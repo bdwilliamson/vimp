@@ -1,0 +1,14 @@
+Package: npvi
+Type: Package
+Title: Nonparametric Variable Importance
+Version: 0.1.0
+Author: Brian Williamson, Noah Simon, and Marco Carone
+Maintainer: Brian Williamson <brianw26@uw.edu>
+Description: Calculates point estimates and valid confidence intervals for our
+    specific parameter of interest, which tackles the variable importance problem
+    in high and low dimensions. This involves estimating the regression function of
+    interest, and the current iteration uses \code{np}, \code{loess}, or \code{mgcv}
+    to do this estimation.
+License: GNU GPLv3
+LazyData: TRUE
+RoxygenNote: 5.0.1.9000
