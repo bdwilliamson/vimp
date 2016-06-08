@@ -93,7 +93,7 @@ npvi <- function(f, data, j = 1, alpha = 0.05, type = "mgcv", ...) {
 
   ## create the output and return it
   output <- list(call = cl, full.f = f1, red.f = f2, data = data, j = j - 1, type = type, full.fit = fhat.ful,
-                 red.fit = fhat.red, est = onestep, se = se, ci = ci, full.mod = full, red.mod = reduced)
+                 red.fit = fhat.red, est = onestep, se = se, ci = ci, full.mod = full, red.mod = reduced, alpha = alpha)
 
   ## make it also an npvi object
   tmp.cls <- class(full)
