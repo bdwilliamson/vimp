@@ -1,53 +1,64 @@
 #' Nonparametric Variable Importance
 #'
-#' This function computes estimates and confidence intervals for the nonparametric variable importance parameter of interest.
+#' Compute estimates and confidence intervals for the nonparametric variable importance parameter of interest.
 #'
 #' @param f1 the regression function to estimate for the full fit, in the usual \code{lm} format.
 #' @param f2 the regression function to estimate for the reduced fit, in the usual \code{lm} format.
-#' @param data the dataset. Must be in $n \times (p+1)$, where the first column is $Y$.
+#' @param dat the dataset. Must be in $n \times (p+1)$, where the last column is $Y$.
 #' @param j the covariate(s) to calculate variable importance for, defaults to 1.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95% confidence interval.
 #' @param type the nonparametric estimation tool to use, defaults to \code{mgcv}. Partial strings can be used, if they are unique identifiers of the tool.
 #' @param ... other arguments to the estimation tool.
+#'
 #' @export
+#'
+#' @examples
+#' ## generate the data
+#' testdat <- generateData(n = 100, p = 2)
+#'
+#' ## get the estimate
+#' est <- npvi(y ~ V1 + V2, y ~ V1, data = testdat, j = 2, type = "np", regtype = "ll", cktertype = "epanechnikov")
+#'
 
-npvi <- function(f, data, j = 1, alpha = 0.05, type = "mgcv", ...) {
+npvi <- function(f1, f2, data, j = 1, alpha = 0.05, type = "mgcv", ...) {
   ## get the type, if not fully specified
   ## if not mgcv, loess, np, then stop and return error
   findx <-  pmatch(type,c("mgcv", "loess", "np"))
   if (is.na(findx)) stop("Unsupported estimation tool. Please supply a different tool.")
   type <- c("mgcv", "loess", "np")[findx]
 
-  ## if either of the functions are missing, stop and throw an error
-  if (missing(f1)) stop("You must enter a formula for the full fit.")
-  if (missing(f2)) stop("You must enter a formula for the reduced fit.")
+  ## if the data is missing, stop and throw an error
+  if (missing(f1)) stop("You must enter a full model.")
+  if (missing(f2)) stop("You must enter a reduced model.")
   if (missing(data)) stop("You must enter data.")
-
-  ## add one to j, since Y is the first column
-  j <- j + 1
 
   ## get the call for later
   cl <- match.call()
 
+  ## get the reduced dataset
+  dat.reduced <- data[, -j]
+
   ## split into type
   if (type == "loess") {
     ## calculate the full fit
-    full <- loess(f1, data, ...)
+    full <- loess(f1, data = data, ...)
 
     ## calculate the reduced fit
-    reduced <- loess(f2, data[, -j], ...)
+    reduced <- loess(f2, data = dat.reduced, ...)
   } else if (type == "mgcv") {
     ## calculate the full fit
-    full <- mgcv(f1, data, ...)
+    full <- mgcv::gam(f1, data = data, ...)
 
     ## calculate the reduced fit
-    reduced <- mgcv(f2, data[, -j], ...)
+    reduced <- mgcv::gam(f2, data = dat.reduced, ...)
   } else if (type == "np") {
     ## calculate the full fit
-    full <- np(f1, data, ...)
+    full.bws <- np::npregbw(f1, data = data, ...)
+    full <- np::npreg(full.bws, txdat = data[, -dim(data)[2]], tydat = data[, dim(data)[2]])
 
     ## calculate the reduced fit
-    reduced <- np(f2, data[, -j], ...)
+    red.bws <- np::npregbw(f2, data = dat.reduced, ...)
+    reduced <- np::npreg(red.bws, txdat = dat.reduced[, -dim(dat.reduced)[2]], tydat = dat.reduced[, dim(dat.reduced)[2]], ...)
   } else {
     stop("Unsupported estimation tool. Please supply a different tool.") # shouldn't make it here, but include for completeness
   }
@@ -92,7 +103,7 @@ npvi <- function(f, data, j = 1, alpha = 0.05, type = "mgcv", ...) {
   ci <- myConfint(onestep, se, n, 1 - alpha)
 
   ## create the output and return it
-  output <- list(call = cl, full.f = f1, red.f = f2, data = data, j = j - 1, type = type, full.fit = fhat.ful,
+  output <- list(call = cl, full.f = f1, red.f = f2, data = data, j = j, type = type, full.fit = fhat.ful,
                  red.fit = fhat.red, est = onestep, se = se, ci = ci, full.mod = full, red.mod = reduced, alpha = alpha)
 
   ## make it also an npvi object

@@ -2,7 +2,9 @@ Package: npvi
 Type: Package
 Title: Nonparametric Variable Importance
 Version: 0.1.0
-Author: Brian Williamson, Noah Simon, and Marco Carone
+Authors@R: c(person("Brian D.", "Williamson", email = "brianw26@uw.edu", role = c("aut", "cre")),
+            person("Noah", "Simon", role = c("aut", "cre")), person("Marco", "Carone", role = c("aut", "cre")))
+Author: Brian Williamson [aut, cre], Noah Simon [aut, cre], Marco Carone [aut, cre]
 Maintainer: Brian Williamson <brianw26@uw.edu>
 Description: Calculates point estimates and valid confidence intervals for our
     specific parameter of interest, which tackles the variable importance problem
@@ -10,5 +12,9 @@ Description: Calculates point estimates and valid confidence intervals for our
     interest, and the current iteration uses \code{np}, \code{loess}, or \code{mgcv}
     to do this estimation.
 License: GNU GPLv3
+Depends: R (>= 3.1.0)
+Imports:
+      np,
+      mgcv
 LazyData: TRUE
 RoxygenNote: 5.0.1.9000
