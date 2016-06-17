@@ -4,22 +4,25 @@
 \alias{npvi}
 \title{Nonparametric Variable Importance}
 \usage{
-npvi(f, data, j = 1, alpha = 0.05, type = "mgcv", ...)
+npvi(f1, f2, data, j = 1, alpha = 0.05, type = "mgcv", ...)
 }
 \arguments{
-\item{data}{the dataset. Must be in $n \times (p+1)$, where the first column is $Y$.}
-
-\item{j}{the covariate(s) to calculate variable importance for, defaults to 1.}
-
-\item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95% confidence interval.}
-
-\item{type}{the nonparametric estimation tool to use, defaults to \code{mgcv}. Partial strings can be used, if they are unique identifiers of the tool.}
-
-\item{...}{other arguments to the estimation tool.}
-
 \item{f1}{the regression function to estimate for the full fit, in the usual \code{lm} format.}
 
 \item{f2}{the regression function to estimate for the reduced fit, in the usual \code{lm} format.}
+
+\item{j}{the covariate(s) to calculate variable importance for, defaults to 1.}
+
+\item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
+
+\item{type}{the nonparametric estimation tool to use, defaults to \code{mgcv}. Partial strings can be used, if they are unique identifiers of the tool.}
+
+\item{...}{other arguments to the estimation tool, see "See also".}
+
+\item{dat}{the dataset. Must be in \eqn{n x (p+1)}, where the last column is \eqn{Y}.}
+}
+\value{
+An object of class \code{npvi}.
 }
 \description{
 Compute estimates and confidence intervals for the nonparametric variable importance parameter of interest.
@@ -27,11 +30,14 @@ Compute estimates and confidence intervals for the nonparametric variable import
 \examples{
 ## generate the data
 testdat <- generateData(n = 100, p = 2)
-## load the np package
-library(np)
-options(np.messages = FALSE)
-## get the estimate
-est <- npvi(y ~ V1 + V2, y ~ V1, j = 2, type = "np")
 
+## get the estimate
+est <- npvi(y ~ V1 + V2, y ~ V1, data = testdat, j = 2, type = "np", regtype = "ll", cktertype = "epanechnikov")
+
+}
+\seealso{
+\code{\link{np}} for specific usage of the nonparametric kernel smoothing methods,
+\code{\link{mgcv}} for specific usage of the GAM methods, and
+\code{\link{loess}} for local polynomial fitting.
 }
 
