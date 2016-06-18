@@ -15,8 +15,8 @@ print.npvi <- function(obj, digits = max(3, getOption("digits") - 3)) {
   colnames(output) <- c("Estimate", "SE", paste(1 - obj$alpha, "% CIL", sep = ""), paste(1 - obj$alpha, "% CIU", sep = ""))
 
   ## print out the call
-  cat("\nCall:\n", paste(deparse(obj$call), sep = "\n", collapse = "\n"),
-      "\n\n", sep = "")
+  cat("Call:\n", paste(deparse(obj$call), sep = "\n", collapse = "\n"),
+      "\n", sep = "")
   ## print out the matrix
   cat("\nEstimates:\n")
   print(output)

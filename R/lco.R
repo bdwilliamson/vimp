@@ -86,6 +86,13 @@ lco <- function(f1, f2, data, j = 1, alpha = 0.05, type = "mgcv", ...) {
     ## calculate the reduced fit
     reduced <- mgcv::gam(f2, data = dat.reduced, ...)
   } else if (type == "np") {
+    ## set the messages if we haven't already
+    if (is.null(options("np.messages")$np.messages)) {
+      invisible(options(np.messages = FALSE))
+    }
+    if (is.null(options("np.tree")$np.tree)) {
+      invisible(options(np.tree = TRUE))
+    }
     ## calculate the full fit
     full.bws <- np::npregbw(f1, data = data, ...)
     full <- np::npreg(full.bws, txdat = data[, -dim(data)[2]], tydat = data[, dim(data)[2]])
