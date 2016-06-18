@@ -25,20 +25,20 @@
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{npvi} object. This results in a list containing:
 #' \itemize{
-#'  \item{call}{the call to \code{lco}}
-#'  \item{full.f}{the model for the full data}
-#'  \item{red.f}{the model for the reduced data}
-#'  \item{data}{the data used by the function}
-#'  \item{j}{the column(s) to calculate variable importance for}
-#'  \item{type}{the method to estimate the regressions}
-#'  \item{full.fit}{the fitted values of the chosen method fit to the full data}
-#'  \item{red.fit}{the fitted values of the chosen method fit to the reduced data}
-#'  \item{est}{the estimated variable importance}
-#'  \item{se}{the standard error for the estimated variable importance}
-#'  \item{ci}{the \eqn{(1-\alpha) x 100}% confidence interval for the variable importance}
-#'  \item{full.mod}{the object returned by the estimation procedure for the full data regression}
-#'  \item{red.mod}{the object returned by the estimation procedure for the reduced data regression}
-#'  \item{alpha}{the level, for confidence interval calculation}
+#'  \item{call}{ - the call to \code{lco}}
+#'  \item{full.f}{ - the model for the full data}
+#'  \item{red.f}{ - the model for the reduced data}
+#'  \item{data}{ - the data used by the function}
+#'  \item{j}{ - the column(s) to calculate variable importance for}
+#'  \item{type}{ - the method to estimate the regressions}
+#'  \item{full.fit}{ - the fitted values of the chosen method fit to the full data}
+#'  \item{red.fit}{ - the fitted values of the chosen method fit to the reduced data}
+#'  \item{est}{ - the estimated variable importance}
+#'  \item{se}{ - the standard error for the estimated variable importance}
+#'  \item{ci}{ - the \eqn{(1-\alpha) x 100}\% confidence interval for the variable importance}
+#'  \item{full.mod}{ - the object returned by the estimation procedure for the full data regression}
+#'  \item{red.mod}{ - the object returned by the estimation procedure for the reduced data regression}
+#'  \item{alpha}{ - the level, for confidence interval calculation}
 #' }
 #'
 #' @examples
