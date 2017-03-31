@@ -12,16 +12,13 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
-#' @examples
-#'
-#'
 variableImportanceCI <- function(est, se, n, level = 0.95) {
   ## set up the level
   a <- (1 - level)/2
   a <- c(a, 1 - a)
 
   ## get the quantiles
-  fac <- qnorm(a)
+  fac <- stats::qnorm(a)
 
   ## create the ci
   ci <- array(NA, dim = c(length(est), 2L), dimnames = list(names(est)))

@@ -13,9 +13,6 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
-#' @examples
-#'
-#'
 variableImportanceSE <- function(full, reduced, y, n = length(y), standardized = TRUE) {
 
   ## calculate the influence curve

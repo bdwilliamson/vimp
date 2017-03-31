@@ -4,10 +4,10 @@
 #'
 #' @param obj the \code{npvi} object of interest.
 #' @param digits the number of digits to display results to. Defaults to the maximum of 3 and the "digits" option minus 3.
-#'
+#' @param ... other options, see the generic \code{print} function.
 #' @export
 
-print.npvi <- function(obj, digits = max(3, getOption("digits") - 3)) {
+print.npvi <- function(obj, digits = max(3, getOption("digits") - 3), ...) {
 
   ## create the output matrix
   output <- cbind(round(obj$est, digits), round(obj$se, digits), round(obj$ci, digits))

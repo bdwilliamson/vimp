@@ -1,11 +1,10 @@
 Package: npvi
 Type: Package
 Title: Nonparametric Variable Importance
-Version: 0.1.0
+Version: 0.0.1
 Authors@R: c(person("Brian D.", "Williamson", email = "brianw26@uw.edu", role = c("aut", "cre")),
-            person("Noah", "Simon", role = c("aut", "cre")), person("Marco", "Carone", role = c("aut", "cre")))
-Author: Brian Williamson [aut, cre], Noah Simon [aut, cre], Marco Carone [aut,
-    cre]
+            person("Noah", "Simon", role = c("aut")), person("Marco", "Carone", role = c("aut")))
+Author: Brian Williamson [aut, cre], Noah Simon [aut], Marco Carone [aut]
 Maintainer: Brian Williamson <brianw26@uw.edu>
 Description: Calculates point estimates and valid confidence intervals for our
     specific parameter of interest, which tackles the variable importance problem
@@ -15,6 +14,7 @@ License: GNU GPLv3
 Depends:
     R (>= 3.1.0)
 Imports:
-    SuperLearner
+    SuperLearner,
+    stats
 LazyData: TRUE
 RoxygenNote: 5.0.1

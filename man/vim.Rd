@@ -48,8 +48,8 @@ In the interest of transparency, we return most of the calculations
 within the \code{npvi} object. This results in a list containing:
 \itemize{
  \item{call}{ - the call to \code{vim}}
- \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \texttt{call}}
- \item{red.f}{ - either the formula for the reduced regression or the fitted values for the reduced regression, based on the \texttt{call}}
+ \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
+ \item{red.f}{ - either the formula for the reduced regression or the fitted values for the reduced regression, based on the \code{call}}
  \item{data}{ - the data used by the function}
  \item{j}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
@@ -73,15 +73,20 @@ testdat <- generateData(n = 100, p = 2)
 learners <- "SL.gam"
 
 ## using class "formula"
-est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 3], n = length(y), j = 2, standardized = TRUE, alpha = 0.05, SL.library = learners, cvControl = list(V = 10))
+est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 3],
+           n = length(y), j = 2, standardized = TRUE, alpha = 0.05,
+           SL.library = learners, cvControl = list(V = 10))
 
 ## using pre-computed fitted values
-full <- SuperLearner(Y = testdat$y, X = testdat[, 1:2], SL.library = learners, cvControl = list(V = 10))
+full <- SuperLearner(Y = testdat$y, X = testdat[, 1:2],
+SL.library = learners, cvControl = list(V = 10))
 full.fit <- predict(full)$pred
-reduced <- SuperLearner(Y = full.fit, X = testdat[, 1], SL.library = learners, cvControl = list(V = 10))
+reduced <- SuperLearner(Y = full.fit, X = testdat[, 1],
+SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vim(full.fit, reduced.fit, y = testdat$y, j = 2, standardized = TRUE, alpha = 0.05)
+est <- vim(full.fit, reduced.fit, y = testdat$y, j = 2,
+standardized = TRUE, alpha = 0.05)
 }
 
 }

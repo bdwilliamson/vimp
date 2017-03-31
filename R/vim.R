@@ -28,8 +28,8 @@
 #' within the \code{npvi} object. This results in a list containing:
 #' \itemize{
 #'  \item{call}{ - the call to \code{vim}}
-#'  \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \texttt{call}}
-#'  \item{red.f}{ - either the formula for the reduced regression or the fitted values for the reduced regression, based on the \texttt{call}}
+#'  \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
+#'  \item{red.f}{ - either the formula for the reduced regression or the fitted values for the reduced regression, based on the \code{call}}
 #'  \item{data}{ - the data used by the function}
 #'  \item{j}{ - the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
@@ -53,15 +53,20 @@
 #' learners <- "SL.gam"
 #'
 #' ## using class "formula"
-#' est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 3], n = length(y), j = 2, standardized = TRUE, alpha = 0.05, SL.library = learners, cvControl = list(V = 10))
+#' est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 3],
+#'            n = length(y), j = 2, standardized = TRUE, alpha = 0.05,
+#'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ## using pre-computed fitted values
-#' full <- SuperLearner(Y = testdat$y, X = testdat[, 1:2], SL.library = learners, cvControl = list(V = 10))
+#' full <- SuperLearner(Y = testdat$y, X = testdat[, 1:2],
+#' SL.library = learners, cvControl = list(V = 10))
 #' full.fit <- predict(full)$pred
-#' reduced <- SuperLearner(Y = full.fit, X = testdat[, 1], SL.library = learners, cvControl = list(V = 10))
+#' reduced <- SuperLearner(Y = full.fit, X = testdat[, 1],
+#' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vim(full.fit, reduced.fit, y = testdat$y, j = 2, standardized = TRUE, alpha = 0.05)
+#' est <- vim(full.fit, reduced.fit, y = testdat$y, j = 2,
+#' standardized = TRUE, alpha = 0.05)
 #' }
 #'
 #' @seealso \code{\link{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
@@ -90,20 +95,20 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     X.minus.j <- X[, -j]
 
     ## fit the Super Learner given the specified library
-    full <- SuperLearner(Y = y, X = X, ...)
+    full <- SuperLearner::SuperLearner(Y = y, X = X, ...)
 
     ## get the fitted values
-    fhat.ful <- predict(full)$pred
+    fhat.ful <- SuperLearner::predict(full)$pred
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner(Y = y, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, ...)
     } else { ## two-step, recommended
-      reduced <- SuperLearner(fhat.ful, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, ...)
     }
 
     ## get the fitted values
-    fhat.red <- predict(reduced)$pred
+    fhat.red <- SuperLearner::predict(reduced)$pred
 
   } else if (class(f2) == "formula") { ## can use fitted in full and formula in reduced
 
