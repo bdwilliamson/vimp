@@ -25,8 +25,4 @@ Compute the value of the influence function for the given group of left-out cova
 See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind this function and the definition of the parameter of interest.
 }
-\examples{
-
-
-}
 

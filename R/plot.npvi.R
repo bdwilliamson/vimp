@@ -18,12 +18,9 @@ plot.npvi <- function(x, nms, ...) {
   ord.mat <- mat[order(mat$est), ]
 
   ## plot
-  plot(ord.mat$est, 1:dim(ord.mat)[1], xlab, ylab,
-       main, axes)
-  abline(v = 0, col = "red", lty = 2)
-  arrows(unlist(ord.mat$cil), 1:dim(ord.mat)[1], unlist(ord.mat$ciu), 1:dim(ord.mat)[1],
+  graphics::plot(ord.mat$est, 1:dim(ord.mat)[1], ...)
+  graphics::abline(v = 0, col = "red", lty = 2)
+  graphics::arrows(unlist(ord.mat$cil), 1:dim(ord.mat)[1], unlist(ord.mat$ciu), 1:dim(ord.mat)[1],
          length = 0, angle = 90, lwd = 2)
-  title(ylab, line)
-  axis(side = 1, at)
-  axis(side = 2, at = 1:dim(ord.mat)[1], label = nms[order(ord.mat$onestep)], las = 2)
+  graphics::axis(side = 2, at = 1:dim(ord.mat)[1], label = nms[order(ord.mat$onestep)], las = 2)
 }

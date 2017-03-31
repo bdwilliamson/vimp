@@ -12,9 +12,6 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
-#' @examples
-#'
-#'
 variableImportanceIC <- function(full, reduced, y, standardized = TRUE) {
 
   ## first calculate the naive estimates of the parameters

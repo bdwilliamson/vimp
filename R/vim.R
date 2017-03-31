@@ -98,7 +98,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     full <- SuperLearner::SuperLearner(Y = y, X = X, ...)
 
     ## get the fitted values
-    fhat.ful <- SuperLearner::predict(full)$pred
+    fhat.ful <- SuperLearner::predict.SuperLearner(full)$pred
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
@@ -108,7 +108,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     }
 
     ## get the fitted values
-    fhat.red <- SuperLearner::predict(reduced)$pred
+    fhat.red <- SuperLearner::predict.SuperLearner(reduced)$pred
 
   } else if (class(f2) == "formula") { ## can use fitted in full and formula in reduced
 
@@ -132,13 +132,13 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner(Y = y, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, ...)
     } else { ## two-step, recommended
-      reduced <- SuperLearner(fhat.ful, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, ...)
     }
 
     ## get the fitted values
-    fhat.red <- predict(reduced)$pred
+    fhat.red <- SuperLearner::predict.SuperLearner(reduced)$pred
 
   } else { ## otherwise they are fitted values
 

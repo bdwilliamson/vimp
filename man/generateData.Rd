@@ -15,6 +15,8 @@ generateData(n, p = 2)
 Generates data used in the low-dimensional simulations.
 }
 \examples{
+\dontrun{
 generateData(100)
+}
 }
 

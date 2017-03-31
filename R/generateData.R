@@ -6,7 +6,9 @@
 #' @param p the number of covariates. Defaults to 2, and many more will result in increased computation time for \code{np}.
 #'
 #' @examples
+#' \dontrun{
 #' generateData(100)
+#' }
 
 generateData <- function(n, p=2){
 

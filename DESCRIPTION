@@ -10,11 +10,12 @@ Description: Calculates point estimates and valid confidence intervals for our
     specific parameter of interest, which tackles the variable importance problem
     in high and low dimensions. This involves estimating the regression function of
     interest, and the current iteration uses \code{SuperLearner} to do this estimation.
-License: GNU GPLv3
+License: GPL-3
 Depends:
     R (>= 3.1.0)
 Imports:
     SuperLearner,
-    stats
+    stats,
+    graphics
 LazyData: TRUE
 RoxygenNote: 5.0.1
