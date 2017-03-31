@@ -25,7 +25,7 @@
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{npvi} object. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{lco}}
+#'  \item{call}{ - the call to \code{vim}}
 #'  \item{full.f}{ - the model for the full data}
 #'  \item{red.f}{ - the model for the reduced data}
 #'  \item{data}{ - the data used by the function}
@@ -54,7 +54,7 @@
 #' @export
 
 
-lco <- function(f1, f2, data, j = 1, alpha = 0.05, type = "mgcv", ...) {
+vim <- function(f1, f2, data, j = 1, alpha = 0.05, type = "mgcv", ...) {
   ## get the type, if not fully specified
   ## if not mgcv, loess, np, then stop and return error
   findx <-  pmatch(type,c("mgcv", "loess", "np"))
