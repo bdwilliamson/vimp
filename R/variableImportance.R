@@ -29,6 +29,6 @@ variableImportance <- function(full, reduced, y, n = length(y), standardized = T
   onestep <- naive + mean(variableImportanceIC(full, reduced, y, standardized))
 
   ## return
-  ret <- c(naive, onestep)
+  ret <- onestep
   return(ret)
 }
