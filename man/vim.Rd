@@ -67,7 +67,16 @@ within the \code{npvi} object. This results in a list containing:
 \dontrun{
 require(SuperLearner)
 ## generate the data
-testdat <- generateData(n = 100, p = 2)
+## generate X
+x <- replicate(p, stats::runif(n, -5, 5))
+
+## apply the function to the x's
+smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
+
+## generate Y ~ Normal (smooth, 1)
+y <- smooth + stats::rnorm(n, 0, 1)
+
+testdat <- as.data.frame(cbind(x, y))
 
 ## set up a library for SuperLearner
 learners <- "SL.gam"

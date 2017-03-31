@@ -47,7 +47,16 @@
 #' \dontrun{
 #' require(SuperLearner)
 #' ## generate the data
-#' testdat <- generateData(n = 100, p = 2)
+#' ## generate X
+#' x <- replicate(p, stats::runif(n, -5, 5))
+#'
+#' ## apply the function to the x's
+#' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
+#'
+#' ## generate Y ~ Normal (smooth, 1)
+#' y <- smooth + stats::rnorm(n, 0, 1)
+#'
+#' testdat <- as.data.frame(cbind(x, y))
 #'
 #' ## set up a library for SuperLearner
 #' learners <- "SL.gam"
@@ -95,16 +104,16 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     X.minus.j <- X[, -j]
 
     ## fit the Super Learner given the specified library
-    full <- SuperLearner::SuperLearner(Y = y, X = X, ...)
+    full <- SuperLearner::SuperLearner(Y = y, X = X, SL.library = SL.library, ...)
 
     ## get the fitted values
     fhat.ful <- SuperLearner::predict.SuperLearner(full)$pred
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, SL.library = SL.library,...)
     } else { ## two-step, recommended
-      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, SL.library = SL.library,...)
     }
 
     ## get the fitted values
@@ -132,9 +141,9 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, SL.library = SL.library,...)
     } else { ## two-step, recommended
-      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, ...)
+      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, SL.library = SL.library,...)
     }
 
     ## get the fitted values
