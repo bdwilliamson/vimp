@@ -2,20 +2,20 @@
 #'
 #' Prints out the table of estimates, confidence intervals, and standard errors for a \code{npvi} object.
 #'
-#' @param obj the \code{npvi} object of interest.
+#' @param x the \code{npvi} object of interest.
 #' @param digits the number of digits to display results to. Defaults to the maximum of 3 and the "digits" option minus 3.
 #' @param ... other options, see the generic \code{print} function.
 #' @export
 
-print.npvi <- function(obj, digits = max(3, getOption("digits") - 3), ...) {
+print.npvi <- function(x, digits = max(3, getOption("digits") - 3), ...) {
 
   ## create the output matrix
-  output <- cbind(round(obj$est, digits), round(obj$se, digits), round(obj$ci, digits))
-  rownames(output) <- paste("j = ", obj$j, sep = "")
-  colnames(output) <- c("Estimate", "SE", paste(1 - obj$alpha, "% CIL", sep = ""), paste(1 - obj$alpha, "% CIU", sep = ""))
+  output <- cbind(round(x$est, digits), round(x$se, digits), round(x$ci, digits))
+  rownames(output) <- paste("j = ", x$j, sep = "")
+  colnames(output) <- c("Estimate", "SE", paste(1 - x$alpha, "% CIL", sep = ""), paste(1 - x$alpha, "% CIU", sep = ""))
 
   ## print out the call
-  cat("Call:\n", paste(deparse(obj$call), sep = "\n", collapse = "\n"),
+  cat("Call:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n", sep = "")
   ## print out the matrix
   cat("\nEstimates:\n")

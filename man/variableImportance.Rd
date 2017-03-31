@@ -27,8 +27,4 @@ Compute nonparametric estimates of the variable importance parameter interpreted
 See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind this function and the definition of the parameter of interest.
 }
-\examples{
-
-
-}
 
