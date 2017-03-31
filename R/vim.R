@@ -101,7 +101,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.j <- X[, -j]
+    X.minus.j <- X[, -j, drop = FALSE]
 
     ## fit the Super Learner given the specified library
     full <- SuperLearner::SuperLearner(Y = y, X = X, SL.library = SL.library, ...)
@@ -137,7 +137,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.j <- X[, -j]
+    X.minus.j <- X[, -j, drop = FALSE]
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
