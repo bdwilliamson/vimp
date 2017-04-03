@@ -1,0 +1,18 @@
+---
+title: "Introduction to npvi"
+author: "Brian D. Williamson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to npvi}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Often when working with data we attempt to estimate the conditional mean of the outcome $Y$ given features $X$, defined as $E_P(Y \mid X)$. 
+
+There are many tools for estimating this conditional mean. We might choose a classical parametric tool such as linear regression. We might also want to be model-agnostic and use a more nonparametric approach to estimate the conditional mean. However, 
+
+- This involves using some nonparametric smoothing technique, which requires: (1) choosing a technique, and (2) selecting tuning parameters
+- Naive optimal tuning balances out the bias and variance of the smoothing estimator. Is this the correct trade-off for estimating the conditional mean?
+
