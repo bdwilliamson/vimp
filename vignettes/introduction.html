@@ -18,6 +18,44 @@
 
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
 
 
 
@@ -36,12 +74,155 @@
 
 
 
-<p>Often when working with data we attempt to estimate the conditional mean of the outcome <span class="math inline">\(Y\)</span> given features <span class="math inline">\(X\)</span>, defined as <span class="math inline">\(E_P(Y \mid X)\)</span>.</p>
+<p>Often when working with data we attempt to estimate the conditional mean of the outcome <span class="math inline">\(Y\)</span> given features <span class="math inline">\(X\)</span>, defined as <span class="math inline">\(\mu_P(x) = E_P(Y \mid X = x)\)</span>.</p>
 <p>There are many tools for estimating this conditional mean. We might choose a classical parametric tool such as linear regression. We might also want to be model-agnostic and use a more nonparametric approach to estimate the conditional mean. However,</p>
 <ul>
 <li>This involves using some nonparametric smoothing technique, which requires: (1) choosing a technique, and (2) selecting tuning parameters</li>
 <li>Naive optimal tuning balances out the bias and variance of the smoothing estimator. Is this the correct trade-off for estimating the conditional mean?</li>
 </ul>
+<p>Once we have a good estimate of the conditional mean, it is often of scientific interest to understand which features contribute the most to the variation in <span class="math inline">\(\mu_P\)</span>. Specifically, we might consider <span class="math display">\[\mu_{P, j}(x) = E_P(Y \mid X_{(-j)} = x_{(-j)}),\]</span> where <span class="math inline">\(X_{(-j)}\)</span> is the vector with the <span class="math inline">\(j\)</span>th element, or some group of elements, removed. By comparing <span class="math inline">\(\mu_{P, j}\)</span> to <span class="math inline">\(\mu_P\)</span> we can evaluate the importance of the <span class="math inline">\(j\)</span>th element (or group of elements).</p>
+<p>Assume that our data are generated according to the mechanism <span class="math inline">\(P_0\)</span>. We can then define a nonparametric measure of variable importance, <span class="math display">\[\psi_{0, j} = \frac{\int [\mu_{P_0} - \mu_{P_0, j}]^2dP_0(x)}{\text{Var}_{P_0}(Y)},\]</span> which is the proportion of the variability in the outcome explained by including <span class="math inline">\(X_j\)</span> in our chosen estimation technique.</p>
+<p>This document introduces you to the basic tools in npvi and how to apply them to a dataset. We will explore the two different ways of obtaining variable estimates using npvi:</p>
+<ol style="list-style-type: decimal">
+<li>You (the user) only specify a <em>library</em> of candidate estimators for the conditional means <span class="math inline">\(\mu_{P_0}\)</span> and <span class="math inline">\(\mu_{P_0, j}\)</span>; you allow npvi to obtain the optimal estimates of these quantities using the <code>SuperLearner</code> <span class="citation">(van der Laan, Polley, and Hubbard 2007)</span>, and use these estimates to obtain variable importance estimates</li>
+<li>You (the user) have a favorite estimator for the conditional means; you simply want npvi to obtain variable importance estimates using this estimator</li>
+</ol>
+<div id="data-boston" class="section level2">
+<h2>Data: Boston</h2>
+<p>Throughout we will use the Boston housing study data <span class="citation">(Harrison and Rubinfeld 1978)</span>, freely available from the <code>MASS</code> package. We can use <code>?Boston</code> to see documentation for these data.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## load the library, view the data
+<span class="kw">library</span>(MASS)
+<span class="kw">data</span>(Boston)
+<span class="kw">head</span>(Boston)</code></pre></div>
+<pre><code>##      crim zn indus chas   nox    rm  age    dis rad tax ptratio  black
+## 1 0.00632 18  2.31    0 0.538 6.575 65.2 4.0900   1 296    15.3 396.90
+## 2 0.02731  0  7.07    0 0.469 6.421 78.9 4.9671   2 242    17.8 396.90
+## 3 0.02729  0  7.07    0 0.469 7.185 61.1 4.9671   2 242    17.8 392.83
+## 4 0.03237  0  2.18    0 0.458 6.998 45.8 6.0622   3 222    18.7 394.63
+## 5 0.06905  0  2.18    0 0.458 7.147 54.2 6.0622   3 222    18.7 396.90
+## 6 0.02985  0  2.18    0 0.458 6.430 58.7 6.0622   3 222    18.7 394.12
+##   lstat medv
+## 1  4.98 24.0
+## 2  9.14 21.6
+## 3  4.03 34.7
+## 4  2.94 33.4
+## 5  5.33 36.2
+## 6  5.21 28.7</code></pre>
+<p>In addition to the median house value <code>medv</code>, the outcome of interest, we have measurements on four groups of variables. First are accessibility features: the weighted distances to five employment centers in the Boston region <code>dis</code>, where housing prices are expected to increase with decreased distance to employment centers; and an index of accessibility to radial highways <code>rad</code>, where housing prices are expected to increase with increased access to highways. Second are neighborhood features: the proportion of black residents in the population <code>black</code>; the proportion of population that is lower status <code>lstat</code>, which denotes adults without some high school education and male workers classified as laborers; the crime rate <code>crim</code>; the proportion of a town’s residential land zoned for lots greater than 25,000 square feet <code>zn</code>; the proportion of nonretail business acres per town <code>indus</code>; the full value property tax rate <code>tax</code>; the pupil-teacher ratio by school district <code>ptratio</code>; and an indicator of whether the tract of land borders the Charles River <code>chas</code>. The third group are structural features: the average number of rooms in owner units <code>rm</code>; and the proportion of owner units built prior to 1940 <code>age</code>. The final group is the nitrogen oxide concentration <code>nox</code>.</p>
+<p>Since we have 13 features and four groups, it is of interest to determine variable importance both for the 13 features separately and for the four groups of features.</p>
+</div>
+<div id="building-a-library-of-learners" class="section level2">
+<h2>Building a library of learners</h2>
+<p>Suppose that I prefer to use generalized additive models <span class="citation">(Hastie and Tibshirani 1990)</span> to estimate <span class="math inline">\(\mu_{P_0}\)</span> and <span class="math inline">\(\mu_{P_0, j}\)</span>, so I am planning on using the <code>mgcv</code> package. Suppose that you prefer to use the elastic net <span class="citation">(Zou and Hastie 2005)</span>, and are planning to use the <code>glmnet</code> package.</p>
+<p>The choice of either method is somewhat subjective, and we also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means! This motivates using <code>SuperLearner</code> to allow the data to determine the optimal combination of <em>base learners</em> from a <em>library</em> that we define. These base learners are a combination of different methods (e.g. generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g. additive models with 3 and 4 degrees of freedom).</p>
+<p>For instance, my library could include additive models, elastic net , random forests <span class="citation">(Breiman 2001)</span>, and gradient boosted trees <span class="citation">(Friedman 2001)</span> as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## load the library
+<span class="kw">library</span>(SuperLearner)</code></pre></div>
+<pre><code>## Loading required package: nnls</code></pre>
+<pre><code>## Super Learner</code></pre>
+<pre><code>## Version: 2.0-19</code></pre>
+<pre><code>## Package created on 2016-02-02</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## create a function for boosted stumps
+SL.gbm<span class="fl">.1</span> &lt;-<span class="st"> </span>function(..., <span class="dt">interaction.depth =</span> <span class="dv">1</span>) <span class="kw">SL.gbm</span>(..., <span class="dt">interaction.depth =</span> interaction.depth)
+
+## create GAMs with different degrees of freedom
+SL.gam<span class="fl">.3</span> &lt;-<span class="st"> </span>function(..., <span class="dt">deg.gam =</span> <span class="dv">3</span>) <span class="kw">SL.gam</span>(..., <span class="dt">deg.gam =</span> deg.gam)
+SL.gam<span class="fl">.4</span> &lt;-<span class="st"> </span>function(..., <span class="dt">deg.gam =</span> <span class="dv">4</span>) <span class="kw">SL.gam</span>(..., <span class="dt">deg.gam =</span> deg.gam)
+SL.gam<span class="fl">.5</span> &lt;-<span class="st"> </span>function(..., <span class="dt">deg.gam =</span> <span class="dv">5</span>) <span class="kw">SL.gam</span>(..., <span class="dt">deg.gam =</span> deg.gam)
+
+## add more levels of alpha for glmnet
+create.SL.glmnet &lt;-<span class="st"> </span>function(<span class="dt">alpha =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>)) {
+  for (mm in <span class="kw">seq</span>(<span class="kw">length</span>(alpha))) {
+    <span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">file =</span> <span class="st">&quot;&quot;</span>, <span class="dt">text =</span> <span class="kw">paste</span>(<span class="st">'SL.glmnet.'</span>, alpha[mm], <span class="st">'&lt;- function(..., alpha = '</span>, alpha[mm], <span class="st">') SL.glmnet(..., alpha = alpha)'</span>, <span class="dt">sep =</span> <span class="st">''</span>)), <span class="dt">envir =</span> .GlobalEnv)
+  }
+  <span class="kw">invisible</span>(<span class="ot">TRUE</span>)
+}
+<span class="kw">create.SL.glmnet</span>()
+
+## add tuning parameters for randomForest
+create.SL.randomForest &lt;-<span class="st"> </span>function(<span class="dt">tune =</span> <span class="kw">list</span>(<span class="dt">mtry =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">7</span>), <span class="dt">nodesize =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>))) {
+  tuneGrid &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(tune, <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)
+  for (mm in <span class="kw">seq</span>(<span class="kw">nrow</span>(tuneGrid))) {
+    <span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">file =</span> <span class="st">&quot;&quot;</span>, <span class="dt">text =</span> <span class="kw">paste</span>(<span class="st">&quot;SL.randomForest.&quot;</span>, mm, <span class="st">&quot;&lt;- function(..., mtry = &quot;</span>, tuneGrid[mm, <span class="dv">1</span>], <span class="st">&quot;, nodesize = &quot;</span>, tuneGrid[mm, <span class="dv">2</span>], <span class="st">&quot;) SL.randomForest(..., mtry = mtry, nodesize = nodesize)&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)), <span class="dt">envir =</span> .GlobalEnv)
+  }
+  <span class="kw">invisible</span>(<span class="ot">TRUE</span>)
+}
+<span class="kw">create.SL.randomForest</span>()
+
+## create the library
+learners &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;SL.gam&quot;</span>, <span class="st">&quot;SL.gam.3&quot;</span>, <span class="st">&quot;SL.gam.4&quot;</span>, <span class="st">&quot;SL.gam.5&quot;</span>,
+              <span class="st">&quot;SL.glmnet&quot;</span>, <span class="st">&quot;SL.glmnet.0.25&quot;</span>, <span class="st">&quot;SL.glmnet.0.5&quot;</span>, <span class="st">&quot;SL.glmnet.0.75&quot;</span>,
+              <span class="st">&quot;SL.randomForest&quot;</span>, <span class="st">&quot;SL.randomForest.1&quot;</span>, <span class="st">&quot;SL.randomForest.2&quot;</span>, <span class="st">&quot;SL.randomForest.3&quot;</span>,
+              <span class="st">&quot;SL.randomForest.4&quot;</span>, <span class="st">&quot;SL.randomForest.5&quot;</span>, <span class="st">&quot;SL.randomForest.6&quot;</span>, <span class="st">&quot;SL.randomForest.7&quot;</span>,
+              <span class="st">&quot;SL.randomForest.8&quot;</span>, <span class="st">&quot;SL.randomForest.9&quot;</span>,
+              <span class="st">&quot;SL.gbm.1&quot;</span>)</code></pre></div>
+<p>Now that we have created the library of learners, we can move on to estimating variable importance.</p>
+</div>
+<div id="estimating-variable-importance-for-a-single-variable" class="section level2">
+<h2>Estimating variable importance for a single variable</h2>
+<p>The main function in the npvi package is the <code>vim()</code> function. There are three main arguments to <code>vim()</code>:</p>
+<ul>
+<li><code>f1</code> and <code>f2</code>, which specify whether or not we need to estimate the conditional means</li>
+<li><code>data</code>, which supplies data to the function</li>
+<li><code>j</code>, which determines the feature we want to estimate variable importance for</li>
+</ul>
+<p>There are three ways to specify <code>f1</code> and <code>f2</code>:</p>
+<ol style="list-style-type: decimal">
+<li>Use formula notation and supply a library of learners (e.g. <code>learners</code> above)</li>
+<li>Supply fitted values for our estimate of <span class="math inline">\(\mu_{P_0}\)</span> but supply a library of learners for estimating <span class="math inline">\(\mu_{P_0, j}\)</span></li>
+<li>Supply fitted values for both estimates</li>
+</ol>
+<p>We will illustrate each of these choices in order below.</p>
+<p>Say we choose (1). Then we supplying <code>vim()</code> with</p>
+<ul>
+<li><code>f1 = y ~ x</code></li>
+<li><code>f2 = fit ~ x</code></li>
+<li><code>data = Boston</code></li>
+<li><code>j = 5</code></li>
+</ul>
+<p>means that:</p>
+<ul>
+<li>We want to use <code>SuperLearner()</code> to estimate the conditional mean <span class="math inline">\(\mu_{P_0}\)</span></li>
+<li>We want to use the two-step procedure outlined in Williamson 2017 (CITE) to estimate the conditional mean <span class="math inline">\(\mu_{P_0, j}\)</span></li>
+<li>We want to estimate variable importance for the fifth column of <code>Boston</code>, which is <code>nox</code></li>
+</ul>
+<p>The call to <code>vim()</code> looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## first re-order the data so that the outcome is in the first column
+Boston2 &lt;-<span class="st"> </span>Boston[, <span class="dv">1</span>:<span class="dv">13</span>]
+Boston3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">medv =</span> Boston$medv, Boston2)
+## now estimate variable importance
+<span class="kw">vim</span>(<span class="dt">f1 =</span> y ~<span class="st"> </span>x, <span class="dt">f2 =</span> fit ~<span class="st"> </span>x, <span class="dt">data =</span> Boston3, <span class="dt">y =</span> Boston3[, <span class="dv">1</span>], 
+    <span class="dt">j =</span> <span class="dv">5</span>, <span class="dt">SL.library =</span> learners)</code></pre></div>
+<p>If we choose (1), then <code>vim()</code> will fit the <code>SuperLearner()</code> function with the specified library, and will then return fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset.</p>
+<p>We should choose (2) if we have already estimated variable importance on one feature in a given dataset,</p>
+<p>If we choose (3), then we have to use a single method from the library, or call <code>SuperLearner()</code> ourselves, prior to estimating variable importance. Then <code>vim()</code> simply returns</p>
+</div>
+<div id="estimating-variable-importance-for-multiple-variables" class="section level2">
+<h2>Estimating variable importance for multiple variables</h2>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references">
+<div id="ref-breiman2001">
+<p>Breiman, L. 2001. “Random Forests” 45. Machine Learning.</p>
+</div>
+<div id="ref-friedman2001">
+<p>Friedman, JH. 2001. “Greedy Function Approximation: A Gradient Boosting Machine.” The Annals of Applied Statistics.</p>
+</div>
+<div id="ref-harrison1978">
+<p>Harrison, D, and DL Rubinfeld. 1978. “Hedonic Housing Prices and the Demand for Clean Air” 5. Journal of Environmental Economics and Management.</p>
+</div>
+<div id="ref-hastie1990">
+<p>Hastie, TJ, and RJ Tibshirani. 1990. <em>Generalized Additive Models</em>. Vol. 43. CRC Press.</p>
+</div>
+<div id="ref-vanderlaan2007">
+<p>van der Laan, MJ, EC Polley, and AE Hubbard. 2007. “Super Learner” 6. Statistical Applications in Genetics and Molecular Biology.</p>
+</div>
+<div id="ref-zou2005">
+<p>Zou, H, and TJ Hastie. 2005. “Regularization and Variable Selection via the Elastic Net.” Journal of the Royal Statistical Society: Series B (Statistical Methodology).</p>
+</div>
+</div>
+</div>
 
 
 
