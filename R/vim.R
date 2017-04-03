@@ -128,10 +128,13 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     if (is.null(SL.library)) stop("You must enter a library of learners for the Super Learner.")
 
     ## need f1 to be the same length as Y
-    if (length(y) != dim(data)[1] | length(f1) != dim(data)[1])
+    if (length(y) != dim(data)[1] | length(f1) != dim(data)[1]) stop("The fitted values must be the same length as the outcome.")
 
     ## fitted values from full regression
     fhat.ful <- f1
+
+    ## full model
+    full <- NA
 
     ## set up X
     X <- data[, -1]
@@ -152,6 +155,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
   } else { ## otherwise they are fitted values
 
     ## check to make sure they are the same length as y
+    if (is.null(y)) stop("Y must be entered.")
     if (length(f1) != length(y)) stop("Fitted values from the full regression must be the same length as y.")
     if (length(f2) != length(y)) stop("Fitted values from the reduced regression must be the same length as y.")
 
@@ -159,7 +163,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     fhat.ful <- f1
     fhat.red <- f2
 
-    full.mod <- red.mod <- NA
+    full <- reduced <- NA
   }
 
   ## calculate the estimate

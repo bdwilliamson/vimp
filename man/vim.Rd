@@ -4,7 +4,7 @@
 \alias{vim}
 \title{Leave Covariate(s) Out Nonparametric Variable Importance}
 \usage{
-vim(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1,
+vim(f1, f2, data = NULL, y = rep(1, length(f1)), n = length(y), j = 1,
   standardized = TRUE, alpha = 0.05, SL.library = NULL, ...)
 }
 \arguments{
