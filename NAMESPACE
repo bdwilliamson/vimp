@@ -2,4 +2,8 @@
 
 S3method(plot,npvi)
 S3method(print,npvi)
+export(variableImportance)
+export(variableImportanceCI)
+export(variableImportanceIC)
+export(variableImportanceSE)
 export(vim)

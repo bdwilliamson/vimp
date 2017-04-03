@@ -11,7 +11,7 @@
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
-#'
+#' @export
 variableImportanceCI <- function(est, se, n, level = 0.95) {
   ## set up the level
   a <- (1 - level)/2
