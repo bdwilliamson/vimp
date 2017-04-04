@@ -98,7 +98,7 @@ Assume that our data are generated according to the mechanism $P_0$. We can then
 This document introduces you to the basic tools in npvi and how to apply them to a dataset. We will explore the two different ways of obtaining variable estimates using npvi:
 
 1. You (the user) only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, j}$; you allow npvi to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates
-2. You (the user) have a favorite estimator for the conditional means; you simply want npvi to obtain variable importance estimates using this estimator
+2. You have a favorite estimator for the conditional means; you simply want npvi to obtain variable importance estimates using this estimator
 
 ## Data: Boston
 
@@ -179,7 +179,7 @@ There are three ways to specify `f1` and `f2`:
 2. Supply fitted values for our estimate of $\mu_{P_0}$ but supply a library of learners for estimating $\mu_{P_0, j}$
 3. Supply fitted values for both estimates
 
-We will illustrate each of these choices in order below, but in general we use (1) to estimate variable importance for the first feature in a given dataset and (2) or (3) to estimate variable importance for subsequent features in the same dataset. Method (3) allows the most flexibility, and all time-intensive computation occurs before calling `vim()`; however, this involves more work on your (the user's) end. 
+We will illustrate each of these choices in order below, but in general we use (1) to estimate variable importance for the first feature in a given dataset and (2) or (3) to estimate variable importance for subsequent features in the same dataset. Method (3) allows the most flexibility, and all time-intensive computation occurs before calling `vim()`; however, this involves more work on your end. 
 
 Suppose that the first feature that we want to estimate variable importance for is nitrogen oxide, `nox`. Since this is the first feature, say we choose (1) above. Then supplying `vim()` with 
 
