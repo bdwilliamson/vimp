@@ -298,21 +298,38 @@ lstat.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
 
 Now that we have estimates of each of individual feature's variable importance, we can view them all simultaneously by plotting:
 ```{r}
-## create a list with the objects
-lst.vim <- list(crim.vim, zn.vim, indus.vim, chas.vim, nox.vim, rm.vim, age.vim, dis.vim, rad.vim, tax.vim, ptratio.vim, black.vim, lstat.vim)
+## combine the objects together
+ests <- combine(crim.vim, zn.vim, indus.vim, chas.vim,
+                nox.vim, rm.vim, age.vim, dis.vim, rad.vim,
+                tax.vim, ptratio.vim, black.vim, lstat.vim)
 
-## make the class of the list npvi, for plot to work correctly
-tmp.cls <- class(lst.vim)
-tmp.cls <- c("npvi", tmp.cls)
-class(lst.vim) <- tmp.cls
-
-## create a vector of names
-nms <- c("Crime", "Prop. large zoned", "Prop. business", "Charles riv.", "Nitrogen oxide", "Avg. num. rooms", "Age", "Distance", "Acces to radial hwys", "Property tax rate", "Pupil-teacher ratio", "Prop. black", "Prop. lower status")
+## create a vector of names; must be in the same order as the
+## mat object in ests
+nms <- c("Prop. lower status", "Avg. num. rooms", "Pupil-teacher ratio", "Nitrogen oxide", "Distance", "Crime", "Access to radial hwys", "Property tax rate", "Charles riv.", "Prop. black", "Prop. business", "Prop. large zoned", "Age")
 
 ## plot
-plot(lst.vim, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance", xlim = c(0, 0.2), axes = FALSE)
+plot(ests, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for individual features", xlim = c(0, 0.2), axes = FALSE)
 ```
 
 ## Estimating variable importance for a group of variables
+
+Now that we have estimated variable importance for each of the individual features, we can estimate variable importance for each of the groups that we mentioned above: accessibility features, structural features, nitrogen oxide, and neighborhood features.
+
+The only difference between estimating variable importance for a group of features rather than an individual feature is that now we specify a vector for `j`; we can use any of the options listed in the previous section to compute these estimates.
+
+```{r}
+## get the estimates
+structure.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = c(6, 7), SL.library = learners.2)
+access.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = c(8, 9), SL.library = learners.2)
+neigh.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = c(1, 2, 3, 4, 10, 11, 12, 13), SL.library = learners.2)
+
+## combine and plot
+groups <- combine(structure.vim, access.vim, neigh.vim, nox.vim)
+nms.2 <- c("Neighborhood", "Structure", "Accessibility", "Nitrogen oxide")
+plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.2), axes = FALSE)
+```
 
 ## References

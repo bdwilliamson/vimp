@@ -2,7 +2,7 @@
 #'
 #' Plot the estimates and standard errors for a set of \code{npvi} objects.
 #'
-#' @param x a list of \code{npvi} objects.
+#' @param x an \code{npvi} object created from a call to \code{combine}.
 #' @param y a vector of names, given in the same order as the list.
 #' @param ... other options, see the generic \code{plot} function.
 #' @export
