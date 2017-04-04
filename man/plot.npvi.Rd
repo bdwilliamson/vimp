@@ -4,12 +4,12 @@
 \alias{plot.npvi}
 \title{Plot \code{npvi} objects}
 \usage{
-\method{plot}{npvi}(x, nms, ...)
+\method{plot}{npvi}(x, y, ...)
 }
 \arguments{
-\item{x}{a list of \code{npvi} objects.}
+\item{x}{an \code{npvi} object created from a call to \code{combine}.}
 
-\item{nms}{a vector of names, given in the same order as the list.}
+\item{y}{a vector of names, given in the same order as the list.}
 
 \item{...}{other options, see the generic \code{plot} function.}
 }

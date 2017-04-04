@@ -20,5 +20,6 @@ Imports:
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    MASS
 VignetteBuilder: knitr
