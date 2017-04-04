@@ -186,7 +186,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
                  alpha = alpha)
 
   ## make it also an npvi object
-  tmp.cls <- class(full)
+  tmp.cls <- class(output)
   class(output) <- c("npvi", tmp.cls)
   return(output)
 }

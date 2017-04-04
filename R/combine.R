@@ -8,9 +8,9 @@
 #' @return an object of class \code{npvi} containing all of the output
 #' from the individual \code{npvi} objects. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - a list of the calls to \code{vim}}
-#'  \item{full.f}{ - a list of either the formula for the full regression or the fitted values for the full regressions, based on the \code{call}}
-#'  \item{red.f}{ - a list of either the formula for the reduced regression or the fitted values for the reduced regressions, based on the \code{call}}
+#'  \item{call}{ - the call to \code{combine()}}
+#'  \item{full.f}{ - a list of individual formulas or fitted values from the full regressions}
+#'  \item{red.f}{ - a list of individual formulas or fitted values from the reduced regressions}
 #'  \item{data}{ - the data used by the function}
 #'  \item{j}{ - a list of the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
@@ -61,15 +61,16 @@ combine <- function(...) {
   ## extract the estimates and CIs from each element of the list
   ests <- do.call(rbind.data.frame, lapply(L, function(z) z$est))
   cis <- do.call(rbind.data.frame, lapply(L, function(z) z$ci))
+  ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
 
   ## combine into a matrix
-  tmp <- cbind(ests, cis)
-  names(tmp) <- c("est", "cil", "ciu")
+  tmp <- cbind(ests, ses, cis)
+  names(tmp) <- c("est", "se", "cil", "ciu")
   ## put in decreasing order
   mat <- tmp[order(tmp$est, decreasing = TRUE), ]
 
   ## now get lists of the remaining components
-  call <- lapply(L, function(z) z$call)
+  call <- match.call()
   full.f <- lapply(L, function(z) z$full.f)
   red.f <- lapply(L, function(z) z$red.f)
   data <- L[[1]]$data
