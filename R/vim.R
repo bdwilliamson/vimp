@@ -1,4 +1,4 @@
-#' Leave Covariate(s) Out Nonparametric Variable Importance
+#' Nonparametric Variable Importance Estimates
 #'
 #' Compute estimates and confidence intervals for the
 #' nonparametric variable importance parameter of interest.
@@ -56,21 +56,21 @@
 #' ## generate Y ~ Normal (smooth, 1)
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
-#' testdat <- as.data.frame(cbind(x, y))
+#' testdat <- as.data.frame(cbind(y, x))
 #'
 #' ## set up a library for SuperLearner
 #' learners <- "SL.gam"
 #'
 #' ## using class "formula"
-#' est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 3],
+#' est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
 #'            n = length(y), j = 2, standardized = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ## using pre-computed fitted values
-#' full <- SuperLearner(Y = testdat$y, X = testdat[, 1:2],
+#' full <- SuperLearner(Y = testdat$y, X = testdat[, 2:3],
 #' SL.library = learners, cvControl = list(V = 10))
 #' full.fit <- predict(full)$pred
-#' reduced <- SuperLearner(Y = full.fit, X = testdat[, 1],
+#' reduced <- SuperLearner(Y = full.fit, X = testdat[, 3],
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'

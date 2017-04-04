@@ -210,7 +210,7 @@ vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3[, 1],
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data so letting an algorithm run for a few hours should not be an issue. 
 
-However, for the sake of illustration, we can estimate varibable importance for nitrogen oxide only using one base learner as follows:
+However, for the sake of illustration, we can estimate varibable importance for nitrogen oxide only using only two base learners as follows:
 ```{r}
 ## load the library
 library(npvi)
@@ -220,13 +220,13 @@ Boston2 <- Boston[, 1:13]
 Boston3 <- cbind(medv = Boston$medv, Boston2)
 
 ## new learners library, with only one learner for illustration only
-learners.2 <- "SL.gam"
+learners.2 <- c("SL.gam", "SL.glmnet")
 
 ## now estimate variable importance
 nox.vim <- vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3$medv, j = 5, SL.library = learners.2)
 ```
 
-This code takes approximately 5 seconds to run on a (not very fast) PC. Under the hood, `vim()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. We can see these estimates:
+This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vim()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. We can see these estimates:
 
 ```{r}
 nox.vim
@@ -252,7 +252,7 @@ rm.vim <- vim(full.fit, f2 = fit ~ x, data = Boston3, y = Boston3$medv,
 rm.vim
 ```
 
-This takes approximately 2 seconds --- now rather than estimating both conditional means, we are only estimating one.
+This takes approximately 5 seconds --- now rather than estimating both conditional means, we are only estimating one.
 
 If we choose (3), then we have to use a single method from the library, or call `SuperLearner()` ourselves, prior to estimating variable importance. Then `vim()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
 
@@ -261,7 +261,7 @@ If we choose (3), then we have to use a single method from the library, or call 
 y <- Boston$medv
 x <- Boston[, -c(8, 14)] # this removes dis and medv
 
-## fit a GAM using SuperLearner, using the two-step estimating procedure
+## fit a GAM and glmnet using SuperLearner, using the two-step estimating procedure
 reduced.mod <- SuperLearner(Y = full.fit, X = x, SL.library = learners.2)
 reduced.fit <- predict(reduced.mod)$pred
 ## this takes 2 seconds
@@ -270,8 +270,49 @@ reduced.fit <- predict(reduced.mod)$pred
 dis.vim <- vim(full.fit, reduced.fit, y = Boston3$medv, j = 8)
 ```
 
-Now that we 
+It is important to note that if we use the same learners library, then approaches (2) and (3) are equivalent. 
 
-## Estimating variable importance for multiple variables
+We can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
+```{r}
+crim.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 1, SL.library = learners.2)
+zn.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 2, SL.library = learners.2)
+indus.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 3, SL.library = learners.2)
+chas.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 4, SL.library = learners.2)
+age.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 7, SL.library = learners.2)
+rad.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 9, SL.library = learners.2)
+tax.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 10, SL.library = learners.2)
+ptratio.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 11, SL.library = learners.2)
+black.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 12, SL.library = learners.2)
+lstat.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
+                j = 13, SL.library = learners.2)
+```
+
+Now that we have estimates of each of individual feature's variable importance, we can view them all simultaneously by plotting:
+```{r}
+## create a list with the objects
+lst.vim <- list(crim.vim, zn.vim, indus.vim, chas.vim, nox.vim, rm.vim, age.vim, dis.vim, rad.vim, tax.vim, ptratio.vim, black.vim, lstat.vim)
+
+## make the class of the list npvi, for plot to work correctly
+tmp.cls <- class(lst.vim)
+tmp.cls <- c("npvi", tmp.cls)
+class(lst.vim) <- tmp.cls
+
+## create a vector of names
+nms <- c("Crime", "Prop. large zoned", "Prop. business", "Charles riv.", "Nitrogen oxide", "Avg. num. rooms", "Age", "Distance", "Acces to radial hwys", "Property tax rate", "Pupil-teacher ratio", "Prop. black", "Prop. lower status")
+
+## plot
+plot(lst.vim, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance", xlim = c(0, 0.2), axes = FALSE)
+```
+
+## Estimating variable importance for a group of variables
 
 ## References

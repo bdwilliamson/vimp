@@ -118,10 +118,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>For instance, my library could include additive models, elastic net , random forests <span class="citation">(Breiman 2001)</span>, and gradient boosted trees <span class="citation">(Friedman 2001)</span> as follows:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## load the library
 <span class="kw">library</span>(SuperLearner)</code></pre></div>
+<pre><code>## Warning: package 'SuperLearner' was built under R version 3.3.3</code></pre>
 <pre><code>## Loading required package: nnls</code></pre>
 <pre><code>## Super Learner</code></pre>
-<pre><code>## Version: 2.0-19</code></pre>
-<pre><code>## Package created on 2016-02-02</code></pre>
+<pre><code>## Version: 2.0-21</code></pre>
+<pre><code>## Package created on 2016-11-11</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## create a function for boosted stumps
 SL.gbm<span class="fl">.1</span> &lt;-<span class="st"> </span>function(..., <span class="dt">interaction.depth =</span> <span class="dv">1</span>) <span class="kw">SL.gbm</span>(..., <span class="dt">interaction.depth =</span> interaction.depth)
 
@@ -172,8 +173,8 @@ learners &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st
 <li>Supply fitted values for our estimate of <span class="math inline">\(\mu_{P_0}\)</span> but supply a library of learners for estimating <span class="math inline">\(\mu_{P_0, j}\)</span></li>
 <li>Supply fitted values for both estimates</li>
 </ol>
-<p>We will illustrate each of these choices in order below.</p>
-<p>Say we choose (1). Then we supplying <code>vim()</code> with</p>
+<p>We will illustrate each of these choices in order below, but in general we use (1) to estimate variable importance for the first feature in a given dataset and (2) or (3) to estimate variable importance for subsequent features in the same dataset. Method (3) allows the most flexibility, and all time-intensive computation occurs before calling <code>vim()</code>; however, this involves more work on your (the user’s) end.</p>
+<p>Suppose that the first feature that we want to estimate variable importance for is nitrogen oxide, <code>nox</code>. Since this is the first feature, say we choose (1) above. Then supplying <code>vim()</code> with</p>
 <ul>
 <li><code>f1 = y ~ x</code></li>
 <li><code>f2 = fit ~ x</code></li>
@@ -187,15 +188,90 @@ learners &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st
 <li>We want to estimate variable importance for the fifth column of <code>Boston</code>, which is <code>nox</code></li>
 </ul>
 <p>The call to <code>vim()</code> looks like this:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## first re-order the data so that the outcome is in the first column
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## load the library
+<span class="kw">library</span>(npvi)
+
+## first re-order the data so that the outcome is in the first column
 Boston2 &lt;-<span class="st"> </span>Boston[, <span class="dv">1</span>:<span class="dv">13</span>]
 Boston3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">medv =</span> Boston$medv, Boston2)
+
 ## now estimate variable importance
 <span class="kw">vim</span>(<span class="dt">f1 =</span> y ~<span class="st"> </span>x, <span class="dt">f2 =</span> fit ~<span class="st"> </span>x, <span class="dt">data =</span> Boston3, <span class="dt">y =</span> Boston3[, <span class="dv">1</span>], 
     <span class="dt">j =</span> <span class="dv">5</span>, <span class="dt">SL.library =</span> learners)</code></pre></div>
-<p>If we choose (1), then <code>vim()</code> will fit the <code>SuperLearner()</code> function with the specified library, and will then return fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset.</p>
-<p>We should choose (2) if we have already estimated variable importance on one feature in a given dataset,</p>
-<p>If we choose (3), then we have to use a single method from the library, or call <code>SuperLearner()</code> ourselves, prior to estimating variable importance. Then <code>vim()</code> simply returns</p>
+<p>While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay — in general, you took a long time to collect the data so letting an algorithm run for a few hours should not be an issue.</p>
+<p>However, for the sake of illustration, we can estimate varibable importance for nitrogen oxide only using one base learner as follows:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## load the library
+<span class="kw">library</span>(npvi)
+
+## first re-order the data so that the outcome is in the first column
+Boston2 &lt;-<span class="st"> </span>Boston[, <span class="dv">1</span>:<span class="dv">13</span>]
+Boston3 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="dt">medv =</span> Boston$medv, Boston2)
+
+## new learners library, with only one learner for illustration only
+learners<span class="fl">.2</span> &lt;-<span class="st"> &quot;SL.gam&quot;</span>
+
+## now estimate variable importance
+nox.vim &lt;-<span class="st"> </span><span class="kw">vim</span>(<span class="dt">f1 =</span> y ~<span class="st"> </span>x, <span class="dt">f2 =</span> fit ~<span class="st"> </span>x, <span class="dt">data =</span> Boston3, <span class="dt">y =</span> Boston3$medv, <span class="dt">j =</span> <span class="dv">5</span>, <span class="dt">SL.library =</span> learners<span class="fl">.2</span>)</code></pre></div>
+<pre><code>## Loading required package: gam</code></pre>
+<pre><code>## Loading required package: splines</code></pre>
+<pre><code>## Loading required package: foreach</code></pre>
+<pre><code>## Loaded gam 1.14</code></pre>
+<p>This code takes approximately 5 seconds to run on a (not very fast) PC. Under the hood, <code>vim()</code> fits the <code>SuperLearner()</code> function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. We can see these estimates:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">nox.vim</code></pre></div>
+<pre><code>## Call:
+## vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3$medv, 
+##     j = 5, SL.library = learners.2)
+## 
+## Estimates:
+##       Estimate     SE 0.95% CIL 0.95% CIU
+## j = 5   0.0389 0.0063    0.0265    0.0513</code></pre>
+<p>The object returned by <code>vim()</code> also contains fitted values from using <code>SuperLearner()</code>; we access these using <code>$full.fit</code> and <code>$red.fit</code>. For example,</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(nox.vim$full.fit)</code></pre></div>
+<pre><code>##       [,1]
+## 1 28.73662
+## 2 23.44149
+## 3 31.62415
+## 4 31.50261
+## 5 30.04405
+## 6 26.68196</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(nox.vim$red.fit)</code></pre></div>
+<pre><code>##       [,1]
+## 1 30.10768
+## 2 24.05180
+## 3 31.72481
+## 4 31.43526
+## 5 30.15800
+## 6 26.91924</code></pre>
+<p>We said earlier that we want to obtain estimates of all individual features in these data, so let’s choose average number of rooms (<code>rm</code>) next. Now that we have estimated variable importance for nitrogen oxide, the <code>full.fit</code> object contains our estimate of <span class="math inline">\(\mu_{P_0}\)</span>. Since we have spent the time to estimate this using <code>SuperLearner()</code>, there is no reason to estimate this function again. This leads us to choose (2) above, since we have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## specify that full.fit doesn't change
+full.fit &lt;-<span class="st"> </span>nox.vim$full.fit
+
+## estimate variable importance for the average number of rooms
+rm.vim &lt;-<span class="st"> </span><span class="kw">vim</span>(full.fit, <span class="dt">f2 =</span> fit ~<span class="st"> </span>x, <span class="dt">data =</span> Boston3, <span class="dt">y =</span> Boston3$medv,
+              <span class="dt">j =</span> <span class="dv">6</span>, <span class="dt">SL.library =</span> learners<span class="fl">.2</span>)
+
+rm.vim</code></pre></div>
+<pre><code>## Call:
+## vim(f1 = full.fit, f2 = fit ~ x, data = Boston3, y = Boston3$medv, 
+##     j = 6, SL.library = learners.2)
+## 
+## Estimates:
+##       Estimate     SE 0.95% CIL 0.95% CIU
+## j = 6   0.0701 0.0157    0.0394    0.1008</code></pre>
+<p>This takes approximately 2 seconds — now rather than estimating both conditional means, we are only estimating one.</p>
+<p>If we choose (3), then we have to use a single method from the library, or call <code>SuperLearner()</code> ourselves, prior to estimating variable importance. Then <code>vim()</code> returns variable importance estimates based on these fitted values. For example, let’s estimate variable importance for the distance to radial highways using this approach.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## set up the data
+y &lt;-<span class="st"> </span>Boston$medv
+x &lt;-<span class="st"> </span>Boston[, -<span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">14</span>)] <span class="co"># this removes dis and medv</span>
+
+## fit a GAM using SuperLearner, using the two-step estimating procedure
+reduced.mod &lt;-<span class="st"> </span><span class="kw">SuperLearner</span>(<span class="dt">Y =</span> full.fit, <span class="dt">X =</span> x, <span class="dt">SL.library =</span> learners<span class="fl">.2</span>)
+reduced.fit &lt;-<span class="st"> </span><span class="kw">predict</span>(reduced.mod)$pred
+## this takes 2 seconds
+
+## estimate variable importance
+dis.vim &lt;-<span class="st"> </span><span class="kw">vim</span>(full.fit, reduced.fit, <span class="dt">y =</span> Boston3$medv, <span class="dt">j =</span> <span class="dv">8</span>)</code></pre></div>
+<p>Now that we</p>
 </div>
 <div id="estimating-variable-importance-for-multiple-variables" class="section level2">
 <h2>Estimating variable importance for multiple variables</h2>
