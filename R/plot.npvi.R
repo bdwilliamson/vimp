@@ -9,7 +9,7 @@
 plot.npvi <- function(x, y, ...) {
 
   ## order based on the estimate
-  ord.mat <- mat[order(mat$est), ]
+  ord.mat <- mat[order(x$mat$est), ]
 
   ## plot
   graphics::plot(ord.mat$est, 1:dim(ord.mat)[1], ...)
