@@ -95,14 +95,14 @@ Once we have a good estimate of the conditional mean, it is often of scientific 
 
 Assume that our data are generated according to the mechanism $P_0$. We can then define a nonparametric measure of variable importance, \[\psi_{0, j} = \frac{\int [\mu_{P_0} - \mu_{P_0, j}]^2dP_0(x)}{\text{Var}_{P_0}(Y)},\] which is the proportion of the variability in the outcome explained by including $X_j$ in our chosen estimation technique. 
 
-This document introduces you to the basic tools in npvi and how to apply them to a dataset. We will explore the two different ways of obtaining variable estimates using npvi:
+This document introduces you to the basic tools in npvi and how to apply them to a dataset. I will explore the two different ways of obtaining variable estimates using npvi:
 
-1. You (the user) only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, j}$; you allow npvi to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates
+1. You only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, j}$; you allow npvi to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates
 2. You have a favorite estimator for the conditional means; you simply want npvi to obtain variable importance estimates using this estimator
 
 ## Data: Boston
 
-Throughout we will use the Boston housing study data [@harrison1978], freely available from the `MASS` package. We can use `?Boston` to see documentation for these data.
+Throughout I will use the Boston housing study data [@harrison1978], freely available from the `MASS` package. Use `?Boston` to see documentation for these data.
 
 ```{r}
 ## load the library, view the data
@@ -111,15 +111,15 @@ data(Boston)
 head(Boston)
 ```
 
-In addition to the median house value `medv`, the outcome of interest, we have measurements on four groups of variables. First are accessibility features: the weighted distances to five employment centers in the Boston region `dis`, where housing prices are expected to increase with decreased distance to employment centers; and an index of accessibility to radial highways `rad`, where housing prices are expected to increase with increased access to highways. Second are neighborhood features: the proportion of black residents in the population `black`; the proportion of population that is lower status `lstat`, which denotes adults without some high school education and male workers classified as laborers; the crime rate `crim`; the proportion of a town's residential land zoned for lots greater than 25,000 square feet `zn`; the proportion of nonretail business acres per town `indus`; the full value property tax rate `tax`; the pupil-teacher ratio  by school district `ptratio`; and an indicator of whether the tract of land borders the Charles River `chas`. The third group are structural features: the average number of rooms in owner units `rm`; and the proportion of owner units built prior to 1940 `age`. The final group is the nitrogen oxide concentration `nox`. 
+In addition to the median house value `medv`, the outcome of interest, there are measurements on four groups of variables. First are accessibility features: the weighted distances to five employment centers in the Boston region `dis`, where housing prices are expected to increase with decreased distance to employment centers; and an index of accessibility to radial highways `rad`, where housing prices are expected to increase with increased access to highways. Second are neighborhood features: the proportion of black residents in the population `black`; the proportion of population that is lower status `lstat`, which denotes adults without some high school education and male workers classified as laborers; the crime rate `crim`; the proportion of a town's residential land zoned for lots greater than 25,000 square feet `zn`; the proportion of nonretail business acres per town `indus`; the full value property tax rate `tax`; the pupil-teacher ratio  by school district `ptratio`; and an indicator of whether the tract of land borders the Charles River `chas`. The third group are structural features: the average number of rooms in owner units `rm`; and the proportion of owner units built prior to 1940 `age`. The final group is the nitrogen oxide concentration `nox`. 
 
-Since we have 13 features and four groups, it is of interest to determine variable importance both for the 13 features separately and for the four groups of features.
+Since there are 13 features and four groups, it is of interest to determine variable importance both for the 13 features separately and for the four groups of features.
 
 ## Building a library of learners
 
 Suppose that I prefer to use generalized additive models [@hastie1990] to estimate $\mu_{P_0}$ and $\mu_{P_0, j}$, so I am planning on using the `mgcv` package. Suppose that you prefer to use the elastic net [@zou2005], and are planning to use the `glmnet` package. 
 
-The choice of either method is somewhat subjective, and we also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means! This motivates using `SuperLearner` to allow the data to determine the optimal combination of *base learners* from a *library* that we define. These base learners are a combination of different methods (e.g. generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g. additive models with 3 and 4 degrees of freedom).
+The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means! This motivates using `SuperLearner` to allow the data to determine the optimal combination of *base learners* from a *library* that I define. These base learners are a combination of different methods (e.g. generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g. additive models with 3 and 4 degrees of freedom).
 
 For instance, my library could include additive models, elastic net , random forests [@breiman2001], and gradient boosted trees [@friedman2001] as follows:
 
@@ -163,15 +163,15 @@ learners <- c("SL.gam", "SL.gam.3", "SL.gam.4", "SL.gam.5",
               "SL.gbm.1")
 ```
 
-Now that we have created the library of learners, we can move on to estimating variable importance.
+Now that I have created the library of learners, I can move on to estimating variable importance.
 
 ## Estimating variable importance for a single variable
 
 The main function in the npvi package is the `vim()` function. There are three main arguments to `vim()`:
 
-- `f1` and `f2`, which specify whether or not we need to estimate the conditional means 
+- `f1` and `f2`, which specify whether or not I need to estimate the conditional means 
 - `data`, which supplies data to the function
-- `j`, which determines the feature we want to estimate variable importance for
+- `j`, which determines the feature I want to estimate variable importance for
 
 There are three ways to specify `f1` and `f2`:
 
@@ -179,9 +179,9 @@ There are three ways to specify `f1` and `f2`:
 2. Supply fitted values for our estimate of $\mu_{P_0}$ but supply a library of learners for estimating $\mu_{P_0, j}$
 3. Supply fitted values for both estimates
 
-We will illustrate each of these choices in order below, but in general we use (1) to estimate variable importance for the first feature in a given dataset and (2) or (3) to estimate variable importance for subsequent features in the same dataset. Method (3) allows the most flexibility, and all time-intensive computation occurs before calling `vim()`; however, this involves more work on your end. 
+I will illustrate each of these choices in order below, but in general I use (1) to estimate variable importance for the first feature in a given dataset and (2) or (3) to estimate variable importance for subsequent features in the same dataset. Method (3) allows the most flexibility, and all time-intensive computation occurs before calling `vim()`; however, this involves more work on your end. 
 
-Suppose that the first feature that we want to estimate variable importance for is nitrogen oxide, `nox`. Since this is the first feature, say we choose (1) above. Then supplying `vim()` with 
+Suppose that the first feature that I want to estimate variable importance for is nitrogen oxide, `nox`. Since this is the first feature, say I choose (1) above. Then supplying `vim()` with 
 
 - `f1 = y ~ x`
 - `f2 = fit ~ x`
@@ -190,9 +190,9 @@ Suppose that the first feature that we want to estimate variable importance for 
 
 means that: 
 
-- We want to use `SuperLearner()` to estimate the conditional mean $\mu_{P_0}$
-- We want to use the two-step procedure outlined in Williamson 2017 (CITE) to estimate the conditional mean $\mu_{P_0, j}$
-- We want to estimate variable importance for the fifth column of `Boston`, which is `nox`
+- I want to use `SuperLearner()` to estimate the conditional mean $\mu_{P_0}$
+- I want to use the two-step procedure outlined in Williamson 2017 (CITE) to estimate the conditional mean $\mu_{P_0, j}$
+- I want to estimate variable importance for the fifth column of `Boston`, which is `nox`
 
 The call to `vim()` looks like this:
 ```{r, eval = FALSE}
@@ -210,7 +210,7 @@ vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3[, 1],
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data so letting an algorithm run for a few hours should not be an issue. 
 
-However, for the sake of illustration, we can estimate varibable importance for nitrogen oxide only using only two base learners as follows:
+However, for the sake of illustration, I can estimate varibable importance for nitrogen oxide only using only two base learners as follows:
 ```{r}
 ## load the library
 library(npvi)
@@ -226,20 +226,20 @@ learners.2 <- c("SL.gam", "SL.glmnet")
 nox.vim <- vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3$medv, j = 5, SL.library = learners.2)
 ```
 
-This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vim()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. We can see these estimates:
+This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vim()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
 
 ```{r}
 nox.vim
 ```
 
-The object returned by `vim()` also contains fitted values from using `SuperLearner()`; we access these using `$full.fit` and `$red.fit`. For example,
+The object returned by `vim()` also contains fitted values from using `SuperLearner()`; I access these using `$full.fit` and `$red.fit`. For example,
 
 ```{r}
 head(nox.vim$full.fit)
 head(nox.vim$red.fit)
 ```
 
-We said earlier that we want to obtain estimates of all individual features in these data, so let's choose average number of rooms (`rm`) next. Now that we have estimated variable importance for nitrogen oxide, the `full.fit` object contains our estimate of $\mu_{P_0}$. Since we have spent the time to estimate this using `SuperLearner()`, there is no reason to estimate this function again. This leads us to choose (2) above, since we have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields
+I said earlier that I want to obtain estimates of all individual features in these data, so let's choose average number of rooms (`rm`) next. Now that I have estimated variable importance for nitrogen oxide, the `full.fit` object contains our estimate of $\mu_{P_0}$. Since I have spent the time to estimate this using `SuperLearner()`, there is no reason to estimate this function again. This leads me to choose (2) above, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields
 
 ```{r}
 ## specify that full.fit doesn't change
@@ -252,9 +252,9 @@ rm.vim <- vim(full.fit, f2 = fit ~ x, data = Boston3, y = Boston3$medv,
 rm.vim
 ```
 
-This takes approximately 5 seconds --- now rather than estimating both conditional means, we are only estimating one.
+This takes approximately 5 seconds --- now rather than estimating both conditional means, I am only estimating one.
 
-If we choose (3), then we have to use a single method from the library, or call `SuperLearner()` ourselves, prior to estimating variable importance. Then `vim()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
+If I choose (3), then I have to use a single method from the library, or call `SuperLearner()` ourselves, prior to estimating variable importance. Then `vim()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
 
 ```{r}
 ## set up the data
@@ -270,9 +270,9 @@ reduced.fit <- predict(reduced.mod)$pred
 dis.vim <- vim(full.fit, reduced.fit, y = Boston3$medv, j = 8)
 ```
 
-It is important to note that if we use the same learners library, then approaches (2) and (3) are equivalent. 
+It is important to note that if I use the same learners library, then approaches (2) and (3) are equivalent. 
 
-We can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
+I can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
 ```{r}
 crim.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
                 j = 1, SL.library = learners.2)
@@ -296,8 +296,8 @@ lstat.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
                 j = 13, SL.library = learners.2)
 ```
 
-Now that we have estimates of each of individual feature's variable importance, we can view them all simultaneously by plotting:
-```{r}
+Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
+```{r, fig.width = 10, fig.height = 8}
 ## combine the objects together
 ests <- combine(crim.vim, zn.vim, indus.vim, chas.vim,
                 nox.vim, rm.vim, age.vim, dis.vim, rad.vim,
@@ -313,11 +313,11 @@ plot(ests, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variab
 
 ## Estimating variable importance for a group of variables
 
-Now that we have estimated variable importance for each of the individual features, we can estimate variable importance for each of the groups that we mentioned above: accessibility features, structural features, nitrogen oxide, and neighborhood features.
+Now that I have estimated variable importance for each of the individual features, I can estimate variable importance for each of the groups that I mentioned above: accessibility features, structural features, nitrogen oxide, and neighborhood features.
 
-The only difference between estimating variable importance for a group of features rather than an individual feature is that now we specify a vector for `j`; we can use any of the options listed in the previous section to compute these estimates.
+The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for `j`; I can use any of the options listed in the previous section to compute these estimates.
 
-```{r}
+```{r, fig.width = 10, fig.height = 8}
 ## get the estimates
 structure.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
                 j = c(6, 7), SL.library = learners.2)

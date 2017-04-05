@@ -12,6 +12,7 @@ plot.npvi <- function(x, y, ...) {
   ord.mat <- x$mat[order(x$mat$est), ]
 
   ## plot
+  graphics::par(mar = c(5, 12, 4, 2) + 0.1)
   graphics::plot(ord.mat$est, 1:dim(ord.mat)[1], ...)
   graphics::abline(v = 0, col = "red", lty = 2)
   graphics::arrows(unlist(ord.mat$cil), 1:dim(ord.mat)[1], unlist(ord.mat$ciu), 1:dim(ord.mat)[1],
