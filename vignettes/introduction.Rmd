@@ -93,16 +93,16 @@ There are many tools for estimating this conditional mean. We might choose a cla
 
 Once we have a good estimate of the conditional mean, it is often of scientific interest to understand which features contribute the most to the variation in $\mu_P$. Specifically, we might consider \[\mu_{P, j}(x) = E_P(Y \mid X_{(-j)} = x_{(-j)}),\] where $X_{(-j)}$ is the vector with the $j$th element, or some group of elements, removed. By comparing $\mu_{P, j}$ to $\mu_P$ we can evaluate the importance of the $j$th element (or group of elements).
 
-Assume that our data are generated according to the mechanism $P_0$. We can then define a nonparametric measure of variable importance, \[\psi_{0, j} = \frac{\int [\mu_{P_0} - \mu_{P_0, j}]^2dP_0(x)}{\text{Var}_{P_0}(Y)},\] which is the proportion of the variability in the outcome explained by including $X_j$ in our chosen estimation technique. 
+Assume that our data are generated according to the mechanism $P_0$. We can then define a nonparametric measure of variable importance, \[\psi_{0, j} = \frac{\int [\mu_{P_0}(x) - \mu_{P_0, j}(x)]^2dP_0(x)}{\text{Var}_{P_0}(Y)},\] which is the proportion of the variability in the outcome explained by including $X_j$ in our chosen estimation technique. 
 
 This document introduces you to the basic tools in npvi and how to apply them to a dataset. I will explore the two different ways of obtaining variable estimates using npvi:
 
 1. You only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, j}$; you allow npvi to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates
 2. You have a favorite estimator for the conditional means; you simply want npvi to obtain variable importance estimates using this estimator
 
-## Data: Boston
+## A look at the Boston housing study data
 
-Throughout I will use the Boston housing study data [@harrison1978], freely available from the `MASS` package. Use `?Boston` to see documentation for these data.
+Throughout this document I will use the Boston housing study data [@harrison1978], freely available from the `MASS` package. Use `?Boston` to see documentation for these data.
 
 ```{r}
 ## load the library, view the data
