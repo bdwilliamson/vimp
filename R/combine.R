@@ -74,7 +74,7 @@ combine <- function(...) {
   full.f <- lapply(L, function(z) z$full.f)
   red.f <- lapply(L, function(z) z$red.f)
   data <- L[[1]]$data
-  j <- lapply(L, function(z) z$j)
+  j <- lapply(L, function(z) z$j)[order(tmp$est, decreasing = TRUE)]
   SL.library <- lapply(L, function(z) z$SL.library)
   full.fit <- lapply(L, function(z) z$full.fit)
   red.fit <- lapply(L, function(z) z$red.fit)
