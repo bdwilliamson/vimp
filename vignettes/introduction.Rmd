@@ -84,6 +84,14 @@ references:
    year: 2005
 ---
 
+```{r echo = FALSE, message = FALSE}
+library(knitr)
+opts_knit$set(cache = FALSE, verbose = TRUE, global.par = TRUE)
+```
+
+```{r echo = FALSE}
+par(mar = c(5, 12, 4, 2) + 0.1)
+```
 Often when working with data we attempt to estimate the conditional mean of the outcome $Y$ given features $X$, defined as $\mu_P(x) = E_P(Y \mid X = x)$. 
 
 There are many tools for estimating this conditional mean. We might choose a classical parametric tool such as linear regression. We might also want to be model-agnostic and use a more nonparametric approach to estimate the conditional mean. However, 
@@ -297,7 +305,7 @@ lstat.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
-```{r, fig.width = 10, fig.height = 8}
+```{r, fig.width = 8.5, fig.height = 8}
 ## combine the objects together
 ests <- combine(crim.vim, zn.vim, indus.vim, chas.vim,
                 nox.vim, rm.vim, age.vim, dis.vim, rad.vim,
@@ -317,7 +325,7 @@ Now that I have estimated variable importance for each of the individual feature
 
 The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for `j`; I can use any of the options listed in the previous section to compute these estimates.
 
-```{r, fig.width = 10, fig.height = 8}
+```{r, fig.width = 8.5, fig.height = 8}
 ## get the estimates
 structure.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
                 j = c(6, 7), SL.library = learners.2)
@@ -329,7 +337,7 @@ neigh.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
 ## combine and plot
 groups <- combine(structure.vim, access.vim, neigh.vim, nox.vim)
 nms.2 <- c("Neighborhood", "Structure", "Accessibility", "Nitrogen oxide")
-plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.2), axes = FALSE)
+plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.5), axes = FALSE)
 ```
 
 ## References
