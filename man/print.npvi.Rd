@@ -4,12 +4,10 @@
 \alias{print.npvi}
 \title{Print a \code{npvi} object}
 \usage{
-\method{print}{npvi}(x, digits = max(3, getOption("digits") - 3), ...)
+\method{print}{npvi}(x, ...)
 }
 \arguments{
 \item{x}{the \code{npvi} object of interest.}
-
-\item{digits}{the number of digits to display results to. Defaults to the maximum of 3 and the "digits" option minus 3.}
 
 \item{...}{other options, see the generic \code{print} function.}
 }

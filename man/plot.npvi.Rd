@@ -7,9 +7,9 @@
 \method{plot}{npvi}(x, y, ...)
 }
 \arguments{
-\item{x}{an \code{npvi} object created from a call to \code{combine}.}
+\item{x}{an \code{npvi} object.}
 
-\item{y}{a vector of names, given in the same order as the list.}
+\item{y}{a vector of names, given in the same order as the estimates in the \code{npvi} object.}
 
 \item{...}{other options, see the generic \code{plot} function.}
 }
