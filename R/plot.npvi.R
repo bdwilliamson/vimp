@@ -28,15 +28,21 @@ plot.npvi <- function(x, y, ...) {
   ## get the graphical parameters passed in
   L <- list(...)
 
-  ## set up default parameters
+  ## set up default parameters, if they didn't get passed in
   if (!("mar" %in% names(L))) {
     mar <- c(5, 12, 4, 2) + 0.1
+  } else {
+    mar <- L$mar
   }
   if (!("xlim" %in% names(L))) {
     xlim <- c(0, 1)
+  } else {
+    xlim <- L$xlim
   }
   if (!("ylim" %in% names(L))) {
     ylim <- c(0, dim(ord.mat)[1])
+  } else {
+    ylim <- L$ylim
   }
 
   ## plot
