@@ -84,7 +84,7 @@ references:
    year: 2005
 ---
 
-```{r echo = FALSE, message = FALSE}
+```{r, echo = FALSE, include = FALSE}
 library(knitr)
 opts_knit$set(cache = FALSE, verbose = TRUE, global.par = TRUE)
 ```
