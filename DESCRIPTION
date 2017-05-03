@@ -1,4 +1,4 @@
-Package: nova
+Package: vimp
 Type: Package
 Title: Nonparametric Variable Importance
 Version: 0.0.1

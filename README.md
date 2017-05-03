@@ -1,7 +1,7 @@
-## nova
+## vimp
 
 We have developed a parameter of interest for assessing variable importance nonparametrically. The parameter is 
-$$T(P) = \int [E(Y | X) - E(Y | X_{(-j)})]^2 dP,$$
+\begin{equation} T(P) = \int [E(Y | X) - E(Y | X_{(-j)})]^2 dP,\end{equation}
 where $X_{(-j)}$ denotes the matrix of covariates with the $j$th column --- or a group of columns --- removed. Thus the parameter measures the "information loss" due to removing the covariate from the model.
 
 We use a Generalized Newton-Raphson One-step estimator to get an estimate, and then use the influence function and results on statistical functionals to develop asymptotically valid confidence intervals.
