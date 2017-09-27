@@ -4,7 +4,7 @@
 \alias{vim}
 \title{Nonparametric Variable Importance Estimates}
 \usage{
-vim(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1,
+vim(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1,
   standardized = TRUE, alpha = 0.05, SL.library = NULL, ...)
 }
 \arguments{
@@ -21,7 +21,7 @@ column is \eqn{Y}.}
 
 \item{n}{the sample size.}
 
-\item{j}{the covariate(s) to calculate variable importance for,
+\item{s}{the covariate(s) to calculate variable importance for,
 defaults to 1.}
 
 \item{standardized}{should we estimate the standardized parameter? (defaults to \code{TRUE})}
@@ -51,7 +51,7 @@ within the \code{npvi} object. This results in a list containing:
  \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
  \item{red.f}{ - either the formula for the reduced regression or the fitted values for the reduced regression, based on the \code{call}}
  \item{data}{ - the data used by the function}
- \item{j}{ - the column(s) to calculate variable importance for}
+ \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
  \item{full.fit}{ - the fitted values of the chosen method fit to the full data}
  \item{red.fit}{ - the fitted values of the chosen method fit to the reduced data}
@@ -83,7 +83,7 @@ learners <- "SL.gam"
 
 ## using class "formula"
 est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-           n = length(y), j = 2, standardized = TRUE, alpha = 0.05,
+           n = length(y), s = 2, standardized = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
 ## using pre-computed fitted values
@@ -94,7 +94,7 @@ reduced <- SuperLearner(Y = full.fit, X = testdat[, 3],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vim(full.fit, reduced.fit, y = testdat$y, j = 2,
+est <- vim(full.fit, reduced.fit, y = testdat$y, s = 2,
 standardized = TRUE, alpha = 0.05)
 }
 

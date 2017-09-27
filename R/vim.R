@@ -11,7 +11,7 @@
 #' column is \eqn{Y}.
 #' @param y the outcome; by default is the first column in \code{data}.
 #' @param n the sample size.
-#' @param j the covariate(s) to calculate variable importance for,
+#' @param s the covariate(s) to calculate variable importance for,
 #'  defaults to 1.
 #' @param standardized should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param alpha the level to compute the confidence interval at.
@@ -31,7 +31,7 @@
 #'  \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
 #'  \item{red.f}{ - either the formula for the reduced regression or the fitted values for the reduced regression, based on the \code{call}}
 #'  \item{data}{ - the data used by the function}
-#'  \item{j}{ - the column(s) to calculate variable importance for}
+#'  \item{s}{ - the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 #'  \item{full.fit}{ - the fitted values of the chosen method fit to the full data}
 #'  \item{red.fit}{ - the fitted values of the chosen method fit to the reduced data}
@@ -63,7 +63,7 @@
 #'
 #' ## using class "formula"
 #' est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-#'            n = length(y), j = 2, standardized = TRUE, alpha = 0.05,
+#'            n = length(y), s = 2, standardized = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ## using pre-computed fitted values
@@ -74,7 +74,7 @@
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vim(full.fit, reduced.fit, y = testdat$y, j = 2,
+#' est <- vim(full.fit, reduced.fit, y = testdat$y, s = 2,
 #' standardized = TRUE, alpha = 0.05)
 #' }
 #'
@@ -82,7 +82,7 @@
 #' @export
 
 
-vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standardized = TRUE, alpha = 0.05, SL.library = NULL, ...) {
+vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standardized = TRUE, alpha = 0.05, SL.library = NULL, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1)) stop("You must enter a formula or fitted values for the full regression.")
@@ -101,7 +101,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.j <- X[, -j, drop = FALSE]
+    X.minus.s <- X[, -s, drop = FALSE]
 
     ## fit the Super Learner given the specified library
     full <- SuperLearner::SuperLearner(Y = y, X = X, SL.library = SL.library, ...)
@@ -111,9 +111,9 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, SL.library = SL.library,...)
+      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.s, SL.library = SL.library,...)
     } else { ## two-step, recommended
-      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, SL.library = SL.library,...)
+      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.s, SL.library = SL.library,...)
     }
 
     ## get the fitted values
@@ -140,13 +140,13 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.j <- X[, -j, drop = FALSE]
+    X.minus.s <- X[, -s, drop = FALSE]
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.j, SL.library = SL.library,...)
+      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.s, SL.library = SL.library,...)
     } else { ## two-step, recommended
-      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.j, SL.library = SL.library,...)
+      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.s, SL.library = SL.library,...)
     }
 
     ## get the fitted values
@@ -179,7 +179,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1, standa
   cl <- match.call()
 
   ## create the output and return it
-  output <- list(call = cl, full.f = f1, red.f = f2, data = data, j = j,
+  output <- list(call = cl, full.f = f1, red.f = f2, data = data, s = s,
                  SL.library = SL.library,
                  full.fit = fhat.ful, red.fit = fhat.red, est = est,
                  se = se, ci = ci, full.mod = full, red.mod = reduced,
