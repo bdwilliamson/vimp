@@ -12,7 +12,7 @@ vim(f1, f2, data = NULL, y = data[, 1], n = length(y), j = 1,
 in the form \code{y ~ x} if using Super Learner; or (2) the fitted values from a flexible estimation technique.}
 
 \item{f2}{either: (1) the regression function to estimate for the reduced fit,
-in the form \code{y ~ x} or \code{fit ~ x} if using Super Learner without or with the two-step estimating procedure (recommended); or (2) the fitted values from a flexible estimation technique.}
+in the form \code{y ~ x} or \code{fit ~ x} if using Super Learner without or with the sequential regression (recommended), respectively; or (2) the fitted values from a flexible estimation technique.}
 
 \item{data}{the dataset. Must be \eqn{n x (p+1)}, where the first
 column is \eqn{Y}.}
@@ -41,7 +41,7 @@ Compute estimates and confidence intervals for the
 nonparametric variable importance parameter of interest.
 }
 \details{
-See the paper by Williamson, Carone, and Simon for more
+See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind this function, and the validity
 of the confidence intervals.
 In the interest of transparency, we return most of the calculations

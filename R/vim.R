@@ -6,7 +6,7 @@
 #' @param f1 either: (1) the regression function to estimate for the full fit,
 #' in the form \code{y ~ x} if using Super Learner; or (2) the fitted values from a flexible estimation technique.
 #' @param f2 either: (1) the regression function to estimate for the reduced fit,
-#' in the form \code{y ~ x} or \code{fit ~ x} if using Super Learner without or with the two-step estimating procedure (recommended); or (2) the fitted values from a flexible estimation technique.
+#' in the form \code{y ~ x} or \code{fit ~ x} if using Super Learner without or with the sequential regression (recommended), respectively; or (2) the fitted values from a flexible estimation technique.
 #' @param data the dataset. Must be \eqn{n x (p+1)}, where the first
 #' column is \eqn{Y}.
 #' @param y the outcome; by default is the first column in \code{data}.
@@ -21,7 +21,7 @@
 #'
 #' @return An object of class \code{npvi}. See Details for more information.
 #'
-#' @details See the paper by Williamson, Carone, and Simon for more
+#' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function, and the validity
 #' of the confidence intervals.
 #' In the interest of transparency, we return most of the calculations
