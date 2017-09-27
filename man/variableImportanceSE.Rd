@@ -27,4 +27,3 @@ Compute standard error estimates for estimates of the variable importance parame
 See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind this function and the definition of the parameter of interest.
 }
-

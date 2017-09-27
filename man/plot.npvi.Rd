@@ -16,4 +16,3 @@
 \description{
 Plot the estimates and standard errors for a set of \code{npvi} objects.
 }
-

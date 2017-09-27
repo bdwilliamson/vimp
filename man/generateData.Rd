@@ -19,4 +19,3 @@ Generates data used in the low-dimensional simulations.
 generateData(100)
 }
 }
-

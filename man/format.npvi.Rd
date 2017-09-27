@@ -14,4 +14,3 @@
 \description{
 Nicely formats the output from a \code{npvi} object for printing.
 }
-

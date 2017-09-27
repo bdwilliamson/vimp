@@ -1,0 +1,18 @@
+#' vimp: Nonparametric variable importance assessment
+#'
+#' The vimp package provides one major function: vim.
+#' This function calculates an estimate of the variable importance
+#' parameter of interest developed by Williamson, Gilbert, Simon, and Carone. The parameter is defined as the additional variability in the outcome explained by including the covariates of interest in the estimating procedure.
+#'
+#' @section vimp Functions:
+#' The function vim() computes the estimates, standard error estimates,
+#' and confidence intervals. It is an object of class "npvi",
+#' and has its own print method.
+#' 
+#' The function combine() takes the output of multiple calls to vim(), and combines the results into a single npvi object.
+#' 
+#' The function format() formats a npvi object for printing; print() prints the results; and plot() plots the estimates and standard errors.
+#'
+#' @docType package
+#' @name vimp
+NULL

@@ -102,4 +102,3 @@ standardized = TRUE, alpha = 0.05)
 \seealso{
 \code{\link{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 }
-

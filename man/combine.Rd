@@ -61,4 +61,3 @@ cvControl = list(V = 10))
 ests <- combine(est.1, est.2)
 }
 }
-

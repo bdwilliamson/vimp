@@ -14,4 +14,3 @@
 \description{
 Prints out the table of estimates, confidence intervals, and standard errors for a \code{npvi} object.
 }
-
