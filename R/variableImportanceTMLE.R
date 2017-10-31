@@ -14,7 +14,7 @@
 #'
 #' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
 #' @export
-variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps) {
+variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max.iter = 500) {
     ## helper functions
     logit <- function(x) log(x/(1-x))
     expit <- function(x) exp(x)/(1+exp(x))
@@ -29,7 +29,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     covar <- full - reduced
 
     ## get initial epsilon (with no intercept)
-    eps.init <- glm(ystar ~ covar - 1, offset = full, family = binomial(link = "logit"))$coefficients[1]
+    eps.init <- suppressWarnings(glm(ystar ~ covar - 1, offset = full, family = binomial(link = "logit"))$coefficients[1])
 
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
@@ -45,14 +45,16 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         f <- new.f
         r <- new.r
         eps <- eps.init
-        while(abs(eps) > tol) {
+        k <- 0
+        while(abs(eps) > tol & k < max.iter) {
             ## get the covariate
             covar <- f - r
             ## update epsilon
-            eps <- glm(ystar ~ covar - 1, offset = f, family = binomial(link = "logit"))$coefficients[1]
+            eps <- suppressWarnings(glm(ystar ~ covar - 1, offset = f, family = binomial(link = "logit"))$coefficients[1])
             ## update the fitted values
             f <- expit(logit(f) + eps*covar)
             r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib)$SL.predict
+            k <- k+1
         }
     }
     est <- mean((f - r)^2)/mean((y - mean(y))^2)
