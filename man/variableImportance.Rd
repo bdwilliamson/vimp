@@ -2,7 +2,7 @@
 % Please edit documentation in R/variableImportance.R
 \name{variableImportance}
 \alias{variableImportance}
-\title{Estimate variable importance}
+\title{Estimate variable importance using a one-step estimator-based approach}
 \usage{
 variableImportance(full, reduced, y, n = length(y), standardized = TRUE)
 }

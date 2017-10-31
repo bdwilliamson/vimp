@@ -14,7 +14,7 @@
 #'
 #' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
 #' @export
-variableImportanceTMLE <- function(full, reduced, y, x, s, tol = .Machine$double.eps) {
+variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps) {
     ## helper functions
     logit <- function(x) log(x/(1-x))
     expit <- function(x) exp(x)/(1+exp(x))
@@ -23,25 +23,32 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, tol = .Machine$double
     covar <- full - reduced
 
     ## get initial epsilon (with no intercept)
-    eps.init <- glm(y ~ covar - 1, offset = full, family = "binomial", link = "log")
+    eps.init <- glm(y ~ covar - 1, offset = full, family = "binomial", link = "logit")
 
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
-    new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib)
+    new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib)$SL.predict
 
     ## now repeat until convergence
     if (eps.init == 0) {
-        return(list(full = new.f, reduced = new.r, eps = eps.init))
+        f <- new.f
+        r <- new.r
+        eps <- eps.init
+        return(list(est = est, full = new.f, reduced = new.r, eps = eps.init))
     } else {
         f <- new.f
         r <- new.r
+        eps <- eps.init
         while(abs(eps) > tol) {
             ## get the covariate
             covar <- f - r
-            eps <- glm(y ~ covar - 1, offset = f, family = "binomial", link = "log")
+            ## update epsilon
+            eps <- glm(y ~ covar - 1, offset = f, family = "binomial", link = "logit")
+            ## update the fitted values
             f <- expit(logit(f) + eps*covar)
-            r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib)
+            r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib)$SL.predict
         }
-        return(list(full = f, reduced = r, eps = eps))
     }
+    est <- mean((f - r)^2)/mean((y - mean(y))^2)
+    return(list(est = est, full = f, reduced = r, eps = eps))
 }
