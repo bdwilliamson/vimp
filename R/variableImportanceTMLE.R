@@ -10,7 +10,7 @@
 #' @param lib the library of candidate learners passed to SuperLearner
 #' @param tol the tolerance level for convergence
 #'
-#' @return The estimated variable importance for the given group of left-out covariates.
+#' @return The estimated variable importance for the given group of left-out covariates, along with the SE and a CI.
 #'
 #' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
 #' @export
@@ -23,7 +23,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     covar <- full - reduced
 
     ## get initial epsilon (with no intercept)
-    eps.init <- glm(y ~ covar - 1, offset = full, family = "binomial", link = "logit")
+    eps.init <- glm(y ~ covar - 1, offset = full, family = binomial(link = "logit"))
 
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
@@ -43,12 +43,14 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             ## get the covariate
             covar <- f - r
             ## update epsilon
-            eps <- glm(y ~ covar - 1, offset = f, family = "binomial", link = "logit")
+            eps <- glm(y ~ covar - 1, offset = f, family = binomial(link = "logit"))
             ## update the fitted values
             f <- expit(logit(f) + eps*covar)
             r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib)$SL.predict
         }
     }
     est <- mean((f - r)^2)/mean((y - mean(y))^2)
-    return(list(est = est, full = f, reduced = r, eps = eps))
+    se <- variableImportanceSE(full = f, reduced = r, y = y, n = length(y))
+    ci <- variableImportanceCI(est = est, se = se, n = length(y))
+    return(list(est = est, se = se, ci = ci, full = f, reduced = r, eps = eps))
 }
