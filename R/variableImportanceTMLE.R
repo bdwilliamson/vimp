@@ -1,0 +1,47 @@
+#' Estimate variable importance using a TMLE-based approach
+#'
+#' Compute nonparametric estimates of the variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
+#'
+#' @param full fitted values from an initial regression of the outcome on the full set of covariates.
+#' @param reduced fitted values from an initial regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.
+#' @param y the outcome variable
+#' @param x the covariates (ordered)
+#' @param s the indices for variable importance
+#' @param lib the library of candidate learners passed to SuperLearner
+#' @param tol the tolerance level for convergence
+#'
+#' @return The estimated variable importance for the given group of left-out covariates.
+#'
+#' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
+#' @export
+variableImportanceTMLE <- function(full, reduced, y, x, s, tol = .Machine$double.eps) {
+    ## helper functions
+    logit <- function(x) log(x/(1-x))
+    expit <- function(x) exp(x)/(1+exp(x))
+
+    ## calculate the covariate
+    covar <- full - reduced
+
+    ## get initial epsilon (with no intercept)
+    eps.init <- glm(y ~ covar - 1, offset = full, family = "binomial", link = "log")
+
+    ## get update
+    new.f <- expit(logit(full) + eps.init*covar)
+    new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib)
+
+    ## now repeat until convergence
+    if (eps.init == 0) {
+        return(list(full = new.f, reduced = new.r, eps = eps.init))
+    } else {
+        f <- new.f
+        r <- new.r
+        while(abs(eps) > tol) {
+            ## get the covariate
+            covar <- f - r
+            eps <- glm(y ~ covar - 1, offset = f, family = "binomial", link = "log")
+            f <- expit(logit(f) + eps*covar)
+            r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib)
+        }
+        return(list(full = f, reduced = r, eps = eps))
+    }
+}

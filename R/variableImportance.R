@@ -1,4 +1,4 @@
-#' Estimate variable importance
+#' Estimate variable importance using a one-step estimator-based approach
 #'
 #' Compute nonparametric estimates of the variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
 #'
