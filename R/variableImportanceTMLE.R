@@ -18,12 +18,18 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     ## helper functions
     logit <- function(x) log(x/(1-x))
     expit <- function(x) exp(x)/(1+exp(x))
+    ## change y to between 0 and 1 if it isn't already
+    if (max(y) > 1 | min(y) < 0) {
+        ystar <- (y - min(y))/(max(y) - min(y))
+    } else {
+        ystar <- y
+    }
 
     ## calculate the covariate
     covar <- full - reduced
 
     ## get initial epsilon (with no intercept)
-    eps.init <- glm(y ~ covar - 1, offset = full, family = binomial(link = "logit"))
+    eps.init <- glm(ystar ~ covar - 1, offset = full, family = binomial(link = "logit"))
 
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
@@ -43,7 +49,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             ## get the covariate
             covar <- f - r
             ## update epsilon
-            eps <- glm(y ~ covar - 1, offset = f, family = binomial(link = "logit"))
+            eps <- glm(ystar ~ covar - 1, offset = f, family = binomial(link = "logit"))
             ## update the fitted values
             f <- expit(logit(f) + eps*covar)
             r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib)$SL.predict
