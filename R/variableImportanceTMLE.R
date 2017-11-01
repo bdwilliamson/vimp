@@ -50,7 +50,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         r <- new.r
         eps <- eps.init
         k <- 1
-        while(abs(eps) > tol | k < max.iter) {
+        while(abs(eps) > tol | k < max.iter | abs(epss[k] - epss[k-1]) < tol) {
             ## get the covariate
             covar <- f - r
             ## update epsilon
