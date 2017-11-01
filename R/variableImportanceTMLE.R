@@ -9,12 +9,13 @@
 #' @param s the indices for variable importance
 #' @param lib the library of candidate learners passed to SuperLearner
 #' @param tol the tolerance level for convergence
+#' @param ... other arguments, passed to SuperLearner
 #'
 #' @return The estimated variable importance for the given group of left-out covariates, along with the SE and a CI.
 #'
 #' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
 #' @export
-variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max.iter = 500) {
+variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max.iter = 500, ...) {
     ## helper functions
     logit <- function(x) log(x/(1-x))
     expit <- function(x) exp(x)/(1+exp(x))
@@ -33,7 +34,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
 
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
-    new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib)$SL.predict
+    new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
 
     ## now repeat until convergence
     if (eps.init == 0) {
@@ -53,7 +54,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             eps <- suppressWarnings(glm(ystar ~ covar - 1, offset = f, family = binomial(link = "logit"))$coefficients[1])
             ## update the fitted values
             f <- expit(logit(f) + eps*covar)
-            r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib)$SL.predict
+            r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
             k <- k+1
         }
     }
