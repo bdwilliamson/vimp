@@ -19,6 +19,9 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     ## helper functions
     logit <- function(x) log(x/(1-x))
     expit <- function(x) exp(x)/(1+exp(x))
+    ## initialize the epsilon return vector
+    epss <- vector("numeric", max.iter)
+
     ## change y to between 0 and 1 if it isn't already
     if (max(y) > 1 | min(y) < 0) {
         ystar <- (y - min(y))/(max(y) - min(y))
@@ -31,7 +34,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
 
     ## get initial epsilon (with no intercept)
     eps.init <- suppressWarnings(glm(ystar ~ covar - 1, offset = full, family = binomial(link = "logit"))$coefficients[1])
-
+    epss[1] <- eps.init
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
     new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
@@ -46,7 +49,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         f <- new.f
         r <- new.r
         eps <- eps.init
-        k <- 0
+        k <- 1
         while(abs(eps) > tol | k < max.iter) {
             ## get the covariate
             covar <- f - r
@@ -56,10 +59,11 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             f <- expit(logit(f) + eps*covar)
             r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
             k <- k+1
+            epss[k] <- eps
         }
     }
     est <- mean((f - r)^2)/mean((y - mean(y))^2)
     se <- variableImportanceSE(full = f, reduced = r, y = y, n = length(y))
     ci <- variableImportanceCI(est = est, se = se, n = length(y))
-    return(list(est = est, se = se, ci = ci, full = f, reduced = r, eps = eps))
+    return(list(est = est, se = se, ci = ci, full = f, reduced = r, eps = eps, epss = epss))
 }
