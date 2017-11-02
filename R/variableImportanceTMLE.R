@@ -18,7 +18,8 @@
 variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max.iter = 500, ...) {
     ## helper functions
     logit <- function(x) log(x/(1-x))
-    expit <- function(x) exp(x)/(1+exp(x))
+    # expit <- function(x) exp(x)/(1+exp(x))
+    expit <- function(x) 1/(1+exp(x))
     ## initialize the epsilon return vector
     epss <- vector("numeric", max.iter)
 
