@@ -52,7 +52,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         eps <- eps.init
         k <- 1
         epss[k] <- eps
-        while(abs(eps) > tol | k < max.iter) {
+        while(abs(eps) > tol & k < max.iter) {
             ## if we didn't change by tol, break
             if (k > 1) {
                 if (abs(epss[k] - epss[k-1]) < tol) {
