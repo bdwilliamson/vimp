@@ -14,8 +14,7 @@
 #' @return The estimated variable importance for the given group of left-out covariates, along with the SE and a CI.
 #'
 #' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
-#' @export
-variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max.iter = 500, ...) {
+variableImportanceTMLE2 <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max.iter = 500, ...) {
     ## helper functions
     logit <- function(x) log(x/(1-x))
     # expit <- function(x) exp(x)/(1+exp(x))
@@ -32,6 +31,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
 
     ## calculate the covariate
     covar <- full - reduced
+
     ## calculate the offset
     off <- logit(full)
 
@@ -40,17 +40,16 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     epss[1] <- eps.init
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
-    new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
 
     ## now repeat until convergence
     if (eps.init == 0) {
         f <- new.f
-        r <- new.r
+        r <- reduced
         eps <- eps.init
         return(list(est = est, full = new.f, reduced = new.r, eps = eps.init))
     } else {
         f <- new.f
-        r <- new.r
+        r <- reduced
         eps <- eps.init
         k <- 1
         epss[k] <- eps
@@ -69,7 +68,6 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             eps <- suppressWarnings(glm(ystar ~ covar - 1, offset = off, family = binomial(link = "logit"))$coefficients[1])
             ## update the fitted values
             f <- expit(logit(f) + eps*covar)
-            r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
             k <- k+1
             epss[k] <- eps
         }
