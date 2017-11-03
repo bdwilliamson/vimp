@@ -71,15 +71,8 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         }
     }
     ## if we had to transform, then back transform
-    est <- mean((f - r)^2)/mean((y - mean(y))^2)
-    se <- variableImportanceSE(full = f, reduced = r, y = y, n = length(y))
-    ## change y to between 0 and 1 if it isn't already
-    if (max(y) > 1 | min(y) < 0) {
-        est <- est*(max(y) - min(y))
-        se <- se*(max(y) - min(y))
-    } else {
-        
-    }
+    est <- mean((f - r)^2)/mean((ystar - mean(ystar))^2)
+    se <- variableImportanceSE(full = f, reduced = r, y = ystar, n = length(ystar))
     ci <- variableImportanceCI(est = est, se = se, n = length(y))
     return(list(est = est, se = se, ci = ci, full = f, reduced = r, eps = eps, epss = epss))
 }
