@@ -38,7 +38,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     epss[1] <- eps.init
     ## get update
     new.f <- expit(logit(full) + eps.init*covar)
-    new.r <- SuperLearner::SuperLearner(Y = new.f, X = as.data.frame(x[, -s]), family = gaussian(), SL.library = lib, ...)$SL.predict
+    new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
 
     ## now repeat until convergence
     if (eps.init == 0) {
@@ -65,7 +65,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             eps <- suppressWarnings(glm(ystar ~ covar - 1, offset = f, family = binomial(link = "logit"))$coefficients[1])
             ## update the fitted values
             f <- expit(logit(f) + eps*covar)
-            r <- SuperLearner::SuperLearner(Y = f, X = as.data.frame(x[, -s]), family = gaussian(), SL.library = lib, ...)$SL.predict
+            r <- SuperLearner::SuperLearner(Y = f, X = x[-s], family = gaussian(), SL.library = lib, ...)$SL.predict
             k <- k+1
             epss[k] <- eps
         }
