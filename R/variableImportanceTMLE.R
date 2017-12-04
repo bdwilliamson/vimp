@@ -6,7 +6,7 @@
 #' @param reduced fitted values from an initial regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates. \code{reduced} may be a matrix or data frame, in which case multivariate updates will be performed.
 #' @param y the outcome variable
 #' @param x the covariates (ordered)
-#' @param s the indices for variable importance
+#' @param s the indices for variable importance, or a list of indices (where the length of the list matches the number of columns in \code{reduced}.)
 #' @param lib the library of candidate learners passed to Super Learner
 #' @param tol the tolerance level for convergence
 #' @param max_iter the maximum number of iterations for each Super Learner fit
@@ -16,13 +16,13 @@
 #'
 #' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
 #' @export
-variableImportanceTMLE2 <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max_iter = 500, ...) {
+variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max_iter = 500, ...) {
     ## helper functions
     logit <- function(x) log(x/(1-x))
     # expit <- function(x) exp(x)/(1+exp(x))
     expit <- function(x) 1/(1+exp(-x))
     ## initialize the epsilon return vector
-    epss <- vector("numeric", max.iter)
+    epss <- matrix(0, nrow = ifelse(!is.null(dim(reduced)), dim(reduced)[2], 1), ncol = max.iter)
 
     ## change y to between 0 and 1 if it isn't already
     if (max(y) > 1 | min(y) < 0) {
@@ -32,16 +32,16 @@ variableImportanceTMLE2 <- function(full, reduced, y, x, s, lib, tol = .Machine$
     }
 
     ## calculate the covariate
-    covar <- full - reduced
+    covar <- as.vector(full) - reduced
     ## calculate the offset
     off <- logit(full)
 
     ## get initial epsilon (with no intercept)
-    fluctuation <- suppressWarnings(glm(ystar ~ covar - 1, offset = off, family = binomial(link = "logit"))
-    eps.init <- fluctuation$coefficients[1:length(fluctuation$coefficients)])
-    epss[1] <- eps.init
+    fluctuation <- suppressWarnings(glm.fit(covar, ystar, offset = off, family = binomial(link = "logit"), intercept = FALSE))
+    eps.init <- fluctuation$coefficients[1:length(fluctuation$coefficients)]
+    epss[, 1] <- eps.init
     ## get update
-    new.f <- expit(logit(full) + eps.init*covar)
+    new.f <- expit(logit(full) + covar%*%matrix(eps.init))
     ## update all of the reduced ones
     for (i in 1:length(s)){
         new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[-s[[i]]], family = gaussian(), SL.library = lib, ...)$SL.predict    
