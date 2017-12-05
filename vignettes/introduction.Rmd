@@ -205,7 +205,7 @@ means that:
 The call to `vim()` looks like this:
 ```{r, eval = FALSE}
 ## load the library
-library(nova)
+library(vimp)
 
 ## first re-order the data so that the outcome is in the first column
 Boston2 <- Boston[, 1:13]
