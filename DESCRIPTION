@@ -23,5 +23,6 @@ Suggests: knitr,
     rmarkdown,
     MASS,
     gam,
+    glmnet,
     covr
 VignetteBuilder: knitr
