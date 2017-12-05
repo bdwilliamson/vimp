@@ -125,7 +125,7 @@ Since there are 13 features and four groups, it is of interest to determine vari
 
 ## Building a library of learners
 
-Suppose that I prefer to use generalized additive models [@hastie1990] to estimate $\mu_{P_0}$ and $\mu_{P_0, s}$, so I am planning on using the `mgcv` package. Suppose that you prefer to use the elastic net [@zou2005], and are planning to use the `glmnet` package. 
+Suppose that I prefer to use generalized additive models [@hastie1990] to estimate $\mu_{P_0}$ and $\mu_{P_0, s}$, so I am planning on using the `gam` package. Suppose that you prefer to use the elastic net [@zou2005], and are planning to use the `glmnet` package. 
 
 The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means! This motivates using `SuperLearner` to allow the data to determine the optimal combination of *base learners* from a *library* that I define. These base learners are a combination of different methods (e.g. generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g. additive models with 3 and 4 degrees of freedom).
 
