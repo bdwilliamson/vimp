@@ -64,7 +64,6 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         f <- new.f
         r <- new.r
         eps <- eps.init
-        return(list(est = est, full = new.f, reduced = new.r, eps = eps.init))
     } else {## now repeat until convergence
         f <- new.f
         r <- new.r
@@ -105,6 +104,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             } else { # only entered a vector  
                 avg <- variableImportanceIC(full = f, reduced = r, y = ystar)    
             }
+            k <- k+1
         }
     }
     ## if we had to transform, then back transform
