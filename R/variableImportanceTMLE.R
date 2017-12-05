@@ -21,8 +21,8 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     logit <- function(x) log(x/(1-x))
     # expit <- function(x) exp(x)/(1+exp(x))
     expit <- function(x) 1/(1+exp(-x))
-    ## initialize the epsilon return vector
-    epss <- matrix(0, nrow = ifelse(!is.null(dim(reduced)), dim(reduced)[2], 1), ncol = max_iter)
+    ## initialize the criterion return vector
+    avgs <- matrix(0, nrow = ifelse(!is.null(dim(reduced)), dim(reduced)[2], 1), ncol = max_iter)
     ## initialize updated reduced
     new.r <- NULL
 
@@ -41,7 +41,6 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     ## get initial epsilon (with no intercept)
     fluctuation <- suppressWarnings(glm.fit(covar, ystar, offset = off, family = binomial(link = "logit"), intercept = FALSE))
     eps.init <- fluctuation$coefficients[1:length(fluctuation$coefficients)]
-    epss[, 1] <- eps.init
     ## get update
     new.f <- expit(logit(full) + covar%*%matrix(eps.init))
     ## update all of the reduced ones
@@ -60,6 +59,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     } else { 
         avg <- variableImportanceIC(full = new.f, reduced = new.r, y = ystar)
     }    
+    avgs[, 1] <- avg
     if (max(abs(avg)) < tol) { # criterion should be empirical average zero
         f <- new.f
         r <- new.r
@@ -69,7 +69,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         r <- new.r
         eps <- eps.init
         k <- 1
-        epss[, k] <- eps
+        avgs[, k] <- avg
         while(max(abs(avg)) > tol & k < max_iter) {
             ## if we didn't change by tol, break
             # if (k > 1) {
@@ -84,7 +84,6 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             ## update epsilon
             fluctuation <- suppressWarnings(glm.fit(covar, ystar, offset = off, family = binomial(link = "logit"), intercept = FALSE))
             eps <- fluctuation$coefficients[1:length(fluctuation$coefficients)]
-            epss[, k+1] <- eps
             ## get update
             new.f <- expit(logit(f) + covar%*%matrix(eps))
             new.r <- NULL
@@ -105,6 +104,8 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
                 avg <- variableImportanceIC(full = f, reduced = r, y = ystar)    
             }
             k <- k+1
+            avgs[, k] <- avg
+
         }
     }
     ## if we had to transform, then back transform
@@ -116,5 +117,5 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
         se <- variableImportanceSE(full = f, reduced = r, y = ystar, n = length(ystar))
     }
     ci <- variableImportanceCI(est = est, se = se, n = length(y))
-    return(list(est = est, se = se, ci = ci, full = f, reduced = r, eps = eps, epss = epss))
+    return(list(est = est, se = se, ci = ci, full = f, reduced = r, avg = avg, avgs = avgs))
 }
