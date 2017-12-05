@@ -21,5 +21,6 @@ LazyData: TRUE
 RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown,
-    MASS
+    MASS,
+    covr
 VignetteBuilder: knitr
