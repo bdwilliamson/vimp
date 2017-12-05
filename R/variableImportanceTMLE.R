@@ -45,18 +45,27 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     ## get update
     new.f <- expit(logit(full) + covar%*%matrix(eps.init))
     ## update all of the reduced ones
-    for (i in 1:length(s)){
-        new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+    if (is.list(s)) {
+        for (i in 1:length(s)){
+            new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+        }
+    } else {
+        new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict
     }
     
-    ## now repeat until convergence
-    avg <- colMeans(apply(new.r, 2, variableImportanceIC, full = new.f, y = ystar))
+    
+    ## check the stopping criterion 
+    if (!is.null(dim(new.r))) {
+        avg <- colMeans(apply(new.r, 2, variableImportanceIC, full = new.f, y = ystar))
+    } else { 
+        avg <- variableImportanceIC(full = new.f, reduced = new.r, y = ystar)
+    }    
     if (max(abs(avg)) < tol) { # criterion should be empirical average zero
         f <- new.f
         r <- new.r
         eps <- eps.init
         return(list(est = est, full = new.f, reduced = new.r, eps = eps.init))
-    } else {
+    } else {## now repeat until convergence
         f <- new.f
         r <- new.r
         eps <- eps.init
@@ -81,18 +90,31 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             new.f <- expit(logit(f) + covar%*%matrix(eps))
             new.r <- NULL
             ## update all of the reduced ones
-            for (i in 1:length(s)){
-                new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+            if (is.list(s)) {
+                for (i in 1:length(s)){
+                    new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+                }
+            } else {
+                new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict
             }
             f <- new.f
             r <- new.r
             ## now repeat until convergence
-            avg <- colMeans(apply(r, 2, variableImportanceIC, full = f, y = ystar))
+            if (!is.null(dim(r))) {
+                avg <- colMeans(apply(r, 2, variableImportanceIC, full = f, y = ystar))
+            } else { # only entered a vector  
+                avg <- variableImportanceIC(full = f, reduced = r, y = ystar)    
+            }
         }
     }
     ## if we had to transform, then back transform
-    est <- mean((as.vector(f) - r)^2)/mean((ystar - mean(ystar))^2)
-    se <- variableImportanceSE(full = f, reduced = r, y = ystar, n = length(ystar))
+    if (!is.null(dim(r))) { 
+        est <- colMeans((as.vector(f) - r)^2)/mean((ystar - mean(ystar))^2)
+        se <- apply(r, 2, variableImportanceSE, full = f, y = ystar, n = length(ystar))
+    } else {
+        est <- mean((as.vector(f) - r)^2)/mean((ystar - mean(ystar))^2)
+        se <- variableImportanceSE(full = f, reduced = r, y = ystar, n = length(ystar))
+    }
     ci <- variableImportanceCI(est = est, se = se, n = length(y))
     return(list(est = est, se = se, ci = ci, full = f, reduced = r, eps = eps, epss = epss))
 }
