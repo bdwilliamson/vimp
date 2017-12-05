@@ -22,7 +22,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     # expit <- function(x) exp(x)/(1+exp(x))
     expit <- function(x) 1/(1+exp(-x))
     ## initialize the epsilon return vector
-    epss <- matrix(0, nrow = ifelse(!is.null(dim(reduced)), dim(reduced)[2], 1), ncol = max.iter)
+    epss <- matrix(0, nrow = ifelse(!is.null(dim(reduced)), dim(reduced)[2], 1), ncol = max_iter)
     ## initialize updated reduced
     new.r <- NULL
 
