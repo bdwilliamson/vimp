@@ -68,6 +68,8 @@ within the \code{npvi} object. This results in a list containing:
 require(SuperLearner)
 ## generate the data
 ## generate X
+p <- 2
+n <- 100
 x <- replicate(p, stats::runif(n, -5, 5))
 
 ## apply the function to the x's
