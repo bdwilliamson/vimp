@@ -39,17 +39,17 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
     off <- logit(full)
 
     ## get initial epsilon (with no intercept)
-    fluctuation <- suppressWarnings(glm.fit(covar, ystar, offset = off, family = binomial(link = "logit"), intercept = FALSE))
+    fluctuation <- suppressWarnings(stats::glm.fit(covar, ystar, offset = off, family = stats::binomial(link = "logit"), intercept = FALSE))
     eps.init <- fluctuation$coefficients[1:length(fluctuation$coefficients)]
     ## get update
     new.f <- expit(logit(full) + covar%*%matrix(eps.init))
     ## update all of the reduced ones
     if (is.list(s)) {
         for (i in 1:length(s)){
-            new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+            new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict)    
         }
     } else {
-        new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict
+        new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict
     }
     
     
@@ -82,7 +82,7 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             ## calculate the offset
             off <- logit(f)
             ## update epsilon
-            fluctuation <- suppressWarnings(glm.fit(covar, ystar, offset = off, family = binomial(link = "logit"), intercept = FALSE))
+            fluctuation <- suppressWarnings(stats::glm.fit(covar, ystar, offset = off, family = stats::binomial(link = "logit"), intercept = FALSE))
             eps <- fluctuation$coefficients[1:length(fluctuation$coefficients)]
             ## get update
             new.f <- expit(logit(f) + covar%*%matrix(eps))
@@ -90,10 +90,10 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$d
             ## update all of the reduced ones
             if (is.list(s)) {
                 for (i in 1:length(s)){
-                    new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+                    new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict)    
                 }
             } else {
-                new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict
+                new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict
             }
             f <- new.f
             r <- new.r
