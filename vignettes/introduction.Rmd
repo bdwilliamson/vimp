@@ -8,6 +8,21 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 references:
+- id: williamson2017
+  author:
+  - family: Williamson
+    given: Brian D
+  - family: Gilbert
+    given: Peter B
+  - family: Simon
+    given: Noah
+  - family: Carone
+    given: Marco
+  publisher: University of Washington Department of Biostatistics Working Paper Series
+  type: article-journal
+  issued:
+   year: 2017
+  URL: 'http://biostats.bepress.com/uwbiostat/paper422/'
 - id: hastie1990
   title: Generalized Additive Models
   author:
@@ -123,11 +138,89 @@ In addition to the median house value `medv`, the outcome of interest, there are
 
 Since there are 13 features and four groups, it is of interest to determine variable importance both for the 13 features separately and for the four groups of features.
 
+## A first approach: linear regression
+Suppose that I believe that a linear model truly holds in the Boston housing data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. This is achieved by the following:
+
+```{r}
+## estimate the full conditional mean using linear regression
+full.mod <- lm(medv ~ ., data = Boston)
+full.fit <- predict(full.mod)
+
+## estimate the reduced conditional means for each of the individual variables
+X <- as.matrix(Boston[, -14]) # remove the outcome for the predictor matrix
+
+red.mod.crim <- lm(full.fit ~ X[,-1])
+red.fit.crim <- predict(red.mod.crim)
+
+red.mod.zn <- lm(full.fit ~ X[,-2])
+red.fit.zn <- predict(red.mod.zn)
+
+red.mod.indus <- lm(full.fit ~ X[,-3])
+red.fit.indus <- predict(red.mod.indus)
+
+red.mod.chas <- lm(full.fit ~ X[,-4])
+red.fit.chas <- predict(red.mod.chas)
+
+red.mod.nox <- lm(full.fit ~ X[,-5])
+red.fit.nox <- predict(red.mod.nox)
+
+red.mod.rm <- lm(full.fit ~ X[, -6])
+red.fit.rm <- predict(red.mod.rm)
+
+red.mod.age <- lm(full.fit ~ X[,-7])
+red.fit.age <- predict(red.mod.age)
+
+red.mod.dis <- lm(full.fit ~ X[, -8])
+red.fit.dis <- predict(red.mod.dis)
+
+red.mod.rad <- lm(full.fit ~ X[,-9])
+red.fit.rad <- predict(red.mod.rad)
+
+red.mod.tax <- lm(full.fit ~ X[,-10])
+red.fit.tax <- predict(red.mod.tax)
+
+red.mod.ptratio <- lm(full.fit ~ X[,-11])
+red.fit.ptratio <- predict(red.mod.ptratio)
+
+red.mod.black <- lm(full.fit ~ X[,-12])
+red.fit.black <- predict(red.mod.black)
+
+red.mod.lstat <- lm(full.fit ~ X[,-13])
+red.fit.lstat <- predict(red.mod.lstat)
+
+## load the library
+library(vimp)
+
+## plug these into vim
+lm.vim.crim <- vim(full.fit, red.fit.crim, y = Boston$medv)
+lm.vim.zn <- vim(full.fit, red.fit.zn, y = Boston$medv)
+lm.vim.indus <- vim(full.fit, red.fit.indus, y = Boston$medv)
+lm.vim.chas <- vim(full.fit, red.fit.chas, y = Boston$medv)
+lm.vim.nox <- vim(full.fit, red.fit.nox, y = Boston$medv)
+lm.vim.rm <- vim(full.fit, red.fit.rm, y = Boston$medv)
+lm.vim.age <- vim(full.fit, red.fit.age, y = Boston$medv)
+lm.vim.dis <- vim(full.fit, red.fit.dis, y = Boston$medv)
+lm.vim.rad <- vim(full.fit, red.fit.rad, y = Boston$medv)
+lm.vim.tax <- vim(full.fit, red.fit.tax, y = Boston$medv)
+lm.vim.ptratio <- vim(full.fit, red.fit.ptratio, y = Boston$medv)
+lm.vim.black <- vim(full.fit, red.fit.black, y = Boston$medv)
+lm.vim.lstat <- vim(full.fit, red.fit.lstat, y = Boston$medv)
+
+## make a table with the estimates using the combine() function
+lm.mat <- combine(lm.vim.crim, lm.vim.zn, lm.vim.indus, lm.vim.chas,
+                lm.vim.nox, lm.vim.rm, lm.vim.age, lm.vim.dis, lm.vim.rad,
+                lm.vim.tax, lm.vim.ptratio, lm.vim.black, lm.vim.lstat)
+## print out the matrix
+lm.mat$mat
+```
+
 ## Building a library of learners
 
-Suppose that I prefer to use generalized additive models [@hastie1990] to estimate $\mu_{P_0}$ and $\mu_{P_0, s}$, so I am planning on using the `gam` package. Suppose that you prefer to use the elastic net [@zou2005], and are planning to use the `glmnet` package. 
+In general, we don't believe that a linear model truly holds. Thinking about potential model misspecification leads us to consider other algorithms. Suppose that I prefer to use generalized additive models [@hastie1990] to estimate $\mu_{P_0}$ and $\mu_{P_0, s}$, so I am planning on using the `gam` package. Suppose that you prefer to use the elastic net [@zou2005], and are planning to use the `glmnet` package. 
 
-The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means! This motivates using `SuperLearner` to allow the data to determine the optimal combination of *base learners* from a *library* that I define. These base learners are a combination of different methods (e.g. generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g. additive models with 3 and 4 degrees of freedom).
+The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means! 
+
+This motivates using `SuperLearner` to allow the data to determine the optimal combination of *base learners* from a *library* that I define. These base learners are a combination of different methods (e.g., generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g., additive models with 3 and 4 degrees of freedom). The Super Learner is an example of model stacking, or model aggregation --- these approaches use a data-adaptive combination of base learners to make predictions. 
 
 For instance, my library could include additive models, elastic net , random forests [@breiman2001], and gradient boosted trees [@friedman2001] as follows:
 
@@ -183,7 +276,7 @@ The main function in the vimp package is the `vim()` function. There are three m
 
 There are three ways to specify `f1` and `f2`:
 
-1. Use formula notation and supply a library of learners (e.g. `learners` above)
+1. Use formula notation and supply a library of learners (e.g., `learners` above)
 2. Supply fitted values for our estimate of $\mu_{P_0}$ but supply a library of learners for estimating $\mu_{P_0, s}$
 3. Supply fitted values for both estimates
 
@@ -199,7 +292,7 @@ Suppose that the first feature that I want to estimate variable importance for i
 means that: 
 
 - I want to use `SuperLearner()` to estimate the conditional mean $\mu_{P_0}$
-- I want to use the two-step procedure outlined in Williamson 2017 (CITE) to estimate the conditional mean $\mu_{P_0, s}$
+- I want to use the sequential regression procedure outlined in [@williamson2017] to estimate the conditional mean $\mu_{P_0, s}$
 - I want to estimate variable importance for the fifth column of `Boston`, which is `nox`
 
 The call to `vim()` looks like this:
@@ -216,7 +309,7 @@ vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3[, 1],
     s = 5, SL.library = learners)
 ```
 
-While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data so letting an algorithm run for a few hours should not be an issue. 
+While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue. 
 
 However, for the sake of illustration, I can estimate varibable importance for nitrogen oxide only using only two base learners as follows:
 ```{r}
