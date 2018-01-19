@@ -13,11 +13,11 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-variableImportanceIC <- function(full, reduced, y, standardized = TRUE) {
+variableImportanceIC <- function(full, reduced, y, standardized = TRUE, na.rm = TRUE) {
 
   ## first calculate the naive estimates of the parameters
-  naive.j <- mean((full - reduced) ^ 2)
-  naive.var <- mean((y - mean(y))^2)
+  naive.j <- mean((full - reduced) ^ 2, na.rm)
+  naive.var <- mean((y - mean(y))^2, na.rm)
 
   ## now calculate the influence curve using these
   if (standardized) {
