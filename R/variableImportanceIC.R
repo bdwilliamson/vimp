@@ -13,7 +13,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-variableImportanceIC <- function(full, reduced, y, standardized = TRUE, na.rm = TRUE) {
+variableImportanceIC <- function(full, reduced, y, standardized = TRUE, na.rm = FALSE) {
 
   ## first calculate the naive estimates of the parameters
   naive.j <- mean((full - reduced) ^ 2, na.rm)
