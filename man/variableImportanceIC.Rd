@@ -4,7 +4,7 @@
 \alias{variableImportanceIC}
 \title{Estimate the influence function}
 \usage{
-variableImportanceIC(full, reduced, y, standardized = TRUE)
+variableImportanceIC(full, reduced, y, standardized = TRUE, na.rm = FALSE)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates.}
@@ -14,6 +14,8 @@ variableImportanceIC(full, reduced, y, standardized = TRUE)
 \item{y}{the outcome.}
 
 \item{standardized}{logical; should we estimate the standardized parameter? (defaults to \code{TRUE})}
+
+\item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
 }
 \value{
 The influence function values for the given group of left-out covariates.
