@@ -6,6 +6,7 @@
 #' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.
 #' @param y the outcome.
 #' @param standardized logical; should we estimate the standardized parameter? (defaults to \code{TRUE})
+#' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return The influence function values for the given group of left-out covariates.
 #'
