@@ -19,6 +19,8 @@
 #' @param alpha the level to compute the confidence interval at.
 #' Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are formulas.
+#' @param tol numerical error tolerance (only used if \code{tmle = TRUE}).
+#' @param max_iter maximum number of TMLE iterations (only used if \code{tmle = TRUE}).
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{npvi}. See Details for more information.
@@ -86,7 +88,7 @@
 #' @export
 
 
-vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standardized = TRUE, alpha = 0.05, SL.library = NULL, ...) {
+vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1)) stop("You must enter a formula or fitted values for the full regression.")
@@ -167,18 +169,25 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
     fhat.ful <- f1
     fhat.red <- f2
 
-    full <- reduced <- NA
+    full <- reduced <- NA    
   }
 
   ## calculate the estimate
-  est <- variableImportance(fhat.ful, fhat.red, y, n, standardized)
-
-  ## calculate the standard error
-  se <- variableImportanceSE(fhat.ful, fhat.red, y, n, standardized)
-
-  ## calculate the confidence interval
-  ci <- variableImportanceCI(est, se, n, 1 - alpha)
-
+  if (tmle) {
+    tmle_lst <- variableImportanceTMLE(fhat.ful, fhat.red, y, n, standardized)
+    est <- tmle_lst$est
+    se <- tmle_lst$se
+    ci <- tmle_lst$ci
+    fhat.ful <- tmle_lst$full
+    fhat.red <- tmle_lst$reduced
+  } else {
+    est <- variableImportance(fhat.ful, fhat.red, y, n, standardized)
+    ## calculate the standard error
+    se <- variableImportanceSE(fhat.ful, fhat.red, y, n, standardized)
+    ## calculate the confidence interval
+    ci <- variableImportanceCI(est, se, n, 1 - alpha)
+  }
+  
   ## get the call
   cl <- match.call()
 
