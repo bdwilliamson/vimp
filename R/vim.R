@@ -14,6 +14,8 @@
 #' @param s the covariate(s) to calculate variable importance for,
 #'  defaults to 1.
 #' @param standardized should we estimate the standardized parameter? (defaults to \code{TRUE})
+#' @param two_phase did the data come from a two-phase sample? (defaults to \code{FALSE})
+#' @param tmle should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).
 #' @param alpha the level to compute the confidence interval at.
 #' Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are formulas.
