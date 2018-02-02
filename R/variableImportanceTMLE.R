@@ -7,6 +7,7 @@
 #' @param y the outcome variable
 #' @param x the covariates (ordered)
 #' @param s the indices for variable importance, or a list of indices (where the length of the list matches the number of columns in \code{reduced}.)
+#' @param two_phase logical; did the data come from a two-phase sample? (defaults to \code{FALSE})
 #' @param lib the library of candidate learners passed to Super Learner
 #' @param tol the tolerance level for convergence
 #' @param max_iter the maximum number of iterations for each Super Learner fit
@@ -16,7 +17,7 @@
 #'
 #' @details This differs from estimates returned by variableImportance() in that the procedure used to target the estimate to the parameter of interest is based on a TMLE approach.
 #' @export
-variableImportanceTMLE <- function(full, reduced, y, x, s, lib, tol = .Machine$double.eps, max_iter = 500, ...) {
+variableImportanceTMLE <- function(full, reduced, y, x, s, two_phase = FALSE, lib, tol = .Machine$double.eps, max_iter = 500, ...) {
     ## helper functions
     logit <- function(x) log(x/(1-x))
     # expit <- function(x) exp(x)/(1+exp(x))
