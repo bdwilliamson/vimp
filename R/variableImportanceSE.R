@@ -7,13 +7,14 @@
 #' @param y the outcome.
 #' @param n the sample size.
 #' @param standardized logical; should we estimate the standardized parameter? (defaults to \code{TRUE})
+#' @param two_phase logical; did the data come from a two-phase study? (defaults to \code{FALSE})
 #'
 #' @return The estimated variable importance for the given group of left-out covariates.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-variableImportanceSE <- function(full, reduced, y, n = length(y), standardized = TRUE) {
+variableImportanceSE <- function(full, reduced, y, n = length(y), standardized = TRUE, two_phase = FALSE) {
 
   ## calculate the influence curve
   ic <- variableImportanceIC(full, reduced, y, standardized)

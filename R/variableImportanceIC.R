@@ -6,6 +6,7 @@
 #' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.
 #' @param y the outcome.
 #' @param standardized logical; should we estimate the standardized parameter? (defaults to \code{TRUE})
+#' @param two_phase logical; did the data come from a two-phase study? (defaults to \code{FALSE})
 #'
 #' @return The influence function values for the given group of left-out covariates.
 #'
@@ -13,7 +14,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-variableImportanceIC <- function(full, reduced, y, standardized = TRUE) {
+variableImportanceIC <- function(full, reduced, y, standardized = TRUE, two_phase = FALSE) {
 
   ## first calculate the naive estimates of the parameters
   naive.j <- mean((full - reduced) ^ 2)
