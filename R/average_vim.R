@@ -1,6 +1,6 @@
-#' Average multiple importance estimates 
+#' Average multiple independent importance estimates 
 #' 
-#' Average the output from multiple calls to vim, for different groups, into a single estimate with a corresponding standard error and confidence interval.
+#' Average the output from multiple calls to vim, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
 #' 
 #' @param ... an arbitrary number of \code{vim} objects
 #' @param weights how to average the vims together, and must sum to 1; defaults to 1/(number of vims) for each vim, corresponding to the arithmetic mean
@@ -58,12 +58,46 @@ average_vim <- function(..., weights = rep(1/length(...), length(...))) {
   	names(L) <- unlist(match.call(expand.dots=F)$...)
   	p <- length(L)
 
-  	## extract the estimates and CIs from each element of the list
+  	## check if weights sum to 1; if not, break
+  	if (sum(weights) != 1) stop("Weights must sum to one.")
+
+  	## extract the estimates and SEs from each element of the list
   	## also get the sample sizes
   	ests <- do.call(rbind.data.frame, lapply(L, function(z) z$est))
-  	cis <- do.call(rbind.data.frame, lapply(L, function(z) z$ci))
   	ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
 
   	## create the (weighted) average
-  	avg <- 
+  	est_avg <- weights*sum(ests)
+
+  	## combine the variances correctly
+  	## will need to use the covariance, if not independent
+  	sd_avg <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(ses^2))
+
+  	## create a CI
+  	ci_avg <- variableImportanceCI(est_avg, sd_avg)
+
+  	## create the output matrix
+  	mat <- cbind(est_avg, sd_avg, ci_avg)
+  	names(mat) <- c("est", "se", "cil", "ciu")
+
+  	## now get lists of the remaining components
+  	call <- match.call()
+  	full.f <- lapply(L, function(z) z$full.f)
+  	red.f <- lapply(L, function(z) z$red.f)
+  	data <- lapply(L, function(z) z$data)
+  	j <- lapply(L, function(z) z$j)
+  	SL.library <- lapply(L, function(z) z$SL.library)
+  	full.fit <- lapply(L, function(z) z$full.fit)
+  	red.fit <- lapply(L, function(z) z$red.fit)
+  	full.mod <- lapply(L, function(z) z$full.mod)
+  	red.mod <- lapply(L, function(z) z$red.mod)
+  	alpha <- lapply(L, function(z) z$alpha)
+  	
+  	output <- list(call = call, full.f = full.f, red.f = red.f, data = data,
+              j = j, SL.library = SL.library, full.fit = full.fit,
+              red.fit = red.fit, mat = mat,
+              full.mod = full.mod, red.mod = red.mod,
+              alpha = alpha)
+  tmp.cls <- class(mat)
+  class(output) <- c("vim", tmp.cls)
 }
