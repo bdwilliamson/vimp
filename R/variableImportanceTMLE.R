@@ -22,8 +22,8 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, two_phase = FALSE, li
     logit <- function(x) log(x/(1-x))
     # expit <- function(x) exp(x)/(1+exp(x))
     expit <- function(x) 1/(1+exp(-x))
-    ## initialize the epsilon return vector
-    epss <- matrix(0, nrow = ifelse(!is.null(dim(reduced)), dim(reduced)[2], 1), ncol = max.iter)
+    ## initialize the criterion return vector
+    avgs <- matrix(0, nrow = ifelse(!is.null(dim(reduced)), dim(reduced)[2], 1), ncol = max_iter)
     ## initialize updated reduced
     new.r <- NULL
 
@@ -40,18 +40,17 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, two_phase = FALSE, li
     off <- logit(full)
 
     ## get initial epsilon (with no intercept)
-    fluctuation <- suppressWarnings(glm.fit(covar, ystar, offset = off, family = binomial(link = "logit"), intercept = FALSE))
+    fluctuation <- suppressWarnings(stats::glm.fit(covar, ystar, offset = off, family = stats::binomial(link = "logit"), intercept = FALSE))
     eps.init <- fluctuation$coefficients[1:length(fluctuation$coefficients)]
-    epss[, 1] <- eps.init
     ## get update
     new.f <- expit(logit(full) + covar%*%matrix(eps.init))
     ## update all of the reduced ones
     if (is.list(s)) {
         for (i in 1:length(s)){
-            new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+            new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict)    
         }
     } else {
-        new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict
+        new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict
     }
     
     
@@ -61,17 +60,17 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, two_phase = FALSE, li
     } else { 
         avg <- variableImportanceIC(full = new.f, reduced = new.r, y = ystar)
     }    
+    avgs[, 1] <- avg
     if (max(abs(avg)) < tol) { # criterion should be empirical average zero
         f <- new.f
         r <- new.r
         eps <- eps.init
-        return(list(est = est, full = new.f, reduced = new.r, eps = eps.init))
     } else {## now repeat until convergence
         f <- new.f
         r <- new.r
         eps <- eps.init
         k <- 1
-        epss[, k] <- eps
+        avgs[, k] <- avg
         while(max(abs(avg)) > tol & k < max_iter) {
             ## if we didn't change by tol, break
             # if (k > 1) {
@@ -84,19 +83,18 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, two_phase = FALSE, li
             ## calculate the offset
             off <- logit(f)
             ## update epsilon
-            fluctuation <- suppressWarnings(glm.fit(covar, ystar, offset = off, family = binomial(link = "logit"), intercept = FALSE))
+            fluctuation <- suppressWarnings(stats::glm.fit(covar, ystar, offset = off, family = stats::binomial(link = "logit"), intercept = FALSE))
             eps <- fluctuation$coefficients[1:length(fluctuation$coefficients)]
-            epss[, k+1] <- eps
             ## get update
             new.f <- expit(logit(f) + covar%*%matrix(eps))
             new.r <- NULL
             ## update all of the reduced ones
             if (is.list(s)) {
                 for (i in 1:length(s)){
-                    new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict)    
+                    new.r <- cbind(new.r, SuperLearner::SuperLearner(Y = new.f, X = x[, -s[[i]], drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict)    
                 }
             } else {
-                new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = lib, ...)$SL.predict
+                new.r <- SuperLearner::SuperLearner(Y = new.f, X = x[, -s, drop = FALSE], family = stats::gaussian(), SL.library = lib, ...)$SL.predict
             }
             f <- new.f
             r <- new.r
@@ -106,6 +104,9 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, two_phase = FALSE, li
             } else { # only entered a vector  
                 avg <- variableImportanceIC(full = f, reduced = r, y = ystar)    
             }
+            k <- k+1
+            avgs[, k] <- avg
+
         }
     }
     ## if we had to transform, then back transform
@@ -117,5 +118,5 @@ variableImportanceTMLE <- function(full, reduced, y, x, s, two_phase = FALSE, li
         se <- variableImportanceSE(full = f, reduced = r, y = ystar, n = length(ystar))
     }
     ci <- variableImportanceCI(est = est, se = se, n = length(y))
-    return(list(est = est, se = se, ci = ci, full = f, reduced = r, eps = eps, epss = epss))
+    return(list(est = est, se = se, ci = ci, full = f, reduced = r, avg = avg, avgs = avgs))
 }

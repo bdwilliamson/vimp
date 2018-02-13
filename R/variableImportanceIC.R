@@ -7,6 +7,7 @@
 #' @param y the outcome.
 #' @param standardized logical; should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param two_phase logical; did the data come from a two-phase study? (defaults to \code{FALSE})
+#' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return The influence function values for the given group of left-out covariates.
 #'
@@ -14,11 +15,11 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-variableImportanceIC <- function(full, reduced, y, standardized = TRUE, two_phase = FALSE) {
+variableImportanceIC <- function(full, reduced, y, standardized = TRUE, two_phase = FALSE, na.rm = FALSE) {
 
   ## first calculate the naive estimates of the parameters
-  naive.j <- mean((full - reduced) ^ 2)
-  naive.var <- mean((y - mean(y))^2)
+  naive.j <- mean((full - reduced) ^ 2, na.rm = na.rm)
+  naive.var <- mean((y - mean(y))^2, na.rm = na.rm)
 
   ## now calculate the influence curve using these
   if (standardized) {
