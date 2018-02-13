@@ -13,8 +13,8 @@ format.vim <- function(x, ...) {
     tmp.ci <- cbind(format(x$mat$cil, ...), format(x$mat$ciu, ...))
     output <- cbind(format(x$mat$est, ...), format(x$mat$se, ...), apply(tmp.ci, 1, function(x) paste("[", paste(x, collapse = ", "), "]", sep = "")))
     ## tag on row names
-    tmp.j <- do.call(c, x$j)
-    rownames(output) <- paste("j = ", tmp.j, sep = "")
+    tmp.j <- do.call(c, x$s)
+    rownames(output) <- paste("s = ", tmp.j, sep = "")
   } else {
     output <- cbind(format(x$est, ...), format(x$se, ...), paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
     rownames(output) <- paste("s = ", x$s, sep = "")
