@@ -16,6 +16,9 @@
 #'  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
 #'  \item{full.fit}{ - a list of the fitted values of the chosen method fit to the full data}
 #'  \item{red.fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
+#'  \item{est} {- a vector with the estimates}
+#'  \item{se} {- a vector with the standard errors}
+#'  \item{ci} {- a matrix with the CIs}
 #'  \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) x 100}\% confidence intervals}
 #'  \item{full.mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red.mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
@@ -64,6 +67,9 @@ merge_vim <- function(...) {
   ests <- do.call(rbind.data.frame, lapply(L, function(z) z$est))
   cis <- do.call(rbind.data.frame, lapply(L, function(z) z$ci))
   ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
+  
+  ## put on names
+  names(ests) <- "est"
 
   ## combine into a matrix
   tmp <- cbind(ests, ses, cis)
@@ -82,12 +88,13 @@ merge_vim <- function(...) {
   red.fit <- lapply(L, function(z) z$red.fit)
   full.mod <- lapply(L, function(z) z$full.mod)
   red.mod <- lapply(L, function(z) z$red.mod)
-  alpha <- lapply(L, function(z) z$alpha)
+  alpha <- min(unlist(lapply(L, function(z) z$alpha)))
 
   ## create output list
   output <- list(call = call, full.f = full.f, red.f = red.f, data = data,
               s = s, SL.library = SL.library, full.fit = full.fit,
-              red.fit = red.fit, est = mat[, 1], se = mat[, 2], ci = cbind(mat[, 3], mat[, 4]),
+              red.fit = red.fit, est = mat$est, se = mat$se, ci = cbind(mat$cil, mat$ciu),
+              mat = mat,
               full.mod = full.mod, red.mod = red.mod,
               alpha = alpha)
   tmp.cls <- class(mat)

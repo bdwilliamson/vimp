@@ -67,6 +67,9 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	## also get the sample sizes
   	ests <- do.call(rbind.data.frame, lapply(L, function(z) z$est))
   	ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
+  	
+  	names(ests) <- "est"
+  	names(ses) <- "se"
 
   	## create the (weighted) average
   	est_avg <- sum(weights*ests)
@@ -76,7 +79,8 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	se_avg <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(ses^2))
 
   	## create a CI
-  	ci_avg <- variableImportanceCI(est_avg, se_avg)
+  	alpha <- min(unlist(lapply(L, function(z) z$alpha)))
+  	ci_avg <- variableImportanceCI(est_avg, se_avg, level = alpha)
 
   	## create the output matrix
   	mat <- cbind(est_avg, se_avg, ci_avg)
@@ -98,7 +102,6 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	red.fit <- lapply(L, function(z) z$red.fit)
   	full.mod <- lapply(L, function(z) z$full.mod)
   	red.mod <- lapply(L, function(z) z$red.mod)
-  	alpha <- lapply(L, function(z) z$alpha)
   	
   	output <- list(call = call, full.f = full.f, red.f = red.f, data = data,
               s = s, SL.library = SL.library, full.fit = full.fit,
