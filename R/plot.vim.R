@@ -12,7 +12,7 @@ plot.vim <- function(x, y, ...) {
   if (!is.null(x$mat)) {
     ord.mat <- x$mat[order(x$mat$est), ]
     if (missing(y)) {
-      tmp <- do.call(c, x$s)
+      tmp <- x$s
       y <- paste("s = ", tmp, sep = "")
     }
   } else {
