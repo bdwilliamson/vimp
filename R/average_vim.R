@@ -95,9 +95,9 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	if (all(s_lst == 1)) {
   	  # check for underscore or period
   	  if (any(is.na(unlist(lapply(strsplit(names(s_lst), ".", fixed = TRUE), function(x) x[2]))))) {
-  	    s <- paste0("avg_", paste(unlist(lapply(strsplit(names(s_lst), ".", fixed = TRUE), function(x) x[3])), collapse = "_")
+  	    s <- paste0("avg_", paste(unlist(lapply(strsplit(names(s_lst), ".", fixed = TRUE), function(x) x[3])), collapse = "_"))
   	  } else {
-  	    s <- paste0("avg_", paste(unlist(lapply(strsplit(names(s_lst), ".", fixed = TRUE), function(x) x[2])), collapse = "_")
+  	    s <- paste0("avg_", paste(unlist(lapply(strsplit(names(s_lst), ".", fixed = TRUE), function(x) x[2])), collapse = "_"))
   	  }
   	} else {
   	  s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))
