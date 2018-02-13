@@ -82,7 +82,7 @@ merge_vim <- function(...) {
   full.f <- lapply(L, function(z) z$full.f)
   red.f <- lapply(L, function(z) z$red.f)
   data <- L[[1]]$data
-  s <- lapply(L, function(z) z$s)[order(tmp$est, decreasing = TRUE)]
+  s <- do.call(c, lapply(L, function(z) z$s)[order(tmp$est, decreasing = TRUE)])
   SL.library <- lapply(L, function(z) z$SL.library)
   full.fit <- lapply(L, function(z) z$full.fit)
   red.fit <- lapply(L, function(z) z$red.fit)

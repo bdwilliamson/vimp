@@ -12,15 +12,15 @@ plot.vim <- function(x, y, ...) {
   if (!is.null(x$mat)) {
     ord.mat <- x$mat[order(x$mat$est), ]
     if (missing(y)) {
-      tmp <- do.call(c, x$j)
-      y <- paste("j = ", tmp, sep = "")
+      tmp <- do.call(c, x$s)
+      y <- paste("s = ", tmp, sep = "")
     }
   } else {
     tmp <- data.frame(est = x$est, se = x$se, x$ci)
     names(tmp) <- c("est", "se", "cil", "ciu")
     ord.mat <- tmp[order(tmp$est), ]
     if (missing(y)) {
-      y <- paste("j = ", x$j, sep = "")
+      y <- paste("s = ", x$s, sep = "")
     }
   }
 
