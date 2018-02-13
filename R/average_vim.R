@@ -80,7 +80,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
 
   	## create a CI
   	alpha <- min(unlist(lapply(L, function(z) z$alpha)))
-  	ci_avg <- variableImportanceCI(est_avg, se_avg, level = alpha)
+  	ci_avg <- variableImportanceCI(est_avg, se_avg, level = 1 - alpha)
 
   	## create the output matrix
   	mat <- cbind(est_avg, se_avg, ci_avg)
