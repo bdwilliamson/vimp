@@ -6,12 +6,12 @@
 #'
 #' @section vimp Functions:
 #' The function vim() computes the estimates, standard error estimates,
-#' and confidence intervals. It is an object of class "npvi",
+#' and confidence intervals. It is an object of class "vim",
 #' and has its own print method.
 #' 
-#' The function combine() takes the output of multiple calls to vim(), and combines the results into a single npvi object.
+#' The function combine() takes the output of multiple calls to vim(), and combines the results into a single vim object.
 #' 
-#' The function format() formats a npvi object for printing; print() prints the results; and plot() plots the estimates and standard errors.
+#' The function format() formats a vim object for printing; print() prints the results; and plot() plots the estimates and standard errors.
 #'
 #' @docType package
 #' @name vimp

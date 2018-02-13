@@ -1,14 +1,14 @@
-#' Combine multiple \code{npvi} objects
+#' Merge multiple \code{vim} objects into one
 #'
 #' Take the output from multiple different calls to \code{vim} and
-#' combine into a single \code{npvi} object; mostly used for plotting results.
+#' merge into a single \code{vim} object; mostly used for plotting results.
 #'
-#' @param ... an arbitrary number of \code{npvi} objects, separated by commas.
+#' @param ... an arbitrary number of \code{vim} objects, separated by commas.
 #'
-#' @return an object of class \code{npvi} containing all of the output
-#' from the individual \code{npvi} objects. This results in a list containing:
+#' @return an object of class \code{vim} containing all of the output
+#' from the individual \code{vim} objects. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{combine()}}
+#'  \item{call}{ - the call to \code{merge_vim()}}
 #'  \item{full.f}{ - a list of individual formulas or fitted values from the full regressions}
 #'  \item{red.f}{ - a list of individual formulas or fitted values from the reduced regressions}
 #'  \item{data}{ - the data used by the function}
@@ -27,6 +27,8 @@
 #' require(SuperLearner)
 #' ## generate the data
 #' ## generate X
+#' p <- 2
+#' n <- 100
 #' x <- replicate(p, stats::runif(n, -5, 5))
 #'
 #' ## apply the function to the x's
@@ -42,17 +44,17 @@
 #'
 #' ## using class "formula"
 #' est.2 <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-#'            n = length(y), j = 2, standardized = TRUE, alpha = 0.05,
+#'            n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' est.1 <- vim(est.2$full.fit, fit ~ x, data = testdat, y = testdat[, 1],
-#' n = length(y), j = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
+#' n = length(y), indx = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
 #' cvControl = list(V = 10))
 #'
-#' ests <- combine(est.1, est.2)
+#' ests <- merge_vim(est.1, est.2)
 #' }
 #' @export
-combine <- function(...) {
+merge_vim <- function(...) {
   ## capture the arguments
   L <- list(...)
   names(L) <- unlist(match.call(expand.dots=F)$...)
@@ -74,7 +76,7 @@ combine <- function(...) {
   full.f <- lapply(L, function(z) z$full.f)
   red.f <- lapply(L, function(z) z$red.f)
   data <- L[[1]]$data
-  j <- lapply(L, function(z) z$j)[order(tmp$est, decreasing = TRUE)]
+  s <- lapply(L, function(z) z$s)[order(tmp$est, decreasing = TRUE)]
   SL.library <- lapply(L, function(z) z$SL.library)
   full.fit <- lapply(L, function(z) z$full.fit)
   red.fit <- lapply(L, function(z) z$red.fit)
@@ -84,12 +86,12 @@ combine <- function(...) {
 
   ## create output list
   output <- list(call = call, full.f = full.f, red.f = red.f, data = data,
-              j = j, SL.library = SL.library, full.fit = full.fit,
-              red.fit = red.fit, mat = mat,
+              s = s, SL.library = SL.library, full.fit = full.fit,
+              red.fit = red.fit, est = mat[, 1], se = mat[, 2], ci = cbind(mat[, 3], mat[, 4]),
               full.mod = full.mod, red.mod = red.mod,
               alpha = alpha)
   tmp.cls <- class(mat)
-  class(output) <- c("npvi", tmp.cls)
+  class(output) <- c("vim", tmp.cls)
 
   return(output)
 }

@@ -4,8 +4,9 @@
 \alias{vim}
 \title{Nonparametric Variable Importance Estimates}
 \usage{
-vim(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1,
-  standardized = TRUE, alpha = 0.05, SL.library = NULL, ...)
+vim(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1,
+  standardized = TRUE, two_phase = FALSE, tmle = FALSE, alpha = 0.05,
+  SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...)
 }
 \arguments{
 \item{f1}{either: (1) the regression function to estimate for the full fit,
@@ -21,20 +22,28 @@ column is \eqn{Y}.}
 
 \item{n}{the sample size.}
 
-\item{s}{the covariate(s) to calculate variable importance for,
+\item{indx}{the indices of the covariate(s) to calculate variable importance for,
 defaults to 1.}
 
 \item{standardized}{should we estimate the standardized parameter? (defaults to \code{TRUE})}
+
+\item{two_phase}{did the data come from a two-phase sample? (defaults to \code{FALSE})}
+
+\item{tmle}{should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).}
 
 \item{alpha}{the level to compute the confidence interval at.
 Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are formulas.}
 
+\item{tol}{numerical error tolerance (only used if \code{tmle = TRUE}).}
+
+\item{max_iter}{maximum number of TMLE iterations (only used if \code{tmle = TRUE}).}
+
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
-An object of class \code{npvi}. See Details for more information.
+An object of class \code{vim}. See Details for more information.
 }
 \description{
 Compute estimates and confidence intervals for the
@@ -45,7 +54,7 @@ See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind this function, and the validity
 of the confidence intervals.
 In the interest of transparency, we return most of the calculations
-within the \code{npvi} object. This results in a list containing:
+within the \code{vim} object. This results in a list containing:
 \itemize{
  \item{call}{ - the call to \code{vim}}
  \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
@@ -85,7 +94,7 @@ learners <- "SL.gam"
 
 ## using class "formula"
 est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-           n = length(y), s = 2, standardized = TRUE, alpha = 0.05,
+           n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
 ## using pre-computed fitted values
@@ -96,7 +105,7 @@ reduced <- SuperLearner(Y = full.fit, X = testdat[, 3],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vim(full.fit, reduced.fit, y = testdat$y, s = 2,
+est <- vim(full.fit, reduced.fit, y = testdat$y, indx = 2,
 standardized = TRUE, alpha = 0.05)
 }
 

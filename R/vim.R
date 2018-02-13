@@ -11,21 +11,25 @@
 #' column is \eqn{Y}.
 #' @param y the outcome; by default is the first column in \code{data}.
 #' @param n the sample size.
-#' @param s the covariate(s) to calculate variable importance for,
+#' @param indx the indices of the covariate(s) to calculate variable importance for,
 #'  defaults to 1.
 #' @param standardized should we estimate the standardized parameter? (defaults to \code{TRUE})
+#' @param two_phase did the data come from a two-phase sample? (defaults to \code{FALSE})
+#' @param tmle should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).
 #' @param alpha the level to compute the confidence interval at.
 #' Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are formulas.
+#' @param tol numerical error tolerance (only used if \code{tmle = TRUE}).
+#' @param max_iter maximum number of TMLE iterations (only used if \code{tmle = TRUE}).
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
-#' @return An object of class \code{npvi}. See Details for more information.
+#' @return An object of class \code{vim}. See Details for more information.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function, and the validity
 #' of the confidence intervals.
 #' In the interest of transparency, we return most of the calculations
-#' within the \code{npvi} object. This results in a list containing:
+#' within the \code{vim} object. This results in a list containing:
 #' \itemize{
 #'  \item{call}{ - the call to \code{vim}}
 #'  \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
@@ -65,7 +69,7 @@
 #'
 #' ## using class "formula"
 #' est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-#'            n = length(y), s = 2, standardized = TRUE, alpha = 0.05,
+#'            n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ## using pre-computed fitted values
@@ -76,7 +80,7 @@
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vim(full.fit, reduced.fit, y = testdat$y, s = 2,
+#' est <- vim(full.fit, reduced.fit, y = testdat$y, indx = 2,
 #' standardized = TRUE, alpha = 0.05)
 #' }
 #'
@@ -84,7 +88,7 @@
 #' @export
 
 
-vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standardized = TRUE, alpha = 0.05, SL.library = NULL, ...) {
+vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1)) stop("You must enter a formula or fitted values for the full regression.")
@@ -103,7 +107,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.s <- X[, -s, drop = FALSE]
+    X.minus.s <- X[, -indx, drop = FALSE]
 
     ## fit the Super Learner given the specified library
     full <- SuperLearner::SuperLearner(Y = y, X = X, SL.library = SL.library, ...)
@@ -142,7 +146,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.s <- X[, -s, drop = FALSE]
+    X.minus.s <- X[, -indx, drop = FALSE]
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
@@ -165,30 +169,37 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
     fhat.ful <- f1
     fhat.red <- f2
 
-    full <- reduced <- NA
+    full <- reduced <- NA    
   }
 
   ## calculate the estimate
-  est <- variableImportance(fhat.ful, fhat.red, y, n, standardized)
-
-  ## calculate the standard error
-  se <- variableImportanceSE(fhat.ful, fhat.red, y, n, standardized)
-
-  ## calculate the confidence interval
-  ci <- variableImportanceCI(est, se, n, 1 - alpha)
-
+  if (tmle) {
+    tmle_lst <- variableImportanceTMLE(fhat.ful, fhat.red, y, n, standardized)
+    est <- tmle_lst$est
+    se <- tmle_lst$se
+    ci <- tmle_lst$ci
+    fhat.ful <- tmle_lst$full
+    fhat.red <- tmle_lst$reduced
+  } else {
+    est <- variableImportance(fhat.ful, fhat.red, y, n, standardized)
+    ## calculate the standard error
+    se <- variableImportanceSE(fhat.ful, fhat.red, y, n, standardized)
+    ## calculate the confidence interval
+    ci <- variableImportanceCI(est, se, n, 1 - alpha)
+  }
+  
   ## get the call
   cl <- match.call()
 
   ## create the output and return it
-  output <- list(call = cl, full.f = f1, red.f = f2, data = data, s = s,
+  output <- list(call = cl, full.f = f1, red.f = f2, data = data, s = indx,
                  SL.library = SL.library,
                  full.fit = fhat.ful, red.fit = fhat.red, est = est,
                  se = se, ci = ci, full.mod = full, red.mod = reduced,
                  alpha = alpha)
 
-  ## make it also an npvi object
+  ## make it also an vim object
   tmp.cls <- class(output)
-  class(output) <- c("npvi", tmp.cls)
+  class(output) <- c("vim", tmp.cls)
   return(output)
 }

@@ -4,7 +4,8 @@
 \alias{variableImportanceIC}
 \title{Estimate the influence function}
 \usage{
-variableImportanceIC(full, reduced, y, standardized = TRUE, na.rm = FALSE)
+variableImportanceIC(full, reduced, y, standardized = TRUE,
+  two_phase = FALSE, na.rm = FALSE)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates.}
@@ -14,6 +15,8 @@ variableImportanceIC(full, reduced, y, standardized = TRUE, na.rm = FALSE)
 \item{y}{the outcome.}
 
 \item{standardized}{logical; should we estimate the standardized parameter? (defaults to \code{TRUE})}
+
+\item{two_phase}{logical; did the data come from a two-phase study? (defaults to \code{FALSE})}
 
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
 }

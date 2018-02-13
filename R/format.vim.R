@@ -1,11 +1,11 @@
-#' Format a \code{npvi} object
+#' Format a \code{vim} object
 #'
-#' Nicely formats the output from a \code{npvi} object for printing.
+#' Nicely formats the output from a \code{vim} object for printing.
 #'
-#' @param x the \code{npvi} object of interest.
+#' @param x the \code{vim} object of interest.
 #' @param ... other options, see the generic \code{format} function.
 #' @export
-format.npvi <- function(x, ...) {
+format.vim <- function(x, ...) {
   ## create the output matrix
   ## if it is a combined object, we need to print the matrix instead
   if (!is.null(x$mat)) {
@@ -17,7 +17,7 @@ format.npvi <- function(x, ...) {
     rownames(output) <- paste("j = ", tmp.j, sep = "")
   } else {
     output <- cbind(format(x$est, ...), format(x$se, ...), paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
-    rownames(output) <- paste("j = ", x$j, sep = "")
+    rownames(output) <- paste("s = ", x$s, sep = "")
   }
   colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
 

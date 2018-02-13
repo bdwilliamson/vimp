@@ -4,7 +4,8 @@
 \alias{variableImportanceSE}
 \title{Estimate standard errors}
 \usage{
-variableImportanceSE(full, reduced, y, n = length(y), standardized = TRUE)
+variableImportanceSE(full, reduced, y, n = length(y), standardized = TRUE,
+  two_phase = FALSE)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates.}
@@ -16,6 +17,8 @@ variableImportanceSE(full, reduced, y, n = length(y), standardized = TRUE)
 \item{n}{the sample size.}
 
 \item{standardized}{logical; should we estimate the standardized parameter? (defaults to \code{TRUE})}
+
+\item{two_phase}{logical; did the data come from a two-phase study? (defaults to \code{FALSE})}
 }
 \value{
 The estimated variable importance for the given group of left-out covariates.

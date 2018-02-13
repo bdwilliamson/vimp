@@ -4,8 +4,8 @@
 \alias{variableImportanceTMLE}
 \title{Estimate variable importance using a TMLE-based approach}
 \usage{
-variableImportanceTMLE(full, reduced, y, x, s, lib, tol = .Machine$double.eps,
-  max_iter = 500, ...)
+variableImportanceTMLE(full, reduced, y, x, s, two_phase = FALSE, lib,
+  tol = .Machine$double.eps, max_iter = 500, ...)
 }
 \arguments{
 \item{full}{fitted values from an initial regression of the outcome on the full set of covariates.}
@@ -17,6 +17,8 @@ variableImportanceTMLE(full, reduced, y, x, s, lib, tol = .Machine$double.eps,
 \item{x}{the covariates (ordered)}
 
 \item{s}{the indices for variable importance, or a list of indices (where the length of the list matches the number of columns in \code{reduced}.)}
+
+\item{two_phase}{logical; did the data come from a two-phase sample? (defaults to \code{FALSE})}
 
 \item{lib}{the library of candidate learners passed to Super Learner}
 
