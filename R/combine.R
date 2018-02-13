@@ -1,12 +1,12 @@
-#' Combine multiple \code{npvi} objects
+#' Combine multiple \code{vim} objects
 #'
 #' Take the output from multiple different calls to \code{vim} and
-#' combine into a single \code{npvi} object; mostly used for plotting results.
+#' combine into a single \code{vim} object; mostly used for plotting results.
 #'
-#' @param ... an arbitrary number of \code{npvi} objects, separated by commas.
+#' @param ... an arbitrary number of \code{vim} objects, separated by commas.
 #'
-#' @return an object of class \code{npvi} containing all of the output
-#' from the individual \code{npvi} objects. This results in a list containing:
+#' @return an object of class \code{vim} containing all of the output
+#' from the individual \code{vim} objects. This results in a list containing:
 #' \itemize{
 #'  \item{call}{ - the call to \code{combine()}}
 #'  \item{full.f}{ - a list of individual formulas or fitted values from the full regressions}
@@ -89,7 +89,7 @@ combine <- function(...) {
               full.mod = full.mod, red.mod = red.mod,
               alpha = alpha)
   tmp.cls <- class(mat)
-  class(output) <- c("npvi", tmp.cls)
+  class(output) <- c("vim", tmp.cls)
 
   return(output)
 }

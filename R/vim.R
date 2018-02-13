@@ -23,13 +23,13 @@
 #' @param max_iter maximum number of TMLE iterations (only used if \code{tmle = TRUE}).
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
-#' @return An object of class \code{npvi}. See Details for more information.
+#' @return An object of class \code{vim}. See Details for more information.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function, and the validity
 #' of the confidence intervals.
 #' In the interest of transparency, we return most of the calculations
-#' within the \code{npvi} object. This results in a list containing:
+#' within the \code{vim} object. This results in a list containing:
 #' \itemize{
 #'  \item{call}{ - the call to \code{vim}}
 #'  \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
@@ -198,8 +198,8 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
                  se = se, ci = ci, full.mod = full, red.mod = reduced,
                  alpha = alpha)
 
-  ## make it also an npvi object
+  ## make it also an vim object
   tmp.cls <- class(output)
-  class(output) <- c("npvi", tmp.cls)
+  class(output) <- c("vim", tmp.cls)
   return(output)
 }

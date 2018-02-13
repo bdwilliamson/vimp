@@ -1,12 +1,12 @@
-#' Plot \code{npvi} objects
+#' Plot \code{vim} objects
 #'
-#' Plot the estimates and standard errors for a set of \code{npvi} objects.
+#' Plot the estimates and standard errors for a set of \code{vim} objects.
 #'
-#' @param x an \code{npvi} object.
-#' @param y a vector of names, given in the same order as the estimates in the \code{npvi} object.
+#' @param x an \code{vim} object.
+#' @param y a vector of names, given in the same order as the estimates in the \code{vim} object.
 #' @param ... other options, see the generic \code{plot} function.
 #' @export
-plot.npvi <- function(x, y, ...) {
+plot.vim <- function(x, y, ...) {
 
   ## order based on the estimate
   if (!is.null(x$mat)) {
