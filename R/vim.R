@@ -11,7 +11,7 @@
 #' column is \eqn{Y}.
 #' @param y the outcome; by default is the first column in \code{data}.
 #' @param n the sample size.
-#' @param s the covariate(s) to calculate variable importance for,
+#' @param indx the indices of the covariate(s) to calculate variable importance for,
 #'  defaults to 1.
 #' @param standardized should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param two_phase did the data come from a two-phase sample? (defaults to \code{FALSE})
@@ -69,7 +69,7 @@
 #'
 #' ## using class "formula"
 #' est <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-#'            n = length(y), s = 2, standardized = TRUE, alpha = 0.05,
+#'            n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ## using pre-computed fitted values
@@ -80,7 +80,7 @@
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vim(full.fit, reduced.fit, y = testdat$y, s = 2,
+#' est <- vim(full.fit, reduced.fit, y = testdat$y, indx = 2,
 #' standardized = TRUE, alpha = 0.05)
 #' }
 #'
@@ -88,7 +88,7 @@
 #' @export
 
 
-vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...) {
+vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1)) stop("You must enter a formula or fitted values for the full regression.")
@@ -107,7 +107,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.s <- X[, -s, drop = FALSE]
+    X.minus.s <- X[, -indx, drop = FALSE]
 
     ## fit the Super Learner given the specified library
     full <- SuperLearner::SuperLearner(Y = y, X = X, SL.library = SL.library, ...)
@@ -146,7 +146,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
     X <- data[, -1]
 
     ## set up the reduced X
-    X.minus.s <- X[, -s, drop = FALSE]
+    X.minus.s <- X[, -indx, drop = FALSE]
 
     ## non-two-step (not recommended)
     if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
@@ -192,7 +192,7 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), s = 1, standa
   cl <- match.call()
 
   ## create the output and return it
-  output <- list(call = cl, full.f = f1, red.f = f2, data = data, s = s,
+  output <- list(call = cl, full.f = f1, red.f = f2, data = data, s = indx,
                  SL.library = SL.library,
                  full.fit = fhat.ful, red.fit = fhat.red, est = est,
                  se = se, ci = ci, full.mod = full, red.mod = reduced,

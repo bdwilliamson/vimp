@@ -27,6 +27,8 @@
 #' require(SuperLearner)
 #' ## generate the data
 #' ## generate X
+#' p <- 2
+#' n <- 100
 #' x <- replicate(p, stats::runif(n, -5, 5))
 #'
 #' ## apply the function to the x's
@@ -42,11 +44,11 @@
 #'
 #' ## using class "formula"
 #' est.2 <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-#'            n = length(y), j = 2, standardized = TRUE, alpha = 0.05,
+#'            n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' est.1 <- vim(est.2$full.fit, fit ~ x, data = testdat, y = testdat[, 1],
-#' n = length(y), j = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
+#' n = length(y), indx = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
 #' cvControl = list(V = 10))
 #'
 #' ests <- merge_vim(est.1, est.2)
@@ -74,7 +76,7 @@ merge_vim <- function(...) {
   full.f <- lapply(L, function(z) z$full.f)
   red.f <- lapply(L, function(z) z$red.f)
   data <- L[[1]]$data
-  j <- lapply(L, function(z) z$j)[order(tmp$est, decreasing = TRUE)]
+  s <- lapply(L, function(z) z$s)[order(tmp$est, decreasing = TRUE)]
   SL.library <- lapply(L, function(z) z$SL.library)
   full.fit <- lapply(L, function(z) z$full.fit)
   red.fit <- lapply(L, function(z) z$red.fit)
@@ -84,8 +86,8 @@ merge_vim <- function(...) {
 
   ## create output list
   output <- list(call = call, full.f = full.f, red.f = red.f, data = data,
-              j = j, SL.library = SL.library, full.fit = full.fit,
-              red.fit = red.fit, mat = mat,
+              s = s, SL.library = SL.library, full.fit = full.fit,
+              red.fit = red.fit, est = mat[, 1], se = mat[, 2], ci = cbind(mat[, 3], mat[, 4]),
               full.mod = full.mod, red.mod = red.mod,
               alpha = alpha)
   tmp.cls <- class(mat)
