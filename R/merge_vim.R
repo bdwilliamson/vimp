@@ -97,8 +97,7 @@ merge_vim <- function(...) {
               mat = mat,
               full.mod = full.mod, red.mod = red.mod,
               alpha = alpha)
-  tmp.cls <- class(mat)
-  class(output) <- c("vim", tmp.cls)
+  class(output) <- c("vim", "list")
 
   return(output)
 }

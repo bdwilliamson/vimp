@@ -113,7 +113,6 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
               red.fit = red.fit, est = est_avg, se = se_avg, ci = ci_avg,
               full.mod = full.mod, red.mod = red.mod,
               alpha = alpha)
-  tmp.cls <- class(mat)
-  class(output) <- c("vim", tmp.cls)
+  class(output) <- c("vim")
   return(output)
 }
