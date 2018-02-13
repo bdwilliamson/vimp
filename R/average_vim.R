@@ -92,16 +92,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	red.f <- lapply(L, function(z) z$red.f)
   	data <- lapply(L, function(z) z$data)
   	s_lst <- lapply(L, function(z) z$s)
-  	if (all(s_lst == 1)) {
-  	  # check for underscore or period
-  	  if (any(is.na(unlist(lapply(strsplit(names(s_lst), ".", fixed = TRUE), function(x) x[2]))))) {
-  	    s <- paste0("avg_", paste(unlist(lapply(strsplit(names(s_lst), "_", fixed = TRUE), function(x) x[3])), collapse = "_"))
-  	  } else {
-  	    s <- paste0("avg_", paste(unlist(lapply(strsplit(names(s_lst), ".", fixed = TRUE), function(x) x[2])), collapse = "_"))
-  	  }
-  	} else {
-  	  s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))
-  	}
+  	s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))
   	SL.library <- lapply(L, function(z) z$SL.library)
   	full.fit <- lapply(L, function(z) z$full.fit)
   	red.fit <- lapply(L, function(z) z$red.fit)
