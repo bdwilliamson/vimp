@@ -19,12 +19,12 @@ variableImportanceIC <- function(full, reduced, y, standardized = TRUE, two_phas
 
   ## first calculate the naive estimates of the parameters
   naive.j <- mean((full - reduced) ^ 2, na.rm = na.rm)
-  naive.var <- mean((y - mean(y))^2, na.rm = na.rm)
+  naive.var <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
 
   ## now calculate the influence curve using these
   if (standardized) {
     contrib.num <- (2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - naive.j)/naive.var
-    contrib.denom <- ((y - mean(y))^2 - naive.var)*naive.j/(naive.var ^ 2)
+    contrib.denom <- ((y - mean(y, na.rm = na.rm))^2 - naive.var)*naive.j/(naive.var ^ 2)
     ret <-  contrib.num - contrib.denom
   } else {
     ret <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - naive.j

@@ -8,23 +8,24 @@
 #' @param n the sample size.
 #' @param standardized logical; should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param two_phase logical; did the data come from a two-phase study? (defaults to \code{FALSE})
+#' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return The estimated variable importance for the given group of left-out covariates.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-variableImportance <- function(full, reduced, y, n = length(y), standardized = TRUE, two_phase = FALSE) {
+variableImportance <- function(full, reduced, y, n = length(y), standardized = TRUE, two_phase = FALSE, na.rm = FALSE) {
 
   ## first calculate the naive
   if (standardized) {
-    naive <- mean((full - reduced) ^ 2)/mean((y - mean(y)) ^ 2)
+    naive <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
   } else {
-    naive <- mean((full - reduced) ^ 2)
+    naive <- mean((full - reduced) ^ 2, na.rm = na.rm)
   }
 
   ## now add on the mean of the ic
-  onestep <- naive + mean(variableImportanceIC(full, reduced, y, standardized))
+  onestep <- naive + mean(variableImportanceIC(full, reduced, y, standardized), na.rm)
 
   ## return
   ret <- onestep

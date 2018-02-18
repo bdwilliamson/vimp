@@ -16,6 +16,7 @@
 #' @param standardized should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param two_phase did the data come from a two-phase sample? (defaults to \code{FALSE})
 #' @param tmle should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).
+#' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param alpha the level to compute the confidence interval at.
 #' Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are formulas.
@@ -88,7 +89,7 @@
 #' @export
 
 
-vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...) {
+vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, na.rm = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1)) stop("You must enter a formula or fitted values for the full regression.")
@@ -181,9 +182,9 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, sta
     fhat.ful <- tmle_lst$full
     fhat.red <- tmle_lst$reduced
   } else {
-    est <- variableImportance(fhat.ful, fhat.red, y, n, standardized)
+    est <- variableImportance(fhat.ful, fhat.red, y, n, standardized, na.rm = na.rm)
     ## calculate the standard error
-    se <- variableImportanceSE(fhat.ful, fhat.red, y, n, standardized)
+    se <- variableImportanceSE(fhat.ful, fhat.red, y, n, standardized, na.rm = na.rm)
     ## calculate the confidence interval
     ci <- variableImportanceCI(est, se, n, 1 - alpha)
   }
