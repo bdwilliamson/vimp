@@ -18,7 +18,7 @@
 variableImportanceSE <- function(full, reduced, y, n = length(y), standardized = TRUE, two_phase = FALSE, na.rm = FALSE) {
 
   ## calculate the influence curve
-  ic <- variableImportanceIC(full, reduced, y, standardized, na.rm)
+  ic <- variableImportanceIC(full, reduced, y, standardized = standardized, na.rm = na.rm)
 
   ## calculate the variance
   var <- mean(ic ^ 2)
