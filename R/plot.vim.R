@@ -44,6 +44,16 @@ plot.vim <- function(x, y, ...) {
   } else {
     ylim <- L$ylim
   }
+  # if (!("cex") %in% names(L)) {
+  #   cex <- 1
+  # } else {
+  #   cex <- L$cex
+  # }
+  # if (!("cex.axis" %in% names(L))) {
+  #   cex.axis <- 1
+  # } else {
+  #   cex.axis <- L$cex.axis
+  # }
 
   ## plot
   graphics::par(mar = mar)
@@ -53,7 +63,7 @@ plot.vim <- function(x, y, ...) {
   graphics::abline(v = 0, col = "red", lty = 2)
   graphics::arrows(unlist(ord.mat$cil), 1:dim(ord.mat)[1], unlist(ord.mat$ciu), 1:dim(ord.mat)[1],
          length = 0, angle = 90, lwd = 2)
-  graphics::axis(side = 2, at = 1:dim(ord.mat)[1], label = y[order(ord.mat$est)], las = 2)
-  graphics::axis(side = 1, at = seq(xlim[1], xlim[2], xlim[2]/10))
+  graphics::axis(side = 2, at = 1:dim(ord.mat)[1], label = y[order(ord.mat$est)], las = 2, ...)
+  graphics::axis(side = 1, at = seq(xlim[1], xlim[2], xlim[2]/10), ...)
   graphics::box()
 }
