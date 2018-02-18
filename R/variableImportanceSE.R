@@ -21,7 +21,7 @@ variableImportanceSE <- function(full, reduced, y, n = length(y), standardized =
   ic <- variableImportanceIC(full, reduced, y, standardized = standardized, na.rm = na.rm)
 
   ## calculate the variance
-  var <- mean(ic ^ 2)
+  var <- mean(ic ^ 2, na.rm = na.rm)
 
   ## calculate se
   # se <- sqrt(var)
