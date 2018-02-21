@@ -17,7 +17,7 @@ format.vim <- function(x, ...) {
     rownames(output) <- paste("s = ", tmp.j, sep = "")
   } else {
     output <- cbind(format(x$est, ...), format(x$se, ...), paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
-    rownames(output) <- paste("s = ", x$s, sep = "")
+    rownames(output) <- paste("s = ", paste(x$s, collapse = ", "), sep = "")
   }
   colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
 
