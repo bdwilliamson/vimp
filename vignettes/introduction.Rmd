@@ -287,7 +287,7 @@ Suppose that the first feature that I want to estimate variable importance for i
 - `f1 = y ~ x`
 - `f2 = fit ~ x`
 - `data = Boston`
-- `s = 5` 
+- `indx = 5` 
 
 means that: 
 
@@ -306,7 +306,7 @@ Boston3 <- cbind(medv = Boston$medv, Boston2)
 
 ## now estimate variable importance
 vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3[, 1], 
-    s = 5, SL.library = learners)
+    indx = 5, SL.library = learners)
 ```
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue. 
@@ -324,7 +324,7 @@ Boston3 <- cbind(medv = Boston$medv, Boston2)
 learners.2 <- c("SL.gam", "SL.glmnet")
 
 ## now estimate variable importance
-nox.vim <- vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3$medv, s = 5, SL.library = learners.2)
+nox.vim <- vim(f1 = y ~ x, f2 = fit ~ x, data = Boston3, y = Boston3$medv, indx = 5, SL.library = learners.2)
 ```
 
 This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vim()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
@@ -348,7 +348,7 @@ full.fit <- nox.vim$full.fit
 
 ## estimate variable importance for the average number of rooms
 rm.vim <- vim(full.fit, f2 = fit ~ x, data = Boston3, y = Boston3$medv,
-              s = 6, SL.library = learners.2)
+              indx = 6, SL.library = learners.2)
 
 rm.vim
 ```
@@ -368,7 +368,7 @@ reduced.fit <- predict(reduced.mod)$pred
 ## this takes 2 seconds
 
 ## estimate variable importance
-dis.vim <- vim(full.fit, reduced.fit, y = Boston3$medv, s = 8)
+dis.vim <- vim(full.fit, reduced.fit, y = Boston3$medv, indx = 8)
 ```
 
 It is important to note that if I use the same learners library, then approaches (2) and (3) are equivalent. 
@@ -376,25 +376,25 @@ It is important to note that if I use the same learners library, then approaches
 I can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
 ```{r}
 crim.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 1, SL.library = learners.2)
+                indx = 1, SL.library = learners.2)
 zn.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 2, SL.library = learners.2)
+                indx = 2, SL.library = learners.2)
 indus.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 3, SL.library = learners.2)
+                indx = 3, SL.library = learners.2)
 chas.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 4, SL.library = learners.2)
+                indx = 4, SL.library = learners.2)
 age.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 7, SL.library = learners.2)
+                indx = 7, SL.library = learners.2)
 rad.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 9, SL.library = learners.2)
+                indx = 9, SL.library = learners.2)
 tax.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 10, SL.library = learners.2)
+                indx = 10, SL.library = learners.2)
 ptratio.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 11, SL.library = learners.2)
+                indx = 11, SL.library = learners.2)
 black.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 12, SL.library = learners.2)
+                indx = 12, SL.library = learners.2)
 lstat.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = 13, SL.library = learners.2)
+                indx = 13, SL.library = learners.2)
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
@@ -421,11 +421,11 @@ The only difference between estimating variable importance for a group of featur
 ```{r, fig.width = 8.5, fig.height = 8}
 ## get the estimates
 structure.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = c(6, 7), SL.library = learners.2)
+                indx = c(6, 7), SL.library = learners.2)
 access.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = c(8, 9), SL.library = learners.2)
+                indx = c(8, 9), SL.library = learners.2)
 neigh.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
-                s = c(1, 2, 3, 4, 10, 11, 12, 13), SL.library = learners.2)
+                indx = c(1, 2, 3, 4, 10, 11, 12, 13), SL.library = learners.2)
 
 ## combine and plot
 groups <- merge_vim(structure.vim, access.vim, neigh.vim, nox.vim)

@@ -25,6 +25,9 @@ variableImportanceSE <- function(full, reduced, y, n = length(y), standardized =
 
   ## calculate se
   # se <- sqrt(var)
+  if (na.rm) {
+  	n <- length(y[!is.na(y)])
+  }
   se <- sqrt(var/n)
 
   return(se)
