@@ -192,17 +192,16 @@ cv_vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, 
     updates <- vector("numeric", V)
     ses <- vector("numeric", V)
     for (v in 1:V) {
-      # only cross-validate over the numerator, since denominator shouldn't be over-fit
-      # but only do this for the naive and updated
-      naive_cv[v] <- mean((fhat.ful[[v]] - fhat.red[[v]])^2, na.rm = na.rm)
-      updates[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = FALSE, na.rm = na.rm), na.rm = na.rm)
+      if (standardized) {
+        naive_cv[v] <- mean((fhat.ful[[v]] - fhat.red[[v]])^2, na.rm = na.rm)/mean((y[[v]] - mean(y[[v]], na.rm = na.rm))^2, na.rm = na.rm)
+      } else {
+        naive_cv[v] <- mean((fhat.ful[[v]] - fhat.red[[v]])^2, na.rm = na.rm)
+      }
       
-      # SE still needs to be calculated based on standardized or not
+      updates[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm), na.rm = na.rm)
       ses[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm)^2, na.rm = na.rm)
     }
-    # get the full y vector
-    y_vec <- unlist(y)
-    est <- mean(naive_cv)/mean((y_vec - mean(y_vec, na.rm = na.rm))^2, na.rm = na.rm) + mean(updates)/mean((y_vec - mean(y_vec, na.rm = na.rm))^2, na.rm = na.rm)
+    est <- mean(naive_cv) + mean(updates)
     ## calculate the standard error
     se <- mean(ses)/sqrt(n)
     ## calculate the confidence interval
