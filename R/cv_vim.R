@@ -24,6 +24,7 @@
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are formulas.
 #' @param tol numerical error tolerance (only used if \code{tmle = TRUE}).
 #' @param max_iter maximum number of TMLE iterations (only used if \code{tmle = TRUE}).
+#' @param V the number of folds for cross-validation, defaults to 10.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -91,7 +92,7 @@
 #' @export
 
 
-vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, na.rm = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, ...) {
+cv_vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, na.rm = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, V = 10, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1)) stop("You must enter a formula or fitted values for the full regression.")
@@ -191,18 +192,19 @@ vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, sta
     updates <- vector("numeric", V)
     ses <- vector("numeric", V)
     for (v in 1:V) {
-      if (standardized) {
-        naive_cv[v] <- mean((fhat.ful[[v]] - fhat.red[[v]])^2, na.rm = na.rm)/mean((y[[v]] - mean(y[[v]], na.rm = na.rm))^2, na.rm = na.rm)
-      } else {
-        naive_cv[v] <- mean((fhat.ful[[v]] - fhat.red[[v]])^2, na.rm = na.rm)
-      }
+      # only cross-validate over the numerator, since denominator shouldn't be over-fit
+      # but only do this for the naive and updated
+      naive_cv[v] <- mean((fhat.ful[[v]] - fhat.red[[v]])^2, na.rm = na.rm)
+      updates[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = FALSE, na.rm = na.rm), na.rm = na.rm)
       
-      updates[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm), na.rm = na.rm)
+      # SE still needs to be calculated based on standardized or not
       ses[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm)^2, na.rm = na.rm)
     }
-    est <- mean(naive_cv) + mean(updates)
+    # get the full y vector
+    y_vec <- unlist(y)
+    est <- mean(naive_cv)/mean((y_vec - mean(y_vec, na.rm = na.rm))^2, na.rm = na.rm) + mean(updates)/mean((y_vec - mean(y_vec, na.rm = na.rm))^2, na.rm = na.rm)
     ## calculate the standard error
-    se <- mean(updates)/sqrt(n)
+    se <- mean(ses)/sqrt(n)
     ## calculate the confidence interval
     ci <- variableImportanceCI(est, se, n, 1 - alpha)
   }
