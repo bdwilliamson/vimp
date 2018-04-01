@@ -18,6 +18,7 @@
 #' @param standardized should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param two_phase did the data come from a two-phase sample? (defaults to \code{FALSE})
 #' @param tmle should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).
+#' @param update_denom logical; was smoothing used to estimate the denominator of the parameter of interest, if standardized? (defaults to \code{TRUE})
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param alpha the level to compute the confidence interval at.
 #' Defaults to 0.05, corresponding to a 95\% confidence interval.
@@ -92,7 +93,7 @@
 #' @export
 
 
-cv_vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, na.rm = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, V = 10, ...) {
+cv_vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(unlist(y)), indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE, update_denom = TRUE, na.rm = FALSE, alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps, max_iter = 500, V = 10, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1)) stop("You must enter a formula or fitted values for the full regression.")
@@ -102,66 +103,9 @@ cv_vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, 
   ## if formula, fit Super Learner with the given library
   if (class(f1) == "formula" & class(f2) == "formula") {
     stop("cv_vim() is not yet implemented for objects of class 'formula'.")
-    ## if formula is entered, data can't be null
-    if (is.null(data)) stop("You must enter data if f1 and f2 are formulas.")
-
-    ## if formula is entered, need a library for Super Learner
-    if (is.null(SL.library)) stop("You must enter a library of learners for the Super Learner.")
-
-    ## set up X
-    X <- data[, -1]
-
-    ## set up the reduced X
-    X.minus.s <- X[, -indx, drop = FALSE]
-
-    ## fit the Super Learner given the specified library
-    full <- SuperLearner::SuperLearner(Y = y, X = X, SL.library = SL.library, ...)
-
-    ## get the fitted values
-    fhat.ful <- SuperLearner::predict.SuperLearner(full)$pred
-
-    ## non-two-step (not recommended)
-    if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.s, SL.library = SL.library,...)
-    } else { ## two-step, recommended
-      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.s, SL.library = SL.library,...)
-    }
-
-    ## get the fitted values
-    fhat.red <- SuperLearner::predict.SuperLearner(reduced)$pred
 
   } else if (class(f2) == "formula") { ## can use fitted in full and formula in reduced
     stop("cv_vim() is not yet implemented for objects of class 'formula'.")
-    ## if formula is entered, data can't be null
-    if (is.null(data)) stop("You must enter data if f2 is a formula.")
-
-    ## if formula is entered, need a library for Super Learner
-    if (is.null(SL.library)) stop("You must enter a library of learners for the Super Learner.")
-
-    ## need f1 to be the same length as Y
-    if (length(y) != dim(data)[1] | length(f1) != dim(data)[1]) stop("The fitted values must be the same length as the outcome.")
-
-    ## fitted values from full regression
-    fhat.ful <- f1
-
-    ## full model
-    full <- NA
-
-    ## set up X
-    X <- data[, -1]
-
-    ## set up the reduced X
-    X.minus.s <- X[, -indx, drop = FALSE]
-
-    ## non-two-step (not recommended)
-    if (sum(as.character(f2) == c("~", "y", "x")) == 3) {
-      reduced <- SuperLearner::SuperLearner(Y = y, X = X.minus.s, SL.library = SL.library,...)
-    } else { ## two-step, recommended
-      reduced <- SuperLearner::SuperLearner(fhat.ful, X = X.minus.s, SL.library = SL.library,...)
-    }
-
-    ## get the fitted values
-    fhat.red <- SuperLearner::predict.SuperLearner(reduced)$pred
 
   } else { ## otherwise they are fitted values
 
@@ -180,12 +124,7 @@ cv_vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, 
   ## calculate the estimate
   if (tmle) {
     stop("cv_vim() is not yet implemented with a TMLE.")
-    tmle_lst <- variableImportanceTMLE(fhat.ful, fhat.red, y, n, standardized)
-    est <- tmle_lst$est
-    se <- tmle_lst$se
-    ci <- tmle_lst$ci
-    fhat.ful <- tmle_lst$full
-    fhat.red <- tmle_lst$reduced
+    
   } else {
     ## loop over the folds
     naive_cv <- vector("numeric", V)
@@ -198,8 +137,22 @@ cv_vim <- function(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1, 
         naive_cv[v] <- mean((fhat.ful[[v]] - fhat.red[[v]])^2, na.rm = na.rm)
       }
       
-      updates[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm), na.rm = na.rm)
-      ses[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm)^2, na.rm = na.rm)
+      if (update_denom) { ## here, use the IC of the full standardized parameter
+        updates[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm), na.rm = na.rm)
+        ses[v] <- mean(variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = standardized, na.rm = na.rm)^2, na.rm = na.rm)  
+      } else { ## here, use the fact that the unstandardized and variance are jointly normal, along with the delta method
+        ## naive estimators of numerator (based on subset, due to smoothing), denominator (based on all data, no smoothing)
+        naive.j <- mean((fhat.ful[[v]] - fhat.red[[v]]) ^ 2, na.rm = na.rm)
+        naive.var <- mean((unlist(y) - mean(unlist(y), na.rm = na.rm))^2, na.rm = na.rm)
+        ## influence curves
+        contrib.denom <- ((unlist(y) - mean(unlist(y), na.rm = na.rm))^2 - naive.var)
+        contrib.num <- variableImportanceIC(fhat.ful[[v]], fhat.red[[v]], y[[v]], standardized = FALSE, na.rm = na.rm)
+        ## update
+        updates[v] <- (mean(contrib.num, na.rm = na.rm) - mean(contrib.denom, na.rm = na.rm))/naive.var
+        ## standard deviation, based on delta method
+        ses[v] <- sqrt(mean((1/naive.var^2)*contrib.num^2, na.rm = na.rm) + mean((naive.j/(naive.var)^2)^2*contrib.denom^2, na.rm = na.rm))
+      }
+      
     }
     est <- mean(naive_cv) + mean(updates)
     ## calculate the standard error
