@@ -65,5 +65,7 @@ plot.vim <- function(x, y, ...) {
          length = 0, angle = 90, lwd = 2)
   graphics::axis(side = 2, at = 1:dim(ord.mat)[1], label = y[order(ord.mat$est)], las = 2, ...)
   graphics::axis(side = 1, at = seq(xlim[1], xlim[2], xlim[2]/10), ...)
+  graphics::title(xlab = L$xlab)
+  graphics::title(main = L$main)
   graphics::box()
 }

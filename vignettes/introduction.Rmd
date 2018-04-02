@@ -411,7 +411,7 @@ ests <- merge_vim(crim.vim, zn.vim, indus.vim, chas.vim,
 nms <- c("Prop. lower status", "Avg. num. rooms", "Pupil-teacher ratio", "Nitrogen oxide", "Distance", "Crime", "Access to radial hwys", "Property tax rate", "Charles riv.", "Prop. black", "Prop. business", "Prop. large zoned", "Age")
 
 ## plot
-plot(ests, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for individual features", xlim = c(0, 0.2), axes = FALSE)
+plot(ests, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for individual features", xlim = c(0, 0.2))
 ```
 
 ## Estimating variable importance for a group of variables
@@ -432,7 +432,7 @@ neigh.vim <- vim(full.fit, fit ~ x, data = Boston3, y = Boston3$medv,
 ## combine and plot
 groups <- merge_vim(structure.vim, access.vim, neigh.vim, nox.vim)
 nms.2 <- c("Neighborhood", "Structure", "Accessibility", "Nitrogen oxide")
-plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.5), axes = FALSE)
+plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.5))
 ```
 
 ## References
