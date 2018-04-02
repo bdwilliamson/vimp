@@ -2,7 +2,9 @@
 title: "Introduction to vimp"
 author: "Brian D. Williamson"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    keep_md: true
 vignette: >
   %\VignetteIndexEntry{Introduction to vimp}
   %\VignetteEngine{knitr::rmarkdown}
