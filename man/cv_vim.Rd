@@ -45,11 +45,9 @@ Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
 \item{max_iter}{maximum number of TMLE iterations (only used if \code{tmle = TRUE}).}
 
-\item{V}{the number of folds for cross-validation (defaults to 5).}
+\item{V}{the number of folds for cross-validation, defaults to 10.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
-
-\item{V}{the number of folds for cross-validation, defaults to 10.}
 }
 \value{
 An object of class \code{vim}. See Details for more information.

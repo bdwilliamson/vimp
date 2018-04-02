@@ -14,7 +14,6 @@
 #' @param n the sample size.
 #' @param indx the indices of the covariate(s) to calculate variable importance for,
 #'  defaults to 1.
-#' @param V the number of folds for cross-validation (defaults to 5).
 #' @param standardized should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param two_phase did the data come from a two-phase sample? (defaults to \code{FALSE})
 #' @param tmle should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).
