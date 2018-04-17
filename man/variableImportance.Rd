@@ -5,7 +5,7 @@
 \title{Estimate variable importance using a one-step estimator-based approach}
 \usage{
 variableImportance(full, reduced, y, n = length(y), standardized = TRUE,
-  two_phase = FALSE, na.rm = FALSE)
+  two_phase = FALSE, na.rm = FALSE, return_naive = FALSE)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates.}
@@ -21,6 +21,8 @@ variableImportance(full, reduced, y, n = length(y), standardized = TRUE,
 \item{two_phase}{logical; did the data come from a two-phase study? (defaults to \code{FALSE})}
 
 \item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE})}
+
+\item{return_naive}{logical; should the naive estimator be returned as well? (defaults to \code{FALSE})}
 }
 \value{
 The estimated variable importance for the given group of left-out covariates.

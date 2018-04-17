@@ -9,13 +9,14 @@
 #' @param standardized logical; should we estimate the standardized parameter? (defaults to \code{TRUE})
 #' @param two_phase logical; did the data come from a two-phase study? (defaults to \code{FALSE})
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
+#' @param return_naive logical; should the naive estimator be returned as well? (defaults to \code{FALSE})
 #'
 #' @return The estimated variable importance for the given group of left-out covariates.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-variableImportance <- function(full, reduced, y, n = length(y), standardized = TRUE, two_phase = FALSE, na.rm = FALSE) {
+variableImportance <- function(full, reduced, y, n = length(y), standardized = TRUE, two_phase = FALSE, na.rm = FALSE, return_naive = FALSE) {
 
   ## first calculate the naive
   if (standardized) {
@@ -29,5 +30,9 @@ variableImportance <- function(full, reduced, y, n = length(y), standardized = T
 
   ## return
   ret <- onestep
+  ## if return_naive, return the naive too
+  if (return_naive) {
+    ret <- c(naive, ret)
+  }
   return(ret)
 }

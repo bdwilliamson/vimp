@@ -6,8 +6,8 @@
 \usage{
 vim(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1,
   standardized = TRUE, two_phase = FALSE, tmle = FALSE, na.rm = FALSE,
-  alpha = 0.05, SL.library = NULL, tol = .Machine$double.eps,
-  max_iter = 500, ...)
+  return_naive = FALSE, alpha = 0.05, SL.library = NULL,
+  tol = .Machine$double.eps, max_iter = 500, ...)
 }
 \arguments{
 \item{f1}{either: (1) the regression function to estimate for the full fit,
@@ -33,6 +33,8 @@ defaults to 1.}
 \item{tmle}{should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
+
+\item{return_naive}{should we return the naive estimator of importance as well? (defaults to \code{FALSE})}
 
 \item{alpha}{the level to compute the confidence interval at.
 Defaults to 0.05, corresponding to a 95\% confidence interval.}
