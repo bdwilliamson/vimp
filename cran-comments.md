@@ -4,9 +4,8 @@
 * windows server 2012 (on appveyor), R 3.5.0
 
 ## R CMD check results
-There were no ERRORs or WARNINGs.
+There were no ERRORs, WARNINGs, or NOTEs.
 
-There were 2 NOTEs
 
 ## Downstream dependencies
-None
+None.
