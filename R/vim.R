@@ -86,7 +86,7 @@
 #' standardized = TRUE, alpha = 0.05)
 #' }
 #'
-#' @seealso \code{\link{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
 
 
