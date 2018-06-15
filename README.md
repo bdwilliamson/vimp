@@ -3,27 +3,70 @@
 [![Travis-CI Build Status](https://travis-ci.org/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.org/bdwilliamson/vimp)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bdwilliamson/vimp?branch=master&svg=true)](https://ci.appveyor.com/project/bdwilliamson/vimp)
 [![Coverage Status](https://img.shields.io/codecov/c/github/bdwilliamson/vimp/master.svg)](https://codecov.io/github/bdwilliamson/vimp?branch=master)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-We have developed a parameter of interest for assessing variable importance nonparametrically. For a true data generating mechanism ![equation](http://latex.codecogs.com/gif.latex?P_0), we define the parameter ![equation](http://latex.codecogs.com/gif.latex?%5CPsi_s%28P_0%29%20%3A%3D%20%5Cfrac%7B%5Cint%20%5C%7BE_%7BP_0%7D%28Y%20%5Cmid%20X%20%3D%20x%29%20-%20E_%7BP_0%7D%28Y%20%5Cmid%20X_%7B%28-s%29%7D%20%3D%20x_%7B%28-s%29%7D%29%5C%7D%5E2%20dP_0%28x%29%7D%7Bvar_%7BP_0%7D%28Y%29%7D%2C) where for a vector ![equation](http://latex.codecogs.com/gif.latex?v) and a set of indices ![equation](http://latex.codecogs.com/gif.latex?r), ![equation](http://latex.codecogs.com/gif.latex?v_r) denotes the elements of ![equation](http://latex.codecogs.com/gif.latex?v) with index in ![equation](http://latex.codecogs.com/gif.latex?r) and ![equation](http://latex.codecogs.com/gif.latex?v_%7B%28-r%29%7D) denotes the elements of ![equation](http://latex.codecogs.com/gif.latex?v) with index not in ![equation](http://latex.codecogs.com/gif.latex?r). The parameter of interest defined above can then be interpreted as the additional proportion of the variability in the outcome explained by including ![equation](http://latex.codecogs.com/gif.latex?X_s) in the conditional mean. This is a generalization of ANOVA-derived variable importance to a nonparametric model. 
+**Author:** Brian Williamson
 
-The parameter of interest and methods we use to estimate it are explained in more detail in our [tech report](http://biostats.bepress.com/uwbiostat/paper422/).
+## Introduction
+
+In predictive modeling applications, it is often of interest to determine the relative contribution of subsets of features in explaining an outcome; this is often called variable importance. It is useful to consider variable importance as a function of the unknown, underlying data-generating mechanism rather than the specific predictive algorithm used to fit the data. This package provides functions that, given fitted values from predictive algorithms, compute nonparametric estimates of and variance-based variable importance, along with asymptotically valid confidence intervals for the true importance.
+
+More detail may be found in our [tech report](http://biostats.bepress.com/uwbiostat/paper422/).
 
 This method works on low-dimensional and high-dimensional data. 
 
-## Motivation
+## Issues
 
-In a regression setting, it is often of interest to quantify the importance of various features in predicting the response. Commonly, the variable importance measure used is determined by the regression technique employed. For this reason, practitioners often only resort to one of a few regression techniques for which a variable importance measure is naturally defined. Unfortunately, these regression techniques are often sub-optimal for predicting the response. Additionally, because the variable importance measures native to different regression techniques generally have a different interpretation, comparisons across techniques can be difficult. This work studies a novel variable importance measure that can be used with any regression technique, and whose interpretation is agnostic to the technique used. Specifically, we propose a generalization of the ANOVA-derived variable importance measure. Our theoretical results suggest that we can use possibly-complex machine learning techniques to flexibly and efficiently estimate the variable importance of a single feature or group of features, as well as a valid confidence interval.
+If you encounter any bugs or have any specific feature requests, please [file an issue](https://github.com/bdwilliamson/vimp/issues).
 
 ## R installation
 
-To install the package in R, run the following code:
+You may install a stable release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code:
 
 ```r
 ## install.packages("devtools") # only run this line if necessary
 devtools::install_github(repo = "bdwilliamson/vimp")
 ```
 
-## License
+## Example
 
-GNU GPLv3
+This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions. For more examples and detailed explanation, please see the vignette (to come).
+
+```r
+## load required functions and libraries
+library("SuperLearner")
+library("vimp")
+library("xgboost")
+library("glmnet")
+
+## -------------------------------------------------------------
+## problem setup
+## -------------------------------------------------------------
+## set up the data
+n <- 100
+p <- 2
+s <- 1 # desire importance for X_1
+x <- replicate(p, runif(n, -1, 1))
+y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1) 
+
+## -------------------------------------------------------------
+## preliminary step: estimate the conditional means
+## -------------------------------------------------------------
+## set up the learner library, consisting of the mean, boosted trees,
+## elastic net, and random forest
+learner.lib <- c("SL.mean", "SL.xgboost", "SL.glmnet", "SL.randomForest")
+
+## the full conditional mean
+full_regression <- SuperLearner::SuperLearner(Y = y, X = x, family = gaussian(), SL.library = learner.lib)
+full_fit <- full_regression$SL.predict
+
+## the reduced conditional mean
+reduced_regression <- SuperLearner::SuperLearner(Y = full_fit, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = learner.lib)
+reduced_fit <- reduced_regression$SL.predict
+
+## -------------------------------------------------------------
+## get variable importance!
+## -------------------------------------------------------------
+## get the variable importance estimate, SE, and CI
+vimp <- vim(full_fit, reduced_fit, data = data.frame(x, y), indx = 1)
+```

@@ -6,11 +6,9 @@ Authors@R: c(person("Brian D.", "Williamson", email = "brianw26@uw.edu", role = 
             person("Noah", "Simon", role = c("aut")), person("Marco", "Carone", role = c("aut")))
 Author: Brian Williamson [aut, cre], Noah Simon [aut], Marco Carone [aut]
 Maintainer: Brian Williamson <brianw26@uw.edu>
-Description: Calculates point estimates and valid confidence intervals for our
-    specific parameter of interest, which tackles the variable importance problem
-    in high and low dimensions. This involves estimating the regression function of
-    interest, and the current iteration uses \code{SuperLearner} to do this estimation.
-License: GPL-3
+Description: Calculate point estimates of and valid confidence intervals for nonparametric variable importance measures
+    in high and low dimensions, using flexible estimators of the underlying regression functions.
+License: MIT
 Depends:
     R (>= 3.1.0)
 Imports:
