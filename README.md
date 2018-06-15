@@ -2,7 +2,6 @@
 
 [![Travis-CI Build Status](https://travis-ci.org/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.org/bdwilliamson/vimp)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bdwilliamson/vimp?branch=master&svg=true)](https://ci.appveyor.com/project/bdwilliamson/vimp)
-[![Coverage Status](https://img.shields.io/codecov/c/github/bdwilliamson/vimp/master.svg)](https://codecov.io/github/bdwilliamson/vimp?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Author:** Brian Williamson

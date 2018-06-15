@@ -4,8 +4,8 @@ Title: Nonparametric Variable Importance
 Version: 0.0.3
 Authors@R: c(person("Brian D.", "Williamson", email = "brianw26@uw.edu", role = c("aut", "cre")),
             person("Noah", "Simon", role = c("aut")), person("Marco", "Carone", role = c("aut")))
-Author: Brian Williamson [aut, cre], Noah Simon [aut], Marco Carone [aut]
-Maintainer: Brian Williamson <brianw26@uw.edu>
+Author: Brian D. Williamson [aut, cre], Noah Simon [aut], Marco Carone [aut]
+Maintainer: Brian D. Williamson <brianw26@uw.edu>
 Description: Calculate point estimates of and valid confidence intervals for nonparametric variable importance measures
     in high and low dimensions, using flexible estimators of the underlying regression functions.
 License: MIT + file LICENSE
