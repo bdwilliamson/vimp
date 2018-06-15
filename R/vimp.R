@@ -9,7 +9,7 @@
 #' and confidence intervals. It is an object of class "vim",
 #' and has its own print method.
 #' 
-#' The function combine() takes the output of multiple calls to vim(), and combines the results into a single vim object.
+#' The function merge_vim() takes the output of multiple calls to vim(), and combines the results into a single vim object.
 #' 
 #' The function format() formats a vim object for printing; print() prints the results; and plot() plots the estimates and standard errors.
 #'
