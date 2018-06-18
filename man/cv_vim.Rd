@@ -23,7 +23,7 @@ cv_vim(Y, X, f1, f2, indx = 1, V = 10, type = "regression",
 
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"regression"})}
 
-\item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression = TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
+\item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 

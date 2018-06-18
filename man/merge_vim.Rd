@@ -23,7 +23,7 @@ from the individual \code{vim} objects. This results in a list containing:
  \item{update}{- a list with the influence curve-based updates}
  \item{se}{- a vector with the standard errors}
  \item{ci}{- a matrix with the CIs}
- \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) x 100}\% confidence intervals}
+ \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) \times 100}\% confidence intervals}
  \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - a list of the levels, for confidence interval calculation}
@@ -56,8 +56,9 @@ est_2 <- vimp_regression(Y = u, X = x, indx = 2,
            run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
-est_1 <- vim(Y = Y, X = X, indx = 1, run_regression = TRUE, alpha = 0.05, SL.library = learners,
-cvControl = list(V = 10))
+est_1 <- vim(Y = Y, X = X, indx = 1, 
+           run_regression = TRUE, alpha = 0.05, 
+           SL.library = learners, cvControl = list(V = 10))
 
 ests <- merge_vim(est_1, est_2)
 }

@@ -19,7 +19,7 @@ vimp_regression(Y, X, f1 = NULL, f2 = NULL, indx = 1,
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
-\item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression = TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
+\item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 
@@ -51,7 +51,7 @@ within the \code{vim} object. This results in a list containing:
  \item{naive}{ - the naive estimator of variable importance}
  \item{update}{ - the influence curve-based update}
  \item{se}{ - the standard error for the estimated variable importance}
- \item{ci}{ - the \eqn{(1-\alpha) x 100}\% confidence interval for the variable importance estimate}
+ \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}

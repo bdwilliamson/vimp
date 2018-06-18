@@ -23,7 +23,7 @@ This results in a list containing:
  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
  \item{full.fit}{ - a list of the fitted values of the chosen method fit to the full data}
  \item{red.fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
- \item{mat}{ - a matrix with the estimated variable importance, the standard error, and the \eqn{(1-\alpha) x 100}\% confidence interval}
+ \item{mat}{ - a matrix with the estimated variable importance, the standard error, and the \eqn{(1-\alpha) \times 100}\% confidence interval}
  \item{full.mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
  \item{red.mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
