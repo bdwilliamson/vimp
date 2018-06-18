@@ -3,36 +3,35 @@
 #' Compute nonparametric estimates of the variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
 #'
 #' @param full fitted values from a regression of the outcome on the full set of covariates.
-#' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.
+#' @param reduced fitted values from a regression of the fitted values from the full regression on the reduced set of covariates.
 #' @param y the outcome.
-#' @param n the sample size.
-#' @param standardized logical; should we estimate the standardized parameter? (defaults to \code{TRUE})
-#' @param two_phase logical; did the data come from a two-phase study? (defaults to \code{FALSE})
+#' @param type which parameter are you estimating (defaults to \code{regression}, for ANOVA-based variable importance)?
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
-#' @param return_naive logical; should the naive estimator be returned as well? (defaults to \code{FALSE})
 #'
 #' @return The estimated variable importance for the given group of left-out covariates.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-variableImportance <- function(full, reduced, y, n = length(y), standardized = TRUE, two_phase = FALSE, na.rm = FALSE, return_naive = FALSE) {
+onestep_based_estimator <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
 
   ## first calculate the naive
-  if (standardized) {
+  if (type == "regression") {
     naive <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
+  } else if (type == "deviance") { 
+    p <- apply(y, 2, mean)
+    naive_num <- 2*sum(diag(t(full)%*%log(full/reduced)))/dim(y)[1]
+    naive_denom <- -1*sum(log(p))
+    naive <- naive_num/naive_denom
   } else {
-    naive <- mean((full - reduced) ^ 2, na.rm = na.rm)
+    stop("We currently do not support the entered variable importance parameter.")
   }
 
   ## now add on the mean of the ic
-  onestep <- naive + mean(variableImportanceIC(full, reduced, y, standardized, na.rm = na.rm), na.rm = na.rm)
+  onestep <- naive + mean(vimp_update(full, reduced, y, type, na.rm = na.rm), na.rm = na.rm)
 
   ## return
-  ret <- onestep
-  ## if return_naive, return the naive too
-  if (return_naive) {
-    ret <- c(naive, ret)
-  }
+  ret <- c(onestep, naive)
+  
   return(ret)
 }

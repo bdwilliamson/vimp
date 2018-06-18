@@ -1,6 +1,6 @@
 #' Merge multiple \code{vim} objects into one
 #'
-#' Take the output from multiple different calls to \code{vim} and
+#' Take the output from multiple different calls to \code{vimp_regression} and
 #' merge into a single \code{vim} object; mostly used for plotting results.
 #'
 #' @param ... an arbitrary number of \code{vim} objects, separated by commas.
@@ -9,19 +9,18 @@
 #' from the individual \code{vim} objects. This results in a list containing:
 #' \itemize{
 #'  \item{call}{ - the call to \code{merge_vim()}}
-#'  \item{full.f}{ - a list of individual formulas or fitted values from the full regressions}
-#'  \item{red.f}{ - a list of individual formulas or fitted values from the reduced regressions}
-#'  \item{data}{ - the data used by the function}
-#'  \item{j}{ - a list of the column(s) to calculate variable importance for}
+#'  \item{s}{ - a list of the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
-#'  \item{full.fit}{ - a list of the fitted values of the chosen method fit to the full data}
-#'  \item{red.fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
-#'  \item{est} {- a vector with the estimates}
-#'  \item{se} {- a vector with the standard errors}
-#'  \item{ci} {- a matrix with the CIs}
-#'  \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) x 100}\% confidence intervals}
-#'  \item{full.mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
-#'  \item{red.mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
+#'  \item{full_fit}{ - a list of the fitted values of the chosen method fit to the full data}
+#'  \item{red_fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
+#'  \item{est}{- a vector with the corrected estimates}
+#'  \item{naive}{- a vector with the naive estimates}
+#'  \item{update}{- a list with the influence curve-based updates}
+#'  \item{se}{- a vector with the standard errors}
+#'  \item{ci}{- a matrix with the CIs}
+#'  \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) \times 100}\% confidence intervals}
+#'  \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
+#'  \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - a list of the levels, for confidence interval calculation}
 #' }
 #'
@@ -32,7 +31,7 @@
 #' ## generate X
 #' p <- 2
 #' n <- 100
-#' x <- replicate(p, stats::runif(n, -5, 5))
+#' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 #'
 #' ## apply the function to the x's
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
@@ -40,21 +39,19 @@
 #' ## generate Y ~ Normal (smooth, 1)
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
-#' testdat <- as.data.frame(cbind(y, x))
-#'
 #' ## set up a library for SuperLearner
 #' learners <- "SL.gam"
 #'
-#' ## using class "formula"
-#' est.2 <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-#'            n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
+#' ## using Super Learner
+#' est_2 <- vimp_regression(Y = u, X = x, indx = 2, 
+#'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
-#' est.1 <- vim(est.2$full.fit, fit ~ x, data = testdat, y = testdat[, 1],
-#' n = length(y), indx = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
-#' cvControl = list(V = 10))
+#' est_1 <- vim(Y = Y, X = X, indx = 1, 
+#'            run_regression = TRUE, alpha = 0.05, 
+#'            SL.library = learners, cvControl = list(V = 10))
 #'
-#' ests <- merge_vim(est.1, est.2)
+#' ests <- merge_vim(est_1, est_2)
 #' }
 #' @export
 merge_vim <- function(...) {
@@ -65,9 +62,10 @@ merge_vim <- function(...) {
 
   ## extract the estimates and CIs from each element of the list
   ests <- do.call(rbind.data.frame, lapply(L, function(z) z$est))
+  naives <- do.call(rbind.data.frame, lapply(L, function(z) z$naive))
   cis <- do.call(rbind.data.frame, lapply(L, function(z) z$ci))
   ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
-  
+
   ## put on names
   names(ests) <- "est"
 
@@ -79,25 +77,25 @@ merge_vim <- function(...) {
 
   ## now get lists of the remaining components
   call <- match.call()
-  full.f <- lapply(L, function(z) z$full.f)
-  red.f <- lapply(L, function(z) z$red.f)
-  data <- L[[1]]$data
+  updates <- lapply(L, function(z) z$update)
   s <- do.call(c, lapply(L, function(z) z$s)[order(tmp$est, decreasing = TRUE)])
   SL.library <- lapply(L, function(z) z$SL.library)
-  full.fit <- lapply(L, function(z) z$full.fit)
-  red.fit <- lapply(L, function(z) z$red.fit)
-  full.mod <- lapply(L, function(z) z$full.mod)
-  red.mod <- lapply(L, function(z) z$red.mod)
+  full_fit <- lapply(L, function(z) z$full_fit)
+  red_fit <- lapply(L, function(z) z$red_fit)
+  full_mod <- lapply(L, function(z) z$full_mod)
+  red_mod <- lapply(L, function(z) z$red_mod)
   alpha <- min(unlist(lapply(L, function(z) z$alpha)))
 
   ## create output list
-  output <- list(call = call, full.f = full.f, red.f = red.f, data = data,
-              s = s, SL.library = SL.library, full.fit = full.fit,
-              red.fit = red.fit, est = mat$est, se = mat$se, ci = cbind(mat$cil, mat$ciu),
+  output <- list(call = call,
+              s = s, SL.library = SL.library, full_fit = full_fit,
+              red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
+              se = mat$se, ci = cbind(mat$cil, mat$ciu),
               mat = mat,
-              full.mod = full.mod, red.mod = red.mod,
+              full_mod = full_mod, red_mod = red_mod,
               alpha = alpha)
-  class(output) <- c("vim", "list")
+  tmp <- class(output)
+  class(output) <- c("vim", "list", tmp)
 
   return(output)
 }

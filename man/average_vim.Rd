@@ -16,30 +16,29 @@ an object of class \code{vim} containing the (weighted) average of the individua
 This results in a list containing:
 \itemize{
  \item{call}{ - the call to \code{average_vim()}}
- \item{full.f}{ - a list of individual formulas or fitted values from the full regressions}
- \item{red.f}{ - a list of individual formulas or fitted values from the reduced regressions}
- \item{data}{ - the data used by the function}
- \item{j}{ - a list of the column(s) to calculate variable importance for}
+ \item{s}{ - a list of the column(s) to calculate variable importance for}
  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
- \item{full.fit}{ - a list of the fitted values of the chosen method fit to the full data}
- \item{red.fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
- \item{mat}{ - a matrix with the estimated variable importance, the standard error, and the \eqn{(1-\alpha) x 100}\% confidence interval}
- \item{full.mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
- \item{red.mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
+ \item{full_fit}{ - a list of the fitted values of the chosen method fit to the full data}
+ \item{red_fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
+ \item{est}{- a vector with the corrected estimates}
+ \item{naive}{- a vector with the naive estimates}
+ \item{update}{- a list with the influence curve-based updates}
+ \item{mat}{ - a matrix with the estimated variable importance, the standard error, and the \eqn{(1-\alpha) \times 100}\% confidence interval}
+ \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
+ \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
 }
 }
 \description{
-Average the output from multiple calls to vim, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
+Average the output from multiple calls to \code{vimp_regression}, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
 }
 \examples{
 \dontrun{
 require(SuperLearner)
 ## generate the data
-## generate X
 p <- 2
 n <- 100
-x <- replicate(p, stats::runif(n, -5, 5))
+x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 
 ## apply the function to the x's
 smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
@@ -47,20 +46,21 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 ## generate Y ~ Normal (smooth, 1)
 y <- smooth + stats::rnorm(n, 0, 1)
 
-testdat <- as.data.frame(cbind(y, x))
-
 ## set up a library for SuperLearner
 learners <- "SL.gam"
 
-## using class "formula"
-est.2 <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-           n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
+## get estimates on independent splits of the data
+samp <- sample(1:n, n/2, replace = FALSE)
+
+## using Super Learner
+est_2 <- vimp_regression(Y = Y[samp, , drop = FALSE], X = x[samp, ], indx = 2, 
+           run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
-est.1 <- vim(est.2$full.fit, fit ~ x, data = testdat, y = testdat[, 1],
-n = length(y), indx = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
-cvControl = list(V = 10))
+est_1 <- vimp_regression(Y = Y[-samp, , drop = FALSE], X = x[-samp, ], indx = 2, 
+           run_regression = TRUE, alpha = 0.05,
+           SL.library = learners, cvControl = list(V = 10))
 
-ests <- average_vim(est.1, est.2, weights = c(1/2, 1/2))
+ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
 }
 }

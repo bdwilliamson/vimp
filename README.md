@@ -1,7 +1,8 @@
-## vimp
+## vimp: nonparametric variable importance assessment
 
 [![Travis-CI Build Status](https://travis-ci.org/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.org/bdwilliamson/vimp)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bdwilliamson/vimp?branch=master&svg=true)](https://ci.appveyor.com/project/bdwilliamson/vimp)
+[![Coverage status](https://codecov.io/gh/bdwilliamson/vimp/branch/master/graph/badge.svg)](https://codecov.io/github/bdwilliamson/vimp?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Author:** Brian Williamson
@@ -29,7 +30,7 @@ devtools::install_github(repo = "bdwilliamson/vimp")
 
 ## Example
 
-This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions. For more examples and detailed explanation, please see the vignette (to come).
+This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions. For more examples and detailed explanation, please see the [vignette](vignettes/introduction_to_vimp.Rmd).
 
 ```r
 ## load required functions and libraries
@@ -67,5 +68,5 @@ reduced_fit <- reduced_regression$SL.predict
 ## get variable importance!
 ## -------------------------------------------------------------
 ## get the variable importance estimate, SE, and CI
-vimp <- vim(full_fit, reduced_fit, data = data.frame(x, y), indx = 1)
+vimp <- vimp_regression(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
 ```
