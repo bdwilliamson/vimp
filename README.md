@@ -30,7 +30,7 @@ devtools::install_github(repo = "bdwilliamson/vimp")
 
 ## Example
 
-This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions. For more examples and detailed explanation, please see the vignette (to come).
+This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions. For more examples and detailed explanation, please see the [vignette](vignettes/introduction_to_vimp.Rmd).
 
 ```r
 ## load required functions and libraries
