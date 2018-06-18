@@ -4,14 +4,15 @@
 \alias{cv_vim}
 \title{Nonparametric Variable Importance Estimates using Cross-validation}
 \usage{
-cv_vim(Y, X, f1, f2, indx = 1, V = 10, type = "regression",
-  run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, na.rm = FALSE, update_denom = TRUE, ...)
+cv_vim(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
+  type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet",
+  "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
+  update_denom = TRUE, ...)
 }
 \arguments{
-\item{Y}{the outcome; a list of length V.}
+\item{Y}{the outcome.}
 
-\item{X}{the covariates; a list of length V.}
+\item{X}{the covariates.}
 
 \item{f1}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V.}
 
@@ -20,6 +21,8 @@ cv_vim(Y, X, f1, f2, indx = 1, V = 10, type = "regression",
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
 \item{V}{the number of folds for cross-validation, defaults to 10}
+
+\item{folds}{the folds to use, if f1 and f2 are supplied}
 
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"regression"})}
 
@@ -50,7 +53,7 @@ of the confidence intervals.
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{call}{ - the call to \code{vim}}
+ \item{call}{ - the call to \code{cv_vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
  \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
@@ -59,7 +62,7 @@ within the \code{vim} object. This results in a list containing:
  \item{naive}{ - the naive estimator of variable importance}
  \item{update}{ - the influence curve-based update}
  \item{se}{ - the standard error for the estimated variable importance}
- \item{ci}{ - the \eqn{(1-\alpha) x 100}\% confidence interval for the variable importance estimate}
+ \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
@@ -68,6 +71,8 @@ within the \code{vim} object. This results in a list containing:
 \examples{
 \dontrun{
 require(SuperLearner)
+n <- 100
+p <- 2
 ## generate the data
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 
@@ -80,21 +85,11 @@ y <- smooth + stats::rnorm(n, 0, 1)
 ## set up a library for SuperLearner
 learners <- "SL.gam"
 
-## using class "formula"
-est <- cv_vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-           n = length(y), indx = 2, V = 5, standardized = TRUE, alpha = 0.05,
-           SL.library = learners, cvControl = list(V = 10))
 
-## using pre-computed fitted values
-full <- SuperLearner(Y = testdat$y, X = testdat[, 2:3],
-SL.library = learners, cvControl = list(V = 10))
-full.fit <- predict(full)$pred
-reduced <- SuperLearner(Y = full.fit, X = testdat[, 3],
-SL.library = learners, cvControl = list(V = 10))
-red.fit <- predict(reduced)$pred
-
-est <- cv_vim(full.fit, reduced.fit, y = testdat$y, indx = 2, V = 5,
-standardized = TRUE, alpha = 0.05)
+## using Super Learner
+est <- cv_vim(Y = y, X = x, indx = 2, V = 5, 
+type = "regression", run_regression = TRUE, 
+SL.library = learners, alpha = 0.05)
 }
 
 }

@@ -30,7 +30,7 @@ from the individual \code{vim} objects. This results in a list containing:
 }
 }
 \description{
-Take the output from multiple different calls to \code{vim} and
+Take the output from multiple different calls to \code{vimp_regression} and
 merge into a single \code{vim} object; mostly used for plotting results.
 }
 \examples{
