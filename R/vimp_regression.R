@@ -43,7 +43,7 @@
 #' ## generate X
 #' p <- 2
 #' n <- 100
-#' x <- replicate(p, stats::runif(n, -5, 5))
+#' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 #'
 #' ## apply the function to the x's
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
@@ -55,18 +55,18 @@
 #' learners <- "SL.gam"
 #'
 #' ## using Y and X
-#' est <- vimp_regression(Y, X, indx = 2, alpha = 0.05, run_regression = TRUE, 
+#' est <- vimp_regression(y, x, indx = 2, alpha = 0.05, run_regression = TRUE, 
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ## using pre-computed fitted values
-#' full <- SuperLearner(Y = Y, X = X,
+#' full <- SuperLearner(Y = y, X = x,
 #' SL.library = learners, cvControl = list(V = 10))
 #' full.fit <- predict(full)$pred
-#' reduced <- SuperLearner(Y = full.fit, X = X[, 2, drop = FALSE],
+#' reduced <- SuperLearner(Y = full.fit, X = x[, 2, drop = FALSE],
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vimp_regression(Y = Y, f1 = full.fit, f2 = red.fit, indx = 2, run_regression = FALSE, alpha = 0.05)
+#' est <- vimp_regression(Y = y, f1 = full.fit, f2 = red.fit, indx = 2, run_regression = FALSE, alpha = 0.05)
 #' }
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
@@ -105,8 +105,8 @@ vimp_regression <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression
 
     ## check to make sure they are the same length as y
     if (is.null(Y)) stop("Y must be entered.")
-    if (length(f1) != length(y)) stop("Fitted values from the full regression must be the same length as Y.")
-    if (length(f2) != length(y)) stop("Fitted values from the reduced regression must be the same length as Y.")
+    if (length(f1) != length(Y)) stop("Fitted values from the full regression must be the same length as Y.")
+    if (length(f2) != length(Y)) stop("Fitted values from the reduced regression must be the same length as Y.")
 
     ## set up the fitted value objects
     fhat_ful <- f1
@@ -116,16 +116,16 @@ vimp_regression <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression
   }
 
   ## calculate the estimators 
-  ests <- onestep_based_estimator(fhat_ful, fhat_red, y, type = "regression", na.rm = na.rm)
+  ests <- onestep_based_estimator(fhat_ful, fhat_red, Y, type = "regression", na.rm = na.rm)
   
   ## compute the update
-  update <- vimp_update(fhat_ful, fhat_red, y, type = "regression", na.rm = na.rm)
+  update <- vimp_update(fhat_ful, fhat_red, Y, type = "regression", na.rm = na.rm)
 
   ## compute the standard error
   se <- vimp_se(update, na.rm = na.rm)
 
   ## compute the confidence interval
-  ci <- vimp_ci(est, se, level = 1 - alpha)
+  ci <- vimp_ci(ests[1], se, level = 1 - alpha)
   
   ## get the call
   cl <- match.call()

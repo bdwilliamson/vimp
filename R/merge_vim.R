@@ -31,7 +31,7 @@
 #' ## generate X
 #' p <- 2
 #' n <- 100
-#' x <- replicate(p, stats::runif(n, -5, 5))
+#' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 #'
 #' ## apply the function to the x's
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
@@ -39,13 +39,11 @@
 #' ## generate Y ~ Normal (smooth, 1)
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
-#' testdat <- as.data.frame(cbind(y, x))
-#'
 #' ## set up a library for SuperLearner
 #' learners <- "SL.gam"
 #'
 #' ## using Super Learner
-#' est_2 <- vimp_regression(Y = Y, X = X, indx = 2, 
+#' est_2 <- vimp_regression(Y = u, X = x, indx = 2, 
 #'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
@@ -90,7 +88,7 @@ merge_vim <- function(...) {
   ## create output list
   output <- list(call = call,
               s = s, SL.library = SL.library, full_fit = full_fit,
-              red_fit = red_fit, est = mat$est, naive = naive, update = update, 
+              red_fit = red_fit, est = mat$est, naive = naives, update = update, 
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
