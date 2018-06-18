@@ -10,11 +10,9 @@ vim(f1, f2, data = NULL, y = data[, 1], n = length(y), indx = 1,
   tol = .Machine$double.eps, max_iter = 500, ...)
 }
 \arguments{
-\item{f1}{either: (1) the regression function to estimate for the full fit,
-in the form \code{y ~ x} if using Super Learner; or (2) the fitted values from a flexible estimation technique.}
+\item{f1}{either: (1) the outcome, Y, if using Super Learner; or (2) the fitted values from a flexible estimation technique.}
 
-\item{f2}{either: (1) the regression function to estimate for the reduced fit,
-in the form \code{y ~ x} or \code{fit ~ x} if using Super Learner without or with the sequential regression (recommended), respectively; or (2) the fitted values from a flexible estimation technique.}
+\item{f2}{either: (1) the covariates, X, if using Super Learner; or (2) the fitted values from a flexible estimation technique.}
 
 \item{data}{the dataset. Must be \eqn{n x (p+1)}, where the first
 column is \eqn{Y}.}
@@ -51,8 +49,7 @@ Defaults to 0.05, corresponding to a 95\% confidence interval.}
 An object of class \code{vim}. See Details for more information.
 }
 \description{
-Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest.
+Compute estimates of and confidence intervals for nonparametric ANOVA-based variable importance.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more

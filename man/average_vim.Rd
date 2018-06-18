@@ -52,15 +52,18 @@ testdat <- as.data.frame(cbind(y, x))
 ## set up a library for SuperLearner
 learners <- "SL.gam"
 
-## using class "formula"
-est.2 <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-           n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
+## get estimates on independent splits of the data
+samp <- sample(1:n, n/2, replace = FALSE)
+
+## using Super Learner
+est_2 <- vimp_regression(Y = Y[samp, , drop = FALSE], X = X[samp, ], indx = 2, 
+           run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
-est.1 <- vim(est.2$full.fit, fit ~ x, data = testdat, y = testdat[, 1],
-n = length(y), indx = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
-cvControl = list(V = 10))
+est_1 <- vimp_regression(Y = Y[-samp, , drop = FALSE], X = X[-samp, ], indx = 2, 
+           run_regression = TRUE, alpha = 0.05,
+           SL.library = learners, cvControl = list(V = 10))
 
-ests <- average_vim(est.1, est.2, weights = c(1/2, 1/2))
+ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
 }
 }

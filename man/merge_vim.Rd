@@ -14,19 +14,18 @@ an object of class \code{vim} containing all of the output
 from the individual \code{vim} objects. This results in a list containing:
 \itemize{
  \item{call}{ - the call to \code{merge_vim()}}
- \item{full.f}{ - a list of individual formulas or fitted values from the full regressions}
- \item{red.f}{ - a list of individual formulas or fitted values from the reduced regressions}
- \item{data}{ - the data used by the function}
- \item{j}{ - a list of the column(s) to calculate variable importance for}
+ \item{s}{ - a list of the column(s) to calculate variable importance for}
  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
- \item{full.fit}{ - a list of the fitted values of the chosen method fit to the full data}
- \item{red.fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
- \item{est} {- a vector with the estimates}
- \item{se} {- a vector with the standard errors}
- \item{ci} {- a matrix with the CIs}
+ \item{full_fit}{ - a list of the fitted values of the chosen method fit to the full data}
+ \item{red_fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
+ \item{est}{- a vector with the corrected estimates}
+ \item{naive}{- a vector with the naive estimates}
+ \item{update}{- a list with the influence curve-based updates}
+ \item{se}{- a vector with the standard errors}
+ \item{ci}{- a matrix with the CIs}
  \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) x 100}\% confidence intervals}
- \item{full.mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
- \item{red.mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
+ \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
+ \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - a list of the levels, for confidence interval calculation}
 }
 }
@@ -54,15 +53,14 @@ testdat <- as.data.frame(cbind(y, x))
 ## set up a library for SuperLearner
 learners <- "SL.gam"
 
-## using class "formula"
-est.2 <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-           n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
+## using Super Learner
+est_2 <- vimp_regression(Y = Y, X = X, indx = 2, 
+           run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
-est.1 <- vim(est.2$full.fit, fit ~ x, data = testdat, y = testdat[, 1],
-n = length(y), indx = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
+est_1 <- vim(Y = Y, X = X, indx = 1, run_regression = TRUE, alpha = 0.05, SL.library = learners,
 cvControl = list(V = 10))
 
-ests <- merge_vim(est.1, est.2)
+ests <- merge_vim(est_1, est_2)
 }
 }

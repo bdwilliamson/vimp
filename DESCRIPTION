@@ -17,10 +17,12 @@ Imports:
     graphics
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Suggests: knitr,
+Suggests: 
+    knitr,
     rmarkdown,
     MASS,
     gam,
     glmnet,
-    covr
+    covr,
+    testthat
 VignetteBuilder: knitr
