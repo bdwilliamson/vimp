@@ -1,6 +1,6 @@
 #' Average multiple independent importance estimates 
 #' 
-#' Average the output from multiple calls to vim, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
+#' Average the output from multiple calls to \code{vimp_regression}, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
 #' 
 #' @param ... an arbitrary number of \code{vim} objects
 #' @param weights how to average the vims together, and must sum to 1; defaults to 1/(number of vims) for each vim, corresponding to the arithmetic mean
@@ -9,16 +9,16 @@
 #' This results in a list containing:
 #' \itemize{
 #'  \item{call}{ - the call to \code{average_vim()}}
-#'  \item{full.f}{ - a list of individual formulas or fitted values from the full regressions}
-#'  \item{red.f}{ - a list of individual formulas or fitted values from the reduced regressions}
-#'  \item{data}{ - the data used by the function}
-#'  \item{j}{ - a list of the column(s) to calculate variable importance for}
+#'  \item{s}{ - a list of the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
-#'  \item{full.fit}{ - a list of the fitted values of the chosen method fit to the full data}
-#'  \item{red.fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
+#'  \item{full_fit}{ - a list of the fitted values of the chosen method fit to the full data}
+#'  \item{red_fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
+#'  \item{est}{- a vector with the corrected estimates}
+#'  \item{naive}{- a vector with the naive estimates}
+#'  \item{update}{- a list with the influence curve-based updates}
 #'  \item{mat}{ - a matrix with the estimated variable importance, the standard error, and the \eqn{(1-\alpha) \times 100}\% confidence interval}
-#'  \item{full.mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
-#'  \item{red.mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
+#'  \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
+#'  \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
 #' }
 
@@ -26,7 +26,6 @@
 #' \dontrun{
 #' require(SuperLearner)
 #' ## generate the data
-#' ## generate X
 #' p <- 2
 #' n <- 100
 #' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))

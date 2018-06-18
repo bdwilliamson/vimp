@@ -5,11 +5,11 @@
 #' parameter of interest developed by Williamson, Gilbert, Simon, and Carone. The parameter is defined as the additional variability in the outcome explained by including the covariates of interest in the estimating procedure.
 #'
 #' @section vimp Functions:
-#' The function vim() computes the estimates, standard error estimates,
-#' and confidence intervals. It is an object of class "vim",
+#' The function vimp_regression() computes the estimates, standard error estimates,
+#' and confidence intervals for the ANOVA-based variable importance measure. It is an object of class "vim",
 #' and has its own print method.
 #' 
-#' The function merge_vim() takes the output of multiple calls to vim(), and combines the results into a single vim object.
+#' The function merge_vim() takes the output of multiple calls to vimp_regression(), and combines the results into a single vim object.
 #' 
 #' The function format() formats a vim object for printing; print() prints the results; and plot() plots the estimates and standard errors.
 #'

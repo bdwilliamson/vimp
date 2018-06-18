@@ -1,6 +1,6 @@
 #' Merge multiple \code{vim} objects into one
 #'
-#' Take the output from multiple different calls to \code{vim} and
+#' Take the output from multiple different calls to \code{vimp_regression} and
 #' merge into a single \code{vim} object; mostly used for plotting results.
 #'
 #' @param ... an arbitrary number of \code{vim} objects, separated by commas.
