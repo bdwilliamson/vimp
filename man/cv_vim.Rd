@@ -4,48 +4,34 @@
 \alias{cv_vim}
 \title{Nonparametric Variable Importance Estimates using Cross-validation}
 \usage{
-cv_vim(f1, f2, data = NULL, y = data[, 1], n = length(unlist(y)),
-  indx = 1, standardized = TRUE, two_phase = FALSE, tmle = FALSE,
-  update_denom = TRUE, na.rm = FALSE, alpha = 0.05, SL.library = NULL,
-  tol = .Machine$double.eps, max_iter = 500, V = 10, ...)
+cv_vim(Y, X, f1, f2, indx = 1, V = 10, type = "regression",
+  run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
+  "SL.mean"), alpha = 0.05, na.rm = FALSE, update_denom = TRUE, ...)
 }
 \arguments{
-\item{f1}{either: (1) the regression function to estimate for the full fit,
-in the form \code{y ~ x} if using Super Learner; or (2) the fitted values from a flexible estimation technique.}
+\item{Y}{the outcome; a list of length V.}
 
-\item{f2}{either: (1) the regression function to estimate for the reduced fit,
-in the form \code{y ~ x} or \code{fit ~ x} if using Super Learner without or with the sequential regression (recommended), respectively; or (2) the fitted values from a flexible estimation technique.}
+\item{X}{the covariates; a list of length V.}
 
-\item{data}{the dataset. Must be \eqn{n x (p+1)}, where the first
-column is \eqn{Y}.}
+\item{f1}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V.}
 
-\item{y}{the outcome; by default is the first column in \code{data}.}
+\item{f2}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V.}
 
-\item{n}{the sample size.}
+\item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
-\item{indx}{the indices of the covariate(s) to calculate variable importance for,
-defaults to 1.}
+\item{V}{the number of folds for cross-validation, defaults to 10}
 
-\item{standardized}{should we estimate the standardized parameter? (defaults to \code{TRUE})}
+\item{type}{the type of parameter (e.g., ANOVA-based is \code{"regression"})}
 
-\item{two_phase}{did the data come from a two-phase sample? (defaults to \code{FALSE})}
+\item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression = TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
-\item{tmle}{should we use the one-step-based estimator (\code{FALSE}) or the TMLE-based estimator (\code{TRUE}) (defaults to \code{FALSE}).}
+\item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 
-\item{update_denom}{logical; was smoothing used to estimate the denominator of the parameter of interest, if standardized? (defaults to \code{TRUE})}
+\item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
-\item{alpha}{the level to compute the confidence interval at.
-Defaults to 0.05, corresponding to a 95\% confidence interval.}
-
-\item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are formulas.}
-
-\item{tol}{numerical error tolerance (only used if \code{tmle = TRUE}).}
-
-\item{max_iter}{maximum number of TMLE iterations (only used if \code{tmle = TRUE}).}
-
-\item{V}{the number of folds for cross-validation, defaults to 10.}
+\item{update_denom}{logical; was smoothing used to estimate the denominator of the parameter of interest, if standardized? (defaults to \code{TRUE})}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -65,18 +51,17 @@ In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
  \item{call}{ - the call to \code{vim}}
- \item{full.f}{ - either the formula for the full regression or the fitted values for the full regression, based on the \code{call}}
- \item{red.f}{ - either the formula for the reduced regression or the fitted values for the reduced regression, based on the \code{call}}
- \item{data}{ - the data used by the function}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
- \item{full.fit}{ - the fitted values of the chosen method fit to the full data}
- \item{red.fit}{ - the fitted values of the chosen method fit to the reduced data}
+ \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
+ \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
  \item{est}{ - the estimated variable importance}
+ \item{naive}{ - the naive estimator of variable importance}
+ \item{update}{ - the influence curve-based update}
  \item{se}{ - the standard error for the estimated variable importance}
  \item{ci}{ - the \eqn{(1-\alpha) x 100}\% confidence interval for the variable importance estimate}
- \item{full.mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
- \item{red.mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
+ \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
+ \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
 }
 }
@@ -84,18 +69,13 @@ within the \code{vim} object. This results in a list containing:
 \dontrun{
 require(SuperLearner)
 ## generate the data
-## generate X
-p <- 2
-n <- 100
-x <- replicate(p, stats::runif(n, -5, 5))
+x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 
 ## apply the function to the x's
 smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 
 ## generate Y ~ Normal (smooth, 1)
 y <- smooth + stats::rnorm(n, 0, 1)
-
-testdat <- as.data.frame(cbind(y, x))
 
 ## set up a library for SuperLearner
 learners <- "SL.gam"
