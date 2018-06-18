@@ -80,7 +80,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   ## if formula, fit Super Learner with the given library
   if (run_regression) {
     ## set up the cross-validation
-    nums <- rep(seq_len(V), length = n)
+    nums <- rep(seq_len(V), length = length(Y))
     folds <- sample(nums)
 
     ## fit the super learner on each full/reduced pair
@@ -90,11 +90,12 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
         ## fit super learner
         fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
          X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
-        fhat_ful[[v]] <- predict(fit, newdata = X[folds == v, , drop = FALSE])$pred
+        fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds == v, , drop = FALSE])$pred
         red <- SuperLearner::SuperLearner(Y = fhat_ful[[v]],
          X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library, ...)
-        fhat_red[[v]] <- predict(red, newdata = X[folds == v, -indx, drop = FALSE])$pred
+        fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[folds == v, -indx, drop = FALSE])$pred
     }
+    full <- reduced <- NA
 
   } else { ## otherwise they are fitted values
 
