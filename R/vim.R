@@ -1,12 +1,9 @@
 #' Nonparametric Variable Importance Estimates
 #'
-#' Compute estimates and confidence intervals for the
-#' nonparametric variable importance parameter of interest.
+#' Compute estimates of and confidence intervals for nonparametric ANOVA-based variable importance.
 #'
-#' @param f1 either: (1) the regression function to estimate for the full fit,
-#' in the form \code{y ~ x} if using Super Learner; or (2) the fitted values from a flexible estimation technique.
-#' @param f2 either: (1) the regression function to estimate for the reduced fit,
-#' in the form \code{y ~ x} or \code{fit ~ x} if using Super Learner without or with the sequential regression (recommended), respectively; or (2) the fitted values from a flexible estimation technique.
+#' @param f1 either: (1) the outcome, Y, if using Super Learner; or (2) the fitted values from a flexible estimation technique.
+#' @param f2 either: (1) the covariates, X, if using Super Learner; or (2) the fitted values from a flexible estimation technique.
 #' @param data the dataset. Must be \eqn{n x (p+1)}, where the first
 #' column is \eqn{Y}.
 #' @param y the outcome; by default is the first column in \code{data}.
