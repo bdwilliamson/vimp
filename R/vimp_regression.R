@@ -66,7 +66,7 @@
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vimp_regression(Y = Y, f1 = full.fit, f2 = reduced.fit, indx = 2, run_regression = FALSE, alpha = 0.05)
+#' est <- vimp_regression(Y = Y, f1 = full.fit, f2 = red.fit, indx = 2, run_regression = FALSE, alpha = 0.05)
 #' }
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.

@@ -41,17 +41,20 @@
 #'
 #' ## set up a library for SuperLearner
 #' learners <- "SL.gam"
+#' 
+#' ## get estimates on independent splits of the data
+#' samp <- sample(1:n, n/2, replace = FALSE)
 #'
-#' ## using class "formula"
-#' est.2 <- vim(y ~ x, fit ~ x, data = testdat, y = testdat[, 1],
-#'            n = length(y), indx = 2, standardized = TRUE, alpha = 0.05,
+#' ## using Super Learner
+#' est_2 <- vimp_regression(Y = Y[samp, , drop = FALSE], X = X[samp, ], indx = 2, 
+#'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
-#' est.1 <- vim(est.2$full.fit, fit ~ x, data = testdat, y = testdat[, 1],
-#' n = length(y), indx = 1, standardized = TRUE, alpha = 0.05, SL.library = learners,
-#' cvControl = list(V = 10))
+#' est_1 <- vimp_regression(Y = Y[-samp, , drop = FALSE], X = X[-samp, ], indx = 2, 
+#'            run_regression = TRUE, alpha = 0.05,
+#'            SL.library = learners, cvControl = list(V = 10))
 #'
-#' ests <- average_vim(est.1, est.2, weights = c(1/2, 1/2))
+#' ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
 #' }
 #' @export
 average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)))) {
@@ -87,23 +90,26 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	colnames(mat) <- c("est", "se", "cil", "ciu")
 
   	## now get lists of the remaining components
-  	call <- match.call()
-  	full.f <- lapply(L, function(z) z$full.f)
-  	red.f <- lapply(L, function(z) z$red.f)
-  	data <- lapply(L, function(z) z$data)
-  	s_lst <- lapply(L, function(z) z$s)
-  	s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))
-  	SL.library <- lapply(L, function(z) z$SL.library)
-  	full.fit <- lapply(L, function(z) z$full.fit)
-  	red.fit <- lapply(L, function(z) z$red.fit)
-  	full.mod <- lapply(L, function(z) z$full.mod)
-  	red.mod <- lapply(L, function(z) z$red.mod)
-  	
-  	output <- list(call = call, full.f = full.f, red.f = red.f, data = data,
-              s = s, SL.library = SL.library, full.fit = full.fit,
-              red.fit = red.fit, est = est_avg, se = se_avg, ci = ci_avg,
-              full.mod = full.mod, red.mod = red.mod,
+    call <- match.call()
+    updates <- lapply(L, function(z) z$update)
+    s_lst <- lapply(L, function(z) z$s)
+    s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))  SL.library <- lapply(L, function(z) z$SL.library)
+    full_fit <- lapply(L, function(z) z$full_fit)
+    red_fit <- lapply(L, function(z) z$red_fit)
+    full_mod <- lapply(L, function(z) z$full_mod)
+    red_mod <- lapply(L, function(z) z$red_mod)
+    alpha <- min(unlist(lapply(L, function(z) z$alpha)))
+
+    ## create output list
+    output <- list(call = call,
+              s = s, SL.library = SL.library, full_fit = full_fit,
+              red_fit = red_fit, est = mat$est, naive = naive, update = update, 
+              se = mat$se, ci = cbind(mat$cil, mat$ciu),
+              mat = mat,
+              full_mod = full_mod, red_mod = red_mod,
               alpha = alpha)
-  class(output) <- c("vim")
-  return(output)
+    tmp <- class(output)
+    class(output) <- c("vim", "list", tmp)
+
+    return(output)
 }
