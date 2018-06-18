@@ -68,5 +68,5 @@ reduced_fit <- reduced_regression$SL.predict
 ## get variable importance!
 ## -------------------------------------------------------------
 ## get the variable importance estimate, SE, and CI
-vimp <- vim(full_fit, reduced_fit, data = data.frame(x, y), indx = 1)
+vimp <- vimp_regression(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
 ```
