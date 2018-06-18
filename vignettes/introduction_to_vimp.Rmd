@@ -124,8 +124,8 @@ The author of the `vimp` package is Brian Williamson.
 
 Currently, the package may only be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console:
 
-```{r}
-# only run if you don't have devtools 
+```{r, eval = FALSE}
+# only run if you don't have devtools
 # previously installed
 # install.packages("devtools")
 devtools::install_github("bdwilliamson/vimp")
