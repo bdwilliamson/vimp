@@ -2,6 +2,7 @@ context("test_vimp_regression.R")
 
 ## load required functions and packages
 library("testthat")
+library("nnls")
 library("SuperLearner")
 library("vimp")
 
