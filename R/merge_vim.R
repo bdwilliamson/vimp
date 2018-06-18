@@ -88,7 +88,7 @@ merge_vim <- function(...) {
   ## create output list
   output <- list(call = call,
               s = s, SL.library = SL.library, full_fit = full_fit,
-              red_fit = red_fit, est = mat$est, naive = naives, update = update, 
+              red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,

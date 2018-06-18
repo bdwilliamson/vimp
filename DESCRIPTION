@@ -23,6 +23,7 @@ Suggests:
     MASS,
     gam,
     glmnet,
+    xgboost,
     covr,
     testthat
 VignetteBuilder: knitr

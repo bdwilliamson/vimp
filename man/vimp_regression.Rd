@@ -76,7 +76,8 @@ y <- smooth + stats::rnorm(n, 0, 1)
 learners <- "SL.gam"
 
 ## using Y and X
-est <- vimp_regression(y, x, indx = 2, alpha = 0.05, run_regression = TRUE, 
+est <- vimp_regression(y, x, indx = 2, 
+           alpha = 0.05, run_regression = TRUE, 
            SL.library = learners, cvControl = list(V = 10))
 
 ## using pre-computed fitted values
@@ -87,7 +88,8 @@ reduced <- SuperLearner(Y = full.fit, X = x[, 2, drop = FALSE],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vimp_regression(Y = y, f1 = full.fit, f2 = red.fit, indx = 2, run_regression = FALSE, alpha = 0.05)
+est <- vimp_regression(Y = y, f1 = full.fit, f2 = red.fit, 
+            indx = 2, run_regression = FALSE, alpha = 0.05)
 }
 
 }

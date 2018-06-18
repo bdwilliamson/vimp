@@ -119,7 +119,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, type = "regression", run_regr
       naive.var <- mean((unlist(Y) - mean(unlist(Y), na.rm = na.rm))^2, na.rm = na.rm)
       ## influence curves
       contrib.denom <- ((unlist(Y) - mean(unlist(Y), na.rm = na.rm))^2 - naive.var)
-      contrib.num <- variableImportanceIC(fhat_ful[[v]], fhat_red[[v]], Y[[v]], standardized = FALSE, na.rm = na.rm)
+      contrib.num <- vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[[v]], na.rm = na.rm)
       ## update
       updates[v] <- (mean(contrib.num, na.rm = na.rm) - mean(contrib.denom, na.rm = na.rm))/naive.var
       ## standard deviation, based on delta method
@@ -129,7 +129,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, type = "regression", run_regr
   }
   est <- mean(naive_cv) + mean(updates)
   ## calculate the standard error
-  se <- mean(ses)/sqrt(n)
+  se <- mean(ses)/sqrt(sum(unlist(lapply(Y, length))))
   ## calculate the confidence interval
   ci <- vimp_ci(est, se, 1 - alpha)
   
@@ -140,9 +140,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, type = "regression", run_regr
   output <- list(call = cl, s = indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red, 
-                 est = ests[1],
-                 naive = ests[2],
-                 update = update,
+                 est = est,
+                 naive = naive_cv,
+                 update = updates,
                  se = se, ci = ci, 
                  full_mod = full, 
                  red_mod = reduced,

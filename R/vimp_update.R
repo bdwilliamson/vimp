@@ -26,7 +26,7 @@ vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
         p <- apply(y, 2, mean)
         naive_num <- 2*sum(diag(t(full)%*%log(full/reduced)))/dim(y)[1]
         naive_denom <- -1*sum(log(p))
-        d_s <- 2*rowSums(y*log(full/reduced) - (full - reduced), na.rm = na.rm) - num
+        d_s <- 2*rowSums(y*log(full/reduced) - (full - reduced), na.rm = na.rm) - naive_num
         ## influence function of the denominator
         d_denom <- rowSums(-1/p*((y == 1) - p))
     } else {

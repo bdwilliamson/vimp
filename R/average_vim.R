@@ -67,6 +67,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	## extract the estimates and SEs from each element of the list
   	## also get the sample sizes
   	ests <- do.call(rbind.data.frame, lapply(L, function(z) z$est))
+    naives <- do.call(rbind.data.frame, lapply(L, function(z) z$naive))
   	ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
   	
   	names(ests) <- "est"
@@ -81,7 +82,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
 
   	## create a CI
   	alpha <- min(unlist(lapply(L, function(z) z$alpha)))
-  	ci_avg <- variableImportanceCI(est_avg, se_avg, level = 1 - alpha)
+  	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha)
 
   	## create the output matrix
   	mat <- cbind(est_avg, se_avg, ci_avg)
@@ -102,7 +103,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
     ## create output list
     output <- list(call = call,
               s = s, SL.library = SL.library, full_fit = full_fit,
-              red_fit = red_fit, est = mat$est, naive = naive, update = update, 
+              red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
