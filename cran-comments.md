@@ -11,6 +11,8 @@ This is a resubmission. In this version, I have:
 
 * added unit tests for cv_vim, merge_vim, and average_vim
 
+* fixed WARNING related to 'library' not declared from 'nnls'
+
 ## Test environments
 * local ubuntu 16.04, R 3.4.4
 * ubuntu 14.04 (on travis-ci), R 3.5.0
@@ -19,7 +21,7 @@ This is a resubmission. In this version, I have:
 * win-builder (devel)
 
 ## R CMD check results
-There were no ERRORs or WARNINGs; there is one NOTE, about me (Brian D. Williamson) being a first-time maintainer.
+There were no ERRORs or WARNINGs; there is one NOTE, about me (Brian D. Williamson) being a first-time maintainer, and a possible misspelling of "et al.".
 
 
 ## Downstream dependencies

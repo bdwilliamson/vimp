@@ -34,7 +34,8 @@ Take the output from multiple different calls to \code{vimp_regression} and
 merge into a single \code{vim} object; mostly used for plotting results.
 }
 \examples{
-require(SuperLearner)
+library(SuperLearner)
+library(gam)
 ## generate the data
 ## generate X
 p <- 2

@@ -44,7 +44,8 @@
 #'
 #' @examples
 #' \donttest{
-#' require(SuperLearner)
+#' library(SuperLearner)
+#' library(gam)
 #' n <- 100
 #' p <- 2
 #' ## generate the data

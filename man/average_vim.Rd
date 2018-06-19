@@ -33,7 +33,8 @@ This results in a list containing:
 Average the output from multiple calls to \code{vimp_regression}, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
 }
 \examples{
-require(SuperLearner)
+library(SuperLearner)
+library(gam)
 ## generate the data
 p <- 2
 n <- 100

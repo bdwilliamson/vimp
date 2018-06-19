@@ -23,7 +23,8 @@
 #' }
 
 #' @examples
-#' require(SuperLearner)
+#' library(SuperLearner)
+#' library(gam)
 #' ## generate the data
 #' p <- 2
 #' n <- 100

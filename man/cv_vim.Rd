@@ -70,7 +70,8 @@ within the \code{vim} object. This results in a list containing:
 }
 \examples{
 \donttest{
-require(SuperLearner)
+library(SuperLearner)
+library(gam)
 n <- 100
 p <- 2
 ## generate the data
@@ -83,7 +84,7 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 y <- smooth + stats::rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- c("SL.mean", "SL.gam")
 
 
 ## using Super Learner

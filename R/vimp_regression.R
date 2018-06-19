@@ -37,7 +37,8 @@
 #' }
 #'
 #' @examples
-#' require(SuperLearner)
+#' library(SuperLearner)
+#' library(gam)
 #' ## generate the data
 #' ## generate X
 #' p <- 2
