@@ -57,7 +57,7 @@
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #' 
 #' ## set up a library for SuperLearner
-#' learners <- "SL.gam"
+#' learners <- c("SL.mean", "SL.gam")
 #' 
 #'
 #' ## using Super Learner
@@ -76,6 +76,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
   if (missing(f2) & missing(X)) stop("You must enter either X or fitted values for the reduced regression.")
 
+  ## check to see if Y is a matrix or data.frame; if not, make it one
+  if (is.null(dim(Y))) Y <- as.matrix(Y)
+
   ## check to see if f1 and f2 are formulas or fitted values
   ## if formula, fit Super Learner with the given library
   if (run_regression) {
@@ -91,7 +94,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
         fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
          X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
         fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds == v, , drop = FALSE])$pred
-        red <- SuperLearner::SuperLearner(Y = fhat_ful[[v]],
+        first_stage_v <- SuperLearner::predict.SuperLearner(fit)$pred
+        red <- SuperLearner::SuperLearner(Y = first_stage_v,
          X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library, ...)
         fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[folds == v, -indx, drop = FALSE])$pred
     }
@@ -117,7 +121,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   updates <- vector("numeric", V)
   ses <- vector("numeric", V)
   for (v in 1:V) {
-    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
     
     if (update_denom) { ## here, use the IC of the full standardized parameter
       updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
