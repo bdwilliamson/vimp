@@ -43,7 +43,7 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' require(SuperLearner)
 #' n <- 100
 #' p <- 2

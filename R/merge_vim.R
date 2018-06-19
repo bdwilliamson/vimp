@@ -25,7 +25,6 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
 #' require(SuperLearner)
 #' ## generate the data
 #' ## generate X
@@ -43,16 +42,15 @@
 #' learners <- "SL.gam"
 #'
 #' ## using Super Learner
-#' est_2 <- vimp_regression(Y = u, X = x, indx = 2, 
+#' est_2 <- vimp_regression(Y = y, X = x, indx = 2, 
 #'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
-#' est_1 <- vim(Y = Y, X = X, indx = 1, 
+#' est_1 <- vimp_regression(Y = y, X = x, indx = 1, 
 #'            run_regression = TRUE, alpha = 0.05, 
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ests <- merge_vim(est_1, est_2)
-#' }
 #' @export
 merge_vim <- function(...) {
   ## capture the arguments
@@ -70,7 +68,7 @@ merge_vim <- function(...) {
   names(ests) <- "est"
 
   ## combine into a matrix
-  tmp <- cbind(ests, ses, cis)
+  tmp <- cbind.data.frame(ests, ses, cis)
   names(tmp) <- c("est", "se", "cil", "ciu")
   ## put in decreasing order
   mat <- tmp[order(tmp$est, decreasing = TRUE), ]

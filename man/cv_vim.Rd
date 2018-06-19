@@ -69,7 +69,7 @@ within the \code{vim} object. This results in a list containing:
 }
 }
 \examples{
-\dontrun{
+\donttest{
 require(SuperLearner)
 n <- 100
 p <- 2

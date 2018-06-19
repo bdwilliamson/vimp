@@ -23,7 +23,6 @@
 #' }
 
 #' @examples
-#' \dontrun{
 #' require(SuperLearner)
 #' ## generate the data
 #' p <- 2
@@ -43,16 +42,15 @@
 #' samp <- sample(1:n, n/2, replace = FALSE)
 #'
 #' ## using Super Learner
-#' est_2 <- vimp_regression(Y = Y[samp, , drop = FALSE], X = x[samp, ], indx = 2, 
+#' est_2 <- vimp_regression(Y = y[samp], X = x[samp, ], indx = 2, 
 #'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
-#' est_1 <- vimp_regression(Y = Y[-samp, , drop = FALSE], X = x[-samp, ], indx = 2, 
+#' est_1 <- vimp_regression(Y = y[-samp], X = x[-samp, ], indx = 2, 
 #'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
-#' }
 #' @export
 average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)))) {
 	## capture the arguments
@@ -84,7 +82,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha)
 
   	## create the output matrix
-  	mat <- cbind(est_avg, se_avg, ci_avg)
+  	mat <- cbind.data.frame(est_avg, se_avg, ci_avg)
   	colnames(mat) <- c("est", "se", "cil", "ciu")
 
   	## now get lists of the remaining components
