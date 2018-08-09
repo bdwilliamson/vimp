@@ -1,17 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Added a sentence to the DESCRIPTION detailing where to find the manuscript that I reference in multiple help files
-
-* Replaced \dontrun{} with \donttest{} in cv_vim.R
-
-* unwrapped examples in average_vim.R, merge_vim.R, and vimp_regression.R
-
-* removed generateData.Rd
-
-* added unit tests for cv_vim, merge_vim, and average_vim
-
-* fixed WARNING related to 'library' not declared from 'nnls'
+* Changed the under-the-hood behavior of cv_vim.R to match with my updated theoretical results
 
 ## Test environments
 * local ubuntu 16.04, R 3.4.4
