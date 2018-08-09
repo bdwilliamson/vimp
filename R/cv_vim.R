@@ -6,8 +6,10 @@
 #'
 #' @param Y the outcome.
 #' @param X the covariates. 
-#' @param f1 the fitted values from a flexible estimation technique regressing Y on X; a list of length V.
-#' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V.
+#' @param f1 the fitted values from a flexible estimation technique regressing Y on X; a list of length V, built on the training data.
+#' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, built on the training data.
+#' @param f3 the fitted values from a flexible estimation technique regressing Y on X; a list of length V, built on the test data.
+#' @param f4 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, built on the test data.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
 #' @param V the number of folds for cross-validation, defaults to 10
 #' @param folds the folds to use, if f1 and f2 are supplied
@@ -30,8 +32,8 @@
 #'  \item{call}{ - the call to \code{cv_vim}}
 #'  \item{s}{ - the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
-#'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
-#'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
+#'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
+#'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
 #'  \item{est}{ - the estimated variable importance}
 #'  \item{naive}{ - the naive estimator of variable importance}
 #'  \item{naives}{ - the naive estimator on each fold}
@@ -72,7 +74,7 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, update_denom = TRUE, ...) {
+cv_vim <- function(Y, X, f1, f2, f3, f4, indx = 1, V = 10, folds = NULL, type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, update_denom = TRUE, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -91,15 +93,18 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     ## fit the super learner on each full/reduced pair
     fhat_ful <- list()
     fhat_red <- list()
+    preds_ful <- list()
+    preds_red <- list()
     for (v in 1:V) {
         ## fit super learner
         fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
          X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
-        fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds == v, , drop = FALSE])$pred
-        first_stage_v <- SuperLearner::predict.SuperLearner(fit)$pred
-        red <- SuperLearner::SuperLearner(Y = first_stage_v,
+        fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit)$pred
+        preds_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds == v, , drop = FALSE])$pred
+        red <- SuperLearner::SuperLearner(Y = fhat_ful[[v]],
          X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library, ...)
-        fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[folds == v, -indx, drop = FALSE])$pred
+        fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red)$pred
+        preds_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[folds == v, -indx, drop = FALSE])$pred
     }
     full <- reduced <- NA
 
@@ -113,6 +118,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     ## set up the fitted value objects (both are lists!)
     fhat_ful <- f1
     fhat_red <- f2
+    preds_ful <- f3
+    preds_red <- f4
 
     full <- reduced <- NA    
   }
@@ -124,18 +131,18 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   ses <- vector("numeric", V)
   for (v in 1:V) {
     ## the naive is based on the training data
-    naive_cv[v] <- onestep_based_estimator(fhat_ful[[-v]], fhat_red[[-v]], Y[folds != v, ], type = type, na.rm = na.rm)[2]
+    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds != v, ], type = type, na.rm = na.rm)[2]
     
     if (update_denom) { ## here, use the IC of the full standardized parameter
-      updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
-      ses[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm) 
+      updates[v] <- mean(vimp_update(preds_ful[[v]], preds_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
+      ses[v] <- mean(vimp_update(preds_ful[[v]], preds_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm) 
     } else { ## here, use the fact that the unstandardized and variance are jointly normal, along with the delta method
       ## naive estimators of numerator (based on subset, due to smoothing), denominator (based on all data, no smoothing)
-      naive.j <- mean((fhat_ful[[v]] - fhat_red[[v]]) ^ 2, na.rm = na.rm)
+      naive.j <- mean((preds_ful[[v]] - preds_red[[v]]) ^ 2, na.rm = na.rm)
       naive.var <- mean((unlist(Y) - mean(unlist(Y), na.rm = na.rm))^2, na.rm = na.rm)
       ## influence curves
       contrib.denom <- ((unlist(Y) - mean(unlist(Y), na.rm = na.rm))^2 - naive.var)
-      contrib.num <- vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, , drop = FALSE], na.rm = na.rm)
+      contrib.num <- vimp_update(preds_ful[[v]], preds_red[[v]], Y[folds == v, , drop = FALSE], na.rm = na.rm)
       ## update
       updates[v] <- (mean(contrib.num, na.rm = na.rm) - mean(contrib.denom, na.rm = na.rm))/naive.var
       ## standard deviation, based on delta method
@@ -158,7 +165,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   ## create the output and return it
   output <- list(call = cl, s = indx,
                  SL.library = SL.library,
-                 full_fit = fhat_ful, red_fit = fhat_red, 
+                 full_fit = list("train" = fhat_ful, "test" = preds_ful), red_fit = list("train" = fhat_red, "test" = preds_red), 
                  est = est,
                  naive = naive,
                  naives = naive_cv,

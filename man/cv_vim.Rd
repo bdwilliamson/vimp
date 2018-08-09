@@ -4,7 +4,7 @@
 \alias{cv_vim}
 \title{Nonparametric Variable Importance Estimates using Cross-validation}
 \usage{
-cv_vim(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
+cv_vim(Y, X, f1, f2, f3, f4, indx = 1, V = 10, folds = NULL,
   type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet",
   "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
   update_denom = TRUE, ...)
@@ -14,9 +14,13 @@ cv_vim(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
 
 \item{X}{the covariates.}
 
-\item{f1}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V.}
+\item{f1}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V, built on the training data.}
 
-\item{f2}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V.}
+\item{f2}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, built on the training data.}
+
+\item{f3}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V, built on the test data.}
+
+\item{f4}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, built on the test data.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
@@ -56,8 +60,8 @@ within the \code{vim} object. This results in a list containing:
  \item{call}{ - the call to \code{cv_vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
- \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
- \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
+ \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
+ \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
  \item{est}{ - the estimated variable importance}
  \item{naive}{ - the naive estimator of variable importance}
  \item{naives}{ - the naive estimator on each fold}

@@ -11,7 +11,7 @@ This is a resubmission. In this version, I have:
 * win-builder (devel)
 
 ## R CMD check results
-There were no ERRORs or WARNINGs; there is one NOTE, about me (Brian D. Williamson) being a first-time maintainer, and a possible misspelling of "et al.".
+There were no ERRORs or WARNINGs or NOTEs.
 
 
 ## Downstream dependencies
