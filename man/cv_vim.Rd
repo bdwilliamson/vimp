@@ -60,7 +60,8 @@ within the \code{vim} object. This results in a list containing:
  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
  \item{est}{ - the estimated variable importance}
  \item{naive}{ - the naive estimator of variable importance}
- \item{update}{ - the influence curve-based update}
+ \item{naives}{ - the naive estimator on each fold}
+ \item{updates}{ - the influence curve-based update for each fold}
  \item{se}{ - the standard error for the estimated variable importance}
  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}

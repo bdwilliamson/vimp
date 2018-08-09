@@ -34,7 +34,8 @@
 #'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
 #'  \item{est}{ - the estimated variable importance}
 #'  \item{naive}{ - the naive estimator of variable importance}
-#'  \item{update}{ - the influence curve-based update}
+#'  \item{naives}{ - the naive estimator on each fold}
+#'  \item{updates}{ - the influence curve-based update for each fold}
 #'  \item{se}{ - the standard error for the estimated variable importance}
 #'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
@@ -122,7 +123,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   updates <- vector("numeric", V)
   ses <- vector("numeric", V)
   for (v in 1:V) {
-    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
+    ## the naive is based on the training data
+    naive_cv[v] <- onestep_based_estimator(fhat_ful[[-v]], fhat_red[[-v]], Y[folds != v, ], type = type, na.rm = na.rm)[2]
     
     if (update_denom) { ## here, use the IC of the full standardized parameter
       updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
@@ -141,7 +143,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     }
       
   }
+  ## corrected estimator
   est <- mean(naive_cv) + mean(updates)
+  ## naive estimator
+  naive <- mean(naive_cv)
   ## calculate the standard error
   se <- mean(ses)/sqrt(length(Y))
   ## calculate the confidence interval
@@ -155,7 +160,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red, 
                  est = est,
-                 naive = naive_cv,
+                 naive = naive,
+                 naives = naive_cv,
                  update = updates,
                  se = se, ci = ci, 
                  full_mod = full, 
