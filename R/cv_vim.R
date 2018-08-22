@@ -1,8 +1,8 @@
 #' Nonparametric Variable Importance Estimates using Cross-validation
 #'
 #' Compute estimates and confidence intervals for the
-#' nonparametric variable importance parameter of interest, using cross-validation in the updating procedure.
-#' This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
+#' nonparametric variable importance parameter of interest, using cross-validation with two validation folds in the updating procedure.
+#' This essentially involves splitting the data into V train/test1/test2 splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 #'
 #' @param Y the outcome.
 #' @param X the covariates. 
