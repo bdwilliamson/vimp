@@ -135,7 +135,7 @@ cv_vim <- function(Y, X, f1, f2, f3, f4, indx = 1, V = 10, folds = NULL, type = 
     
     if (update_denom) { ## here, use the IC of the full standardized parameter
       updates[v] <- mean(vimp_update(preds_ful[[v]], preds_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
-      ses[v] <- mean(vimp_update(preds_ful[[v]], preds_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm) 
+      ses[v] <- sqrt(mean(vimp_update(preds_ful[[v]], preds_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
     } else { ## here, use the fact that the unstandardized and variance are jointly normal, along with the delta method
       ## naive estimators of numerator (based on subset, due to smoothing), denominator (based on all data, no smoothing)
       naive.j <- mean((preds_ful[[v]] - preds_red[[v]]) ^ 2, na.rm = na.rm)
