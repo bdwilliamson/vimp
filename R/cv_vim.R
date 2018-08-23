@@ -111,6 +111,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
   if (missing(f2) & missing(X)) stop("You must enter either X or fitted values for the reduced regression.")
 
+  ## check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
+  if(is.null(dim(Y))) Y <- as.matrix(Y)
+
   ## if we need to run the regression, fit Super Learner with the given library
   if (run_regression) {
     ## set up the cross-validation
@@ -163,7 +166,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   updates <- vector("numeric", V)
   ses <- vector("numeric", V)
   for (v in 1:V) {
-    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]][[1]], fhat_red[[v]][[1]], Y[folds[, v] == 1, ], type = type, na.rm = na.rm)
+    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]][[1]], fhat_red[[v]][[1]], Y[folds[, v] == 1, ], type = type, na.rm = na.rm)[2]
     updates[v] <- mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm), na.rm = na.rm)
     ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
   }
