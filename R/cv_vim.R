@@ -129,23 +129,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   ses <- vector("numeric", V)
   for (v in 1:V) {
     naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]][[1]], fhat_red[[v]][[1]], Y[folds[, v] == 1, ], type = type, na.rm = na.rm)
-    
-    # if (update_denom) { ## here, use the IC of the full standardized parameter
     updates[v] <- mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm), na.rm = na.rm)
     ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
-    # } else { ## here, use the fact that the unstandardized and variance are jointly normal, along with the delta method
-    #   ## naive estimators of numerator (based on subset, due to smoothing), denominator (based on all data, no smoothing)
-    #   naive.j <- mean((fhat_ful[[v]][[1]] - fhat_red[[v]][[1]]) ^ 2, na.rm = na.rm)
-    #   naive.var <- mean((unlist(Y) - mean(unlist(Y), na.rm = na.rm))^2, na.rm = na.rm)
-    #   ## influence curves
-    #   contrib.denom <- ((unlist(Y) - mean(unlist(Y), na.rm = na.rm))^2 - naive.var)
-    #   contrib.num <- 2*(Y[folds[, v] == 2, , drop = FALSE] - fhat_ful[[v]][[2]])*(fhat_ful[[v]][[2]] - fhat_red[[v]][[2]])
-    #   ## update
-    #   updates[v] <- (mean(contrib.num, na.rm = na.rm) - mean(contrib.denom, na.rm = na.rm))/naive.var
-    #   ## standard deviation, based on delta method
-    #   ses[v] <- sqrt(mean((1/naive.var^2)*contrib.num^2, na.rm = na.rm) + mean((naive.j/(naive.var)^2)^2*contrib.denom^2, na.rm = na.rm))
-    # }
-      
   }
   est <- mean(naive_cv) + mean(updates)
   ## calculate the standard error
