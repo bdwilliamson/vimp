@@ -97,6 +97,8 @@
 #'     fhat_red[[v]][[2]] <- SuperLearner::predict.SuperLearner(red, 
 #'      newdata = X[folds[, v] == 2, -indx, drop = FALSE])$pred  
 #' }
+#' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
+#' V = 5, type = "regression", run_regression = FALSE, alpha = 0.05)
 #' }
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
@@ -109,8 +111,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
   if (missing(f2) & missing(X)) stop("You must enter either X or fitted values for the reduced regression.")
 
-  ## check to see if f1 and f2 are formulas or fitted values
-  ## if formula, fit Super Learner with the given library
+  ## if we need to run the regression, fit Super Learner with the given library
   if (run_regression) {
     ## set up the cross-validation
     folds <- two_validation_set_cv(length(Y), V)
