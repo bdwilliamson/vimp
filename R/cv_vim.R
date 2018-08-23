@@ -132,7 +132,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     
     # if (update_denom) { ## here, use the IC of the full standardized parameter
     updates[v] <- mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm), na.rm = na.rm)
-    ses[v] <- mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm)^2, na.rm = na.rm) 
+    ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
     # } else { ## here, use the fact that the unstandardized and variance are jointly normal, along with the delta method
     #   ## naive estimators of numerator (based on subset, due to smoothing), denominator (based on all data, no smoothing)
     #   naive.j <- mean((fhat_ful[[v]][[1]] - fhat_red[[v]][[1]]) ^ 2, na.rm = na.rm)
