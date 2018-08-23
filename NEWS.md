@@ -5,6 +5,10 @@
 * added function `two_validation_set_cv`, which sets up folds for V-fold cross-validation with two validation sets per fold
 * changed the functionality of `cv_vim`: now, the cross-validated naive estimator is computed on a first validation set, while the update for the corrected estimator is computed using the second validation set (both created from `two_validation_set_cv`); this allows for relaxation of the Donsker class conditions necessary for asymptotic convergence of the corrected estimator, while making sure that the initial CV naive estimator is not biased high (due to a higher R^2 on the training data)
 
+## Minor changes
+
+None
+
 # vimp 1.1.0
 
 ## Major changes
