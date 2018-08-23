@@ -58,8 +58,8 @@ within the \code{vim} object. This results in a list containing:
 }
 }
 \examples{
-\dontrun{
-require(SuperLearner)
+library(SuperLearner)
+library(gam)
 ## generate the data
 ## generate X
 p <- 2
@@ -90,7 +90,6 @@ red.fit <- predict(reduced)$pred
 
 est <- vimp_regression(Y = y, f1 = full.fit, f2 = red.fit, 
             indx = 2, run_regression = FALSE, alpha = 0.05)
-}
 
 }
 \seealso{

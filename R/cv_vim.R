@@ -29,11 +29,12 @@
 #'  \item{call}{ - the call to \code{cv_vim}}
 #'  \item{s}{ - the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
-#'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
-#'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
+#'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
+#'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
 #'  \item{est}{ - the estimated variable importance}
 #'  \item{naive}{ - the naive estimator of variable importance}
-#'  \item{update}{ - the influence curve-based update}
+#'  \item{naives}{ - the naive estimator on each fold}
+#'  \item{updates}{ - the influence curve-based update for each fold}
 #'  \item{se}{ - the standard error for the estimated variable importance}
 #'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
@@ -42,8 +43,9 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
-#' require(SuperLearner)
+#' \donttest{
+#' library(SuperLearner)
+#' library(gam)
 #' n <- 100
 #' p <- 2
 #' ## generate the data
@@ -56,7 +58,7 @@
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #' 
 #' ## set up a library for SuperLearner
-#' learners <- "SL.gam"
+#' learners <- c("SL.mean", "SL.gam")
 #' 
 #' ## -----------------------------------------
 #' ## using Super Learner
@@ -105,7 +107,7 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, update_denom = TRUE, ...) {
+cv_vim <- function(Y, X, f1, f2, f3, f4, indx = 1, V = 10, folds = NULL, type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, update_denom = TRUE, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -121,6 +123,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     ## fit the super learner on each full/reduced pair
     fhat_ful <- list()
     fhat_red <- list()
+    preds_ful <- list()
+    preds_red <- list()
     for (v in 1:V) {
         ## set up the lists
         fhat_ful[[v]] <- list()
@@ -156,6 +160,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     ## set up the fitted value objects (both are lists of lists!)
     fhat_ful <- f1
     fhat_red <- f2
+    preds_ful <- f3
+    preds_red <- f4
 
     full <- reduced <- NA    
   }
@@ -170,7 +176,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     updates[v] <- mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm), na.rm = na.rm)
     ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
   }
+  ## corrected estimator
   est <- mean(naive_cv) + mean(updates)
+  ## naive estimator
+  naive <- mean(naive_cv)
   ## calculate the standard error
   se <- mean(ses)/sqrt(length(Y))
   ## calculate the confidence interval
@@ -182,9 +191,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   ## create the output and return it
   output <- list(call = cl, s = indx,
                  SL.library = SL.library,
-                 full_fit = fhat_ful, red_fit = fhat_red, 
+                 full_fit = list("train" = fhat_ful, "test" = preds_ful), red_fit = list("train" = fhat_red, "test" = preds_red), 
                  est = est,
-                 naive = naive_cv,
+                 naive = naive,
+                 naives = naive_cv,
                  update = updates,
                  se = se, ci = ci, 
                  full_mod = full, 

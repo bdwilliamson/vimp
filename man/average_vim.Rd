@@ -33,8 +33,8 @@ This results in a list containing:
 Average the output from multiple calls to \code{vimp_regression}, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
 }
 \examples{
-\dontrun{
-require(SuperLearner)
+library(SuperLearner)
+library(gam)
 ## generate the data
 p <- 2
 n <- 100
@@ -53,14 +53,13 @@ learners <- "SL.gam"
 samp <- sample(1:n, n/2, replace = FALSE)
 
 ## using Super Learner
-est_2 <- vimp_regression(Y = Y[samp, , drop = FALSE], X = x[samp, ], indx = 2, 
+est_2 <- vimp_regression(Y = y[samp], X = x[samp, ], indx = 2, 
            run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
-est_1 <- vimp_regression(Y = Y[-samp, , drop = FALSE], X = x[-samp, ], indx = 2, 
+est_1 <- vimp_regression(Y = y[-samp], X = x[-samp, ], indx = 2, 
            run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
 ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
-}
 }

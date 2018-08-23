@@ -4,7 +4,7 @@
 \alias{cv_vim}
 \title{Nonparametric Variable Importance Estimates using Cross-validation}
 \usage{
-cv_vim(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
+cv_vim(Y, X, f1, f2, f3, f4, indx = 1, V = 10, folds = NULL,
   type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet",
   "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
   update_denom = TRUE, ...)
@@ -54,11 +54,12 @@ within the \code{vim} object. This results in a list containing:
  \item{call}{ - the call to \code{cv_vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
- \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
- \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
+ \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
+ \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
  \item{est}{ - the estimated variable importance}
  \item{naive}{ - the naive estimator of variable importance}
- \item{update}{ - the influence curve-based update}
+ \item{naives}{ - the naive estimator on each fold}
+ \item{updates}{ - the influence curve-based update for each fold}
  \item{se}{ - the standard error for the estimated variable importance}
  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
@@ -67,8 +68,9 @@ within the \code{vim} object. This results in a list containing:
 }
 }
 \examples{
-\dontrun{
-require(SuperLearner)
+\donttest{
+library(SuperLearner)
+library(gam)
 n <- 100
 p <- 2
 ## generate the data
@@ -81,7 +83,7 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 y <- smooth + stats::rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- c("SL.mean", "SL.gam")
 
 ## -----------------------------------------
 ## using Super Learner

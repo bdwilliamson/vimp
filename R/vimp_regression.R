@@ -37,8 +37,8 @@
 #' }
 #'
 #' @examples
-#' \dontrun{
-#' require(SuperLearner)
+#' library(SuperLearner)
+#' library(gam)
 #' ## generate the data
 #' ## generate X
 #' p <- 2
@@ -69,7 +69,6 @@
 #'
 #' est <- vimp_regression(Y = y, f1 = full.fit, f2 = red.fit, 
 #'             indx = 2, run_regression = FALSE, alpha = 0.05)
-#' }
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
