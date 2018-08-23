@@ -58,11 +58,45 @@
 #' ## set up a library for SuperLearner
 #' learners <- "SL.gam"
 #' 
-#'
+#' ## -----------------------------------------
 #' ## using Super Learner
+#' ## -----------------------------------------
 #' est <- cv_vim(Y = y, X = x, indx = 2, V = 5, 
 #' type = "regression", run_regression = TRUE, 
 #' SL.library = learners, alpha = 0.05)
+#' 
+#' ## ------------------------------------------
+#' ## doing things by hand, and plugging them in
+#' ## ------------------------------------------
+#' ## set up the folds
+#' V <- 5
+#' folds <- two_validation_set_cv(length(y), V)
+#' ## get the fitted values by fitting the super learner on each pair
+#' fhat_ful <- list()
+#' fhat_red <- list()
+#' for (v in 1:V) {
+#'     fhat_ful[[v]] <- list()
+#'     fhat_red[[v]] <- list()
+#'     ## fit super learner
+#'     fit <- SuperLearner::SuperLearner(Y = Y[folds[, v] == 0, , drop = FALSE],
+#'      X = X[folds[, v] == 0, , drop = FALSE], SL.library = SL.library, ...)
+#'     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
+#'     ## get predictions on the first validation fold
+#'     fhat_ful[[v]][[1]] <- SuperLearner::predict.SuperLearner(fit, 
+#'      newdata = X[folds[, v] == 1, , drop = FALSE])$pred
+#'     ## get predictions on the second validation fold
+#'     fhat_ful[[v]][[2]] <- SuperLearner::predict.SuperLearner(fit, 
+#'      newdata = X[folds[, v] == 2, , drop = FALSE])$pred
+#'     ## fit the super learner on the reduced covariates
+#'     red <- SuperLearner::SuperLearner(Y = fitted_v,
+#'      X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = SL.library, ...)
+#'     ## get predictions on the first validation fold
+#'     fhat_red[[v]][[1]] <- SuperLearner::predict.SuperLearner(red, 
+#'      newdata = X[folds[, v] == 1, -indx, drop = FALSE])$pred
+#'     ## get predictions on the second validation fold
+#'     fhat_red[[v]][[2]] <- SuperLearner::predict.SuperLearner(red, 
+#'      newdata = X[folds[, v] == 2, -indx, drop = FALSE])$pred  
+#' }
 #' }
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
