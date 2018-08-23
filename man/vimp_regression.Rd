@@ -9,9 +9,9 @@ vimp_regression(Y, X, f1 = NULL, f2 = NULL, indx = 1,
   "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
 }
 \arguments{
-\item{Y}{the outcome}
+\item{Y}{the outcome.}
 
-\item{X}{the covariates}
+\item{X}{the covariates.}
 
 \item{f1}{the fitted values from a flexible estimation technique regressing Y on X.}
 

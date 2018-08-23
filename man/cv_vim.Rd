@@ -14,21 +14,17 @@ cv_vim(Y, X, f1, f2, f3, f4, indx = 1, V = 10, folds = NULL,
 
 \item{X}{the covariates.}
 
-\item{f1}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V, built on the training data.}
+\item{f1}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V, where each object is a list of two sets of predictions: the first on a first validation set, and the second on a second validation set.}
 
-\item{f2}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, built on the training data.}
-
-\item{f3}{the fitted values from a flexible estimation technique regressing Y on X; a list of length V, built on the test data.}
-
-\item{f4}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, built on the test data.}
+\item{f2}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, where each object is a list of two sets of predictions: the first on a first validation set, and the second on a second validation set.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
-\item{V}{the number of folds for cross-validation, defaults to 10}
+\item{V}{the number of folds for cross-validation, defaults to 10.}
 
-\item{folds}{the folds to use, if f1 and f2 are supplied}
+\item{folds}{the folds to use, if f1 and f2 are supplied; an n by V matrix populated with 0s, 1s, and 2s, as returned by \code{\link[vimp]{two_validation_set_cv}}.}
 
-\item{type}{the type of parameter (e.g., ANOVA-based is \code{"regression"})}
+\item{type}{the type of parameter (e.g., ANOVA-based is \code{"regression"}).}
 
 \item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
@@ -38,8 +34,6 @@ cv_vim(Y, X, f1, f2, f3, f4, indx = 1, V = 10, folds = NULL,
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
-\item{update_denom}{logical; was smoothing used to estimate the denominator of the parameter of interest, if standardized? (defaults to \code{TRUE})}
-
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
@@ -47,8 +41,8 @@ An object of class \code{vim}. See Details for more information.
 }
 \description{
 Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-validation in the updating procedure.
-This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
+nonparametric variable importance parameter of interest, using cross-validation with two validation folds in the updating procedure.
+This essentially involves splitting the data into V train/test1/test2 splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more
@@ -91,11 +85,47 @@ y <- smooth + stats::rnorm(n, 0, 1)
 ## set up a library for SuperLearner
 learners <- c("SL.mean", "SL.gam")
 
-
+## -----------------------------------------
 ## using Super Learner
+## -----------------------------------------
 est <- cv_vim(Y = y, X = x, indx = 2, V = 5, 
 type = "regression", run_regression = TRUE, 
 SL.library = learners, alpha = 0.05)
+
+## ------------------------------------------
+## doing things by hand, and plugging them in
+## ------------------------------------------
+## set up the folds
+V <- 5
+folds <- two_validation_set_cv(length(y), V)
+## get the fitted values by fitting the super learner on each pair
+fhat_ful <- list()
+fhat_red <- list()
+for (v in 1:V) {
+    fhat_ful[[v]] <- list()
+    fhat_red[[v]] <- list()
+    ## fit super learner
+    fit <- SuperLearner::SuperLearner(Y = Y[folds[, v] == 0, , drop = FALSE],
+     X = X[folds[, v] == 0, , drop = FALSE], SL.library = SL.library, ...)
+    fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
+    ## get predictions on the first validation fold
+    fhat_ful[[v]][[1]] <- SuperLearner::predict.SuperLearner(fit, 
+     newdata = X[folds[, v] == 1, , drop = FALSE])$pred
+    ## get predictions on the second validation fold
+    fhat_ful[[v]][[2]] <- SuperLearner::predict.SuperLearner(fit, 
+     newdata = X[folds[, v] == 2, , drop = FALSE])$pred
+    ## fit the super learner on the reduced covariates
+    red <- SuperLearner::SuperLearner(Y = fitted_v,
+     X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = SL.library, ...)
+    ## get predictions on the first validation fold
+    fhat_red[[v]][[1]] <- SuperLearner::predict.SuperLearner(red, 
+     newdata = X[folds[, v] == 1, -indx, drop = FALSE])$pred
+    ## get predictions on the second validation fold
+    fhat_red[[v]][[2]] <- SuperLearner::predict.SuperLearner(red, 
+     newdata = X[folds[, v] == 2, -indx, drop = FALSE])$pred  
+}
+est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
+V = 5, type = "regression", run_regression = FALSE, alpha = 0.05)
 }
 
 }
