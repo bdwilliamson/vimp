@@ -1,16 +1,16 @@
-#' Nonparametric Variable Importance Estimates using Cross-validation
+#' Nonparametric Variable Importance Estimates using Cross-validation, without Donsker class relaxation
 #'
 #' Compute estimates and confidence intervals for the
-#' nonparametric variable importance parameter of interest, using cross-validation with two validation folds in the updating procedure.
-#' This essentially involves splitting the data into V train/test1/test2 splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
+#' nonparametric variable importance parameter of interest, using cross-validation with a single validation fold in the updating procedure.
+#' This procedure differs from \code{cv_vim} in that this procedure uses the same data for the naive estimator and the update, and thus does not relax Donsker class conditions necessary for valid confidence intervals.
 #'
 #' @param Y the outcome.
 #' @param X the covariates. 
-#' @param f1 the fitted values from a flexible estimation technique regressing Y on X; a list of length V, where each object is a list of two sets of predictions: the first on a first validation set, and the second on a second validation set.
-#' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, where each object is a list of two sets of predictions: the first on a first validation set, and the second on a second validation set.
+#' @param f1 the fitted values from a flexible estimation technique regressing Y on X; a list of length V, where each object is one set of predictions on a validation set.
+#' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, where each object is one set of predictions on a validation set.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
 #' @param V the number of folds for cross-validation, defaults to 10.
-#' @param folds the folds to use, if f1 and f2 are supplied; an n by V matrix populated with 0s, 1s, and 2s, as returned by \code{\link[vimp]{two_validation_set_cv}}.
+#' @param folds the folds to use, if f1 and f2 are supplied.
 #' @param type the type of parameter (e.g., ANOVA-based is \code{"regression"}).
 #' @param run_regression if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
@@ -72,32 +72,25 @@
 #' ## ------------------------------------------
 #' ## set up the folds
 #' V <- 5
-#' folds <- two_validation_set_cv(length(y), V)
+#' folds <- rep(seq_len(V), length = n)
+#' folds <- sample(folds)
 #' ## get the fitted values by fitting the super learner on each pair
 #' fhat_ful <- list()
 #' fhat_red <- list()
 #' for (v in 1:V) {
-#'     fhat_ful[[v]] <- list()
-#'     fhat_red[[v]] <- list()
 #'     ## fit super learner
-#'     fit <- SuperLearner::SuperLearner(Y = Y[folds[, v] == 0, , drop = FALSE],
-#'      X = X[folds[, v] == 0, , drop = FALSE], SL.library = SL.library, ...)
+#'     fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
+#'      X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
 #'     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-#'     ## get predictions on the first validation fold
-#'     fhat_ful[[v]][[1]] <- SuperLearner::predict.SuperLearner(fit, 
-#'      newdata = X[folds[, v] == 1, , drop = FALSE])$pred
-#'     ## get predictions on the second validation fold
-#'     fhat_ful[[v]][[2]] <- SuperLearner::predict.SuperLearner(fit, 
-#'      newdata = X[folds[, v] == 2, , drop = FALSE])$pred
+#'     ## get predictions on the validation fold
+#'     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
+#'      newdata = X[folds == v, , drop = FALSE])$pred
 #'     ## fit the super learner on the reduced covariates
 #'     red <- SuperLearner::SuperLearner(Y = fitted_v,
-#'      X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = SL.library, ...)
-#'     ## get predictions on the first validation fold
-#'     fhat_red[[v]][[1]] <- SuperLearner::predict.SuperLearner(red, 
-#'      newdata = X[folds[, v] == 1, -indx, drop = FALSE])$pred
-#'     ## get predictions on the second validation fold
-#'     fhat_red[[v]][[2]] <- SuperLearner::predict.SuperLearner(red, 
-#'      newdata = X[folds[, v] == 2, -indx, drop = FALSE])$pred  
+#'      X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library, ...)
+#'     ## get predictions on the validation fold
+#'     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
+#'      newdata = X[folds == v, -indx, drop = FALSE])$pred
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
 #' V = 5, type = "regression", run_regression = FALSE, alpha = 0.05)
@@ -107,7 +100,7 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+cv_vim_nodonsker <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -119,31 +112,27 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   ## if we need to run the regression, fit Super Learner with the given library
   if (run_regression) {
     ## set up the cross-validation
-    folds <- two_validation_set_cv(length(Y), V)
+    folds <- rep(seq_len(V), length = dim(Y)[1])
+    folds <- sample(folds)
     ## fit the super learner on each full/reduced pair
     fhat_ful <- list()
     fhat_red <- list()
     preds_ful <- list()
     preds_red <- list()
     for (v in 1:V) {
-        ## set up the lists
-        fhat_ful[[v]] <- list()
-        fhat_red[[v]] <- list()
         ## fit super learner
-        fit <- SuperLearner::SuperLearner(Y = Y[folds[, v] == 0, , drop = FALSE],
-         X = X[folds[, v] == 0, , drop = FALSE], SL.library = SL.library, ...)
+        fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
+                                          X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
         fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-        ## get predictions on the first validation fold
-        fhat_ful[[v]][[1]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds[, v] == 1, , drop = FALSE])$pred
-        ## get predictions on the second validation fold
-        fhat_ful[[v]][[2]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds[, v] == 2, , drop = FALSE])$pred
+        ## get predictions on the validation fold
+        fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
+                                                            newdata = X[folds == v, , drop = FALSE])$pred
         ## fit the super learner on the reduced covariates
         red <- SuperLearner::SuperLearner(Y = fitted_v,
-         X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = SL.library, ...)
-        ## get predictions on the first validation fold
-        fhat_red[[v]][[1]] <- SuperLearner::predict.SuperLearner(red, newdata = X[folds[, v] == 1, -indx, drop = FALSE])$pred
-        ## get predictions on the second validation fold
-        fhat_red[[v]][[2]] <- SuperLearner::predict.SuperLearner(red, newdata = X[folds[, v] == 2, -indx, drop = FALSE])$pred
+                                          X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library, ...)
+        ## get predictions on the validation fold
+        fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
+                                                            newdata = X[folds == v, -indx, drop = FALSE])$pred
     }
     full <- reduced <- NA
 
@@ -151,9 +140,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
 
     ## check to make sure they are the same length as y
     if (is.null(Y)) stop("Y must be entered.")
-    if (is.null(f1)) stop("You must specify a list of lists of predicted values from a regression of Y on X; the two sets of predictions come from using two validation sets.")
-    if (is.null(f2)) stop("You must specify a list of lists of predicted values from a regression of the fitted values from the Y on X regression on the reduced set of covariates; the two sets of predictions come from using two validation sets.")
-    if (is.null(folds)) stop("You must specify an n by V matrix of folds; this is computed, e.g., by two_validation_set_cv().")
+    if (is.null(f1)) stop("You must specify a list of predicted values from a regression of Y on X.")
+    if (is.null(f2)) stop("You must specify a list of predicted values from a regression of the fitted values from the Y on X regression on the reduced set of covariates.")
+    if (is.null(folds)) stop("You must specify a vector of folds.")
     if (length(f1) != length(V)) stop("The number of folds from the full regression must be the same length as the number of folds.")
     if (length(f2) != length(V)) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
 
@@ -170,9 +159,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   updates <- vector("numeric", V)
   ses <- vector("numeric", V)
   for (v in 1:V) {
-    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]][[1]], fhat_red[[v]][[1]], Y[folds[, v] == 1, ], type = type, na.rm = na.rm)[2]
-    updates[v] <- mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm), na.rm = na.rm)
-    ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]][[2]], fhat_red[[v]][[2]], Y[folds[, v] == 2, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
+    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
+    updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
+    ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
   }
   ## corrected estimator
   est <- mean(naive_cv) + mean(updates)

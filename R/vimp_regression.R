@@ -2,8 +2,8 @@
 #'
 #' Compute estimates of and confidence intervals for nonparametric ANOVA-based variable importance.
 #'
-#' @param Y the outcome
-#' @param X the covariates
+#' @param Y the outcome.
+#' @param X the covariates.
 #' @param f1 the fitted values from a flexible estimation technique regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
