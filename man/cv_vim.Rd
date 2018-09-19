@@ -6,8 +6,7 @@
 \usage{
 cv_vim(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
   type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet",
-  "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
-  update_denom = TRUE, ...)
+  "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
