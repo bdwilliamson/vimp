@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Changed the under-the-hood behavior of cv_vim.R to match with my updated theoretical results
+* Added a new function, cv_vim_nodonsker.R, which has different operating characteristics than cv_vim.R
 
 ## Test environments
 * local ubuntu 16.04, R 3.4.4

@@ -1,3 +1,13 @@
+# vimp 1.1.2
+
+## Major changes
+
+* added function `cv_vim_nodonsker`, which computes the cross-validated naive estimator and the update on the same, single, validation fold. This does not allow for relaxation of the Donsker class conditions.
+
+## Minor changes
+
+None
+
 # vimp 1.1.1
 
 ## Major changes
