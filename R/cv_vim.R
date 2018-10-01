@@ -137,9 +137,18 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
         fhat_ful[[v]][[1]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds[, v] == 1, , drop = FALSE])$pred
         ## get predictions on the second validation fold
         fhat_ful[[v]][[2]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[folds[, v] == 2, , drop = FALSE])$pred
-        ## fit the super learner on the reduced covariates
-        red <- SuperLearner::SuperLearner(Y = fitted_v,
-         X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = SL.library, ...)
+        ## fit the super learner on the reduced covariates:
+        ## always use gaussian; if first regression was mean, use Y instead
+        arg_lst <- list(...)
+        arg_lst$family <- gaussian()
+        if (length(unique(fitted_v)) == 1) {
+          arg_lst$Y <- Y[folds[, v] == 0, , drop = FALSE]
+        } else {
+          arg_lst$Y <- fitted_v 
+        }
+        arg_lst$X <- X[folds[, v] == 0, -indx, drop = FALSE]
+        arg_lst$SL.library <- SL.library
+        red <- do.call(SuperLearner::SuperLearner, arg_lst)
         ## get predictions on the first validation fold
         fhat_red[[v]][[1]] <- SuperLearner::predict.SuperLearner(red, newdata = X[folds[, v] == 1, -indx, drop = FALSE])$pred
         ## get predictions on the second validation fold

@@ -127,9 +127,18 @@ cv_vim_nodonsker <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type 
         ## get predictions on the validation fold
         fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
                                                             newdata = X[folds == v, , drop = FALSE])$pred
-        ## fit the super learner on the reduced covariates
-        red <- SuperLearner::SuperLearner(Y = fitted_v,
-                                          X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library, ...)
+        ## fit the super learner on the reduced covariates:
+        ## always use gaussian; if first regression was mean, use Y instead
+        arg_lst <- list(...)
+        arg_lst$family <- gaussian()
+        if (length(unique(fitted_v)) == 1) {
+          arg_lst$Y <- Y[folds != v, , drop = FALSE]
+        } else {
+          arg_lst$Y <- fitted_v 
+        }
+        arg_lst$X <- X[folds != v, -indx, drop = FALSE]
+        arg_lst$SL.library <- SL.library
+        red <- do.call(SuperLearner::SuperLearner, arg_lst)
         ## get predictions on the validation fold
         fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
                                                             newdata = X[folds == v, -indx, drop = FALSE])$pred
