@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Changed the under-the-hood behavior of cv_vim.R to match with my updated theoretical results
+* Changed the under-the-hood behavior of cv_vim.R and cv_vim_nodonsker.R to remove error messages reported by users attempting to set the family to binomial()
 
 ## Test environments
 * local ubuntu 16.04, R 3.4.4
