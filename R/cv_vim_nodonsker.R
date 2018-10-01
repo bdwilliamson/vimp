@@ -143,8 +143,8 @@ cv_vim_nodonsker <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type 
     if (is.null(f1)) stop("You must specify a list of predicted values from a regression of Y on X.")
     if (is.null(f2)) stop("You must specify a list of predicted values from a regression of the fitted values from the Y on X regression on the reduced set of covariates.")
     if (is.null(folds)) stop("You must specify a vector of folds.")
-    if (length(f1) != length(V)) stop("The number of folds from the full regression must be the same length as the number of folds.")
-    if (length(f2) != length(V)) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
+    if (length(f1) != V) stop("The number of folds from the full regression must be the same length as the number of folds.")
+    if (length(f2) != V) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
 
     ## set up the fitted value objects (both are lists of lists!)
     fhat_ful <- f1

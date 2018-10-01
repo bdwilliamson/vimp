@@ -49,7 +49,7 @@ library("glmnet")
 n <- 100
 p <- 2
 s <- 1 # desire importance for X_1
-x <- replicate(p, runif(n, -1, 1))
+x <- as.data.frame(replicate(p, runif(n, -1, 1)))
 y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1) 
 
 ## -------------------------------------------------------------
