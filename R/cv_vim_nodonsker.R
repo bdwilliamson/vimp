@@ -117,8 +117,6 @@ cv_vim_nodonsker <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type 
     ## fit the super learner on each full/reduced pair
     fhat_ful <- list()
     fhat_red <- list()
-    preds_ful <- list()
-    preds_red <- list()
     for (v in 1:V) {
         ## fit super learner
         fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
@@ -178,7 +176,7 @@ cv_vim_nodonsker <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type 
   ## create the output and return it
   output <- list(call = cl, s = indx,
                  SL.library = SL.library,
-                 full_fit = list("train" = fhat_ful, "test" = preds_ful), red_fit = list("train" = fhat_red, "test" = preds_red), 
+                 full_fit = fhat_ful, red_fit = fhat_red, 
                  est = est,
                  naive = naive,
                  naives = naive_cv,
