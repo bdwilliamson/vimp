@@ -140,10 +140,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
         ## fit the super learner on the reduced covariates:
         ## always use gaussian; if first regression was mean, use Y instead
         arg_lst <- list(...)
-        arg_lst$family <- stats::gaussian()
         if (length(unique(fitted_v)) == 1) {
           arg_lst$Y <- Y[folds[, v] == 0, , drop = FALSE]
         } else {
+          arg_lst$family <- stats::gaussian()
           arg_lst$Y <- fitted_v 
         }
         arg_lst$X <- X[folds[, v] == 0, -indx, drop = FALSE]

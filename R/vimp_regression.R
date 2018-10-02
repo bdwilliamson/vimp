@@ -98,10 +98,10 @@ vimp_regression <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression
     ## fit the super learner on the reduced covariates:
     ## always use gaussian; if first regression was mean, use Y instead
     arg_lst <- list(...)
-    arg_lst$family <- stats::gaussian()
     if (length(unique(fhat_ful)) == 1) {
         arg_lst$Y <- Y
     } else {
+        arg_lst$family <- stats::gaussian()
         arg_lst$Y <- fhat_ful 
     }
     arg_lst$X <- X_minus_s
