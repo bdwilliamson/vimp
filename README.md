@@ -22,7 +22,12 @@ If you encounter any bugs or have any specific feature requests, please [file an
 
 ## R installation
 
-You may install a stable release of `vimp` from [CRAN](https://cran.r-project.org/web/packages/vimp/index.html) via `install.packages("vimp")`.
+You may install a stable release of `vimp` from [CRAN](https://cran.r-project.org/web/packages/vimp/index.html) via `install.packages("vimp")`. You may also install a stable release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code (you may replace `v1.1.3` with the tag for the specific release you wish to install):
+
+```r
+## install.packages("devtools") # only run this line if necessary
+devtools::install_github(repo = "bdwilliamson/vimp@v1.1.3")
+```
 
 You may install a development release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code:
 

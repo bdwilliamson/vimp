@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Changed the under-the-hood behavior of cv_vim.R and cv_vim_nodonsker.R to remove error messages reported by users attempting to set the family to binomial()
+* Changed the under-the-hood behavior of vimp_regression.R, cv_vim.R, and cv_vim_nodonsker.R to remove error messages reported by users attempting to set the family to binomial()
 
 
 ## Test environments
