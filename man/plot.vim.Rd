@@ -4,7 +4,7 @@
 \alias{plot.vim}
 \title{Plot \code{vim} objects}
 \usage{
-\method{plot}{vim}(x, y, ...)
+plot.vim(x, y, ...)
 }
 \arguments{
 \item{x}{an \code{vim} object.}
