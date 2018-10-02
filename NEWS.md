@@ -1,3 +1,16 @@
+
+# vimp 1.1.3
+
+## Major changes
+
+None
+
+## Minor changes
+
+* users may now only specify a `family` for the top-level SuperLearner if `run_regression = TRUE`; in call cases, the second-stage SuperLearner uses a `gaussian` family
+* if the SuperLearner chooses `SL.mean` as the best-fitting algorithm, the second-stage regression is now run using the original outcome, rather than the first-stage fitted values
+
+
 # vimp 1.1.2
 
 ## Major changes
