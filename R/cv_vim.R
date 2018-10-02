@@ -81,23 +81,23 @@
 #'     fhat_red[[v]] <- list()
 #'     ## fit super learner
 #'     fit <- SuperLearner::SuperLearner(Y = Y[folds[, v] == 0, , drop = FALSE],
-#'      X = X[folds[, v] == 0, , drop = FALSE], SL.library = learners)
+#'      X = x[folds[, v] == 0, , drop = FALSE], SL.library = learners)
 #'     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
 #'     ## get predictions on the first validation fold
 #'     fhat_ful[[v]][[1]] <- SuperLearner::predict.SuperLearner(fit, 
-#'      newdata = X[folds[, v] == 1, , drop = FALSE])$pred
+#'      newdata = x[folds[, v] == 1, , drop = FALSE])$pred
 #'     ## get predictions on the second validation fold
 #'     fhat_ful[[v]][[2]] <- SuperLearner::predict.SuperLearner(fit, 
-#'      newdata = X[folds[, v] == 2, , drop = FALSE])$pred
+#'      newdata = x[folds[, v] == 2, , drop = FALSE])$pred
 #'     ## fit the super learner on the reduced covariates
 #'     red <- SuperLearner::SuperLearner(Y = fitted_v,
-#'      X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = learners)
+#'      X = x[folds[, v] == 0, -indx, drop = FALSE], SL.library = learners)
 #'     ## get predictions on the first validation fold
 #'     fhat_red[[v]][[1]] <- SuperLearner::predict.SuperLearner(red, 
-#'      newdata = X[folds[, v] == 1, -indx, drop = FALSE])$pred
+#'      newdata = x[folds[, v] == 1, -indx, drop = FALSE])$pred
 #'     ## get predictions on the second validation fold
 #'     fhat_red[[v]][[2]] <- SuperLearner::predict.SuperLearner(red, 
-#'      newdata = X[folds[, v] == 2, -indx, drop = FALSE])$pred  
+#'      newdata = x[folds[, v] == 2, -indx, drop = FALSE])$pred  
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
 #' V = 5, type = "regression", run_regression = FALSE, alpha = 0.05)

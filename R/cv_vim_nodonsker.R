@@ -80,17 +80,17 @@
 #' for (v in 1:V) {
 #'     ## fit super learner
 #'     fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
-#'      X = X[folds != v, , drop = FALSE], SL.library = learners)
+#'      X = x[folds != v, , drop = FALSE], SL.library = learners)
 #'     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
 #'     ## get predictions on the validation fold
 #'     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
-#'      newdata = X[folds == v, , drop = FALSE])$pred
+#'      newdata = x[folds == v, , drop = FALSE])$pred
 #'     ## fit the super learner on the reduced covariates
 #'     red <- SuperLearner::SuperLearner(Y = fitted_v,
-#'      X = X[folds != v, -indx, drop = FALSE], SL.library = learners)
+#'      X = x[folds != v, -indx, drop = FALSE], SL.library = learners)
 #'     ## get predictions on the validation fold
 #'     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
-#'      newdata = X[folds == v, -indx, drop = FALSE])$pred
+#'      newdata = x[folds == v, -indx, drop = FALSE])$pred
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
 #' V = 5, type = "regression", run_regression = FALSE, alpha = 0.05)

@@ -106,7 +106,7 @@ for (v in 1:V) {
     fhat_red[[v]] <- list()
     ## fit super learner
     fit <- SuperLearner::SuperLearner(Y = Y[folds[, v] == 0, , drop = FALSE],
-     X = X[folds[, v] == 0, , drop = FALSE], SL.library = SL.library)
+     X = X[folds[, v] == 0, , drop = FALSE], SL.library = learners)
     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
     ## get predictions on the first validation fold
     fhat_ful[[v]][[1]] <- SuperLearner::predict.SuperLearner(fit, 
@@ -116,7 +116,7 @@ for (v in 1:V) {
      newdata = X[folds[, v] == 2, , drop = FALSE])$pred
     ## fit the super learner on the reduced covariates
     red <- SuperLearner::SuperLearner(Y = fitted_v,
-     X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = SL.library)
+     X = X[folds[, v] == 0, -indx, drop = FALSE], SL.library = learners)
     ## get predictions on the first validation fold
     fhat_red[[v]][[1]] <- SuperLearner::predict.SuperLearner(red, 
      newdata = X[folds[, v] == 1, -indx, drop = FALSE])$pred
