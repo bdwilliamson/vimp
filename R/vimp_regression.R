@@ -106,7 +106,7 @@ vimp_regression <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression
     }
     arg_lst$X <- X_minus_s
     arg_lst$SL.library <- SL.library
-    red <- do.call(SuperLearner::SuperLearner, arg_lst)    
+    reduced <- do.call(SuperLearner::SuperLearner, arg_lst)    
 
     ## get the fitted values
     fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
