@@ -80,7 +80,7 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 
 ## generate Y ~ Normal (smooth, 1)
-y <- smooth + stats::rnorm(n, 0, 1)
+y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
 ## set up a library for SuperLearner
 learners <- c("SL.mean", "SL.gam")
@@ -88,6 +88,7 @@ learners <- c("SL.mean", "SL.gam")
 ## -----------------------------------------
 ## using Super Learner
 ## -----------------------------------------
+set.seed(4747)
 est <- cv_vim(Y = y, X = x, indx = 2, V = 5, 
 type = "regression", run_regression = TRUE, 
 SL.library = learners, alpha = 0.05)
@@ -97,6 +98,8 @@ SL.library = learners, alpha = 0.05)
 ## ------------------------------------------
 ## set up the folds
 V <- 5
+indx <- 2
+set.seed(4747)
 folds <- two_validation_set_cv(length(y), V)
 ## get the fitted values by fitting the super learner on each pair
 fhat_ful <- list()
@@ -125,7 +128,7 @@ for (v in 1:V) {
      newdata = x[folds[, v] == 2, -indx, drop = FALSE])$pred  
 }
 est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-V = 5, type = "regression", run_regression = FALSE, alpha = 0.05)
+V = 5, folds = folds, type = "regression", run_regression = FALSE, alpha = 0.05)
 }
 
 }

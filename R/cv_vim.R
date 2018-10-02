@@ -63,6 +63,7 @@
 #' ## -----------------------------------------
 #' ## using Super Learner
 #' ## -----------------------------------------
+#' set.seed(4747)
 #' est <- cv_vim(Y = y, X = x, indx = 2, V = 5, 
 #' type = "regression", run_regression = TRUE, 
 #' SL.library = learners, alpha = 0.05)
@@ -72,6 +73,8 @@
 #' ## ------------------------------------------
 #' ## set up the folds
 #' V <- 5
+#' indx <- 2
+#' set.seed(4747)
 #' folds <- two_validation_set_cv(length(y), V)
 #' ## get the fitted values by fitting the super learner on each pair
 #' fhat_ful <- list()
@@ -100,7 +103,7 @@
 #'      newdata = x[folds[, v] == 2, -indx, drop = FALSE])$pred  
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-#' V = 5, type = "regression", run_regression = FALSE, alpha = 0.05)
+#' V = 5, folds = folds, type = "regression", run_regression = FALSE, alpha = 0.05)
 #' }
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
@@ -163,8 +166,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
     if (is.null(f1)) stop("You must specify a list of lists of predicted values from a regression of Y on X; the two sets of predictions come from using two validation sets.")
     if (is.null(f2)) stop("You must specify a list of lists of predicted values from a regression of the fitted values from the Y on X regression on the reduced set of covariates; the two sets of predictions come from using two validation sets.")
     if (is.null(folds)) stop("You must specify an n by V matrix of folds; this is computed, e.g., by two_validation_set_cv().")
-    if (length(f1) != length(V)) stop("The number of folds from the full regression must be the same length as the number of folds.")
-    if (length(f2) != length(V)) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
+    if (length(f1) != V) stop("The number of folds from the full regression must be the same length as the number of folds.")
+    if (length(f2) != V) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
 
     ## set up the fitted value objects (both are lists of lists!)
     fhat_ful <- f1
@@ -198,7 +201,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   ## create the output and return it
   output <- list(call = cl, s = indx,
                  SL.library = SL.library,
-                 full_fit = list("train" = fhat_ful, "test" = preds_ful), red_fit = list("train" = fhat_red, "test" = preds_red), 
+                 full_fit = fhat_ful, red_fit = fhat_red, 
                  est = est,
                  naive = naive,
                  naives = naive_cv,
