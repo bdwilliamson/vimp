@@ -80,7 +80,7 @@
 #'     fhat_ful[[v]] <- list()
 #'     fhat_red[[v]] <- list()
 #'     ## fit super learner
-#'     fit <- SuperLearner::SuperLearner(Y = Y[folds[, v] == 0, , drop = FALSE],
+#'     fit <- SuperLearner::SuperLearner(Y = y[folds[, v] == 0, , drop = FALSE],
 #'      X = x[folds[, v] == 0, , drop = FALSE], SL.library = learners)
 #'     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
 #'     ## get predictions on the first validation fold
