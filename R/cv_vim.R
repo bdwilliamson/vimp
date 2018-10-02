@@ -55,7 +55,7 @@
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 #'
 #' ## generate Y ~ Normal (smooth, 1)
-#' y <- smooth + stats::rnorm(n, 0, 1)
+#' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #' 
 #' ## set up a library for SuperLearner
 #' learners <- c("SL.mean", "SL.gam")
