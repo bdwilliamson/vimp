@@ -105,14 +105,14 @@ fhat_red <- list()
 for (v in 1:V) {
     ## fit super learner
     fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
-     X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
+     X = X[folds != v, , drop = FALSE], SL.library = SL.library)
     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
     ## get predictions on the validation fold
     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
      newdata = X[folds == v, , drop = FALSE])$pred
     ## fit the super learner on the reduced covariates
     red <- SuperLearner::SuperLearner(Y = fitted_v,
-     X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library, ...)
+     X = X[folds != v, -indx, drop = FALSE], SL.library = SL.library)
     ## get predictions on the validation fold
     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
      newdata = X[folds == v, -indx, drop = FALSE])$pred
