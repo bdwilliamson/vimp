@@ -70,6 +70,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	
   	names(ests) <- "est"
   	names(ses) <- "se"
+    names(naives) <- "naive"
 
   	## create the (weighted) average
   	est_avg <- sum(weights*ests)
