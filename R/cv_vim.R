@@ -40,6 +40,7 @@
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
+#'  \item{folds}{ - the folds used for cross-validation}
 #' }
 #'
 #' @examples
@@ -209,7 +210,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
                  se = se, ci = ci, 
                  full_mod = full, 
                  red_mod = reduced,
-                 alpha = alpha)
+                 alpha = alpha,
+                 folds = folds)
 
   ## make it also an vim object
   tmp.cls <- class(output)
