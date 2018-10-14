@@ -1,3 +1,12 @@
+# vimp 1.1.4
+
+## Major changes
+
+None
+
+## Minor changes
+
+* `cv_vim` and`cv_vim_nodonsker` now return the cross-validation folds used within the function 
 
 # vimp 1.1.3
 

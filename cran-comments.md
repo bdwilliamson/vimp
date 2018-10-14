@@ -1,11 +1,10 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Changed the under-the-hood behavior of vimp_regression.R, cv_vim.R, and cv_vim_nodonsker.R to remove error messages reported by users attempting to set the family to binomial()
-
+* Added an object to the list returned by cv_vim and cv_vim_nodonsker
 
 ## Test environments
-* local ubuntu 17.04, R 3.4.4
+* local ubuntu 18.04, R 3.5.1
 * ubuntu 14.04 (on travis-ci), R 3.5.0
 * windows server 2012 (on appveyor), R 3.5.1
 * local windows 10, R 3.4.4
