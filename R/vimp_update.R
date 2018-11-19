@@ -39,12 +39,44 @@ vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
         d_s_reduced <- (y - reduced)^2 - mse_reduced
         d_denom <- (y - mean(y, na.rm = na.rm))^2 - naive_denom
         d_s <- (-1)*d_s_full - (-1)*d_s_reduced
+    } else if (type == "auc") {
+        p_0 <- mean(y == 0)
+        p_1 <- mean(y == 1)
+
+        full_pred <- ROCR::prediction(predictions = full, labels = y)
+        red_pred <- ROCR::prediction(predictions = reduced, labels = y)
+
+        sens_full <- unlist(lapply(as.list(full), function(x) mean(full[y == 0] < x)))
+        spec_full <- unlist(lapply(as.list(full), function(x) mean(full[y == 1] > x)))
+
+        sens_red <- unlist(lapply(as.list(reduced), function(x) mean(full[y == 0] < x)))
+        spec_red <- unlist(lapply(as.list(reduced), function(x) mean(full[y == 1] > x)))
+
+        contrib_1_full <- (y == 1)/p_1*sens_full
+        contrib_0_full <- (y == 0)/p_0*spec_full
+        naive_auc_full <- unlist(ROCR::performance(prediction.obj = full_pred, measure = "auc", x.measure = "cutoff")@y.values)
+        d_s_full <- contrib_1_full + contrib_0_full - ((y == 0)/p_0 + (y == 1)/p_1)*naive_auc_full
+
+        contrib_1_reduced <- (y == 1)/p_1*sens_red
+        contrib_0_reduced <- (y == 0)/p_0*spec_red
+        naive_auc_reduced <- unlist(ROCR::performance(prediction.obj = red_pred, measure = "auc", x.measure = "cutoff")@y.values)
+        d_s_reduced <- contrib_1_reduced + contrib_0_reduced - ((y == 0)/p_0 + (y == 1)/p_1)*naive_auc_reduced
+
+        ic_update <- d_s_full - d_s_reduced
+        
     } else {
         stop("We currently do not support the entered variable importance parameter.")
     }
 
     ## influence curve
-    ic_update <- d_s/naive_denom - naive_num/(naive_denom ^ 2)*d_denom
+    if (type %in% c("regression", "anova", "r_squared", "deviance")) {
+        ic_update <- d_s/naive_denom - naive_num/(naive_denom ^ 2)*d_denom    
+    } else if (type == "auc") {
+        # already computed it above
+    } else {
+        stop("We currently do not support the entered variable importance parameter.")
+    }
+    
   
     return(ic_update)
 }

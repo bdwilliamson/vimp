@@ -28,6 +28,13 @@ onestep_based_estimator <- function(full, reduced, y, type = "regression", na.rm
     mse_full <- mean((y - full)^2, na.rm = na.rm)/denom
     mse_reduced <- mean((y - reduced)^2, na.rm = na.rm)/denom
     naive <- (1 - mse_full) - (1 - mse_reduced)
+  } else if (type == "auc") {
+    full_pred <- ROCR::prediction(predictions = full, labels = y)
+    red_pred <- ROCR::prediction(predictions = reduced, labels = y)
+
+    naive_auc_full <- unlist(ROCR::performance(prediction.obj = full_pred, measure = "auc", x.measure = "cutoff")@y.values)
+    naive_auc_reduced <- unlist(ROCR::performance(prediction.obj = red_pred, measure = "auc", x.measure = "cutoff")@y.values)
+    naive <- naive_auc_full - naive_auc_reduced
   } else {
     stop("We currently do not support the entered variable importance parameter.")
   }
