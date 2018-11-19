@@ -17,7 +17,7 @@
 vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
 
     ## calculate the necessary pieces for the influence curve
-    if (type == "regression") {
+    if (type == "regression" | type == "anova") {
         naive_num <- mean((full - reduced) ^ 2, na.rm = na.rm)
         naive_denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
         d_s <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - naive_num
@@ -29,6 +29,16 @@ vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
         d_s <- 2*rowSums(y*log(full/reduced) - (full - reduced), na.rm = na.rm) - naive_num
         ## influence function of the denominator
         d_denom <- rowSums(-1/p*((y == 1) - p))
+    } else if (type == "r_squared") {
+        naive_denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
+        mse_full <- mean((y - full)^2, na.rm = na.rm)/denom
+        mse_reduced <- mean((y - reduced)^2, na.rm = na.rm)/denom
+        naive_num <- mse_reduced - mse_full
+        
+        d_s_full <- (y - full)^2 - mse_full
+        d_s_reduced <- (y - reduced)^2 - mse_reduced
+        d_denom <- (y - mean(y, na.rm = na.rm))^2 - naive_denom
+        d_s <- (-1)*d_s_full - (-1)*d_s_reduced
     } else {
         stop("We currently do not support the entered variable importance parameter.")
     }

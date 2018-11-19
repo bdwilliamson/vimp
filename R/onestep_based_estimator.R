@@ -16,19 +16,28 @@
 onestep_based_estimator <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
 
   ## first calculate the naive
-  if (type == "regression") {
+  if (type == "regression" | type == "anova") {
     naive <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
   } else if (type == "deviance") { 
     p <- apply(y, 2, mean)
     naive_num <- 2*sum(diag(t(full)%*%log(full/reduced)))/dim(y)[1]
     naive_denom <- -1*sum(log(p))
     naive <- naive_num/naive_denom
+  } else if (type == "r_squared"){
+    denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
+    mse_full <- mean((y - full)^2, na.rm = na.rm)/denom
+    mse_reduced <- mean((y - reduced)^2, na.rm = na.rm)/denom
+    naive <- (1 - mse_full) - (1 - mse_reduced)
   } else {
     stop("We currently do not support the entered variable importance parameter.")
   }
 
-  ## now add on the mean of the ic
-  onestep <- naive + mean(vimp_update(full, reduced, y, type, na.rm = na.rm), na.rm = na.rm)
+  ## now add on the mean of the ic, only if type == "regression" or "anova"
+  if (type == "regression" | type == "anova") {
+    onestep <- naive + mean(vimp_update(full, reduced, y, type, na.rm = na.rm), na.rm = na.rm)  
+  } else {
+    onestep <- NA
+  }  
 
   ## return
   ret <- c(onestep, naive)
