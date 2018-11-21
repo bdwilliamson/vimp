@@ -154,6 +154,6 @@ vimp_anova <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TR
 
   ## make it also an vim and vim_regression object
   tmp.cls <- class(output)
-  class(output) <- c("vim", "vim_regression", tmp.cls)
+  class(output) <- c("vim", "vim_anova", tmp.cls)
   return(output)
 }
