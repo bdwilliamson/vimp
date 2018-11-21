@@ -155,12 +155,12 @@ y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1)
 
 This creates a matrix of covariates `x` with two columns, and a vector `y` of normally-distributed outcome values, for a sample of `n = 100` study participants.
 
-The workhorse function of `vimp`, for ANOVA-based variable importance, is `vimp_regression`. The basic arguments are
+The workhorse function of `vimp`, for ANOVA-based variable importance, is `vimp_anova`. The basic arguments are
 
 * Y: the outcome (in this example, `y`)
 * X: the covariates (in this example, `x`)
 * indx: the covariate(s) of interest for evaluating importance (here, either 1 or 2)
-* run_regression: a logical value telling `vimp_regression` whether or not to run a regression of Y on X
+* run_regression: a logical value telling `vimp_anova` whether or not to run a regression of Y on X
 * SL.library: a "library" of learners to pass to the function `SuperLearner`, if `run_regression = TRUE`
 
 This final argument, `SL.library`, determines the estimators you want to use for the conditional mean of Y given X. Estimates of variable importance rely on good estimators of the conditional mean, so we suggest using flexible estimators and model stacking to do so. One option for this is the `SuperLearner` package; load that package using
@@ -174,7 +174,7 @@ library("xgboost")
 
 The code
 ```{r}
-est_1 <- vimp_regression(Y = y, X = x, indx = 1, run_regression = TRUE, 
+est_1 <- vimp_anova(Y = y, X = x, indx = 1, run_regression = TRUE, 
 SL.library = c("SL.gam", "SL.xgboost", "SL.mean"))
 ```
 
@@ -273,19 +273,19 @@ red.fit.lstat <- predict(red.mod.lstat)
 library("vimp")
 
 ## plug these into vim
-lm.vim.crim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.crim, indx = 1, run_regression = FALSE)
-lm.vim.zn <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.zn, indx = 2, run_regression = FALSE)
-lm.vim.indus <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.indus, indx = 3, run_regression = FALSE)
-lm.vim.chas <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.chas, indx = 4, run_regression = FALSE)
-lm.vim.nox <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.nox, indx = 5, run_regression = FALSE)
-lm.vim.rm <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rm, indx = 6, run_regression = FALSE)
-lm.vim.age <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.age, indx = 7, run_regression = FALSE)
-lm.vim.dis <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.dis, indx = 8, run_regression = FALSE)
-lm.vim.rad <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rad, indx = 9, run_regression = FALSE)
-lm.vim.tax <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.tax, indx = 10, run_regression = FALSE)
-lm.vim.ptratio <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.ptratio, indx = 11, run_regression = FALSE)
-lm.vim.black <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.black, indx = 12, run_regression = FALSE)
-lm.vim.lstat <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.lstat, indx = 13, run_regression = FALSE)
+lm.vim.crim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.crim, indx = 1, run_regression = FALSE)
+lm.vim.zn <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.zn, indx = 2, run_regression = FALSE)
+lm.vim.indus <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.indus, indx = 3, run_regression = FALSE)
+lm.vim.chas <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.chas, indx = 4, run_regression = FALSE)
+lm.vim.nox <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.nox, indx = 5, run_regression = FALSE)
+lm.vim.rm <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rm, indx = 6, run_regression = FALSE)
+lm.vim.age <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.age, indx = 7, run_regression = FALSE)
+lm.vim.dis <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.dis, indx = 8, run_regression = FALSE)
+lm.vim.rad <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rad, indx = 9, run_regression = FALSE)
+lm.vim.tax <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.tax, indx = 10, run_regression = FALSE)
+lm.vim.ptratio <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.ptratio, indx = 11, run_regression = FALSE)
+lm.vim.black <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.black, indx = 12, run_regression = FALSE)
+lm.vim.lstat <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit.lstat, indx = 13, run_regression = FALSE)
 
 ## make a table with the estimates using the merge_vim() function
 lm.mat <- merge_vim(lm.vim.crim, lm.vim.zn, lm.vim.indus, lm.vim.chas,
@@ -349,7 +349,7 @@ Now that I have created the library of learners, I can move on to estimating var
 
 ### Estimating variable importance for a single variable
 
-The main function for ANOVA-derived variable importance in the `vimp` package is the `vimp_regression()` function. There are five main arguments to `vimp_regression()`:
+The main function for ANOVA-derived variable importance in the `vimp` package is the `vimp_anova()` function. There are five main arguments to `vimp_anova()`:
 
 - `Y`, the outcome
 - `f1` and `f2`, the fitted values from a sequential regression procedure; or `X`, the covariates
@@ -361,9 +361,9 @@ There are two ways to compute importance:
 1. Supply outcome `Y`, covariates `X`, and a library of learners (e.g., `learners` above) with `run_regression = TRUE`
 2. Supply outcome `Y` and fitted values for estimates of $\mu_{P_0}$ and $\mu_{P_0, s}$ with `run_regression = FALSE`
 
-I will illustrate each of these choices in order below, but in practice I use (3), since it allows the most flexibility, and all time-intensive computation occurs before calling `vimp_regression()`; however, this involves more work on your end. 
+I will illustrate each of these choices in order below, but in practice I use (3), since it allows the most flexibility, and all time-intensive computation occurs before calling `vimp_anova()`; however, this involves more work on your end. 
 
-Suppose that the first feature that I want to estimate variable importance for is nitrogen oxide, `nox`. Since this is the first feature, say I choose (1) above. Then supplying `vimp_regression()` with 
+Suppose that the first feature that I want to estimate variable importance for is nitrogen oxide, `nox`. Since this is the first feature, say I choose (1) above. Then supplying `vimp_anova()` with 
 
 - `Y = Boston$medv`
 - `X = X`
@@ -375,7 +375,7 @@ means that:
 - I want to use `SuperLearner()` to estimate the conditional means $\mu_{P_0}$ and $\mu_{P_0,s}$
 - I want to estimate variable importance for the fifth column of the `Boston` covariates, which is `nox`
 
-The call to `vimp_regression()` looks like this:
+The call to `vimp_anova()` looks like this:
 ```{r, eval = FALSE}
 ## load the library
 library("vimp")
@@ -384,7 +384,7 @@ library("vimp")
 Boston2 <- Boston[, 1:13]
 
 ## now estimate variable importance
-vimp_regression(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
+vimp_anova(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
     indx = 5, run_regression = TRUE, SL.library = learners)
 ```
 
@@ -402,17 +402,17 @@ Boston2 <- Boston[, 1:13]
 learners.2 <- c("SL.gam", "SL.glmnet")
 
 ## now estimate variable importance
-nox.vim <- vimp_regression(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
+nox.vim <- vimp_anova(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
     indx = 5, run_regression = TRUE, SL.library = learners.2)
 ```
 
-This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vimp_regression()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
+This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vimp_anova()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
 
 ```{r}
 nox.vim
 ```
 
-The object returned by `vimp_regression()` also contains fitted values from using `SuperLearner()`; I access these using `$full_fit` and `$red_fit`. For example,
+The object returned by `vimp_anova()` also contains fitted values from using `SuperLearner()`; I access these using `$full_fit` and `$red_fit`. For example,
 
 ```{r}
 head(nox.vim$full_fit)
@@ -428,14 +428,14 @@ full.fit <- nox.vim$full_fit
 ## estimate variable importance for the average number of rooms
 reduced_fit <- SuperLearner::SuperLearner(Y = full.fit, X = Boston2[, -c(1, 6), drop = FALSE], SL.library = learners.2)
 red.fit <- predict(reduced_fit)$pred
-rm.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit, indx = 6, run_regression = FALSE)
+rm.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = red.fit, indx = 6, run_regression = FALSE)
 
 rm.vim
 ```
 
 This takes approximately 5 seconds --- now rather than estimating both conditional means, I am only estimating one.
 
-If I choose (2), then I have to use a single method from the library, or call `SuperLearner()` myself, prior to estimating variable importance. Then `vimp_regression()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
+If I choose (2), then I have to use a single method from the library, or call `SuperLearner()` myself, prior to estimating variable importance. Then `vimp_anova()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
 
 ```{r}
 ## set up the data
@@ -447,49 +447,49 @@ reduced.fit <- predict(reduced.mod)$pred
 ## this takes 2 seconds
 
 ## estimate variable importance
-dis.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced.fit, indx = 8, run_regression = FALSE)
+dis.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced.fit, indx = 8, run_regression = FALSE)
 ```
 
 I can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
 ```{r}
 reduced_crim <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(1, 14)], SL.library = learners.2))$pred
-crim.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_crim,
+crim.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_crim,
                 indx = 1, run_regression = FALSE)
 
 reduced_zn <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(2, 14)], SL.library = learners.2))$pred
-zn.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_zn,
+zn.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_zn,
                 indx = 2, run_regression = FALSE)
 
 reduced_indus <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(3, 14)], SL.library = learners.2))$pred
-indus.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_indus,
+indus.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_indus,
                 indx = 3, run_regression = FALSE)
 
 reduced_chas <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(4, 14)], SL.library = learners.2))$pred
-chas.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_chas,
+chas.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_chas,
                 indx = 4, run_regression = FALSE)
 
 reduced_age <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(7, 14)], SL.library = learners.2))$pred
-age.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_age,
+age.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_age,
                 indx = 7, run_regression = FALSE)
 
 reduced_rad <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(9, 14)], SL.library = learners.2))$pred
-rad.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_rad,
+rad.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_rad,
                 indx = 9, run_regression = FALSE)
 
 reduced_tax <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(10, 14)], SL.library = learners.2))$pred
-tax.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_tax,
+tax.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_tax,
                 indx = 10, run_regression = FALSE)
 
 reduced_ptratio <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(11, 14)], SL.library = learners.2))$pred
-ptratio.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_ptratio,
+ptratio.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_ptratio,
                 indx = 11, run_regression = FALSE)
 
 reduced_black <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(12, 14)], SL.library = learners.2))$pred
-black.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_black,
+black.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_black,
                 indx = 12, run_regression = FALSE)
 
 reduced_lstat <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(13, 14)], SL.library = learners.2))$pred
-lstat.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_lstat,
+lstat.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_lstat,
                 indx = 13, run_regression = FALSE)
 ```
 
@@ -517,13 +517,13 @@ The only difference between estimating variable importance for a group of featur
 ```{r, fig.width = 8.5, fig.height = 8}
 ## get the estimates
 reduced_struct <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(6, 7, 14)], SL.library = learners.2))$pred
-structure.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_struct, indx = c(6, 7), run_regression = FALSE)
+structure.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_struct, indx = c(6, 7), run_regression = FALSE)
 
 reduced_access <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(8, 9, 14)], SL.library = learners.2))$pred
-access.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_access, indx = c(8, 9), run_regression = FALSE)
+access.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_access, indx = c(8, 9), run_regression = FALSE)
 
 reduced_neigh <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(1, 2, 3, 4, 10, 11, 12, 13, 14)], SL.library = learners.2))$pred
-neigh.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_access,
+neigh.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_access,
                 indx = c(1, 2, 3, 4, 10, 11, 12, 13), run_regression = FALSE)
 
 ## combine and plot
