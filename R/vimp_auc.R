@@ -62,7 +62,7 @@
 #' full <- SuperLearner(Y = y, X = x,
 #' SL.library = learners, cvControl = list(V = 10))
 #' full.fit <- predict(full)$pred
-#' reduced <- SuperLearner(Y = y, X = x[, 2, drop = FALSE],
+#' reduced <- SuperLearner(Y = y, X = x[, -2, drop = FALSE],
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
