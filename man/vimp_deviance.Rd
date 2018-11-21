@@ -91,5 +91,5 @@ est <- vimp_deviance(Y = y, f1 = full.fit, f2 = red.fit,
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package, and \code{\link[ROCR]performance} for specific usage of the \code{ROCR} package.
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 }

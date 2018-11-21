@@ -36,7 +36,7 @@ An object of classes \code{vim} and \code{vim_auc}. See Details for more informa
 Compute estimates of and confidence intervals for nonparametric difference in $AUC$-based variable importance.
 }
 \details{
-AUC for each regression (full and reduced) is computed using \code{\link[ROCR]performance}. 
+AUC for each regression (full and reduced) is computed using \code{\link[ROCR]{performance}}. 
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
@@ -92,5 +92,5 @@ est <- vimp_auc(Y = y, f1 = full.fit, f2 = red.fit,
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package, and \code{\link[ROCR]performance} for specific usage of the \code{ROCR} package.
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package, and \code{\link[ROCR]{performance}} for specific usage of the \code{ROCR} package.
 }
