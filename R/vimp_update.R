@@ -49,8 +49,8 @@ vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
         sens_full <- unlist(lapply(as.list(full), function(x) mean(full[y == 0] < x)))
         spec_full <- unlist(lapply(as.list(full), function(x) mean(full[y == 1] > x)))
 
-        sens_red <- unlist(lapply(as.list(reduced), function(x) mean(full[y == 0] < x)))
-        spec_red <- unlist(lapply(as.list(reduced), function(x) mean(full[y == 1] > x)))
+        sens_red <- unlist(lapply(as.list(reduced), function(x) mean(reduced[y == 0] < x)))
+        spec_red <- unlist(lapply(as.list(reduced), function(x) mean(reduced[y == 1] > x)))
 
         contrib_1_full <- (y == 1)/p_1*sens_full
         contrib_0_full <- (y == 0)/p_0*spec_full
