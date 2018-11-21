@@ -1,4 +1,4 @@
-#' Nonparametric Variable Importance Estimates
+#' Nonparametric Variable Importance Estimates: $R^2$
 #'
 #' Compute estimates of and confidence intervals for nonparametric $R^2$-based variable importance.
 #'
