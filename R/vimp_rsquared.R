@@ -1,20 +1,19 @@
 #' Nonparametric Variable Importance Estimates
 #'
-#' Compute estimates of and confidence intervals for nonparametric $R^2$- or ANOVA-based variable importance.
+#' Compute estimates of and confidence intervals for nonparametric $R^2$-based variable importance.
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
 #' @param f1 the fitted values from a flexible estimation technique regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
-#' @param type the type of variable importance to estimate; one of "r_squared" or "anova".
-#' @param run_regression if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
+#' @param run_regression if outcome Y and covariates X are passed to \code{vimp_rsquared}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
-#' @return An object of classes \code{vim} and \code{vim_regression}. See Details for more information.
+#' @return An object of classes \code{vim} and \code{vim_rsquared}. See Details for more information.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function, and the validity
@@ -56,7 +55,7 @@
 #' learners <- "SL.gam"
 #'
 #' ## using Y and X
-#' est <- vimp_regression(y, x, indx = 2, 
+#' est <- vimp_rsquared(y, x, indx = 2, 
 #'            alpha = 0.05, run_regression = TRUE, 
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
@@ -68,14 +67,14 @@
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vimp_regression(Y = y, f1 = full.fit, f2 = red.fit, 
-#'             indx = 2, type = "anova", run_regression = FALSE, alpha = 0.05)
+#' est <- vimp_rsquared(Y = y, f1 = full.fit, f2 = red.fit, 
+#'             indx = 2, run_regression = FALSE, alpha = 0.05)
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
 
 
-vimp_regression <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
