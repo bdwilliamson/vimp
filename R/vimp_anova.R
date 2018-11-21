@@ -126,10 +126,10 @@ vimp_anova <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TR
   }
 
   ## calculate the estimators 
-  ests <- onestep_based_estimator(fhat_ful, fhat_red, Y, type = type, na.rm = na.rm)
+  ests <- onestep_based_estimator(fhat_ful, fhat_red, Y, type = "anova", na.rm = na.rm)
   
   ## compute the update
-  update <- vimp_update(fhat_ful, fhat_red, Y, type = type, na.rm = na.rm)
+  update <- vimp_update(fhat_ful, fhat_red, Y, type = "anova", na.rm = na.rm)
 
   ## compute the standard error
   se <- vimp_se(update, na.rm = na.rm)
