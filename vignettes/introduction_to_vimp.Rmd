@@ -128,7 +128,7 @@ Currently, the package may only be downloaded and installed from GitHub using th
 # only run if you don't have devtools
 # previously installed
 # install.packages("devtools")
-devtools::install_github("bdwilliamson/vimp")
+# devtools::install_github("bdwilliamson/vimp")
 ```
 
 ## Quick Start
