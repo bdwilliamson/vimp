@@ -76,5 +76,5 @@ reduced_fit <- reduced_regression$SL.predict
 ## get variable importance!
 ## -------------------------------------------------------------
 ## get the variable importance estimate, SE, and CI
-vimp <- vimp_regression(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
+vimp <- vimp_anova(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
 ```
