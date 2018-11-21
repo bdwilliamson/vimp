@@ -29,8 +29,8 @@ reduced_fit_2 <- SuperLearner(Y = full_fitted, X = x[, -1, drop = FALSE], SL.lib
 reduced_fitted_2 <- predict(reduced_fit_2)$pred
 
 test_that("Test merging of ANOVA-based variable importance", {
-  est_1 <- vimp_regression(Y = y, f1 = full_fitted, f2 = reduced_fitted_1, run_regression = FALSE, indx = 2)
-  est_2 <- vimp_regression(Y = y, f1 = full_fitted, f2 = reduced_fitted_2, run_regression = FALSE, indx = 1)
+  est_1 <- vimp_anova(Y = y, f1 = full_fitted, f2 = reduced_fitted_1, run_regression = FALSE, indx = 2)
+  est_2 <- vimp_anova(Y = y, f1 = full_fitted, f2 = reduced_fitted_2, run_regression = FALSE, indx = 1)
 
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
