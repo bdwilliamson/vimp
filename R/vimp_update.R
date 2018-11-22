@@ -31,8 +31,8 @@ vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
         d_denom <- rowSums(-1/p*((y == 1) - p))
     } else if (type == "r_squared") {
         naive_denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-        mse_full <- mean((y - full)^2, na.rm = na.rm)/denom
-        mse_reduced <- mean((y - reduced)^2, na.rm = na.rm)/denom
+        mse_full <- mean((y - full)^2, na.rm = na.rm)/naive_denom
+        mse_reduced <- mean((y - reduced)^2, na.rm = na.rm)/naive_denom
         naive_num <- mse_reduced - mse_full
         
         d_s_full <- (y - full)^2 - mse_full

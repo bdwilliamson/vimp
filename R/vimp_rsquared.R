@@ -144,7 +144,7 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
   output <- list(call = cl, s = indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red, 
-                 est = ests[1],
+                 est = ests[2],
                  naive = ests[2],
                  update = update,
                  se = se, ci = ci, 
