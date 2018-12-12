@@ -1,11 +1,11 @@
-#' Estimate the influence function
+#' Estimate the influence function for variable importance parameters
 #'
 #' Compute the value of the influence function for the given group of left-out covariates.
 #'
 #' @param full fitted values from a regression of the outcome on the full set of covariates.
 #' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.
 #' @param y the outcome.
-#' @param type which parameter are you estimating (defaults to \code{regression}, for ANOVA-based variable importance)?
+#' @param type which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return The influence function values for the given group of left-out covariates.
@@ -14,7 +14,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
+vimp_update <- function(full, reduced, y, type = "anova", na.rm = FALSE) {
 
     ## calculate the necessary pieces for the influence curve
     if (type == "regression" | type == "anova") {
@@ -64,6 +64,12 @@ vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
 
         ic_update <- d_s_full - d_s_reduced
         
+    } else if (type == "accuracy") {
+        contrib_full <- sum((full > 1/2) != y)
+        contrib_reduced <- sum((reduced > 1/2) != y)
+        d_s_full <- ((full > 1/2) != y) - contrib_full
+        d_s_reduced <- ((reduced > 1/2) != y) - contrib_reduced
+        ic_update <- d_s_reduced - d_s_full
     } else {
         stop("We currently do not support the entered variable importance parameter.")
     }
@@ -71,7 +77,7 @@ vimp_update <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
     ## influence curve
     if (type %in% c("regression", "anova", "r_squared", "deviance")) {
         ic_update <- d_s/naive_denom - naive_num/(naive_denom ^ 2)*d_denom    
-    } else if (type == "auc") {
+    } else if (type %in% c("auc", "accuracy")) {
         # already computed it above
     } else {
         stop("We currently do not support the entered variable importance parameter.")
