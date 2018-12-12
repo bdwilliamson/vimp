@@ -23,12 +23,24 @@ vimp_update <- function(full, reduced, y, type = "anova", na.rm = FALSE) {
         d_s <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - naive_num
         d_denom <- (y - mean(y, na.rm = na.rm))^2 - naive_denom
     } else if (type == "deviance") {
-        p <- apply(y, 2, mean)
-        naive_num <- 2*sum(diag(t(full)%*%log(full/reduced)))/dim(y)[1]
+        if (is.null(dim(y))) {
+            y_mult <- cbind(y, 1 - y)
+        } else {
+            y_mult <- y
+        }
+        if (is.null(dim(full))) {
+            full_mat <- cbind(full, 1 - full)
+            reduced_mat <- cbind(reduced, 1 - reduced)
+        } else {
+            full_mat <- full
+            reduced_mat <- reduced
+        }
+        p <- apply(y_mult, 2, mean)
+        naive_num <- 2*sum(diag(t(y_mult)%*%log(full_mat/reduced_mat)))/dim(y_mult)[1]
         naive_denom <- -1*sum(log(p))
-        d_s <- 2*rowSums(y*log(full/reduced) - (full - reduced), na.rm = na.rm) - naive_num
+        d_s <- 2*rowSums(y_mult*log(full_mat/reduced_mat) - (full_mat - reduced_mat), na.rm = na.rm) - naive_num
         ## influence function of the denominator
-        d_denom <- rowSums(-1/p*((y == 1) - p))
+        d_denom <- rowSums(-1/p*((y_mult == 1) - p))
     } else if (type == "r_squared") {
         naive_denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
         mse_full <- mean((y - full)^2, na.rm = na.rm)/naive_denom
