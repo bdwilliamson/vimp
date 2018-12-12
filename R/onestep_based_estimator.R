@@ -5,7 +5,7 @@
 #' @param full fitted values from a regression of the outcome on the full set of covariates.
 #' @param reduced fitted values from a regression of the fitted values from the full regression on the reduced set of covariates.
 #' @param y the outcome.
-#' @param type which parameter are you estimating (defaults to \code{regression}, for ANOVA-based variable importance)?
+#' @param type which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return The estimated variable importance for the given group of left-out covariates.
@@ -13,7 +13,7 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-onestep_based_estimator <- function(full, reduced, y, type = "regression", na.rm = FALSE) {
+onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FALSE) {
 
   ## first calculate the naive
   if (type == "regression" | type == "anova") {
@@ -35,6 +35,10 @@ onestep_based_estimator <- function(full, reduced, y, type = "regression", na.rm
     naive_auc_full <- unlist(ROCR::performance(prediction.obj = full_pred, measure = "auc", x.measure = "cutoff")@y.values)
     naive_auc_reduced <- unlist(ROCR::performance(prediction.obj = red_pred, measure = "auc", x.measure = "cutoff")@y.values)
     naive <- naive_auc_full - naive_auc_reduced
+  } else if (type == "accuracy") {
+    contrib_full <- sum((full > 1/2) != y)
+    contrib_reduced <- sum((reduced > 1/2) != y)
+    naive <- (1 - contrib_full) - (1 - contrib_reduced)
   } else {
     stop("We currently do not support the entered variable importance parameter.")
   }
