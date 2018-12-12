@@ -28,7 +28,7 @@ vimp_update <- function(full, reduced, y, type = "anova", na.rm = FALSE) {
         } else {
             y_mult <- y
         }
-        if (is.null(dim(full))) {
+        if (is.null(dim(full)) | dim(full)[2] < 2) {
             full_mat <- cbind(full, 1 - full)
             reduced_mat <- cbind(reduced, 1 - reduced)
         } else {
