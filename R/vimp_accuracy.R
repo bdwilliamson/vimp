@@ -114,10 +114,10 @@ vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
   }
 
   ## calculate the estimators 
-  ests <- onestep_based_estimator(fhat_ful, fhat_red, Y, type = "auc", na.rm = na.rm)
+  ests <- onestep_based_estimator(fhat_ful, fhat_red, Y, type = "accuracy", na.rm = na.rm)
   
   ## compute the update
-  update <- vimp_update(fhat_ful, fhat_red, Y, type = "auc", na.rm = na.rm)
+  update <- vimp_update(fhat_ful, fhat_red, Y, type = "accuracy", na.rm = na.rm)
 
   ## compute the standard error
   se <- vimp_se(update, na.rm = na.rm)
@@ -142,6 +142,6 @@ vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
 
   ## make it also an vim and vim_regression object
   tmp.cls <- class(output)
-  class(output) <- c("vim", "vim_auc", tmp.cls)
+  class(output) <- c("vim", "vim_accuracy", tmp.cls)
   return(output)
 }
