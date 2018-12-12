@@ -4,7 +4,7 @@
 \alias{onestep_based_estimator}
 \title{Estimate variable importance using a one-step estimator-based approach}
 \usage{
-onestep_based_estimator(full, reduced, y, type = "regression",
+onestep_based_estimator(full, reduced, y, type = "anova",
   na.rm = FALSE)
 }
 \arguments{
@@ -14,7 +14,7 @@ onestep_based_estimator(full, reduced, y, type = "regression",
 
 \item{y}{the outcome.}
 
-\item{type}{which parameter are you estimating (defaults to \code{regression}, for ANOVA-based variable importance)?}
+\item{type}{which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?}
 
 \item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE})}
 }
