@@ -32,7 +32,7 @@ onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FA
         reduced_mat <- reduced
     }
     p <- apply(y_mult, 2, mean)
-    naive_num <- 2*sum(diag(t(y_mult)%*%log(full_mat/reduced_mat)))/dim(y_mult)[1]
+    naive_num <- 2*sum(diag(t(y_mult)%*%log(full_mat/reduced_mat)), na.rm = na.rm)/dim(y_mult)[1]
     naive_denom <- -1*sum(log(p))
     naive <- naive_num/naive_denom
   } else if (type == "r_squared"){
