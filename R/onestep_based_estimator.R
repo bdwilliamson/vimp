@@ -48,8 +48,8 @@ onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FA
     naive_auc_reduced <- unlist(ROCR::performance(prediction.obj = red_pred, measure = "auc", x.measure = "cutoff")@y.values)
     naive <- naive_auc_full - naive_auc_reduced
   } else if (type == "accuracy") {
-    contrib_full <- sum((full > 1/2) != y)
-    contrib_reduced <- sum((reduced > 1/2) != y)
+    contrib_full <- mean((full > 1/2) != y)
+    contrib_reduced <- mean((reduced > 1/2) != y)
     naive <- (1 - contrib_full) - (1 - contrib_reduced)
   } else {
     stop("We currently do not support the entered variable importance parameter.")

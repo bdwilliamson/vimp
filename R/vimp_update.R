@@ -77,8 +77,8 @@ vimp_update <- function(full, reduced, y, type = "anova", na.rm = FALSE) {
         ic_update <- d_s_full - d_s_reduced
         
     } else if (type == "accuracy") {
-        contrib_full <- sum((full > 1/2) != y)
-        contrib_reduced <- sum((reduced > 1/2) != y)
+        contrib_full <- mean((full > 1/2) != y)
+        contrib_reduced <- mean((reduced > 1/2) != y)
         d_s_full <- ((full > 1/2) != y) - contrib_full
         d_s_reduced <- ((reduced > 1/2) != y) - contrib_reduced
         ic_update <- d_s_reduced - d_s_full
