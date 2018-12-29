@@ -1,7 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Added an object to the list returned by cv_vim and cv_vim_nodonsker
+* Added new functions vimp_accuracy, vimp_auc, and vimp_rsquared
+* Added new function vimp_anova to take the place of vimp_regression (now deprecated)
 
 ## Test environments
 * local ubuntu 18.04, R 3.5.1

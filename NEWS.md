@@ -1,3 +1,14 @@
+# vimp 1.2.0
+
+## Major changes
+
+* Added new functions `vimp_auc`, `vimp_accuracy`, `vimp_deviance`, `vimp_rsquared`
+* `vimp_regression` is now deprecated; use `vimp_anova` instead
+
+## Minor changes
+
+None
+
 # vimp 1.1.4
 
 ## Major changes
