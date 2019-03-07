@@ -23,17 +23,17 @@ vimp_update <- function(full, reduced, y, type = "anova", na.rm = FALSE) {
     d_s <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - naive_num
     d_denom <- (y - mean(y, na.rm = na.rm))^2 - naive_denom
   } else if (type == "deviance") {
-    if (is.null(dim(y))) {
-      y_mult <- cbind(y, 1 - y)
+    if (is.null(dim(y))) { # assume that zero is in first column
+      y_mult <- cbind(1 - y, y)
     } else {
       y_mult <- y
     }
-    if (is.null(dim(full))) {
-      full_mat <- cbind(full, 1 - full)
-      reduced_mat <- cbind(reduced, 1 - reduced)
+    if (is.null(dim(full))) { # assume predicting y = 1
+      full_mat <- cbind(1 - full, full)
+      reduced_mat <- cbind(1 - reduced, reduced)
     } else if(dim(full)[2] < 2) {
-      full_mat <- cbind(full, 1 - full)
-      reduced_mat <- cbind(reduced, 1 - reduced)
+      full_mat <- cbind(1 - full, full)
+      reduced_mat <- cbind(1 - reduced, reduced)
     } else {
       full_mat <- full
       reduced_mat <- reduced
