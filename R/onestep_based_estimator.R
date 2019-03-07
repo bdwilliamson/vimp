@@ -19,12 +19,15 @@ onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FA
   if (type == "regression" | type == "anova") {
     naive <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
   } else if (type == "deviance") { 
-    if (is.null(dim(y))) {
-        y_mult <- cbind(y, 1 - y)
+    if (is.null(dim(y))) { # assume that zero is in first column
+        y_mult <- cbind(1 - y, y)
     } else {
         y_mult <- y
     }
-    if (is.null(dim(full)) | dim(full)[2] < 2) {
+    if (is.null(dim(full))) {
+      full_mat <- cbind(full, 1 - full)
+      reduced_mat <- cbind(reduced, 1 - reduced)
+    } else if(dim(full)[2] < 2) {
         full_mat <- cbind(full, 1 - full)
         reduced_mat <- cbind(reduced, 1 - reduced)
     } else {
