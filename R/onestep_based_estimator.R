@@ -24,12 +24,12 @@ onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FA
     } else {
         y_mult <- y
     }
-    if (is.null(dim(full))) {
-      full_mat <- cbind(full, 1 - full)
-      reduced_mat <- cbind(reduced, 1 - reduced)
+    if (is.null(dim(full))) { # assume predicting y = 1
+      full_mat <- cbind(1 - full, full)
+      reduced_mat <- cbind(1 - reduced, reduced)
     } else if(dim(full)[2] < 2) {
-        full_mat <- cbind(full, 1 - full)
-        reduced_mat <- cbind(reduced, 1 - reduced)
+        full_mat <- cbind(1 - full, full)
+        reduced_mat <- cbind(1 - reduced, reduced)
     } else {
         full_mat <- full
         reduced_mat <- reduced
