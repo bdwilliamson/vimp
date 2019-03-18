@@ -32,17 +32,17 @@ risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
       fitted_mat <- fitted_values
     }
     p <- apply(y_mult, 2, mean)
-    naive_num <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
-    naive_denom <- -1*sum(log(p))
-    d_risk <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - naive_num
+    num <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
+    denom <- -1*sum(log(p))
+    d_risk <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - num
     ## influence function of the denominator
     d_denom <- rowSums(-1/p*((y_mult == 1) - p))
   } else if (type == "r_squared") {
-    naive_denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-    mse <- mean((y - fitted_values)^2, na.rm = na.rm)/naive_denom
+    denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
+    mse <- mean((y - fitted_values)^2, na.rm = na.rm)/denom
     
     d <- (y - fitted_values)^2 - mse
-    d_denom <- (y - mean(y, na.rm = na.rm))^2 - naive_denom
+    d_denom <- (y - mean(y, na.rm = na.rm))^2 - denom
     d_risk <- (-1)*d 
   } else if (type == "auc") {
     p_0 <- mean(y == 0)
@@ -70,7 +70,7 @@ risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
   
   ## influence curve
   if (type %in% c("regression", "anova", "r_squared", "deviance")) {
-    ic_update <- d_risk/naive_denom - naive_num/(naive_denom ^ 2)*d_denom    
+    ic_update <- d_risk/denom - num/(denom ^ 2)*d_denom    
   } else if (type %in% c("auc", "accuracy")) {
     # already computed it above
   } else {

@@ -16,58 +16,40 @@ risk_estimator <- function(fitted_values, y, type = "anova", na.rm = FALSE) {
 
   ## first calculate the naive
   if (type == "regression" | type == "anova") {
-    naive <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
+    stop("This variable importance parameter does not support risk estimation. Please use 'r_squared' instead.")
   } else if (type == "deviance") { 
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)
     } else {
         y_mult <- y
     }
-    if (is.null(dim(full))) { # assume predicting y = 1
-      full_mat <- cbind(1 - full, full)
-      reduced_mat <- cbind(1 - reduced, reduced)
-    } else if(dim(full)[2] < 2) {
-        full_mat <- cbind(1 - full, full)
-        reduced_mat <- cbind(1 - reduced, reduced)
+    if (is.null(dim(fitted_values))) { # assume predicting y = 1
+      fitted_mat <- cbind(1 - fitted_values, fitted_values)
+    } else if(dim(fitted_values)[2] < 2) {
+        fitted_mat <- cbind(1 - fitted_values, fitted_values)
     } else {
-        full_mat <- full
-        reduced_mat <- reduced
+        fitted_mat <- fitted_values
     }
     p <- apply(y_mult, 2, mean)
-    naive_num <- 2*sum(diag(t(y_mult)%*%log(full_mat/reduced_mat)), na.rm = na.rm)/dim(y_mult)[1]
-    naive_denom <- -1*sum(log(p))
-    naive <- naive_num/naive_denom
+    num <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
+    denom <- -1*sum(log(p))
+    est <- num/denom
   } else if (type == "r_squared"){
     denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-    mse_full <- mean((y - full)^2, na.rm = na.rm)/denom
-    mse_reduced <- mean((y - reduced)^2, na.rm = na.rm)/denom
-    naive <- (1 - mse_full) - (1 - mse_reduced)
+    mse <- mean((y - fitted_values)^2, na.rm = na.rm)/denom
+    est <- (1 - mse)
   } else if (type == "auc") {
-    full_pred <- ROCR::prediction(predictions = full, labels = y)
-    red_pred <- ROCR::prediction(predictions = reduced, labels = y)
+    preds <- ROCR::prediction(predictions = fitted_values, labels = y)
 
-    naive_auc_full <- unlist(ROCR::performance(prediction.obj = full_pred, measure = "auc", x.measure = "cutoff")@y.values)
-    naive_auc_reduced <- unlist(ROCR::performance(prediction.obj = red_pred, measure = "auc", x.measure = "cutoff")@y.values)
-    naive <- naive_auc_full - naive_auc_reduced
+    est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
   } else if (type == "accuracy") {
-    contrib_full <- mean((full > 1/2) != y)
-    contrib_reduced <- mean((reduced > 1/2) != y)
-    naive <- (1 - contrib_full) - (1 - contrib_reduced)
+    est <- 1 - mean((fitted_values > 1/2) != y)
   } else if (type == "avg_value") {
     stop("We currently do not support the entered variable importance parameter.")
   } else {
     stop("We currently do not support the entered variable importance parameter.")
   }
 
-  ## now add on the mean of the ic, only if type == "regression" or "anova"
-  if (type == "regression" | type == "anova") {
-    onestep <- naive + mean(vimp_update(full, reduced, y, type, na.rm = na.rm), na.rm = na.rm)  
-  } else {
-    onestep <- NA
-  }  
-
   ## return
-  ret <- c(onestep, naive)
-  
-  return(ret)
+  return(est)
 }
