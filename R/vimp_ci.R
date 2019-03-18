@@ -2,8 +2,8 @@
 #'
 #' Compute confidence intervals for the true variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
 #'
-#' @param est estimate of variable importance from a call to \code{variableImportance}.
-#' @param se estimate of the standard error of \code{est}, from a call to \code{variableImportanceSE}
+#' @param est estimate of variable importance from a call to \code{onestep_based_estimator}.
+#' @param se estimate of the standard error of \code{est}, from a call to \code{vimp_se}.
 #' @param level confidence interval type (defaults to 0.95).
 #'
 #' @return The Wald-based confidence interval for the true importance of the given group of left-out covariates.
