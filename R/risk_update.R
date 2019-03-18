@@ -17,7 +17,7 @@ risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
   
   ## calculate the necessary pieces for the influence curve
   if (type == "regression" | type == "anova") {
-    stop("Hypothesis testing is not supported for this variable importance functional. Please use the 'difference in R-squared' functional instead.")
+    ic_update <- NA
   } else if (type == "deviance") {
     if (is.null(dim(y))) { # assume that zero is in first column
       y_mult <- cbind(1 - y, y)

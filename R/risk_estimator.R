@@ -16,7 +16,7 @@ risk_estimator <- function(fitted_values, y, type = "anova", na.rm = FALSE) {
 
   ## first calculate the naive
   if (type == "regression" | type == "anova") {
-    stop("This variable importance parameter does not support risk estimation. Please use 'r_squared' instead.")
+    est <- NA
   } else if (type == "deviance") { 
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)
