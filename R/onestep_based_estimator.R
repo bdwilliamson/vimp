@@ -1,6 +1,6 @@
-#' Estimate variable importance using a one-step estimator-based approach
+#' Estimate variable importance
 #'
-#' Compute nonparametric estimates of the variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
+#' Compute nonparametric estimates of the chosen variable importance parameter, with a correction for using data-adaptive techniques to estimate the conditional means only if necessary.
 #'
 #' @param full fitted values from a regression of the outcome on the full set of covariates.
 #' @param reduced fitted values from a regression of the fitted values from the full regression on the reduced set of covariates.
@@ -54,6 +54,8 @@ onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FA
     contrib_full <- mean((full > 1/2) != y)
     contrib_reduced <- mean((reduced > 1/2) != y)
     naive <- (1 - contrib_full) - (1 - contrib_reduced)
+  } else if (type == "avg_value") {
+    stop("We currently do not support the entered variable importance parameter.")
   } else {
     stop("We currently do not support the entered variable importance parameter.")
   }
