@@ -40,7 +40,7 @@ risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
   } else if (type == "r_squared") {
     denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
     mse <- mean((y - fitted_values)^2, na.rm = na.rm)/denom
-    
+    num <- mean((y - fitted_values)^2, na.rm = na.rm)
     d <- (y - fitted_values)^2 - mse
     d_denom <- (y - mean(y, na.rm = na.rm))^2 - denom
     d_risk <- (-1)*d 
