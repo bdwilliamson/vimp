@@ -90,7 +90,7 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
   	risks_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
   	  risks <- vector("numeric", length(unique(z$folds)))
   	  for (v in 1:length(unique(z$folds))) {
-  	      risks[v] <- risk_estimator(z$full_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	      risks[v] <- risk_estimator(z$full_fit[[v]], y = Y[z$folds == v], type = type)
   	  }
   	  mean(risks)
   	  } else {
@@ -99,7 +99,7 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
   	risks_reduced <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
   	  risks <- vector("numeric", length(unique(z$folds)))
   	  for (v in 1:length(unique(z$folds))) {
-  	    risks[v] <- risk_estimator(z$red_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	    risks[v] <- risk_estimator(z$red_fit[[v]], y = Y[z$folds == v], type = type)
   	  }
   	  mean(risks)
   	} else {
@@ -109,7 +109,7 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
   	risk_updates_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
   	  risks <- vector("numeric", length(unique(z$folds)))
   	  for (v in 1:length(unique(z$folds))) {
-  	    risks[v] <- risk_update(z$full_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	    risks[v] <- risk_update(z$full_fit[[v]], y = Y[z$folds == v], type = type)
   	  }
   	  mean(risks)
   	} else {
@@ -118,7 +118,7 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
   	risk_updates_reduced <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
   	  risks <- vector("numeric", length(unique(z$folds)))
   	  for (v in 1:length(unique(z$folds))) {
-  	    risks[v] <- risk_update(z$red_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	    risks[v] <- risk_update(z$red_fit[[v]], y = Y[z$folds == v], type = type)
   	  }
   	  mean(risks)
   	} else {
@@ -128,7 +128,7 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
   	risk_ses_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
   	  risks <- vector("numeric", length(unique(z$folds)))
   	  for (v in 1:length(unique(z$folds))) {
-  	    risks[v] <- vimp_se(risk_update(z$full_fit[z$folds == v], y = Y[z$folds == v], type = type))*sqrt(sum(z$folds == v))
+  	    risks[v] <- vimp_se(risk_update(z$full_fit[[v]], y = Y[z$folds == v], type = type))*sqrt(sum(z$folds == v))
   	  }
   	  mean(risks)
   	} else {
@@ -137,7 +137,7 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
   	risk_ses_reduced <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
   	  risks <- vector("numeric", length(unique(z$folds)))
   	  for (v in 1:length(unique(z$folds))) {
-  	    risks[v] <- vimp_se(risk_update(z$red_fit[z$folds == v], y = Y[z$folds == v], type = type))*sqrt(sum(z$folds == v))
+  	    risks[v] <- vimp_se(risk_update(z$red_fit[[v]], y = Y[z$folds == v], type = type))*sqrt(sum(z$folds == v))
   	  }
   	  mean(risks)
   	} else {
