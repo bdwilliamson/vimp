@@ -176,7 +176,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
   risk_updates_reduced <- vector("numeric", V)
   risk_ses_reduced <- vector("numeric", V)
   for (v in 1:V) {
-    est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[1]
+    est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
     ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
     
