@@ -182,10 +182,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
     
     ## calculate risks, risk updates/ses
     risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_full[v] <- risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
     risk_ses_full[v] <- vimp_se(risk_updates_full[v], na.rm = na.rm)*sqrt(sum(folds == v))
     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_reduced[v] <- risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
     risk_ses_reduced[v] <- vimp_se(risk_updates_reduced[v], na.rm = na.rm)*sqrt(sum(folds == v))
   }
   ## estimator, naive (if applicable)
