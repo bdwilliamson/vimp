@@ -11,15 +11,20 @@ format.vim <- function(x, ...) {
   if (!is.null(x$mat)) {
     ## combine the columns for cis
     tmp.ci <- cbind(format(x$mat$cil, ...), format(x$mat$ciu, ...))
-    output <- cbind(format(x$mat$est, ...), format(x$mat$se, ...), apply(tmp.ci, 1, function(x) paste("[", paste(x, collapse = ", "), "]", sep = "")))
+    output <- cbind(format(x$mat$est, ...), format(x$mat$se, ...), 
+                    apply(tmp.ci, 1, function(x) paste("[", paste(x, collapse = ", "), "]", sep = "")),
+                    format(x$mat$test, ...))
     ## tag on row names
     tmp.j <- x$s
     rownames(output) <- paste("s = ", tmp.j, sep = "")
   } else {
-    output <- cbind(format(x$est, ...), format(x$se, ...), paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
+    output <- cbind(format(x$est, ...), format(x$se, ...), 
+                    paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""),
+                    format(x$test, ...))
     rownames(output) <- paste("s = ", paste(x$s, collapse = ", "), sep = "")
   }
-  colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
+  colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""), 
+                        "VIMP > 0")
 
   return(output)
 }

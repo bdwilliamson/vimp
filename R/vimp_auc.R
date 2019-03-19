@@ -126,6 +126,9 @@ vimp_auc <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE
   ## compute the confidence interval
   ci <- vimp_ci(ests[2], se, level = 1 - alpha)
   
+  ## perform a hypothesis test against the null of zero importance
+  hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, type = "auc", level = alpha, na.rm = na.rm)
+  
   ## get the call
   cl <- match.call()
 
@@ -137,6 +140,7 @@ vimp_auc <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE
                  naive = ests[2],
                  update = update,
                  se = se, ci = ci, 
+                 test = hyp_test,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha)

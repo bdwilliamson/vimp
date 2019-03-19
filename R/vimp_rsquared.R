@@ -137,6 +137,9 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
   ## compute the confidence interval
   ci <- vimp_ci(ests[1], se, level = 1 - alpha)
   
+  ## perform a hypothesis test against the null of zero importance
+  hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, type = "r_squared", level = alpha, na.rm = na.rm)
+  
   ## get the call
   cl <- match.call()
 
@@ -148,6 +151,7 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
                  naive = ests[2],
                  update = update,
                  se = se, ci = ci, 
+                 test = hyp_test,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha)
