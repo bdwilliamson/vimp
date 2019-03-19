@@ -166,7 +166,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
 
   ## calculate the estimate
   ## loop over the folds
-  naive_cv <- vector("numeric", V)
+  est_cv <- vector("numeric", V)
   updates <- vector("numeric", V)
   ses <- vector("numeric", V)
   risks_full <- vector("numeric", V)
