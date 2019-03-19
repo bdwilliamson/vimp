@@ -24,12 +24,12 @@ vimp_hypothesis_test <- function(full, reduced, y, type = "r_squared", level = 0
     hyp_test <- NA
   } else {
     ## point estimates of the risk
-    risk_full <- risk_estimator(full, y, type, na.rm)
-    risk_reduced <- risk_estimator(reduced, y, type, na.rm)
+    risk_full <- risk_estimator(fitted_values = full, y = y, type = type, na.rm = na.rm)
+    risk_reduced <- risk_estimator(fitted_values = reduced, y = y, type = type, na.rm = na.rm)
 
     ## influence curve estimates for the risk
-    ic_full <- risk_update(full, y, type, level, na.rm)
-    ic_reduced <- risk_update(reduced, y, type, level, na.rm)
+    ic_full <- risk_update(fitted_values = full, y = y, type = type, na.rm = na.rm)
+    ic_reduced <- risk_update(fitted_values = reduced, y = y, type = type, na.rm = na.rm)
 
     ## CIs for both risks
     risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = level)
