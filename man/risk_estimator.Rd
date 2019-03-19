@@ -4,7 +4,7 @@
 \alias{risk_estimator}
 \title{Estimate a nonparametric risk functional}
 \usage{
-risk_estimator(fitted_values, y, type = "anova", na.rm = FALSE)
+risk_estimator(fitted_values, y, type = "r_squared", na.rm = FALSE)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}
