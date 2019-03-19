@@ -222,7 +222,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
                  full_fit = fhat_ful, red_fit = fhat_red, 
                  est = est,
                  naive = naive,
-                 naives = naive_cv,
+                 ests = est_cv,
                  update = updates,
                  se = se, ci = ci, 
                  test = hyp_test,
