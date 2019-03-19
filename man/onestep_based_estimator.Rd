@@ -2,7 +2,7 @@
 % Please edit documentation in R/onestep_based_estimator.R
 \name{onestep_based_estimator}
 \alias{onestep_based_estimator}
-\title{Estimate variable importance using a one-step estimator-based approach}
+\title{Estimate variable importance}
 \usage{
 onestep_based_estimator(full, reduced, y, type = "anova",
   na.rm = FALSE)
@@ -22,7 +22,7 @@ onestep_based_estimator(full, reduced, y, type = "anova",
 The estimated variable importance for the given group of left-out covariates.
 }
 \description{
-Compute nonparametric estimates of the variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
+Compute nonparametric estimates of the chosen variable importance parameter, with a correction for using data-adaptive techniques to estimate the conditional means only if necessary.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more

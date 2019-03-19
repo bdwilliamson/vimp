@@ -7,9 +7,9 @@
 vimp_ci(est, se, level = 0.95)
 }
 \arguments{
-\item{est}{estimate of variable importance from a call to \code{variableImportance}.}
+\item{est}{estimate of variable importance from a call to \code{onestep_based_estimator}.}
 
-\item{se}{estimate of the standard error of \code{est}, from a call to \code{variableImportanceSE}}
+\item{se}{estimate of the standard error of \code{est}, from a call to \code{vimp_se}.}
 
 \item{level}{confidence interval type (defaults to 0.95).}
 }
