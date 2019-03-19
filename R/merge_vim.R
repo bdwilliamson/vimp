@@ -64,13 +64,14 @@ merge_vim <- function(...) {
   naives <- do.call(rbind.data.frame, lapply(L, function(z) z$naive))
   cis <- do.call(rbind.data.frame, lapply(L, function(z) z$ci))
   ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
+  tests <- do.call(rbind.data.frame, lapply(L, function(z) z$test))
 
   ## put on names
   names(ests) <- "est"
 
   ## combine into a matrix
-  tmp <- cbind.data.frame(ests, ses, cis)
-  names(tmp) <- c("est", "se", "cil", "ciu")
+  tmp <- cbind.data.frame(ests, ses, cis, tests)
+  names(tmp) <- c("est", "se", "cil", "ciu", "test")
   ## put in decreasing order
   mat <- tmp[order(tmp$est, decreasing = TRUE), ]
 
@@ -90,6 +91,7 @@ merge_vim <- function(...) {
               s = s, SL.library = SL.library, full_fit = full_fit,
               red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
+              test = mat$test,
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
               alpha = alpha)
