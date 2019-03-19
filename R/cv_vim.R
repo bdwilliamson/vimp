@@ -104,7 +104,7 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regression", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -169,19 +169,49 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
   naive_cv <- vector("numeric", V)
   updates <- vector("numeric", V)
   ses <- vector("numeric", V)
+  risks_full <- vector("numeric", V)
+  risk_updates_full <- vector("numeric", V)
+  risk_ses_full <- vector("numeric", V)
+  risks_reduced <- vector("numeric", V)
+  risk_updates_reduced <- vector("numeric", V)
+  risk_ses_reduced <- vector("numeric", V)
   for (v in 1:V) {
-    naive_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
+    est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[1]
     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
     ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
+    
+    ## calculate risks, risk updates/ses
+    risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_updates_full[v] <- risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_ses_full[v] <- vimp_se(risk_updates_full[v], na.rm = na.rm)*sqrt(sum(folds == v))
+    risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_updates_reduced[v] <- risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_ses_reduced[v] <- vimp_se(risk_updates_reduced[v], na.rm = na.rm)*sqrt(sum(folds == v))
   }
-  ## corrected estimator
-  est <- mean(naive_cv) + mean(updates)
-  ## naive estimator
-  naive <- mean(naive_cv)
+  ## estimator, naive (if applicable)
+  if (type == "regression" | type == "anova") {
+    naive <- mean(est_cv)
+    est <- mean(est_cv) + mean(updates)
+  } else {
+    est <- mean(est_cv) 
+    naive <- NA
+  }
+
   ## calculate the standard error
-  se <- mean(ses)/sqrt(length(Y))
+  se <- mean(ses)/sqrt(dim(Y)[1])
+  
   ## calculate the confidence interval
   ci <- vimp_ci(est, se, 1 - alpha)
+  
+  ## compute a hypothesis test against the null of zero importance
+  if (type == "regression" | type == "anova") {
+    hyp_test <- NA
+  } else {
+    risk_ci_full <- vimp_ci(mean(risks_full), mean(risk_ses_full)/sqrt(dim(Y)[1]), 1 - alpha)
+    risk_ci_reduced <- vimp_ci(mean(risks_reduced), mean(risk_ses_reduced)/sqrt(dim(Y)[1]), 1 - alpha)
+    hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
+  }
+  
   
   ## get the call
   cl <- match.call()
@@ -195,6 +225,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
                  naives = naive_cv,
                  update = updates,
                  se = se, ci = ci, 
+                 test = hyp_test,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
@@ -202,6 +233,6 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "regress
 
   ## make it also an vim object
   tmp.cls <- class(output)
-  class(output) <- c("vim", c("vim_regression", "vim_deviance")[as.numeric(type == "deviance") + 1], tmp.cls)
+  class(output) <- c("vim", c("vim_regression", "vim_anova", "vim_deviance", "vim_auc", "vim_accuracy", "vim_avg_value")[grepl(type,  c("vim_regression", "vim_anova", "vim_deviance", "vim_auc", "vim_accuracy", "vim_avg_value"))], tmp.cls)
   return(output)
 }
