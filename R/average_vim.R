@@ -2,7 +2,9 @@
 #' 
 #' Average the output from multiple calls to \code{vimp_regression}, for different independent groups, into a single estimate with a corresponding standard error and confidence interval.
 #' 
-#' @param ... an arbitrary number of \code{vim} objects
+#' @param ... an arbitrary number of \code{vim} objects.
+#' @param Y the outcome of interest.
+#' @param type the type of measure (defaults to \code{r_squared}).
 #' @param weights how to average the vims together, and must sum to 1; defaults to 1/(number of vims) for each vim, corresponding to the arithmetic mean
 #' 
 #' @return an object of class \code{vim} containing the (weighted) average of the individual importance estimates, as well as the appropriate standard error and confidence interval. 
@@ -53,7 +55,7 @@
 #'
 #' ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
 #' @export
-average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)))) {
+average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(...)), length(list(...)))) {
 	## capture the arguments
   	L <- list(...)
   	names(L) <- unlist(match.call(expand.dots=F)$...)
@@ -82,10 +84,79 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	## create a CI
   	alpha <- min(unlist(lapply(L, function(z) z$alpha)))
   	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha)
+  	
+  	## hypothesis test;
+  	## risks
+  	risks_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
+  	  risks <- vector("numeric", length(unique(z$folds)))
+  	  for (v in 1:length(unique(z$folds))) {
+  	      risks[v] <- risk_estimator(z$full_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	  }
+  	  mean(risks)
+  	  } else {
+  	    risk_estimator(z$full_fit, y = Y, type = type)
+  	  })
+  	risks_reduced <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
+  	  risks <- vector("numeric", length(unique(z$folds)))
+  	  for (v in 1:length(unique(z$folds))) {
+  	    risks[v] <- risk_estimator(z$red_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	  }
+  	  mean(risks)
+  	} else {
+  	  risk_estimator(z$red_fit, y = Y, type = type)
+  	})
+  	## updates
+  	risk_updates_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
+  	  risks <- vector("numeric", length(unique(z$folds)))
+  	  for (v in 1:length(unique(z$folds))) {
+  	    risks[v] <- risk_update(z$full_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	  }
+  	  mean(risks)
+  	} else {
+  	  risk_update(z$full_fit, y = Y, type = type)
+  	})
+  	risk_updates_reduced <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
+  	  risks <- vector("numeric", length(unique(z$folds)))
+  	  for (v in 1:length(unique(z$folds))) {
+  	    risks[v] <- risk_update(z$red_fit[z$folds == v], y = Y[z$folds == v], type = type)
+  	  }
+  	  mean(risks)
+  	} else {
+  	  risk_update(z$red_fit, y = Y, type = type)
+  	})
+  	## ses
+  	risk_ses_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
+  	  risks <- vector("numeric", length(unique(z$folds)))
+  	  for (v in 1:length(unique(z$folds))) {
+  	    risks[v] <- vimp_se(risk_update(z$full_fit[z$folds == v], y = Y[z$folds == v], type = type))*sqrt(sum(z$folds == v))
+  	  }
+  	  mean(risks)
+  	} else {
+  	  vimp_se(risk_update(z$full_fit, y = Y, type = type))*sqrt(length(Y))
+  	})
+  	risk_ses_reduced <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
+  	  risks <- vector("numeric", length(unique(z$folds)))
+  	  for (v in 1:length(unique(z$folds))) {
+  	    risks[v] <- vimp_se(risk_update(z$red_fit[z$folds == v], y = Y[z$folds == v], type = type))*sqrt(sum(z$folds == v))
+  	  }
+  	  mean(risks)
+  	} else {
+  	  vimp_se(risk_update(z$red_fit, y = Y, type = type))*sqrt(length(Y))
+  	})
+  	risk_full <- mean(unlist(risks_full))
+  	risk_reduced <- mean(unlist(risks_reduced))
+  	risk_full_se <- mean(unlist(risk_ses_full))/sqrt(length(Y))
+  	risk_reduced_se <- mean(unlist(risk_ses_reduced))/sqrt(length(Y))
+  	## cis
+  	risk_ci_full <- vimp_ci(risk_full, risk_full_se, 1 - level)
+  	risk_ci_reduced <- vimp_ci(risk_reduced, risk_reduced_se, 1 - level)
+  	hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
+  	
+  	
 
   	## create the output matrix
-  	mat <- cbind.data.frame(est_avg, se_avg, ci_avg)
-  	colnames(mat) <- c("est", "se", "cil", "ciu")
+  	mat <- cbind.data.frame(est_avg, se_avg, ci_avg, hyp_test)
+  	colnames(mat) <- c("est", "se", "cil", "ciu", "test")
 
   	## now get lists of the remaining components
     call <- match.call()
@@ -104,6 +175,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
               s = s, SL.library = SL.library, full_fit = full_fit,
               red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
+              test = hyp_test,
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
               alpha = alpha)
