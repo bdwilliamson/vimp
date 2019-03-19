@@ -32,8 +32,8 @@ vimp_hypothesis_test <- function(full, reduced, y, type = "r_squared", level = 0
     ic_reduced <- risk_update(fitted_values = reduced, y = y, type = type, na.rm = na.rm)
 
     ## CIs for both risks
-    risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = level)
-    risk_ci_reduced <- vimp_ci(est = risk_reduced, se = vimp_se(ic_reduced, na.rm = na.rm), level = level)
+    risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = 1 - level)
+    risk_ci_reduced <- vimp_ci(est = risk_reduced, se = vimp_se(ic_reduced, na.rm = na.rm), level = 1 - level)
     ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
     ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
     hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
