@@ -25,7 +25,7 @@ vimp_hypothesis_test(full, reduced, y, type = "r_squared",
 }
 \description{
 Perform a hypothesis test against the null hypothesis of zero importance by: 
-(i) for a user-specified level $\alpha$, compute a $(1 - \alpha)\times 100$\% confidence interval around the risk for both the full and reduced regression functions;
+(i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the risk for both the full and reduced regression functions;
 (ii) if the intervals do not overlap, reject the null hypothesis.
 }
 \details{
