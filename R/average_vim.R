@@ -104,25 +104,6 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	} else {
   	  risk_estimator(z$red_fit, y = z$y, type = class(z)[2])
   	})
-  	## updates
-  	risk_updates_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
-  	  risks <- vector("numeric", length(unique(z$folds)))
-  	  for (v in 1:length(unique(z$folds))) {
-  	    risks[v] <- risk_update(z$full_fit[[v]], y = z$y[z$folds == v], type = class(z)[2])
-  	  }
-  	  mean(risks)
-  	} else {
-  	  risk_update(z$full_fit, y = z$y, type = class(z)[2])
-  	})
-  	risk_updates_reduced <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
-  	  risks <- vector("numeric", length(unique(z$folds)))
-  	  for (v in 1:length(unique(z$folds))) {
-  	    risks[v] <- risk_update(z$red_fit[[v]], y = z$y[z$folds == v], type = class(z)[2])
-  	  }
-  	  mean(risks)
-  	} else {
-  	  risk_update(z$red_fit, y = z$y, type = class(z)[2])
-  	})
   	## ses
   	risk_ses_full <- lapply(L, function(z) if (is.list(z$full_fit)) { # then it came from a call to cv
   	  risks <- vector("numeric", length(unique(z$folds)))
