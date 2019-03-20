@@ -91,7 +91,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	  for (v in 1:length(unique(z$folds))) {
   	      risks[v] <- risk_estimator(z$full_fit[[v]], y = z$y[z$folds == v], type = class(z)[2])
   	  }
-  	  mean(risks)
+  	  mean(risks, na.rm = TRUE)
   	  } else {
   	    risk_estimator(z$full_fit, y = z$y, type = class(z)[2])
   	  })
@@ -100,7 +100,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	  for (v in 1:length(unique(z$folds))) {
   	    risks[v] <- risk_estimator(z$red_fit[[v]], y = z$y[z$folds == v], type = class(z)[2])
   	  }
-  	  mean(risks)
+  	  mean(risks, na.rm = TRUE)
   	} else {
   	  risk_estimator(z$red_fit, y = z$y, type = class(z)[2])
   	})
@@ -110,7 +110,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	  for (v in 1:length(unique(z$folds))) {
   	    risks[v] <- vimp_se(risk_update(z$full_fit[[v]], y = z$y[z$folds == v], type = class(z)[2]))*sqrt(sum(z$folds == v))
   	  }
-  	  mean(risks)
+  	  mean(risks, na.rm = TRUE)
   	} else {
   	  vimp_se(risk_update(z$full_fit, y = z$y, type = class(z)[2]))*sqrt(length(z$y))
   	})
@@ -119,7 +119,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	  for (v in 1:length(unique(z$folds))) {
   	    risks[v] <- vimp_se(risk_update(z$red_fit[[v]], y = z$y[z$folds == v], type = class(z)[2]))*sqrt(sum(z$folds == v))
   	  }
-  	  mean(risks)
+  	  mean(risks, na.rm = TRUE)
   	} else {
   	  vimp_se(risk_update(z$red_fit, y = z$y, type = class(z)[2]))*sqrt(length(z$y))
   	})
