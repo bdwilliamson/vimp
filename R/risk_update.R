@@ -69,12 +69,12 @@ risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
   }
   
   ## influence curve
-  if (type %in% c("regression", "anova", "r_squared", "deviance")) {
+  if (type %in% c("r_squared", "deviance")) {
     ic_update <- d_risk/denom - num/(denom ^ 2)*d_denom    
   } else if (type %in% c("auc", "accuracy")) {
     # already computed it above
   } else {
-    stop("We currently do not support the entered variable importance parameter.")
+    # already computed it above
   }
   
   

@@ -148,12 +148,10 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
   	risk_full_se <- mean(unlist(risk_ses_full))/sqrt(length(Y))
   	risk_reduced_se <- mean(unlist(risk_ses_reduced))/sqrt(length(Y))
   	## cis
-  	risk_ci_full <- vimp_ci(risk_full, risk_full_se, 1 - level)
-  	risk_ci_reduced <- vimp_ci(risk_reduced, risk_reduced_se, 1 - level)
+  	risk_ci_full <- vimp_ci(risk_full, risk_full_se, 1 - alpha)
+  	risk_ci_reduced <- vimp_ci(risk_reduced, risk_reduced_se, 1 - alpha)
   	hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
   	
-  	
-
   	## create the output matrix
   	mat <- cbind.data.frame(est_avg, se_avg, ci_avg, hyp_test)
   	colnames(mat) <- c("est", "se", "cil", "ciu", "test")
@@ -180,7 +178,8 @@ average_vim <- function(..., Y, type = "r_squared", weights = rep(1/length(list(
               full_mod = full_mod, red_mod = red_mod,
               alpha = alpha)
     tmp <- class(output)
-    class(output) <- c("vim", "list", tmp)
+    classes <- unlist(lapply(L, function(z) class(z)[2]))
+    class(output) <- c("vim", classes, tmp)
 
     return(output)
 }
