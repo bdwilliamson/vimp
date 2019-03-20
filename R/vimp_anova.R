@@ -148,6 +148,7 @@ vimp_anova <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TR
                  naive = ests[2],
                  update = update,
                  se = se, ci = ci, 
+                 test = NA,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha)
