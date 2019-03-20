@@ -34,6 +34,7 @@
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
+#'  \item{y}{ - the outcome}
 #' }
 #'
 #' @examples

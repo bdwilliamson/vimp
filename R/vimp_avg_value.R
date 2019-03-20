@@ -31,6 +31,7 @@
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
+#'  \item{y}{ - the outcome}
 #' }
 #'
 #' @examples
@@ -138,10 +139,11 @@ vimp_avg_value <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression 
                  se = se, ci = ci, 
                  full_mod = full, 
                  red_mod = reduced,
-                 alpha = alpha)
+                 alpha = alpha,
+                 y = Y))
 
   ## make it also an vim and vim_regression object
   tmp.cls <- class(output)
-  class(output) <- c("vim", "vim_accuracy", tmp.cls)
+  class(output) <- c("vim", "avg_value", tmp.cls)
   return(output)
 }
