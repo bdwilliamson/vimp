@@ -156,7 +156,7 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
-                 y = Y))
+                 y = Y)
 
   ## make it also an vim and vim_regression object
   tmp.cls <- class(output)
