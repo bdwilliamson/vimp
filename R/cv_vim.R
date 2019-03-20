@@ -41,6 +41,7 @@
 #'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
 #'  \item{folds}{ - the folds used for cross-validation}
+#'  \item{y}{ - the outcome}
 #' }
 #'
 #' @examples
@@ -229,10 +230,11 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
-                 folds = folds)
+                 folds = folds,
+                 y = Y)
 
   ## make it also an vim object
   tmp.cls <- class(output)
-  class(output) <- c("vim", c("vim_regression", "vim_anova", "vim_deviance", "vim_auc", "vim_accuracy", "vim_avg_value")[grepl(type,  c("vim_regression", "vim_anova", "vim_deviance", "vim_auc", "vim_accuracy", "vim_avg_value"))], tmp.cls)
+  class(output) <- c("vim", type, tmp.cls)
   return(output)
 }
