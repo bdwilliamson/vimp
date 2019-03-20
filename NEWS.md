@@ -1,3 +1,15 @@
+# vimp 1.2.1
+
+## Major changes
+
+* Added new functions `risk_estimator`, `risk_update`, `vimp_hypothesis_test`, `vimp_avg_value`
+* `cv_vim_nodonsker` is now deprecated; use `cv_vim` instead
+* All variable importance functions with the exception of `vimp_anova` now return the results of a (potentially conservative) hypothesis test against the null of zero importance
+
+## Minor changes
+
+None
+
 # vimp 1.2.0
 
 ## Major changes
