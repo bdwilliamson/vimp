@@ -292,7 +292,7 @@ lm.mat <- merge_vim(lm.vim.crim, lm.vim.zn, lm.vim.indus, lm.vim.chas,
                 lm.vim.nox, lm.vim.rm, lm.vim.age, lm.vim.dis, lm.vim.rad,
                 lm.vim.tax, lm.vim.ptratio, lm.vim.black, lm.vim.lstat)
 ## print out the matrix
-lm.mat$mat
+lm.mat
 ```
 
 ### Building a library of learners
