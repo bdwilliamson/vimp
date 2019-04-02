@@ -117,7 +117,7 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
     fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
     
     ## get the fitted values on splits for hypothesis testing
-    folds <- sample(1:2, length(fhat_ful), prob = c(0.5, 0.5))
+    folds <- sample(1:2, length(fhat_ful), replace = TRUE, prob = c(0.5, 0.5))
     split_full <- SuperLearner::SuperLearner(Y = Y[folds == 1], X = X[folds == 1, ], SL.library = SL.library, ...)
     split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == 2], X = X_minus_s[folds == 2, ], SL.library = SL.library, ...)
     
