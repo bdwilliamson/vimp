@@ -11,6 +11,9 @@
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
+#' @param f1_split the fitted values from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing).
+#' @param f2_split the fitted values from a flexible estimation technique regressing the predicted values from \code{f1_split} on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).
+#' @param folds the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and \code{vim_rsquared}. See Details for more information.
@@ -75,7 +78,8 @@
 #' @export
 
 
-vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, 
+                          f1_split = NULL, f2_split = NULL, folds = NULL, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -111,6 +115,14 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
 
     ## get the fitted values
     fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
+    
+    ## get the fitted values on splits for hypothesis testing
+    folds <- sample(1:2, length(fhat_ful), prob = c(0.5, 0.5))
+    split_full <- SuperLearner::SuperLearner(Y = Y[folds == 1], X = X[folds == 1, ], SL.library = SL.library, ...)
+    split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == 2], X = X_minus_s[folds == 2, ], SL.library = SL.library, ...)
+    
+    fhat_split_ful <- SuperLearner::predict.SuperLearner(split_full)$pred
+    fhat_split_red <- SuperLearner::predict.SuperLearner(split_reduced)$pred
 
   } else { ## otherwise they are fitted values
 
@@ -123,7 +135,12 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
     fhat_ful <- f1
     fhat_red <- f2
 
-    full <- reduced <- NA    
+    full <- reduced <- NA 
+    
+    ## get the hypothesis testing objects
+    split_full <- split_reduced <- NA
+    fhat_split_ful <- f1_split
+    fhat_split_red <- f2_split
   }
 
   ## calculate the estimators 
@@ -139,7 +156,7 @@ vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression =
   ci <- vimp_ci(ests[2], se, level = 1 - alpha)
   
   ## perform a hypothesis test against the null of zero importance
-  hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, type = "r_squared", level = alpha, na.rm = na.rm)
+  hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, type = "r_squared", level = alpha, na.rm = na.rm)
   
   ## get the call
   cl <- match.call()

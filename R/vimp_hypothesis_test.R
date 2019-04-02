@@ -1,13 +1,14 @@
 #' Perform a hypothesis test against the null hypothesis of zero importance
 #'
 #' Perform a hypothesis test against the null hypothesis of zero importance by: 
-#' (i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the risk for both the full and reduced regression functions;
+#' (i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the risk for both the full and reduced regression functions (these must be estimated on independent splits of the data);
 #' (ii) if the intervals do not overlap, reject the null hypothesis.
 #'
-#' @param full fitted values from a regression of the outcome on the full set of covariates.
-#' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.
+#' @param full fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data.
+#' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates, from an independent split from the data used to estimate the full regression.
 #' @param y the outcome.
-#' @param type which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?
+#' @param folds the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression.
+#' @param type which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?
 #' @param level the desired type I error rate (defaults to 0.05).
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
@@ -17,19 +18,19 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-vimp_hypothesis_test <- function(full, reduced, y, type = "r_squared", level = 0.05, na.rm = FALSE) {
+vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", level = 0.05, na.rm = FALSE) {
   
   ## calculate the necessary pieces for the influence curve
   if (type == "regression" | type == "anova") {
     hyp_test <- NA
   } else {
     ## point estimates of the risk
-    risk_full <- risk_estimator(fitted_values = full, y = y, type = type, na.rm = na.rm)
-    risk_reduced <- risk_estimator(fitted_values = reduced, y = y, type = type, na.rm = na.rm)
+    risk_full <- risk_estimator(fitted_values = full, y = y[folds == 1], type = type, na.rm = na.rm)
+    risk_reduced <- risk_estimator(fitted_values = reduced, y = y[folds == 2], type = type, na.rm = na.rm)
 
     ## influence curve estimates for the risk
-    ic_full <- risk_update(fitted_values = full, y = y, type = type, na.rm = na.rm)
-    ic_reduced <- risk_update(fitted_values = reduced, y = y, type = type, na.rm = na.rm)
+    ic_full <- risk_update(fitted_values = full, y = y[folds == 1], type = type, na.rm = na.rm)
+    ic_reduced <- risk_update(fitted_values = reduced, y = y[folds == 2], type = type, na.rm = na.rm)
 
     ## CIs for both risks
     risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = 1 - level)
