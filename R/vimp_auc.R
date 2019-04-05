@@ -119,7 +119,9 @@ vimp_auc <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE
     if (is.null(Y)) stop("Y must be entered.")
     if (length(f1) != length(Y)) stop("Fitted values from the full regression must be the same length as Y.")
     if (length(f2) != length(Y)) stop("Fitted values from the reduced regression must be the same length as Y.")
-
+    ## if f1_split or f2_split are not entered, don't do a hypothesis test; print a warning
+    if (is.null(f1_split) | is.null(f2_split)) warning("Fitted values from independent data splits must be entered to perform a hypothesis test; hypothesis testing not done.")
+    
     ## set up the fitted value objects
     fhat_ful <- f1
     fhat_red <- f2
@@ -145,8 +147,12 @@ vimp_auc <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE
   ci <- vimp_ci(ests[2], se, level = 1 - alpha)
   
   ## perform a hypothesis test against the null of zero importance
-  hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, type = "auc", level = alpha, na.rm = na.rm)
-  
+  if (!is.null(fhat_split_ful) & !is.null(fhat_split_red)) {
+    hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, type = "auc", level = alpha, na.rm = na.rm)  
+  } else {
+    hyp_test <- NA
+  }
+
   ## get the call
   cl <- match.call()
 
