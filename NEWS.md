@@ -1,3 +1,15 @@
+# vimp 1.3.0
+
+## Major changes
+
+* added new function `vim`; each variable importance function is now a wrapper function around `vim` with the `type` argument filled in
+* each variable importance function now returns a p-value based on the (possibly conservative) hypothesis test against the null of zero importance (with the exception of `vimp_anova`)
+* each variable importance function now returns the estimates of the individual risks (with the exception of `vimp_anova`)
+
+## Minor changes
+
+None
+
 # vimp 1.2.1
 
 ## Major changes
