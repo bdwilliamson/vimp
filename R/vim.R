@@ -120,13 +120,23 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
     ## get the fitted values
     fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
     
-    ## get the fitted values on splits for hypothesis testing
-    folds <- sample(1:2, length(fhat_ful), replace = TRUE, prob = c(0.5, 0.5))
-    split_full <- SuperLearner::SuperLearner(Y = Y[folds == 1], X = X[folds == 1, ], SL.library = SL.library, ...)
-    split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == 2], X = X_minus_s[folds == 2, ], SL.library = SL.library, ...)
+    ## get the fitted values on splits for hypothesis testing; not if type == "anova" 
+    if (type == "anova") {
+      folds <- sample(1:2, length(fhat_ful), replace = TRUE, prob = c(0.5, 0.5))
+      split_full <- SuperLearner::SuperLearner(Y = Y[folds == 1], X = X[folds == 1, ], SL.library = SL.library, ...)
+      split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == 2], X = X_minus_s[folds == 2, ], SL.library = SL.library, ...)
+      
+      fhat_split_ful <- SuperLearner::predict.SuperLearner(split_full)$pred
+      fhat_split_red <- SuperLearner::predict.SuperLearner(split_reduced)$pred  
+    } else {
+      folds <- NA
+      split_full <- NA
+      split_reduced <- NA
+      
+      fhat_split_ful <- NA
+      fhat_split_red <- NA
+    }
     
-    fhat_split_ful <- SuperLearner::predict.SuperLearner(split_full)$pred
-    fhat_split_red <- SuperLearner::predict.SuperLearner(split_reduced)$pred
     
   } else { ## otherwise they are fitted values
     
@@ -162,7 +172,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
   ci <- vimp_ci(ests[2], se, level = 1 - alpha)
   
   ## perform a hypothesis test against the null of zero importance
-  if (!is.null(fhat_split_ful) & !is.null(fhat_split_red)) {
+  if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & type != "anova") {
     hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, type = type, level = alpha, na.rm = na.rm)  
   } else {
     hyp_test <- NA

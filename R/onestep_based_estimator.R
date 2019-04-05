@@ -22,7 +22,11 @@ onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FA
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)
     } else {
+      if (dim(y)[2] == 1) {
+        y_mult <- cbind(1 - y, y) 
+      } else {
         y_mult <- y
+      }
     }
     if (is.null(dim(full))) { # assume predicting y = 1
       full_mat <- cbind(1 - full, full)
