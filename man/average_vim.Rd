@@ -7,7 +7,7 @@
 average_vim(..., weights = rep(1/length(list(...)), length(list(...))))
 }
 \arguments{
-\item{...}{an arbitrary number of \code{vim} objects}
+\item{...}{an arbitrary number of \code{vim} objects.}
 
 \item{weights}{how to average the vims together, and must sum to 1; defaults to 1/(number of vims) for each vim, corresponding to the arithmetic mean}
 }
@@ -27,6 +27,7 @@ This results in a list containing:
  \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
+ \item{y}{ - a list of the outcomes}
 }
 }
 \description{

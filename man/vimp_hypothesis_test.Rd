@@ -4,17 +4,19 @@
 \alias{vimp_hypothesis_test}
 \title{Perform a hypothesis test against the null hypothesis of zero importance}
 \usage{
-vimp_hypothesis_test(full, reduced, y, type = "r_squared",
+vimp_hypothesis_test(full, reduced, y, folds, type = "r_squared",
   level = 0.05, na.rm = FALSE)
 }
 \arguments{
-\item{full}{fitted values from a regression of the outcome on the full set of covariates.}
+\item{full}{fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data.}
 
-\item{reduced}{fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.}
+\item{reduced}{fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates, from an independent split from the data used to estimate the full regression.}
 
 \item{y}{the outcome.}
 
-\item{type}{which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?}
+\item{folds}{the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression.}
+
+\item{type}{which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?}
 
 \item{level}{the desired type I error rate (defaults to 0.05).}
 
@@ -25,7 +27,7 @@ vimp_hypothesis_test(full, reduced, y, type = "r_squared",
 }
 \description{
 Perform a hypothesis test against the null hypothesis of zero importance by: 
-(i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the risk for both the full and reduced regression functions;
+(i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the risk for both the full and reduced regression functions (these must be estimated on independent splits of the data);
 (ii) if the intervals do not overlap, reject the null hypothesis.
 }
 \details{

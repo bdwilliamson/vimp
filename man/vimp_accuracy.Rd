@@ -6,7 +6,8 @@
 \usage{
 vimp_accuracy(Y, X, f1 = NULL, f2 = NULL, indx = 1,
   run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
+  "SL.mean"), alpha = 0.05, na.rm = FALSE, f1_split = NULL,
+  f2_split = NULL, folds = NULL, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -27,13 +28,19 @@ vimp_accuracy(Y, X, f1 = NULL, f2 = NULL, indx = 1,
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
+\item{f1_split}{the fitted values from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing).}
+
+\item{f2_split}{the fitted values from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).}
+
+\item{folds}{the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.}
+
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
 An object of classes \code{vim} and \code{vim_accuracy}. See Details for more information.
 }
 \description{
-Compute estimates of and confidence intervals for nonparametric difference in misclassification rate-based variable importance.
+Compute estimates of and confidence intervals for nonparametric difference in misclassification rate-based variable importance. This is a wrapper function for \code{vim}, with \code{type = "accuracy"}.
 }
 \details{
 In the interest of transparency, we return most of the calculations
@@ -52,6 +59,7 @@ within the \code{vim} object. This results in a list containing:
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
+ \item{y}{ - the outcome}
 }
 }
 \examples{

@@ -7,7 +7,9 @@
 cv_vim(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
   type = "r_squared", run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  na.rm = FALSE, ...)
+  na.rm = FALSE, f1_split = NULL, f2_split = NULL,
+  folds_hyp_outer = NULL, folds_hyp_inner_1 = NULL,
+  folds_hyp_inner_2 = NULL, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -33,6 +35,16 @@ cv_vim(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
 \item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
+
+\item{f1_split}{the predicted values on validation data from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing); a list of length V, where each object is a set of predictions on the validation data.}
+
+\item{f2_split}{the predicted values on validation data from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing); a list of length V, where each object is a set of predictions on the validation data.}
+
+\item{folds_hyp_outer}{the folds used to create two independent splits of the data for hypothesis testing.}
+
+\item{folds_hyp_inner_1}{the within-fold-1 CV folds.}
+
+\item{folds_hyp_inner_2}{the within-fold-2 CV folds.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -66,6 +78,7 @@ within the \code{vim} object. This results in a list containing:
  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
  \item{folds}{ - the folds used for cross-validation}
+ \item{y}{ - the outcome}
 }
 }
 \examples{
