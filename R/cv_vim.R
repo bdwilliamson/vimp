@@ -16,6 +16,11 @@
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
+#' @param f1_split the predicted values on validation data from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing); a list of length V, where each object is a set of predictions on the validation data.
+#' @param f2_split the predicted values on validation data from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing); a list of length V, where each object is a set of predictions on the validation data.
+#' @param folds_hyp_outer the folds used to create two independent splits of the data for hypothesis testing.
+#' @param folds_hyp_inner_1 the within-fold-1 CV folds.
+#' @param folds_hyp_inner_2 the within-fold-2 CV folds.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -105,7 +110,10 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squared", run_regression = TRUE, 
+                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
+                   f1_split = NULL, f2_split = NULL, folds_hyp_outer = NULL, folds_hyp_inner_1 = NULL,
+                   folds_hyp_inner_2 = NULL, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -119,9 +127,16 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
     ## set up the cross-validation
     folds <- rep(seq_len(V), length = dim(Y)[1])
     folds <- sample(folds)
+    ## set up the independent splits for hypothesis testing, and CV within each separate split
+    folds_hyp_outer <- rep(1:2, length = dim(Y)[1])
+    folds_hyp_outer <- sample(folds_hyp_outer)
+    folds_hyp_inner_1 <- sample(seq_len(V), length = sum(folds_hyp_outer == 1))
+    folds_hyp_inner_2 <- sample(seq_len(V), length = sum(folds_hyp_outer == 2))
     ## fit the super learner on each full/reduced pair
     fhat_ful <- list()
     fhat_red <- list()
+    fhat_split_ful <- list()
+    fhat_split_red <- list()
     for (v in 1:V) {
       ## fit super learner
       fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
@@ -131,13 +146,15 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
       fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
                                                           newdata = X[folds == v, , drop = FALSE])$pred
       ## fit the super learner on the reduced covariates:
-      ## always use gaussian; if first regression was mean, use Y instead
+      ## if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
       arg_lst <- list(...)
       if (length(unique(fitted_v)) == 1) {
         arg_lst$Y <- Y[folds != v, , drop = FALSE]
-      } else {
+      } else if (type == "r_squared" | type == "anova") {
         arg_lst$family <- stats::gaussian()
         arg_lst$Y <- fitted_v 
+      } else {
+        # do nothing
       }
       arg_lst$X <- X[folds != v, -indx, drop = FALSE]
       arg_lst$SL.library <- SL.library
@@ -145,8 +162,19 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
       ## get predictions on the validation fold
       fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
                                                           newdata = X[folds == v, -indx, drop = FALSE])$pred
+
+      ## get hypothesis testing fits
+      fit_split_ful <- SuperLearner::SuperLearner(Y = Y[folds_hyp_outer == 1 & folds_hyp_inner_1 != v, , drop = FALSE],
+                                        X = X[folds_hyp_outer == 1 & folds_hyp_inner_1 != v, , drop = FALSE], SL.library = SL.library, ...)
+      fhat_split_ful[[v]] <- SuperLearner::predict.SuperLearner(fit_split_1,
+                                                              newdata = X[folds_hyp_outer == 1 & folds_hyp_inner_1 == v, , drop = FALSE])$pred
+      fit_split_red <- SuperLearner::SuperLearner(Y = Y[folds_hyp_outer == 2 & folds_hyp_inner_2 != v, , drop = FALSE],
+                                        X = X[folds_hyp_outer == 2 & folds_hyp_inner_2 != v, , drop = FALSE], SL.library = SL.library, ...)
+      fhat_split_red[[v]] <- SuperLearner::predict.SuperLearner(fit_split_2,
+                                                              newdata = X[folds_hyp_outer == 2 & folds_hyp_inner_2 == v, , drop = FALSE])$pred
     }
     full <- reduced <- NA
+    split_full <- split_reduced <- NA
 
   } else { ## otherwise they are fitted values
 
@@ -157,12 +185,20 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
     if (is.null(folds)) stop("You must specify a vector of folds.")
     if (length(f1) != V) stop("The number of folds from the full regression must be the same length as the number of folds.")
     if (length(f2) != V) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
-    
+    ## if f1_split or f2_split are not entered, don't do a hypothesis test; print a warning
+    if (is.null(f1_split) | is.null(f2_split)) warning("Fitted values from independent data splits must be entered to perform a hypothesis test; hypothesis testing not done.")
+    ## if they aren't the correct length, don't do a hypothesis test; print a warning
+    if (length(f1_split) != V | length(f2_split) != V) warning("The number of folds from the first split must be the same length as the nubmer of folds requested; hypothesis testing not done.")
     ## set up the fitted value objects (both are lists of lists!)
     fhat_ful <- f1
     fhat_red <- f2
     
-    full <- reduced <- NA    
+    full <- reduced <- NA  
+
+    ## get the hypothesis testing objects
+    split_full <- split_reduced <- NA
+    fhat_split_ful <- f1_split
+    fhat_split_red <- f2_split
   }
 
   ## calculate the estimate
@@ -181,13 +217,23 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
     ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
     
-    ## calculate risks, risk updates/ses
-    risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_ses_full[v] <- vimp_se(risk_updates_full[v], na.rm = na.rm)*sqrt(sum(folds == v))
-    risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_ses_reduced[v] <- vimp_se(risk_updates_reduced[v], na.rm = na.rm)*sqrt(sum(folds == v))
+    ## calculate risks, risk updates/ses, for hypothesis testing; only if the ones aren't null
+    if (!is.null(fhat_split_ful)) {
+        risks_full[v] <- risk_estimator(fhat_split_ful[[v]], Y[folds_hyp_outer == 1 & folds_hyp_inner_1 == v, ], type = type, na.rm = na.rm)
+        risk_updates_full[v] <- mean(risk_update(fhat_split_ful[[v]], Y[folds_hyp_outer == 1 & folds_hyp_inner_1 == v, ], type = type, na.rm = na.rm))
+        risk_ses_full[v] <- vimp_se(risk_updates_full[v], na.rm = na.rm)*sqrt(sum(folds == v))
+        risks_reduced[v] <- risk_estimator(fhat_split_red[[v]], Y[folds_hyp_outer == 2 & folds_hyp_inner_2 == v, ], type = type, na.rm = na.rm)
+        risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds_hyp_outer == 2 & folds_hyp_inner_2 == v, ], type = type, na.rm = na.rm))
+        risk_ses_reduced[v] <- vimp_se(risk_updates_reduced[v], na.rm = na.rm)*sqrt(sum(folds == v))    
+    } else {
+        risks_full[v] <- NA
+        risk_updates_full[v] <- NA
+        risk_ses_full[v] <- NA
+        risks_reduced[v] <- NA
+        risk_updates_reduced[v] <- NA
+        risk_ses_reduced[v] <- NA
+    }
+    
   }
   ## estimator, naive (if applicable)
   if (type == "regression" | type == "anova") {
