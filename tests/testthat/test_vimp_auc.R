@@ -6,14 +6,36 @@ library("SuperLearner")
 library("vimp")
 
 ## generate the data
-set.seed(4747)
-f <- function(x) 0.5 + 0.3*x[1] + 0.2*x[2]
-t <- c(0.1050905, 0.03831476)
-p <- 2
+make_y <- function(b, p) rbinom(b, 1, p)
+make_x <- function(b, mu_0, mu_1, sigma, y) {
+  n_col <- ifelse(!is.null(dim(mu_0)), dim(mu_0)[2], length(mu_0))
+  x <- matrix(0, nrow = b, ncol = n_col)
+  x[y == 0, ] <- MASS::mvrnorm(n = sum(y == 0), mu = mu_0, Sigma = sigma)
+  x[y == 1, ] <- MASS::mvrnorm(n = sum(y == 1), mu = mu_1, Sigma = sigma)
+  if (n_col == 1) {
+    x <- cbind(x, stats::rnorm(b, 0, 1))
+  }
+  return(x)
+}
+gen_data <- function(a, mu_0, mu_1, sigma, p, j) {
+  ## create y
+  y <- make_y(a, p)
+  # create x
+  # x <- make_x(a)
+  x <- make_x(a, mu_0, mu_1, sigma, y)
+  red_x <- x[, -j]
+  
+  return(list(x = x, red_x = red_x, y = y, j = j))
+}
+mu_0 <- matrix(c(0, 0), nrow = 1)
+mu_1 <- matrix(c(1.5, 2), nrow = 1)
+Sigma <- diag(1, nrow = 2)
+t <- c(0.04011305, 0.1058621)
 n <- 10000
-x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
-smooth <- apply(x, 1, function(z) f(z))
-y <- matrix(stats::rbinom(n, size = 1, prob = smooth))
+set.seed(4747)
+dat <- gen_data(n, mu_0, mu_1, Sigma, p = 0.6, j = 1)
+y <- dat$y
+x <- as.data.frame(dat$x)
 
 ## set up a library for SuperLearner
 learners <- "SL.gam"

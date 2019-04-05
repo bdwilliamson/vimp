@@ -162,6 +162,14 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
   ## calculate the estimators 
   ests <- onestep_based_estimator(fhat_ful, fhat_red, Y, type = type, na.rm = na.rm)
   
+  ## if type = "anova", then use onestep; else use naive
+  if (type == "anova") {
+    est <- ests[1]
+    naive <- ests[2]
+  } else {
+    est <- ests[2]
+    naive <- NA
+  }
   ## compute the update
   update <- vimp_update(fhat_ful, fhat_red, Y, type = type, na.rm = na.rm)
   
@@ -169,7 +177,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
   se <- vimp_se(update, na.rm = na.rm)
   
   ## compute the confidence interval
-  ci <- vimp_ci(ests[2], se, level = 1 - alpha)
+  ci <- vimp_ci(est, se, level = 1 - alpha)
   
   ## perform a hypothesis test against the null of zero importance
   if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & type != "anova") {
@@ -185,8 +193,8 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
   output <- list(call = cl, s = indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red, 
-                 est = ests[2],
-                 naive = ests[2],
+                 est = est,
+                 naive = naive,
                  update = update,
                  se = se, ci = ci, 
                  test = hyp_test,

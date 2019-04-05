@@ -1,4 +1,4 @@
-context("test_vimp_deviance.R")
+context("test_vimp_accuracy.R")
 
 ## load required functions and packages
 library("testthat")
@@ -30,7 +30,7 @@ gen_data <- function(a, mu_0, mu_1, sigma, p, j) {
 mu_0 <- matrix(c(0, 0), nrow = 1)
 mu_1 <- matrix(c(1.5, 2), nrow = 1)
 Sigma <- diag(1, nrow = 2)
-t <- c(0.14293485, 0.3001422)
+t <- c(0.05110135, 0.1158337)
 n <- 10000
 set.seed(4747)
 dat <- gen_data(n, mu_0, mu_1, Sigma, p = 0.6, j = 1)
@@ -48,7 +48,7 @@ full_fitted <- predict(full_fit)$pred
 reduced_fit <- SuperLearner(Y = y, X = x[, -1, drop = FALSE], SL.library = learners, family = "binomial")
 reduced_fitted <- predict(reduced_fit)$pred
 
-test_that("Test deviance-based variable importance", {
-  est <- vimp_deviance(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
+test_that("Test accuracy-based variable importance", {
+  est <- vimp_accuracy(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
   expect_equal(est$est, t[1], tolerance = 0.02)
 })

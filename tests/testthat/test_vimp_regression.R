@@ -9,9 +9,9 @@ library("vimp")
 set.seed(4747)
 p <- 2
 n <- 10000
-x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
+x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
 ## apply the function to the x's
-y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
+y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + stats::rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
 learners <- "SL.gam"
