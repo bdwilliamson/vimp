@@ -33,6 +33,8 @@
 #'  \item{update}{ - the influence curve-based update}
 #'  \item{se}{ - the standard error for the estimated variable importance}
 #'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
+#'  \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
+#'  \item{pval}{ - a conservative p-value based on the same conservative test as \code{test}}
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
@@ -78,7 +80,7 @@
 #' @export
 
 
-vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, 
+vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, 
                           f1_split = NULL, f2_split = NULL, folds = NULL, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
@@ -178,6 +180,7 @@ vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_square
                  update = update,
                  se = se, ci = ci, 
                  test = hyp_test,
+                 pval = NA,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,

@@ -74,6 +74,6 @@
 
 
 vimp_avg_value <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
-  vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, type = "avg_value", run_regression = run_regression, SL.libary = SL.library, alpha = alpha, na.rm = na.rm,
+  vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, type = "avg_value", run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm,
         f1_split = f1_split, f2_split = f2_split, folds = folds, ...)
 }
