@@ -121,7 +121,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
     fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
     
     ## get the fitted values on splits for hypothesis testing; not if type == "anova" 
-    if (type == "anova") {
+    if (type != "anova") {
       folds <- sample(1:2, length(fhat_ful), replace = TRUE, prob = c(0.5, 0.5))
       split_full <- SuperLearner::SuperLearner(Y = Y[folds == 1], X = X[folds == 1, ], SL.library = SL.library, ...)
       split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == 2], X = X_minus_s[folds == 2, ], SL.library = SL.library, ...)
@@ -145,7 +145,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
     if (length(f1) != length(Y)) stop("Fitted values from the full regression must be the same length as Y.")
     if (length(f2) != length(Y)) stop("Fitted values from the reduced regression must be the same length as Y.")
     ## if f1_split or f2_split are not entered, don't do a hypothesis test; print a warning
-    if (is.null(f1_split) | is.null(f2_split)) warning("Fitted values from independent data splits must be entered to perform a hypothesis test; hypothesis testing not done.")
+    if (type != "anova" & (is.null(f1_split) | is.null(f2_split))) warning("Fitted values from independent data splits must be entered to perform a hypothesis test; hypothesis testing not done.")
     
     ## set up the fitted value objects
     fhat_ful <- f1
