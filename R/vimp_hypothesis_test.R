@@ -38,6 +38,13 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
     ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
     ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
     hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
+
+    ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
+    levels <- seq(0.0001, 1 - 0.0001, 0.0001)
+    risk_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = x)))
+    risk_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_reduced, se = vimp_se(ic_reduced, na.rm = na.rm), level = x)))
+    hyp_tests <- risk_cis_full[, 1] > risk_cis_redu[, 2]
+    pval <- ifelse(all(hyp_tests), 0.0001, min(levels[hyp_tests]))
   } 
   
   return(hyp_test)
