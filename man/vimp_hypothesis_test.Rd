@@ -5,22 +5,26 @@
 \title{Perform a hypothesis test against the null hypothesis of zero importance}
 \usage{
 vimp_hypothesis_test(full, reduced, y, folds, type = "r_squared",
-  level = 0.05, na.rm = FALSE)
+  level = 0.05, cv = FALSE, na.rm = FALSE)
 }
 \arguments{
-\item{full}{fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data.}
+\item{full}{either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
 
-\item{reduced}{fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates, from an independent split from the data used to estimate the full regression.}
+\item{reduced}{fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates; either (i) a single set of predictions (if \code{cv = FALSE}) fit on an independent split of the data from \code{full} or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
 
 \item{y}{the outcome.}
 
-\item{folds}{the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression.}
+\item{folds}{the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression (if V = 2).}
 
 \item{type}{which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?}
 
 \item{level}{the desired type I error rate (defaults to 0.05).}
 
+\item{cv}{was V-fold cross-validation used to estimate the risks (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.}
+
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
+
+\item{V}{the number of folds used, defaults to 2.}
 }
 \value{
 \code{TRUE} if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, \code{FALSE}.
