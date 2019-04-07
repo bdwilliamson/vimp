@@ -50,7 +50,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
         hyp_tests <- risk_cis_full[, 1] > risk_cis_redu[, 2]
         if (all(hyp_tests)) {
           p_value <- 0.0001
-        } else if (none(hyp_tests)) {
+        } else if (!any(hyp_tests)) {
           p_value <- 1
         } else {
           p_value <- min(levels[hyp_tests])
@@ -90,7 +90,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
             many_hyp_tests <- apply((risk_cis_full[, 1] > risks_cis_red[, c(FALSE, TRUE)]), 1, all)
             if (all(many_hyp_tests)) {
               p_values[v] <- 0.0001
-            } else if (none(many_hyp_tests)) {
+            } else if (!any(many_hyp_tests)) {
               p_values[v] <- 1
             } else {
               p_values[v] <- min(levels[many_hyp_tests])
