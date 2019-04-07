@@ -105,7 +105,7 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squared", run_regression = TRUE, 
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, type = "r_squared", run_regression = TRUE, 
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
                    f1_split = NULL, f2_split = NULL, folds_hyp_outer = NULL, folds_hyp_inner_1 = NULL,
                    folds_hyp_inner_2 = NULL, ...) {
