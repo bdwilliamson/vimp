@@ -48,7 +48,13 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
         risk_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = x)))
         risk_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_reduced, se = vimp_se(ic_reduced, na.rm = na.rm), level = x)))
         hyp_tests <- risk_cis_full[, 1] > risk_cis_redu[, 2]
-        p_value <- ifelse(all(hyp_tests), 0.0001, min(levels[hyp_tests]))        
+        if (all(hyp_tests)) {
+          p_value <- 0.0001
+        } else if (none(hyp_tests)) {
+          p_value <- 1
+        } else {
+          p_value <- min(levels[hyp_tests])
+        }
         
     } else { ## V-fold CV, reject iff ALL pairwise comparisons have no overlapping CI
         V <- length(unique(folds))
@@ -82,7 +88,13 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
                                                                                  est = risks_red, se = lapply(ics_red, vimp_se, na.rm = na.rm),
                                                                                  MoreArgs = list(level = x), SIMPLIFY = "matrix")))
             many_hyp_tests <- apply((risk_cis_full[, 1] > risks_cis_red[, c(FALSE, TRUE)]), 1, all)
-            p_values[v] <- ifelse(all(many_hyp_tests), 0.0001, min(levels[many_hyp_tests]))        
+            if (all(many_hyp_tests)) {
+              p_values[v] <- 0.0001
+            } else if (none(many_hyp_tests)) {
+              p_values[v] <- 1
+            } else {
+              p_values[v] <- min(levels[many_hyp_tests])
+            }
         }
         hyp_test <- all(hyp_tests)
         p_value <- max(p_values)
