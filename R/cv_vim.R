@@ -213,9 +213,14 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
   ci <- vimp_ci(est, se, 1 - alpha)
   
   ## compute a hypothesis test against the null of zero importance
+  ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks
   if (type == "regression" | type == "anova") {
     hyp_test <- NA
   } else {
+    ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
+    for (v in 1:V) {
+        
+    }
     risk_ci_full <- vimp_ci(mean(risks_full), mean(risk_ses_full)/sqrt(dim(Y)[1]), 1 - alpha)
     risk_ci_reduced <- vimp_ci(mean(risks_reduced), mean(risk_ses_reduced)/sqrt(dim(Y)[1]), 1 - alpha)
     hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
@@ -235,6 +240,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
                  update = updates,
                  se = se, ci = ci, 
                  test = hyp_test,
+                 p_value = p_value,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,

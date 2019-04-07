@@ -183,7 +183,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
   if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & type != "anova") {
     hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, type = type, level = alpha, na.rm = na.rm)  
   } else {
-    hyp_test <- NA
+    hyp_test <- list(test = NA, p_value = NA)
   }
   
   ## get the call
@@ -197,8 +197,8 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
                  naive = naive,
                  update = update,
                  se = se, ci = ci, 
-                 test = hyp_test,
-                 pval = NA,
+                 test = hyp_test$test,
+                 p_value = hyp_test$p_value,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
