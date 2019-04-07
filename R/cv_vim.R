@@ -106,9 +106,7 @@
 
 
 cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, type = "r_squared", run_regression = TRUE, 
-                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
-                   f1_split = NULL, f2_split = NULL, folds_hyp_outer = NULL, folds_hyp_inner_1 = NULL,
-                   folds_hyp_inner_2 = NULL, ...) {
+                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
   if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
