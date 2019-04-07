@@ -164,7 +164,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
     if (length(f1) != V) stop("The number of folds from the full regression must be the same length as the number of folds.")
     if (length(f2) != V) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
     if (type == "anova") warning("Hypothesis testing is not available for ANOVA-based variable importance.")
-    ## set up the fitted value objects (both are lists of lists!)
+    ## set up the fitted value objects (both are lists!)
     fhat_ful <- f1
     fhat_red <- f2
     
@@ -188,12 +188,12 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
     ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
     
-    ## calculate risks, risk updates/ses, for hypothesis testing; only if the ones aren't null
-    risks_full[v] <- risk_estimator(fhat_split_ful[[v]], Y[folds_hyp_outer == 1 & folds_hyp_inner_1 == v, ], type = type, na.rm = na.rm)
-    risk_updates_full[v] <- mean(risk_update(fhat_split_ful[[v]], Y[folds_hyp_outer == 1 & folds_hyp_inner_1 == v, ], type = type, na.rm = na.rm))
+    ## calculate risks, risk updates/ses
+    risks_full[v] <- risk_estimator(fhat_split_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_updates_full[v] <- mean(risk_update(fhat_split_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
     risk_ses_full[v] <- vimp_se(risk_updates_full[v], na.rm = na.rm)*sqrt(sum(folds == v))
-    risks_reduced[v] <- risk_estimator(fhat_split_red[[v]], Y[folds_hyp_outer == 2 & folds_hyp_inner_2 == v, ], type = type, na.rm = na.rm)
-    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds_hyp_outer == 2 & folds_hyp_inner_2 == v, ], type = type, na.rm = na.rm))
+    risks_reduced[v] <- risk_estimator(fhat_split_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
     risk_ses_reduced[v] <- vimp_se(risk_updates_reduced[v], na.rm = na.rm)*sqrt(sum(folds == v))    
     
   }
@@ -215,15 +215,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
   ## compute a hypothesis test against the null of zero importance
   ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks
   if (type == "regression" | type == "anova") {
-    hyp_test <- NA
+    hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
   } else {
     ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
-    for (v in 1:V) {
-        
-    }
-    risk_ci_full <- vimp_ci(mean(risks_full), mean(risk_ses_full)/sqrt(dim(Y)[1]), 1 - alpha)
-    risk_ci_reduced <- vimp_ci(mean(risks_reduced), mean(risk_ses_reduced)/sqrt(dim(Y)[1]), 1 - alpha)
-    hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
+    hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, )
   }
   
   
@@ -239,8 +234,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = 10, folds = NULL, type = "r_squar
                  ests = est_cv,
                  update = updates,
                  se = se, ci = ci, 
-                 test = hyp_test,
-                 p_value = p_value,
+                 test = hyp_test$test,
+                 p_value = hyp_test$p_value,
+                 risk_full = hyp_test$risk_full,
+                 risk_red = hyp_test$risk_reduced,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
