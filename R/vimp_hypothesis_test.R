@@ -51,7 +51,10 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
         p_value <- ifelse(all(hyp_tests), 0.0001, min(levels[hyp_tests]))        
         
     } else { ## V-fold CV, reject iff ALL pairwise comparisons have no overlapping CI
-        hyp_tests <- 
+        hyp_tests <- vector("logical", V)
+        p_values <- vector("numeric", V)
+        risks_full <- vector("numeric", V)
+        risks_reduced <- vector("numeric", V)
         for (v in 1:V) {
             other_folds <- (1:V)[-v]
             ## compute the full risk on fold v
@@ -66,11 +69,13 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
             risk_cis_red <- mapply(function(est, se, level) vimp_ci(est = est, se = se, level = level),
                                    est = risks_red, se = lapply(ics_red, vimp_se, na.rm = na.rm),
                                    MoreArgs = list(level = level/V), SIMPLIFY = "array")
-            ## 
+            ## compute the value of the hypothesis test (reject or not reject)
+            # hyp_test <- 
+
         }
     }
     
   } 
   
-  return(list(test = hyp_test, p_value = p_value))
+  return(list(test = hyp_test, p_value = p_value, risk_full = risk_full, risk_reduced = risk_reduced))
 }
