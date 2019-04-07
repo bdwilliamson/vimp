@@ -40,7 +40,10 @@ risk_estimator <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) 
     est <- (1 - mse)
   } else if (type == "auc") {
     if (!is.null(dim(fitted_values))) { # remove dimension
-      fitted_values <- as.vector(fitted_values)
+      if (dim(fitted_values)[2] == 1) {
+        fitted_values <- as.vector(fitted_values)
+        y <- as.vector(y)
+      }
     }
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
     est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)

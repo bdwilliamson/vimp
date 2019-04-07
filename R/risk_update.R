@@ -45,6 +45,12 @@ risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
     d_denom <- (y - mean(y, na.rm = na.rm))^2 - denom
     d_risk <- (-1)*d 
   } else if (type == "auc") {
+    if (!is.null(dim(fitted_values))) { # remove dimension if only dim 1
+      if (dim(fitted_values)[2] == 1) {
+        fitted_values <- as.vector(fitted_values)
+        y <- as.vector(y)
+      }
+    }
     p_0 <- mean(y == 0)
     p_1 <- mean(y == 1)
     
