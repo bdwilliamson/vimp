@@ -51,6 +51,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
         p_value <- ifelse(all(hyp_tests), 0.0001, min(levels[hyp_tests]))        
         
     } else { ## V-fold CV, reject iff ALL pairwise comparisons have no overlapping CI
+        V <- length(unique(folds))
         hyp_tests <- vector("logical", V)
         p_values <- vector("numeric", V)
         risks_full <- vector("numeric", V)
@@ -60,22 +61,34 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
             ## compute the full risk on fold v
             risk_full <- risk_estimator(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
             ic_full <- risk_update(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-            risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = 1 - level)
+            risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = (1 - level/V))
             ## compute the reduced risk on all other folds
-            risks_red <- mapply(function(x, z, y, folds, type, na.rm) risk_estimator(fitted_values = x[[z]], y = y[folds == z], type = type, na.rm = na.rm), 
-                                reduced, list(other_folds), MoreArgs = list(y = y, folds = folds, type = type, na.rm = na.rm), SIMPLIFY = FALSE)
-            ics_red <- mapply(function(x, z, y, folds, type, na.rm) risk_update(fitted_values = x[[z]], y = y[folds == z], type = type, na.rm = na.rm), 
-                                reduced, list(other_folds), MoreArgs = list(y = y, folds = folds, type = type, na.rm = na.rm), SIMPLIFY = FALSE)
+            risks_red <- mapply(function(x, z, y, folds, type, na.rm) risk_estimator(fitted_values = x, y = y[folds == z], type = type, na.rm = na.rm), 
+                                reduced[-v], as.list(other_folds), MoreArgs = list(y = y, folds = folds, type = type, na.rm = na.rm), SIMPLIFY = FALSE)
+            ics_red <- mapply(function(x, z, y, folds, type, na.rm) risk_update(fitted_values = x, y = y[folds == z], type = type, na.rm = na.rm), 
+                                reduced[-v], as.list(other_folds), MoreArgs = list(y = y, folds = folds, type = type, na.rm = na.rm), SIMPLIFY = FALSE)
             risk_cis_red <- mapply(function(est, se, level) vimp_ci(est = est, se = se, level = level),
                                    est = risks_red, se = lapply(ics_red, vimp_se, na.rm = na.rm),
-                                   MoreArgs = list(level = level/V), SIMPLIFY = "array")
+                                   MoreArgs = list(level = (1 - level/V)), SIMPLIFY = "matrix")
             ## compute the value of the hypothesis test (reject or not reject)
-            # hyp_test <- 
-
+            hyp_tests[v] <- all(risk_ci_full[1] > risk_cis_red[2, ])
+            ## save off the risks
+            risks_full[v] <- risk_full
+            risks_reduced[v] <- mean(unlist(risks_red))
+            ## get the p-value
+            levels <- seq(0.0001, 1 - 0.0001, 0.0001)
+            risk_cis_full <- t(apply(matrix(1 - levels/V), 1, function(x) vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = x)))
+            risks_cis_red <- t(apply(matrix(1 - levels/V), 1, function(x) mapply(function(est, se, level) vimp_ci(est = est, se = se, level = level),
+                                                                                 est = risks_red, se = lapply(ics_red, vimp_se, na.rm = na.rm),
+                                                                                 MoreArgs = list(level = x), SIMPLIFY = "matrix")))
+            many_hyp_tests <- apply((risk_cis_full[, 1] > risks_cis_red[, c(FALSE, TRUE)]), 1, all)
+            p_values[v] <- ifelse(all(many_hyp_tests), 0.0001, min(levels[many_hyp_tests]))        
         }
+        hyp_test <- all(hyp_tests)
+        p_value <- max(p_values)
+        risk_full <- mean(risks_full)
+        risk_reduced <- mean(risks_reduced)
     }
-    
   } 
-  
   return(list(test = hyp_test, p_value = p_value, risk_full = risk_full, risk_reduced = risk_reduced))
 }

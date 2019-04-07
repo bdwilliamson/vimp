@@ -14,7 +14,8 @@ format.vim <- function(x, ...) {
     if (!any(grepl("anova", class(x)))) {
       output <- cbind(format(x$mat$est, ...), format(x$mat$se, ...), 
                       apply(tmp.ci, 1, function(x) paste("[", paste(x, collapse = ", "), "]", sep = "")),
-                      format(x$mat$test, ...))  
+                      format(x$mat$test, ...),
+                      format(x$mat$p_value, ...))  
     } else {
       output <- cbind(format(x$mat$est, ...), format(x$mat$se, ...), 
                       apply(tmp.ci, 1, function(x) paste("[", paste(x, collapse = ", "), "]", sep = "")))  
@@ -27,7 +28,8 @@ format.vim <- function(x, ...) {
     if (!any(grepl("anova", class(x)))) {
       output <- cbind(format(x$est, ...), format(x$se, ...), 
                       paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""),
-                      format(x$test, ...))  
+                      format(x$test, ...),
+                      format(x$p_value, ...))  
     } else {
       output <- cbind(format(x$est, ...), format(x$se, ...), 
                       paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
@@ -37,7 +39,7 @@ format.vim <- function(x, ...) {
   }
   if (!any(grepl("anova", class(x)))) {
     colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""), 
-                          "VIMP > 0")
+                          "VIMP > 0", "p_value")
   } else {
     colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
   }

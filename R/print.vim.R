@@ -15,4 +15,5 @@ print.vim <- function(x, ...) {
   ## print out the matrix
   cat("\nVariable importance estimates:\n")
   print(format(x, ...), quote = FALSE)
+  if (!any(grepl("anova", class(x)))) cat("\n NB: p-value and hypothesis test are guaranteed to be conservative.\n")
 }
