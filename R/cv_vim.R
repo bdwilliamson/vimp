@@ -184,16 +184,15 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   for (v in 1:V) {
     est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
-    # ses[v] <- sqrt(mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2, na.rm = na.rm))
-    ses[v] <- vimp_se(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
+    ses[v] <- vimp_se(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))*sqrt(sum(folds == v))/sqrt(dim(Y)[1])
     
     ## calculate risks, risk updates/ses
     risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
     risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_ses_full[v] <- vimp_se(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)#*sqrt(sum(folds == v))
+    risk_ses_full[v] <- vimp_se(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)*sqrt(sum(folds == v))/sqrt(dim(Y)[1])
     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
     risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_ses_reduced[v] <- vimp_se(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)#*sqrt(sum(folds == v))    
+    risk_ses_reduced[v] <- vimp_se(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)*sqrt(sum(folds == v))/sqrt(dim(Y)[1])   
     
   }
   ## estimator, naive (if applicable)
@@ -206,7 +205,6 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   }
 
   ## calculate the standard error
-  # se <- mean(ses)/sqrt(dim(Y)[1])
   se <- mean(ses)
   
   ## calculate the confidence interval
