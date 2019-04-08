@@ -174,25 +174,24 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   ## loop over the folds
   est_cv <- vector("numeric", V)
   updates <- vector("numeric", V)
-  ses <- vector("numeric", V)
+  vars <- vector("numeric", V)
   risks_full <- vector("numeric", V)
   risk_updates_full <- vector("numeric", V)
-  risk_ses_full <- vector("numeric", V)
+  risk_vars_full <- vector("numeric", V)
   risks_reduced <- vector("numeric", V)
   risk_updates_reduced <- vector("numeric", V)
-  risk_ses_reduced <- vector("numeric", V)
+  risk_vars_reduced <- vector("numeric", V)
   for (v in 1:V) {
     est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
-    ses[v] <- vimp_se(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))*sqrt(sum(folds == v))/sqrt(dim(Y)[1])
-    
+    vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2)
     ## calculate risks, risk updates/ses
     risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
     risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_ses_full[v] <- vimp_se(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)*sqrt(sum(folds == v))/sqrt(dim(Y)[1])
+    risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2)
     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
     risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_ses_reduced[v] <- vimp_se(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)*sqrt(sum(folds == v))/sqrt(dim(Y)[1])   
+    risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2)
     
   }
   ## estimator, naive (if applicable)
@@ -205,7 +204,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   }
 
   ## calculate the standard error
-  se <- mean(ses)
+  se <- sqrt(mean(vars)/dim(Y)[1])
   
   ## calculate the confidence interval
   ci <- vimp_ci(est, se, 1 - alpha)
