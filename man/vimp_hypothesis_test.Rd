@@ -5,7 +5,7 @@
 \title{Perform a hypothesis test against the null hypothesis of zero importance}
 \usage{
 vimp_hypothesis_test(full, reduced, y, folds, type = "r_squared",
-  level = 0.05, cv = FALSE, na.rm = FALSE)
+  alpha = 0.05, cv = FALSE, na.rm = FALSE)
 }
 \arguments{
 \item{full}{either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
@@ -18,7 +18,7 @@ vimp_hypothesis_test(full, reduced, y, folds, type = "r_squared",
 
 \item{type}{which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?}
 
-\item{level}{the desired type I error rate (defaults to 0.05).}
+\item{alpha}{the desired type I error rate (defaults to 0.05).}
 
 \item{cv}{was V-fold cross-validation used to estimate the risks (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.}
 
