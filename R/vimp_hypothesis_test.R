@@ -57,7 +57,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", al
         risk_full_n <- sum(sapply(folds_full, function(x) length(y[folds == x])))
         risk_full <- mean(risks_full)
         risk_se_full <- sqrt(mean(risk_vars_full/risk_full_n))
-        risk_ci_full <- vimp_ci(est = risk_full, se = risk_full_se, level = 1 - alpha)
+        risk_ci_full <- vimp_ci(est = risk_full, se = risk_se_full, level = 1 - alpha)
 
         ## get full risk, vars
         risks_reduced <- sapply(folds_reduced, function(x) risk_estimator(fitted_values = reduced[[x]],
@@ -69,7 +69,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", al
         risk_reduced_n <- sum(sapply(folds_reduced, function(x) length(y[folds == x])))
         risk_reduced <- mean(risks_reduced)
         risk_se_reduced <- sqrt(mean(risk_vars_reduced/risk_reduced_n))
-        risk_ci_reduced <- vimp_ci(est = risk_reduced, se = risk_reduced_se, level = 1 - alpha)
+        risk_ci_reduced <- vimp_ci(est = risk_reduced, se = risk_se_reduced, level = 1 - alpha)
     }
   }
   ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
