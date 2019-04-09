@@ -215,7 +215,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
   } else {
     ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
-    hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, type = type, level = alpha, cv = TRUE, na.rm = na.rm)
+    hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, type = type, alpha = alpha, cv = TRUE, na.rm = na.rm)
   }
   
   
