@@ -10,7 +10,7 @@
 #' @param folds the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression (if V = 2).
 #' @param V the number of folds used, defaults to 2.
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?
-#' @param level the desired type I error rate (defaults to 0.05).
+#' @param alpha the desired type I error rate (defaults to 0.05).
 #' @param cv was V-fold cross-validation used to estimate the risks (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
@@ -20,7 +20,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", level = 0.05, cv = FALSE, na.rm = FALSE) {
+vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", alpha = 0.05, cv = FALSE, na.rm = FALSE) {
   
   ## calculate the necessary pieces for the influence curve
   if (type == "regression" | type == "anova") {
@@ -32,75 +32,61 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", le
         risk_full <- risk_estimator(fitted_values = full, y = y[folds == fold_nums[1]], type = type, na.rm = na.rm)
         risk_reduced <- risk_estimator(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
 
-        ## influence curve estimates for the risk
+        ## influence curve estimates for the risk, and corresponding ses
         ic_full <- risk_update(fitted_values = full, y = y[folds == fold_nums[1]], type = type, na.rm = na.rm)
         ic_reduced <- risk_update(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
-
+        se_full <- vimp_se(ic_full, na.rm = na.rm)
+        se_reduced <- vimp_se(ic_full, na.rm = na.rm)
         ## CIs for both risks
-        risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = 1 - level)
-        risk_ci_reduced <- vimp_ci(est = risk_reduced, se = vimp_se(ic_reduced, na.rm = na.rm), level = 1 - level)
-        ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
-        ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
-        hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
-
-        ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
-        levels <- seq(0.0001, 1 - 0.0001, 0.0001)
-        risk_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = x)))
-        risk_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_reduced, se = vimp_se(ic_reduced, na.rm = na.rm), level = x)))
-        hyp_tests <- risk_cis_full[, 1] > risk_cis_redu[, 2]
-        if (all(hyp_tests)) {
-          p_value <- 0.0001
-        } else if (!any(hyp_tests)) {
-          p_value <- 1
-        } else {
-          p_value <- min(levels[hyp_tests])
-        }
+        risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = 1 - alpha)
+        risk_ci_reduced <- vimp_ci(est = risk_reduced, se = vimp_se(ic_reduced, na.rm = na.rm), level = 1 - alpha)
         
-    } else { ## V-fold CV, reject iff ALL pairwise comparisons have no overlapping CI
+    } else { ## V-fold CV; reject if the full risk on ceil(V/2) has CI that doesn't overlap with reduced risk on rest
         V <- length(unique(folds))
-        hyp_tests <- vector("logical", V)
-        p_values <- vector("numeric", V)
-        risks_full <- vector("numeric", V)
-        risks_reduced <- vector("numeric", V)
-        for (v in 1:V) {
-            other_folds <- (1:V)[-v]
-            ## compute the full risk on fold v
-            risk_full <- risk_estimator(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-            ic_full <- risk_update(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-            risk_ci_full <- vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = (1 - level/V))
-            ## compute the reduced risk on all other folds
-            risks_red <- mapply(function(x, z, y, folds, type, na.rm) risk_estimator(fitted_values = x, y = y[folds == z], type = type, na.rm = na.rm), 
-                                reduced[-v], as.list(other_folds), MoreArgs = list(y = y, folds = folds, type = type, na.rm = na.rm), SIMPLIFY = FALSE)
-            ics_red <- mapply(function(x, z, y, folds, type, na.rm) risk_update(fitted_values = x, y = y[folds == z], type = type, na.rm = na.rm), 
-                                reduced[-v], as.list(other_folds), MoreArgs = list(y = y, folds = folds, type = type, na.rm = na.rm), SIMPLIFY = FALSE)
-            risk_cis_red <- mapply(function(est, se, level) vimp_ci(est = est, se = se, level = level),
-                                   est = risks_red, se = lapply(ics_red, vimp_se, na.rm = na.rm),
-                                   MoreArgs = list(level = (1 - level/V)), SIMPLIFY = "matrix")
-            ## compute the value of the hypothesis test (reject or not reject)
-            hyp_tests[v] <- all(risk_ci_full[1] > risk_cis_red[2, ])
-            ## save off the risks
-            risks_full[v] <- risk_full
-            risks_reduced[v] <- mean(unlist(risks_red))
-            ## get the p-value
-            levels <- seq(0.0001, 1 - 0.0001, 0.0001)
-            risk_cis_full <- t(apply(matrix(1 - levels/V), 1, function(x) vimp_ci(est = risk_full, se = vimp_se(ic_full, na.rm = na.rm), level = x)))
-            risks_cis_red <- t(apply(matrix(1 - levels/V), 1, function(x) mapply(function(est, se, level) vimp_ci(est = est, se = se, level = level),
-                                                                                 est = risks_red, se = lapply(ics_red, vimp_se, na.rm = na.rm),
-                                                                                 MoreArgs = list(level = x), SIMPLIFY = "matrix")))
-            many_hyp_tests <- apply((risk_cis_full[, 1] > risks_cis_red[, c(FALSE, TRUE)]), 1, all)
-            if (all(many_hyp_tests)) {
-              p_values[v] <- 0.0001
-            } else if (!any(many_hyp_tests)) {
-              p_values[v] <- 1
-            } else {
-              p_values[v] <- min(levels[many_hyp_tests])
-            }
-        }
-        hyp_test <- all(hyp_tests)
-        p_value <- max(p_values)
+        ## sample the folds to compute full and reduced risk
+        folds_full <- sample(seq_len(V), ceiling(V/2))
+        folds_reduced <- seq_len(V)[-folds_full]
+
+        ## get full risk, vars
+        risks_full <- sapply(folds_full, function(x) risk_estimator(fitted_values = full[[x]],
+                                                                    y = y[folds == x],
+                                                                    type = type, na.rm = na.rm))
+        risk_vars_full <- sapply(folds_full, function(x) mean(risk_update(full[[x]], 
+                                                                          y[folds == x], 
+                                                                          type = type, na.rm = na.rm)^2))
+        risk_full_n <- sum(sapply(folds_full, function(x) length(y[folds == x])))
         risk_full <- mean(risks_full)
+        risk_se_full <- sqrt(mean(risk_vars_full/risk_full_n))
+        risk_ci_full <- vimp_ci(est = risk_full, se = risk_full_se, level = 1 - alpha)
+
+        ## get full risk, vars
+        risks_reduced <- sapply(folds_reduced, function(x) risk_estimator(fitted_values = reduced[[x]],
+                                                                    y = y[folds == x],
+                                                                    type = type, na.rm = na.rm))
+        risk_vars_reduced <- sapply(folds_reduced, function(x) mean(risk_update(reduced[[x]], 
+                                                                          y[folds == x], 
+                                                                          type = type, na.rm = na.rm)^2))
+        risk_reduced_n <- sum(sapply(folds_reduced, function(x) length(y[folds == x])))
         risk_reduced <- mean(risks_reduced)
+        risk_se_reduced <- sqrt(mean(risk_vars_reduced/risk_reduced_n))
+        risk_ci_reduced <- vimp_ci(est = risk_reduced, se = risk_reduced_se, level = 1 - alpha)
     }
+  }
+  ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
+  ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
+  hyp_test <- risk_ci_full[1] > risk_ci_reduced[2]
+
+  ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
+  levels <- seq(0.0001, 1 - 0.0001, 0.0001)
+  risk_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_full, se = risk_se_full, level = x)))
+  risk_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = risk_reduced, se = risk_se_reduced, level = x)))
+  hyp_tests <- risk_cis_full[, 1] > risk_cis_redu[, 2]
+  if (all(hyp_tests)) {
+    p_value <- 0.0001
+  } else if (!any(hyp_tests)) {
+    p_value <- 1
+  } else {
+    p_value <- min(levels[hyp_tests])
   } 
   return(list(test = hyp_test, p_value = p_value, risk_full = risk_full, risk_reduced = risk_reduced))
 }
