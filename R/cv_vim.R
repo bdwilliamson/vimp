@@ -192,15 +192,22 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
     risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
     risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2)
-    
   }
   ## estimator, naive (if applicable)
   if (type == "regression" | type == "anova") {
     naive <- mean(est_cv)
     est <- mean(est_cv) + mean(updates)
+    risk_full <- NA
+    risk_reduced <- NA
+    risk_ci_full <- NA
+    risk_ci_reduced <- NA
   } else {
     est <- mean(est_cv) 
     naive <- NA
+    risk_full <- mean(risks_full)
+    risk_reduced <- mean(risks_reduced)
+    risk_ci_full <- vimp_ci(risk_full, se = sqrt(mean(risk_vars_full)/dim(Y)[1]), 1 - alpha)
+    risk_ci_reduced <- vimp_ci(risk_reduced, se = sqrt(mean(risk_vars_reduced)/dim(Y)[1]), 1 - alpha)
   }
 
   ## calculate the standard error
@@ -231,10 +238,16 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  ests = est_cv,
                  update = updates,
                  se = se, ci = ci, 
+                 risk_full = risk_full,
+                 risk_reduced = risk_reduced,
+                 risk_ci_full = risk_ci_full,
+                 risk_ci_reduced = risk_ci_reduced,
                  test = hyp_test$test,
                  p_value = hyp_test$p_value,
-                 risk_full = hyp_test$risk_full,
-                 risk_red = hyp_test$risk_reduced,
+                 hyp_test_risk_full = hyp_test$risk_full,
+                 hyp_test_risk_red = hyp_test$risk_reduced,
+                 hyp_test_risk_ci_full = hyp_test$risk_ci_full,
+                 hyp_test_risk_ci_reduced = hyp_test$risk_ci_reduced,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
