@@ -88,5 +88,6 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", al
   } else {
     p_value <- min(levels[hyp_tests])
   } 
-  return(list(test = hyp_test, p_value = p_value, risk_full = risk_full, risk_reduced = risk_reduced))
+  return(list(test = hyp_test, p_value = p_value, risk_full = risk_full, risk_reduced = risk_reduced,
+              risk_ci_full = risk_ci_full, risk_ci_reduced = risk_ci_reduced))
 }

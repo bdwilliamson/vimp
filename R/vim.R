@@ -166,9 +166,17 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
   if (type == "anova") {
     est <- ests[1]
     naive <- ests[2]
+    risk_full <- NA
+    risk_reduced <- NA
+    risk_ci_full <- NA
+    risk_ci_reduced <- NA
   } else {
     est <- ests[2]
     naive <- NA
+    risk_full <- risk_estimator(fhat_ful, Y, type = type, na.rm = na.rm)
+    risk_reduced <- risk_estimator(fhat_red, Y, type = type, na.rm = na.rm)
+    risk_ci_full <- vimp_ci(risk_full, se = vimp_se(risk_update(fhat_ful, Y, type = type, na.rm = na.rm)), level = 1 - alpha)
+    risk_ci_reduced <- vimp_ci(risk_reduced, se = vimp_se(risk_update(fhat_red, Y, type = type, na.rm = na.rm)), level = 1 - alpha)
   }
   ## compute the update
   update <- vimp_update(fhat_ful, fhat_red, Y, type = type, na.rm = na.rm)
@@ -197,10 +205,16 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
                  naive = naive,
                  update = update,
                  se = se, ci = ci, 
+                 risk_full = risk_full,
+                 risk_reduced = risk_reduced,
+                 risk_ci_full = risk_ci_full,
+                 risk_ci_reduced = risk_ci_reduced,
                  test = hyp_test$test,
                  p_value = hyp_test$p_value,
-                 risk_full = hyp_test$risk_full,
-                 risk_red = hyp_test$risk_reduced,
+                 hyp_test_risk_full = hyp_test$risk_full,
+                 hyp_test_risk_red = hyp_test$risk_reduced,
+                 hyp_test_risk_ci_full = hyp_test$risk_ci_full,
+                 hyp_test_risk_ci_reduced = hyp_test$risk_ci_reduced,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
