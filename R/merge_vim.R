@@ -65,13 +65,22 @@ merge_vim <- function(...) {
   cis <- do.call(rbind.data.frame, lapply(L, function(z) z$ci))
   ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
   tests <- do.call(rbind.data.frame, lapply(L, function(z) z$test))
-
+  p_values <- do.call(rbind.data.frame, lapply(L, function(z) z$p_value))
+  risks_full <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_full))
+  risks_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_reduced))
+  risk_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_ci_full))
+  risk_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_ci_reduced))
+  hyp_test_risks_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_full))
+  hyp_test_risks_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_reduced))
+  hyp_test_risk_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_ci_full))
+  hyp_test_risk_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_ci_reduced))
+  
   ## put on names
   names(ests) <- "est"
 
   ## combine into a matrix
-  tmp <- cbind.data.frame(ests, ses, cis, tests)
-  names(tmp) <- c("est", "se", "cil", "ciu", "test")
+  tmp <- cbind.data.frame(ests, ses, cis, tests, p_values)
+  names(tmp) <- c("est", "se", "cil", "ciu", "test", "p_value")
   ## put in decreasing order
   mat <- tmp[order(tmp$est, decreasing = TRUE), ]
 
@@ -91,7 +100,16 @@ merge_vim <- function(...) {
               s = s, SL.library = SL.library, full_fit = full_fit,
               red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
+              risk_full = risks_full,
+              risk_reduced = risks_reduced,
+              risk_ci_full = risk_cis_full,
+              risk_ci_reduced = risk_cis_reduced,
               test = mat$test,
+              p_value = mat$p_value,
+              hyp_test_risk_full = hyp_test_risks_full,
+              hyp_test_risk_red = hyp_test_risks_reduced,
+              hyp_test_risk_ci_full = hyp_test_risk_cis_full,
+              hyp_test_risk_ci_reduced = hyp_test_risk_cis_reduced,
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
               alpha = alpha)
