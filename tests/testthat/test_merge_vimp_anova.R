@@ -1,4 +1,4 @@
-context("test_merge_vimp_regression.R")
+context("test_merge_vimp_anova.R")
 
 ## load required functions and packages
 library("testthat")

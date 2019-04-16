@@ -71,7 +71,7 @@ merge_vim <- function(...) {
   risk_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_ci_full))
   risk_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_ci_reduced))
   hyp_test_risks_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_full))
-  hyp_test_risks_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_reduced))
+  hyp_test_risks_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_red))
   hyp_test_risk_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_ci_full))
   hyp_test_risk_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_ci_reduced))
   

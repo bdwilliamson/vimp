@@ -1,4 +1,4 @@
-context("test_cv_vimp_regression.R")
+context("test_cv_vimp_anova.R")
 
 ## load required functions and packages
 library("testthat")
