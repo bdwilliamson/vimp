@@ -77,8 +77,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", al
                                                                              na.rm = na.rm))
           risk_vars_reduced <- sapply(seq_len(V)[-v], function(x) mean(risk_update(fitted_values = reduced[[x]],
                                                                                  y = y[folds == x], type = type,
-                                                                                 na.rm = na.rm)^2), simplify = FALSE)
-          risk_ses_reduced <- sapply(1:length(seq_len(V)[-v]), function(x) sqrt(risk_vars_reduced[[x]]/length(y[folds == x])))
+                                                                                 na.rm = na.rm)^2))
+          risk_ses_reduced <- sapply(1:length(seq_len(V)[-v]), function(x) sqrt(risk_vars_reduced[x]/length(y[folds == x])))
 
           ## compute a p-value
           levels <- seq(0.0001, 1 - 0.0001, 0.0001)
