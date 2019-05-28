@@ -7,6 +7,7 @@
 #' @param f1 the fitted values from a flexible estimation technique regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
+#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, and \code{anova}.
 #' @param run_regression if outcome Y and covariates X are passed to \code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
@@ -80,7 +81,7 @@
 #' @export
 
 
-vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, 
+vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, 
                           f1_split = NULL, f2_split = NULL, folds = NULL, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
@@ -175,8 +176,8 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
     naive <- NA
     risk_full <- risk_estimator(fhat_ful, Y, type = type, na.rm = na.rm)
     risk_reduced <- risk_estimator(fhat_red, Y, type = type, na.rm = na.rm)
-    risk_ci_full <- vimp_ci(risk_full, se = vimp_se(risk_update(fhat_ful, Y, type = type, na.rm = na.rm)), level = 1 - alpha)
-    risk_ci_reduced <- vimp_ci(risk_reduced, se = vimp_se(risk_update(fhat_red, Y, type = type, na.rm = na.rm)), level = 1 - alpha)
+    risk_ci_full <- vimp_ci(risk_full, se = vimp_se(risk_update(fhat_ful, Y, weights = weights, type = type, na.rm = na.rm)), level = 1 - alpha)
+    risk_ci_reduced <- vimp_ci(risk_reduced, se = vimp_se(risk_update(fhat_red, Y, weights = weights, type = type, na.rm = na.rm)), level = 1 - alpha)
   }
   ## compute the update
   update <- vimp_update(fhat_ful, fhat_red, Y, type = type, na.rm = na.rm)
@@ -189,7 +190,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
   
   ## perform a hypothesis test against the null of zero importance
   if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & type != "anova") {
-    hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, type = type, alpha = alpha, na.rm = na.rm)  
+    hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, weights = weights, type = type, alpha = alpha, na.rm = na.rm)  
   } else {
     hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
   }
@@ -218,7 +219,8 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
-                 y = Y)
+                 y = Y,
+                 weights = weights)
   
   ## make it also an vim and vim_type object
   tmp.cls <- class(output)

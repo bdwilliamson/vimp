@@ -8,7 +8,7 @@
 #' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates; either (i) a single set of predictions (if \code{cv = FALSE}) fit on an independent split of the data from \code{full} or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).
 #' @param y the outcome.
 #' @param folds the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression (if V = 2).
-#' @param V the number of folds used, defaults to 2.
+#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?
 #' @param alpha the desired type I error rate (defaults to 0.05).
 #' @param cv was V-fold cross-validation used to estimate the risks (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.
@@ -20,7 +20,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", alpha = 0.05, cv = FALSE, na.rm = FALSE) {
+vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, length(y)), type = "r_squared", alpha = 0.05, cv = FALSE, na.rm = FALSE) {
   
   ## calculate the necessary pieces for the influence curve
   if (type == "regression" | type == "anova") {
@@ -33,8 +33,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", al
         risk_reduced <- risk_estimator(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
 
         ## influence curve estimates for the risk, and corresponding ses
-        ic_full <- risk_update(fitted_values = full, y = y[folds == fold_nums[1]], type = type, na.rm = na.rm)
-        ic_reduced <- risk_update(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
+        ic_full <- risk_update(fitted_values = full, y = y[folds == fold_nums[1]], weights = weights, type = type, na.rm = na.rm)
+        ic_reduced <- risk_update(fitted_values = reduced, y = y[folds == fold_nums[2]], weights = weights, type = type, na.rm = na.rm)
         se_full <- vimp_se(ic_full, na.rm = na.rm)
         se_reduced <- vimp_se(ic_full, na.rm = na.rm)
         ## CIs for both risks
@@ -69,14 +69,14 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", al
         for (v in 1:V) {
           ## compute full risk on fold v, reduced risks on folds -v; also variances
           risk_full <- risk_estimator(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-          risk_var_full <- mean(risk_update(fitted_values = full[[v]], y = y[folds == v], type = type, 
+          risk_var_full <- mean(risk_update(fitted_values = full[[v]], y = y[folds == v], weights = weights, type = type, 
                                             na.rm = na.rm)^2)
           risk_se_full <- sqrt(risk_var_full/length(y[folds == v]))
           risks_reduced <- sapply(seq_len(V)[-v], function(x) risk_estimator(fitted_values = reduced[[x]],
                                                                              y = y[folds == x], type = type,
                                                                              na.rm = na.rm))
           risk_vars_reduced <- sapply(seq_len(V)[-v], function(x) mean(risk_update(fitted_values = reduced[[x]],
-                                                                                 y = y[folds == x], type = type,
+                                                                                 y = y[folds == x], weights = weights, type = type,
                                                                                  na.rm = na.rm)^2))
           risk_ses_reduced <- sapply(1:length(seq_len(V)[-v]), function(x) sqrt(risk_vars_reduced[x]/length(y[folds == x])))
 
@@ -106,7 +106,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, type = "r_squared", al
           risks_full[v] <- risk_full
           risk_vars_full[v] <- risk_var_full
           risks_reduced[v] <- risk_estimator(fitted_values = reduced[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-          risk_vars_reduced[v] <- mean(risk_update(fitted_values = reduced[[v]], y = y[folds == v], type = type, 
+          risk_vars_reduced[v] <- mean(risk_update(fitted_values = reduced[[v]], y = y[folds == v], weights = weights, type = type, 
                                                    na.rm = na.rm)^2)
         }
         ## average the p-values, make a testing decision

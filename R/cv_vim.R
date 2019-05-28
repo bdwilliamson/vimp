@@ -11,6 +11,7 @@
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
 #' @param V the number of folds for cross-validation, defaults to 10.
 #' @param folds the folds to use, if f1 and f2 are supplied.
+#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
@@ -42,6 +43,7 @@
 #'  \item{alpha}{ - the level, for confidence interval calculation}
 #'  \item{folds}{ - the folds used for cross-validation}
 #'  \item{y}{ - the outcome}
+#'  \item{weights}{ - the weights}
 #' }
 #'
 #' @examples
@@ -105,7 +107,7 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, type = "r_squared", run_regression = TRUE, 
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, 
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
   ## check to see if f1 and f2 are missing
   ## if the data is missing, stop and throw an error
@@ -183,15 +185,15 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   risk_vars_reduced <- vector("numeric", V)
   for (v in 1:V) {
     est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)[2]
-    updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm), na.rm = na.rm)
-    vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2)
+    updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)
+    vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm)^2)
     ## calculate risks, risk updates/ses
     risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2)
+    risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm))
+    risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm)^2)
     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm))
-    risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)^2)
+    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm))
+    risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm)^2)
   }
   ## estimator, naive (if applicable)
   if (type == "regression" | type == "anova") {
@@ -222,7 +224,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
   } else {
     ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
-    hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, type = type, alpha = alpha, cv = TRUE, na.rm = na.rm)
+    hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, weights = weights, type = type, alpha = alpha, cv = TRUE, na.rm = na.rm)
   }
   
   
@@ -252,7 +254,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  red_mod = reduced,
                  alpha = alpha,
                  folds = folds,
-                 y = Y)
+                 y = Y,
+                 weights = weights)
 
   ## make it also an vim object
   tmp.cls <- class(output)

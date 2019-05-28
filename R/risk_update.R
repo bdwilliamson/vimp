@@ -4,6 +4,7 @@
 #'
 #' @param fitted_values fitted values from a regression function.
 #' @param y the outcome.
+#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type which risk parameter are you estimating (defaults to \code{r_squared}, for the $R^2$)?
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
@@ -13,7 +14,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
+risk_update <- function(fitted_values, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
   
   ## calculate the necessary pieces for the influence curve
   if (type == "regression" | type == "anova") {
@@ -84,5 +85,5 @@ risk_update <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
   }
   
   
-  return(ic_update)
+  return(weights*ic_update)
 }
