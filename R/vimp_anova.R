@@ -7,6 +7,7 @@
 #' @param f1 the fitted values from a flexible estimation technique regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
+#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param run_regression if outcome Y and covariates X are passed to \code{vimp_anova}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
@@ -75,7 +76,7 @@
 #' @export
 
 
-vimp_anova <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
-    vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, type = "anova", run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm,
+vimp_anova <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+    vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, weights = weights, type = "anova", run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm,
         f1_split = NULL, f2_split = NULL, folds = NULL, ...) 
 }
