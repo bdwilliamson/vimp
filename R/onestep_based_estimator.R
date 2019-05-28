@@ -13,7 +13,7 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FALSE) {
+onestep_based_estimator <- function(full, reduced, y, weights = rep(1, length(y)), type = "anova", na.rm = FALSE) {
 
   ## first calculate the naive
   if (type == "regression" | type == "anova") {
@@ -66,7 +66,7 @@ onestep_based_estimator <- function(full, reduced, y, type = "anova", na.rm = FA
 
   ## now add on the mean of the ic, only if type == "regression" or "anova"
   if (type == "regression" | type == "anova") {
-    onestep <- naive + mean(vimp_update(full, reduced, y, type, na.rm = na.rm), na.rm = na.rm)  
+    onestep <- naive + mean(vimp_update(full, reduced, y, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)  
   } else {
     onestep <- NA
   }  
