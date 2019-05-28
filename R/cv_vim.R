@@ -184,16 +184,16 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   risk_updates_reduced <- vector("numeric", V)
   risk_vars_reduced <- vector("numeric", V)
   for (v in 1:V) {
-    est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm)[2]
-    updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)
-    vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm)^2)
+    est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)[2]
+    updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm), na.rm = na.rm)
+    vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
     ## calculate risks, risk updates/ses
     risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm))
-    risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm)^2)
+    risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
+    risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm))
-    risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights, type = type, na.rm = na.rm)^2)
+    risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
+    risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
   }
   ## estimator, naive (if applicable)
   if (type == "regression" | type == "anova") {

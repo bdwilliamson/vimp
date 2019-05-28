@@ -69,14 +69,14 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
         for (v in 1:V) {
           ## compute full risk on fold v, reduced risks on folds -v; also variances
           risk_full <- risk_estimator(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-          risk_var_full <- mean(risk_update(fitted_values = full[[v]], y = y[folds == v], weights = weights, type = type, 
+          risk_var_full <- mean(risk_update(fitted_values = full[[v]], y = y[folds == v], weights = weights[folds == v], type = type, 
                                             na.rm = na.rm)^2)
           risk_se_full <- sqrt(risk_var_full/length(y[folds == v]))
           risks_reduced <- sapply(seq_len(V)[-v], function(x) risk_estimator(fitted_values = reduced[[x]],
                                                                              y = y[folds == x], type = type,
                                                                              na.rm = na.rm))
           risk_vars_reduced <- sapply(seq_len(V)[-v], function(x) mean(risk_update(fitted_values = reduced[[x]],
-                                                                                 y = y[folds == x], weights = weights, type = type,
+                                                                                 y = y[folds == x], weights = weights[folds == v], type = type,
                                                                                  na.rm = na.rm)^2))
           risk_ses_reduced <- sapply(1:length(seq_len(V)[-v]), function(x) sqrt(risk_vars_reduced[x]/length(y[folds == x])))
 
