@@ -4,10 +4,11 @@
 \alias{vim}
 \title{Nonparametric Variable Importance Estimates}
 \usage{
-vim(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared",
-  run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, na.rm = FALSE, f1_split = NULL,
-  f2_split = NULL, folds = NULL, ...)
+vim(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
+  length(Y)), type = "r_squared", run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
+  na.rm = FALSE, f1_split = NULL, f2_split = NULL, folds = NULL,
+  ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -19,6 +20,8 @@ vim(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared",
 \item{f2}{the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
+
+\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
 \item{type}{the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, and \code{anova}.}
 

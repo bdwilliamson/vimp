@@ -5,9 +5,9 @@
 \title{Nonparametric Variable Importance Estimates using Cross-validation}
 \usage{
 cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
-  folds = NULL, type = "r_squared", run_regression = TRUE,
-  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  na.rm = FALSE, ...)
+  folds = NULL, weights = rep(1, length(Y)), type = "r_squared",
+  run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
+  "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -23,6 +23,8 @@ cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
+
+\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
 
@@ -67,6 +69,7 @@ within the \code{vim} object. This results in a list containing:
  \item{alpha}{ - the level, for confidence interval calculation}
  \item{folds}{ - the folds used for cross-validation}
  \item{y}{ - the outcome}
+ \item{weights}{ - the weights}
 }
 }
 \examples{

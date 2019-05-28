@@ -4,12 +4,15 @@
 \alias{risk_update}
 \title{Estimate the influence function for an estimator of risk}
 \usage{
-risk_update(fitted_values, y, type = "r_squared", na.rm = FALSE)
+risk_update(fitted_values, y, weights = rep(1, length(y)),
+  type = "r_squared", na.rm = FALSE)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}
 
 \item{y}{the outcome.}
+
+\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
 \item{type}{which risk parameter are you estimating (defaults to \code{r_squared}, for the $R^2$)?}
 

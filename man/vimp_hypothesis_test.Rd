@@ -4,8 +4,9 @@
 \alias{vimp_hypothesis_test}
 \title{Perform a hypothesis test against the null hypothesis of zero importance}
 \usage{
-vimp_hypothesis_test(full, reduced, y, folds, type = "r_squared",
-  alpha = 0.05, cv = FALSE, na.rm = FALSE)
+vimp_hypothesis_test(full, reduced, y, folds, weights = rep(1,
+  length(y)), type = "r_squared", alpha = 0.05, cv = FALSE,
+  na.rm = FALSE)
 }
 \arguments{
 \item{full}{either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
@@ -16,6 +17,8 @@ vimp_hypothesis_test(full, reduced, y, folds, type = "r_squared",
 
 \item{folds}{the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression (if V = 2).}
 
+\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
+
 \item{type}{which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?}
 
 \item{alpha}{the desired type I error rate (defaults to 0.05).}
@@ -23,8 +26,6 @@ vimp_hypothesis_test(full, reduced, y, folds, type = "r_squared",
 \item{cv}{was V-fold cross-validation used to estimate the risks (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.}
 
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
-
-\item{V}{the number of folds used, defaults to 2.}
 }
 \value{
 \code{TRUE} if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, \code{FALSE}.
