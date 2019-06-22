@@ -38,10 +38,9 @@ format.vim <- function(x, ...) {
                       paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
     }
     
-    print_s <- apply(matrix(x$s), 1, 
-                          function(x) ifelse(length(x) <= 10, 
-                                             paste(x, collapse = ", "), 
-                                             paste(c(x[1:10], "..."), collapse = ", ")))
+    print_s <- ifelse(length(x$s) <= 10, 
+                      paste(x$s, collapse = ", "), 
+                      paste(c(x$s[1:10], "..."), collapse = ", "))
     rownames(output) <- paste("s = ", print_s, sep = "")
   }
   if (!any(grepl("anova", class(x)))) {
