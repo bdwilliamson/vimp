@@ -34,7 +34,7 @@ format.vim <- function(x, ...) {
                       paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
     }
     
-    print_s <- apply(matrix(x$s, 1, 
+    print_s <- apply(matrix(x$s), 1, 
                           function(x) ifelse(length(x) <= 10, 
                                              paste(x, collapse = ", "), 
                                              paste(c(x[1:10], "..."), collapse = ", ")))
