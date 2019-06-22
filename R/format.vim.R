@@ -22,8 +22,7 @@ format.vim <- function(x, ...) {
     }
     
     ## tag on row names
-    tmp.j <- x$s
-    rownames(output) <- paste("s = ", tmp.j, sep = "")
+    rownames(output) <- paste("s = ", ifelse(length(x$s) <= 10, x$s, paste(x$s[1:10, ", ..."]), sep = " "), sep = "")
   } else {
     if (!any(grepl("anova", class(x)))) {
       output <- cbind(format(x$est, ...), format(x$se, ...), 
@@ -35,7 +34,11 @@ format.vim <- function(x, ...) {
                       paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
     }
     
-    rownames(output) <- paste("s = ", paste(x$s, collapse = ", "), sep = "")
+    print_s <- apply(matrix(x$s, 1, 
+                          function(x) ifelse(length(x) <= 10, 
+                                             paste(x, collapse = ", "), 
+                                             paste(c(x[1:10], "..."), collapse = ", ")))
+    rownames(output) <- paste("s = ", print_s, sep = "")
   }
   if (!any(grepl("anova", class(x)))) {
     colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""), 
