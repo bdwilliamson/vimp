@@ -4,6 +4,7 @@ context("test_merge_vimp_rsquared.R")
 library("testthat")
 library("SuperLearner")
 library("vimp")
+library("gam")
 
 ## generate the data
 set.seed(4747)
@@ -14,7 +15,7 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- "SL.glm"
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
