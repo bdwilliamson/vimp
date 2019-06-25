@@ -185,6 +185,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     if (full_type == "regression" | full_type == "anova" | full_type == "r_squared") {
         denom_point_est <- mean((Y - mean(Y))^2, na.rm = na.rm) 
         denom_ic <- (Y - mean(Y, na.rm = na.rm))^2 - denom_point_est
+        
     } else if (full_type == "deviance") {
         if (is.null(dim(y))) { # assume that zero is in first column
             y_mult <- cbind(1 - Y, Y)
