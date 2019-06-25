@@ -4,9 +4,9 @@
 \alias{vimp_anova}
 \title{Nonparametric Variable Importance Estimates: ANOVA}
 \usage{
-vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1,
-  run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
+vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
+  length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet",
+  "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -18,6 +18,8 @@ vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1,
 \item{f2}{the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
+
+\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
 \item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_anova}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 

@@ -14,7 +14,7 @@ x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
 y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + stats::rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- "SL.glm"
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)

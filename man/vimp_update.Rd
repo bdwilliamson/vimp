@@ -5,7 +5,7 @@
 \title{Estimate the influence function for variable importance parameters}
 \usage{
 vimp_update(full, reduced, y, weights = rep(1, length(y)),
-  type = "anova", na.rm = FALSE)
+  type = "r_squared", na.rm = FALSE)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates.}

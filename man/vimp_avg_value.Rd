@@ -5,8 +5,9 @@
 \title{Nonparametric Variable Importance Estimates: Difference in the average value under the optimal treatment rule}
 \usage{
 vimp_avg_value(Y, X, f1 = NULL, f2 = NULL, indx = 1,
-  run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
+  weights = rep(1, length(Y)), run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
+  na.rm = FALSE, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -18,6 +19,8 @@ vimp_avg_value(Y, X, f1 = NULL, f2 = NULL, indx = 1,
 \item{f2}{the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
+
+\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
 \item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_avg_value}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
