@@ -15,6 +15,21 @@
 #' @export
 vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type = "anova", na.rm = FALSE) {
 
+  ## compute the plug-in point estimates of predictiveness
+
+  ## compute the plug-in point estimate of variable importance
+
+  ## standardize, if necessary to make measure meaningful
+  if (type == "r_squared" | type == "deviance") {
+
+  }
+  ## do correction, if necessary
+  if (type == "regression" | type == "anova") {
+
+  }
+  ret <- c(corrected_est, plug_in_est)
+  return(ret)
+
   ## first calculate the naive
   if (type == "regression" | type == "anova") {
     naive <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
