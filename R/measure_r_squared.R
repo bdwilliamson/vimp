@@ -7,7 +7,7 @@
 #'
 #' @return A named list of: (1) the estimated R-squared of the fitted regression function, and (2) the estimated influence function.
 #' @export
-measure_mse <- function(fitted_values, y, na.rm = FALSE) {
+measure_r_squared <- function(fitted_values, y, na.rm = FALSE) {
     ## point estimates of all components
     mse <- mean((y - fitted_values)^2, na.rm = na.rm)
     var <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)

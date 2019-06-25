@@ -22,14 +22,8 @@ measure_cross_entropy <- function(fitted_values, y, na.rm = FALSE) {
     } else {
         fitted_mat <- fitted_values
     }
-    # p <- apply(y_mult, 2, mean, na.rm = na.rm)
-    # denom_point_est <- (-1)*sum(log())
     cross_entropy <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
-    # est <- num/denom_point_est
     ## influence curve
-    # ic_denom <- rowSums(-1/p*((y_mult == 1) - p))
     ic_cross_entropy <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - est
-    # grad <- matrix(c(1/denom_point_est, -num/denom_point_est^2), nrow = 1)
-    # return(list(point_est = est, ic = grad%*%t(cbind(ic_num, ic_denom)), component_est = num, component_ic = ic_num))
     return(list(point_est = cross_entropy, ic = ic_cross_entropy))
 }
