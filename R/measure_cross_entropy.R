@@ -6,7 +6,7 @@
 #' @param y the outcome.
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #'
-#' @return The estimated cross-entropy of the fitted regression function.
+#' @return A named list of: (1) the estimated cross-entropy of the fitted regression function, and (2) the estimated influence function.
 #' @export
 measure_cross_entropy <- function(fitted_values, y, na.rm = FALSE) {
     if (is.null(dim(y))) { # assume that zero is in first column
@@ -21,5 +21,7 @@ measure_cross_entropy <- function(fitted_values, y, na.rm = FALSE) {
     } else {
         fitted_mat <- fitted_values
     }
-    return(2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1])
+    est <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
+    grad <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - est
+    return(list(point_est = est, ic = grad))
 }
