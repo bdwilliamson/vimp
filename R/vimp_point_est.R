@@ -5,6 +5,7 @@
 #' @param full fitted values from a regression of the outcome on the full set of covariates.
 #' @param reduced fitted values from a regression of the fitted values from the full regression on the reduced set of covariates.
 #' @param y the outcome.
+#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #'
