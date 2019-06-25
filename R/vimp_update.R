@@ -15,90 +15,23 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-vimp_update <- function(full, reduced, y, weights = rep(1, length(y)), type = "anova", na.rm = FALSE) {
-  
-  ## calculate the necessary pieces for the influence curve
-  if (type == "regression" | type == "anova") {
-    naive_num <- mean((full - reduced) ^ 2, na.rm = na.rm)
-    naive_denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-    d_s <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - naive_num
-    d_denom <- (y - mean(y, na.rm = na.rm))^2 - naive_denom
-  } else if (type == "deviance") {
-    if (is.null(dim(y))) { # assume that zero is in first column
-      y_mult <- cbind(1 - y, y)
+vimp_update <- function(full, reduced, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
+    
+    ## get the correct measure function; if not one of the supported ones, say so
+    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+    full_type <- pmatch(type, types)
+    if (full_type == "regression") stop("Type 'regression' has been deprecated. Please enter type = 'anova' instead.")
+    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
+
+    ## get ICs
+    ic_full <- predictiveness_update(full, y, weights, type, na.rm)
+    ic_redu <- predictiveness_update(reduced, y, weights, type, na.rm)
+
+    ## if type isn't anova, return
+    if (type != "anova") {
+        ic <- ic_full - ic_redu
     } else {
-      y_mult <- y
+        ic <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - mean((full - reduced) ^ 2, na.rm = na.rm)
     }
-    if (is.null(dim(full))) { # assume predicting y = 1
-      full_mat <- cbind(1 - full, full)
-      reduced_mat <- cbind(1 - reduced, reduced)
-    } else if(dim(full)[2] < 2) {
-      full_mat <- cbind(1 - full, full)
-      reduced_mat <- cbind(1 - reduced, reduced)
-    } else {
-      full_mat <- full
-      reduced_mat <- reduced
-    }
-    p <- apply(y_mult, 2, mean)
-    naive_num <- 2*sum(diag(t(y_mult)%*%log(full_mat/reduced_mat)), na.rm = na.rm)/dim(y_mult)[1]
-    naive_denom <- -1*sum(log(p))
-    d_s <- 2*rowSums(y_mult*log(full_mat/reduced_mat) - (full_mat - reduced_mat), na.rm = na.rm) - naive_num
-    ## influence function of the denominator
-    d_denom <- rowSums(-1/p*((y_mult == 1) - p))
-  } else if (type == "r_squared") {
-    naive_denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-    mse_full <- mean((y - full)^2, na.rm = na.rm)/naive_denom
-    mse_reduced <- mean((y - reduced)^2, na.rm = na.rm)/naive_denom
-    naive_num <- mse_reduced - mse_full
-    
-    d_s_full <- (y - full)^2 - mse_full
-    d_s_reduced <- (y - reduced)^2 - mse_reduced
-    d_denom <- (y - mean(y, na.rm = na.rm))^2 - naive_denom
-    d_s <- (-1)*d_s_full - (-1)*d_s_reduced
-  } else if (type == "auc") {
-    p_0 <- mean(y == 0)
-    p_1 <- mean(y == 1)
-    
-    full_pred <- ROCR::prediction(predictions = full, labels = y)
-    red_pred <- ROCR::prediction(predictions = reduced, labels = y)
-    
-    sens_full <- unlist(lapply(as.list(full), function(x) mean(full[y == 0] < x)))
-    spec_full <- unlist(lapply(as.list(full), function(x) mean(full[y == 1] > x)))
-    
-    sens_red <- unlist(lapply(as.list(reduced), function(x) mean(reduced[y == 0] < x)))
-    spec_red <- unlist(lapply(as.list(reduced), function(x) mean(reduced[y == 1] > x)))
-    
-    contrib_1_full <- (y == 1)/p_1*sens_full
-    contrib_0_full <- (y == 0)/p_0*spec_full
-    naive_auc_full <- unlist(ROCR::performance(prediction.obj = full_pred, measure = "auc", x.measure = "cutoff")@y.values)
-    d_s_full <- contrib_1_full + contrib_0_full - ((y == 0)/p_0 + (y == 1)/p_1)*naive_auc_full
-    
-    contrib_1_reduced <- (y == 1)/p_1*sens_red
-    contrib_0_reduced <- (y == 0)/p_0*spec_red
-    naive_auc_reduced <- unlist(ROCR::performance(prediction.obj = red_pred, measure = "auc", x.measure = "cutoff")@y.values)
-    d_s_reduced <- contrib_1_reduced + contrib_0_reduced - ((y == 0)/p_0 + (y == 1)/p_1)*naive_auc_reduced
-    
-    ic_update <- d_s_full - d_s_reduced
-    
-  } else if (type == "accuracy") {
-    contrib_full <- mean((full > 1/2) != y)
-    contrib_reduced <- mean((reduced > 1/2) != y)
-    d_s_full <- ((full > 1/2) != y) - contrib_full
-    d_s_reduced <- ((reduced > 1/2) != y) - contrib_reduced
-    ic_update <- d_s_reduced - d_s_full
-  } else {
-    stop("We currently do not support the entered variable importance parameter.")
-  }
-  
-  ## influence curve
-  if (type %in% c("regression", "anova", "r_squared", "deviance")) {
-    ic_update <- d_s/naive_denom - naive_num/(naive_denom ^ 2)*d_denom    
-  } else if (type %in% c("auc", "accuracy")) {
-    # already computed it above
-  } else {
-    stop("We currently do not support the entered variable importance parameter.")
-  }
-  
-  
-  return(weights*ic_update)
+    return(weights*ic)
 }

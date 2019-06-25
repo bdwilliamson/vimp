@@ -13,10 +13,30 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type = "anova", na.rm = FALSE) {
+vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
 
-  ## compute the plug-in point estimates of predictiveness
+    ## get the correct measure function; if not one of the supported ones, say so
+    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+    full_type <- pmatch(type, types)
+    if (full_type == "regression") stop("Type 'regression' has been deprecated. Please enter type = 'anova' instead.")
+    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
+    
+    ## compute plug-in point estimates of predictiveness
+    point_est_full <- predictiveness_point_est(full, y, type, na.rm)
+    point_est_redu <- predictiveness_point_est(reduced, y, type, na.rm)
 
+    ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
+    if (type != "anova") {
+        point_est <- point_est_full - point_est_redu
+        corrected_est <- NA
+    } else {
+        point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)
+        corrected_est <- point_est + mean(vimp_update(full, reduced, y, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)   
+    }
+    return(c(corrected_est, point_est))
+
+
+    ## if
   ## compute the plug-in point estimate of variable importance
 
   ## standardize, if necessary to make measure meaningful
