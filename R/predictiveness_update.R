@@ -29,5 +29,5 @@ predictiveness_update <- function(fitted_values, y, weights = rep(1, length(y)),
     } else { # if type is anova, no plug-in from predictiveness
         ic <- NA
     }
-    return(weights*ic_update)
+    return(weights*ic)
 }
