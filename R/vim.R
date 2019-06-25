@@ -181,63 +181,14 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     }
     ## compute the update
     update <- vimp_update(fhat_ful, fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm)
-  
-    if (full_type == "regression" | full_type == "anova" | full_type == "r_squared") {
-        denom_point_est <- mean((Y - mean(Y))^2, na.rm = na.rm) 
-        denom_ic <- (Y - mean(Y, na.rm = na.rm))^2 - denom_point_est
-        
-    } else if (full_type == "deviance") {
-        if (is.null(dim(y))) { # assume that zero is in first column
-            y_mult <- cbind(1 - Y, Y)
-        } else {
-            y_mult <- Y
-        }
-        p <- apply(y_mult, 2, mean, na.rm = na.rm)
-        denom_point_est <- (-1)*sum(log())
-        denom_ic <- rowSums(-1/p*((y_mult == 1) - p))
-    } else {
-        denom_point_est <- NA
-        denom_ic <- NA
-    }
-    denom <- list(point_est = denom_point_est, ic = denom_ic)
     
-    ## compute the standard error, using the numerator (if we have a denominator)
-    se <- vimp_se(est, update, denom, scale = "log", na.rm = na.rm)
+    ## compute the standard error
+    se <- vimp_se(est, update, scale = "logit", na.rm = na.rm)
   
-    ## at this point, change to scaled MSE or deviance
-    if (full_type == "r_squared" | full_type == "deviance") {
-        tmp <- est/denom_point_est
-        tmp_pred_full <- predictiveness_full/denom_point_est
-        tmp_pred_redu <- predictiveness_redu/denom_point_est
-        tmp_update <- matrix(c(1/denom$point_est, -est/(denom$point_est^2)), nrow = 1)%*%t(cbind(update, denom$ic))
-        tmp_update_full <- matrix(c(1/denom$point_est, -predictiveness_full/(denom$point_est^2)), nrow = 1)%*%t(cbind(predictiveness_update(fhat_ful, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic))
-        tmp_update_redu <- matrix(c(1/denom$point_est, -predictiveness_redu/(denom$point_est^2)), nrow = 1)%*%t(cbind(predictiveness_update(fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic))
-        est <- tmp
-        update <- tmp_update
-        predictiveness_full <- tmp_pred_full
-        predictiveness_redu <- tmp_pred_redu
-        predictiveness_full_update <- tmp_update_full
-        predictiveness_redu_update <- tmp_update_redu
-    }
-    ## if r^2, at this point convert to R^2
-    if (full_type == "r_squared") {
-      tmp <- 1 - est
-      tmp_update <- (-1)*update
-      est <- tmp
-      update <- tmp_update
-      tmp_full <- 1 - predictiveness_full
-      tmp_redu <- 1 - predictiveness_redu
-      tmp_update_full <- (-1)*predictiveness_full_update
-      tmp_update_redu <- (-1)*predictiveness_redu_update
-      predictiveness_full <- tmp_full
-      predictiveness_redu <- tmp_redu
-      predictiveness_full_update <- tmp_update_full
-      predictiveness_redu_update <- tmp_update_redu
-    }
     ## compute the confidence interval
-    ci <- vimp_ci(est, se, scale = "log", level = 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full_update, scale = "log"), scale = "log", level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu_update, scale = "log"), scale = "log", level = 1 - alpha)
+    ci <- vimp_ci(est, se, scale = "logit", level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full_update, scale = "logit"), scale = "logit", level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu_update, scale = "logit"), scale = "logit", level = 1 - alpha)
     
    
   
