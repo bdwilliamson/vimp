@@ -187,11 +187,9 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
   
     ## compute the confidence interval
     ci <- vimp_ci(est, se, scale = "logit", level = 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full_update, scale = "logit"), scale = "logit", level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu_update, scale = "logit"), scale = "logit", level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, predictiveness_update(fhat_ful, Y, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, predictiveness_update(fhat_red, Y, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
     
-   
-  
     ## perform a hypothesis test against the null of zero importance
     if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & full_type != "anova") {
         hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, weights = weights, type = full_type, alpha = alpha, na.rm = na.rm)  
