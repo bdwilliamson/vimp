@@ -1,6 +1,6 @@
-#' Estimate the influence function for an estimator of risk
+#' Estimate the influence function for an estimator of predictiveness
 #'
-#' Estimate the influence function for the given risk parameter.
+#' Estimate the influence function for the given measure of predictiveness.
 #'
 #' @param fitted_values fitted values from a regression function.
 #' @param y the outcome.
@@ -8,7 +8,7 @@
 #' @param type which risk parameter are you estimating (defaults to \code{r_squared}, for the $R^2$)?
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
-#' @return The influence function values for the given group of left-out covariates.
+#' @return The estimated influence function values for the given measure of predictiveness.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.

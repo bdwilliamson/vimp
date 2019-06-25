@@ -1,18 +1,18 @@
-#' Estimate a nonparametric risk functional
+#' Estimate a nonparametric predictiveness functional
 #'
-#' Compute nonparametric estimates of the chosen risk functional.
+#' Compute nonparametric estimates of the chosen measure of predictiveness.
 #'
 #' @param fitted_values fitted values from a regression function.
 #' @param y the outcome.
 #' @param type which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #'
-#' @return The estimated variable importance for the given group of left-out covariates.
+#' @return The estimated measure of predictiveness.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-risk_estimator <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
+predictiveness_point_est <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
 
   ## first calculate the naive
   if (type == "regression" | type == "anova") {
