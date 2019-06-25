@@ -24,8 +24,8 @@ vimp_update <- function(full, reduced, y, weights = rep(1, length(y)), type = "r
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## get ICs
-    ic_full <- predictiveness_update(full, y, weights, type, na.rm)
-    ic_redu <- predictiveness_update(reduced, y, weights, type, na.rm)
+    ic_full <- predictiveness_update(full, y, weights, full_type, na.rm)
+    ic_redu <- predictiveness_update(reduced, y, weights, full_type, na.rm)
 
     ## if type isn't anova, return
     if (type != "anova") {
