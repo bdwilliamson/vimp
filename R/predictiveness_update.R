@@ -25,7 +25,7 @@ predictiveness_update <- function(fitted_values, y, weights = rep(1, length(y)),
 
     ## calculate the necessary pieces for the influence curve
     if (!is.na(measure_func)) {
-        ic <- measure_func(fitted_values, y, na.rm)$ic
+        ic <- measure_func[[1]](fitted_values, y, na.rm)$ic
     } else { # if type is anova, no plug-in from predictiveness
         ic <- NA
     }

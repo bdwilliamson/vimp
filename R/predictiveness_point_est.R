@@ -23,7 +23,7 @@ predictiveness_point_est <- function(fitted_values, y, type = "r_squared", na.rm
     
     ## compute plug-in point estimate
     if (!is.na(measure_func)) {
-        point_est <- measure_func(fitted_values, y, na.rm)$point_est
+        point_est <- measure_func[[1]](fitted_values, y, na.rm)$point_est
     } else { # if type is anova, no plug-in from predictiveness
         point_est <- NA
     }
