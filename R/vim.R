@@ -171,17 +171,13 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     if (full_type == "anova") {
         est <- ests[1]
         naive <- ests[2]
-        risk_full <- NA
-        risk_reduced <- NA
-        risk_ci_full <- NA
-        risk_ci_reduced <- NA
+        predictiveness_full <- NA
+        predictiveness_reduced <- NA
     } else {
         est <- ests[2]
         naive <- NA
-        risk_full <- risk_estimator(fhat_ful, Y, type = full_type, na.rm = na.rm)
-        risk_reduced <- risk_estimator(fhat_red, Y, type = full_type, na.rm = na.rm)
-        risk_ci_full <- vimp_ci(risk_full, se = vimp_se(risk_update(fhat_ful, Y, weights = weights, type = full_type, na.rm = na.rm)), level = 1 - alpha)
-        risk_ci_reduced <- vimp_ci(risk_reduced, se = vimp_se(risk_update(fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm)), level = 1 - alpha)
+        predictiveness_full <- predictiveness_point_est(fhat_ful, Y, type = full_type, na.rm = na.rm)
+        predictiveness_redu <- predictiveness_point_est(fhat_red, Y, type = full_type, na.rm = na.rm)
     }
     ## compute the update
     update <- vimp_update(fhat_ful, fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm)
@@ -210,25 +206,44 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     ## at this point, change to scaled MSE or deviance
     if (full_type == "r_squared" | full_type == "deviance") {
         tmp <- est/denom_point_est
+        tmp_pred_full <- predictiveness_full/denom_point_est
+        tmp_pred_redu <- predictiveness_redu/denom_point_est
         tmp_update <- matrix(c(1/denom$point_est, -est/(denom$point_est^2)), nrow = 1)%*%cbind(update, denom$ic)
+        tmp_update_full <- matrix(c(1/denom$point_est, -predictiveness_full/(denom$point_est^2)), nrow = 1)%*%cbind(predictiveness_update(fhat_ful, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic)
+        tmp_update_redu <- matrix(c(1/denom$point_est, -predictiveness_redu/(denom$point_est^2)), nrow = 1)%*%cbind(predictiveness_update(fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic)
         est <- tmp
         update <- tmp_update
+        predictiveness_full <- tmp_pred_full
+        predictiveness_redu <- tmp_pred_redu
+        predictiveness_full_update <- tmp_update_full
+        predictiveness_redu_update <- tmp_update_redu
     }
     ## compute the confidence interval
     ci <- vimp_ci(est, se, scale = "log", level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full_update, scale = "log"), scale = "log", level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu_update, scale = "log"), scale = "log", level = 1 - alpha)
+    
     ## if r^2, at this point convert to R^2
     if (full_type == "r_squared") {
         tmp <- 1 - est
         tmp_update <- (-1)*update
         est <- tmp
         update <- tmp_update
+        tmp_full <- 1 - predictiveness_full
+        tmp_redu <- 1 - predictiveness_redu
+        tmp_update_full <- (-1)*predictiveness_full_update
+        tmp_update_redu <- (-1)*predictiveness_redu_update
+        predictiveness_full <- tmp_full
+        predictiveness_redu <- tmp_redu
+        predictiveness_full_update <- tmp_update_full
+        predictiveness_redu_update <- tmp_update_redu
     }
   
     ## perform a hypothesis test against the null of zero importance
     if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & full_type != "anova") {
         hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, weights = weights, type = full_type, alpha = alpha, na.rm = na.rm)  
     } else {
-        hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
+        hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA)
     }
   
     ## get the call
@@ -242,16 +257,16 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
                  naive = naive,
                  update = update,
                  se = se, ci = ci, 
-                 risk_full = risk_full,
-                 risk_reduced = risk_reduced,
-                 risk_ci_full = risk_ci_full,
-                 risk_ci_reduced = risk_ci_reduced,
+                 predictiveness_full = predictiveness_full,
+                 predictiveness_reduced = predictiveness_redu,
+                 predictiveness_ci_full = predictiveness_ci_full,
+                 predictiveness_ci_reduced = predictiveness_ci_redu,
                  test = hyp_test$test,
                  p_value = hyp_test$p_value,
-                 hyp_test_risk_full = hyp_test$risk_full,
-                 hyp_test_risk_red = hyp_test$risk_reduced,
-                 hyp_test_risk_ci_full = hyp_test$risk_ci_full,
-                 hyp_test_risk_ci_reduced = hyp_test$risk_ci_reduced,
+                 hyp_test_predictiveness_full = hyp_test$predictiveness_full,
+                 hyp_test_predictiveness_reduced = hyp_test$predictiveness_reduced,
+                 hyp_test_predictiveness_ci_full = hyp_test$predictiveness_ci_full,
+                 hyp_test_predictiveness_ci_reduced = hyp_test$predictiveness_ci_reduced,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
