@@ -208,9 +208,9 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         tmp <- est/denom_point_est
         tmp_pred_full <- predictiveness_full/denom_point_est
         tmp_pred_redu <- predictiveness_redu/denom_point_est
-        tmp_update <- matrix(c(1/denom$point_est, -est/(denom$point_est^2)), nrow = 1)%*%cbind(update, denom$ic)
-        tmp_update_full <- matrix(c(1/denom$point_est, -predictiveness_full/(denom$point_est^2)), nrow = 1)%*%cbind(predictiveness_update(fhat_ful, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic)
-        tmp_update_redu <- matrix(c(1/denom$point_est, -predictiveness_redu/(denom$point_est^2)), nrow = 1)%*%cbind(predictiveness_update(fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic)
+        tmp_update <- matrix(c(1/denom$point_est, -est/(denom$point_est^2)), nrow = 1)%*%t(cbind(update, denom$ic))
+        tmp_update_full <- matrix(c(1/denom$point_est, -predictiveness_full/(denom$point_est^2)), nrow = 1)%*%t(cbind(predictiveness_update(fhat_ful, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic))
+        tmp_update_redu <- matrix(c(1/denom$point_est, -predictiveness_redu/(denom$point_est^2)), nrow = 1)%*%t(cbind(predictiveness_update(fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm), denom$ic))
         est <- tmp
         update <- tmp_update
         predictiveness_full <- tmp_pred_full
@@ -218,26 +218,27 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         predictiveness_full_update <- tmp_update_full
         predictiveness_redu_update <- tmp_update_redu
     }
+    ## if r^2, at this point convert to R^2
+    if (full_type == "r_squared") {
+      tmp <- 1 - est
+      tmp_update <- (-1)*update
+      est <- tmp
+      update <- tmp_update
+      tmp_full <- 1 - predictiveness_full
+      tmp_redu <- 1 - predictiveness_redu
+      tmp_update_full <- (-1)*predictiveness_full_update
+      tmp_update_redu <- (-1)*predictiveness_redu_update
+      predictiveness_full <- tmp_full
+      predictiveness_redu <- tmp_redu
+      predictiveness_full_update <- tmp_update_full
+      predictiveness_redu_update <- tmp_update_redu
+    }
     ## compute the confidence interval
     ci <- vimp_ci(est, se, scale = "log", level = 1 - alpha)
     predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full_update, scale = "log"), scale = "log", level = 1 - alpha)
     predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu_update, scale = "log"), scale = "log", level = 1 - alpha)
     
-    ## if r^2, at this point convert to R^2
-    if (full_type == "r_squared") {
-        tmp <- 1 - est
-        tmp_update <- (-1)*update
-        est <- tmp
-        update <- tmp_update
-        tmp_full <- 1 - predictiveness_full
-        tmp_redu <- 1 - predictiveness_redu
-        tmp_update_full <- (-1)*predictiveness_full_update
-        tmp_update_redu <- (-1)*predictiveness_redu_update
-        predictiveness_full <- tmp_full
-        predictiveness_redu <- tmp_redu
-        predictiveness_full_update <- tmp_update_full
-        predictiveness_redu_update <- tmp_update_redu
-    }
+   
   
     ## perform a hypothesis test against the null of zero importance
     if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & full_type != "anova") {
