@@ -29,8 +29,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
     if (!cv) {
         fold_nums <- unique(folds)
         ## point estimates of the risk
-        risk_full <- risk_estimator(fitted_values = full, y = y[folds == fold_nums[1]], type = type, na.rm = na.rm)
-        risk_reduced <- risk_estimator(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
+        risk_full <- predictiveness_point_est(fitted_values = full, y = y[folds == fold_nums[1]], type = type, na.rm = na.rm)
+        risk_reduced <- predictiveness_point_est(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
 
         ## influence curve estimates for the risk, and corresponding ses
         ic_full <- risk_update(fitted_values = full, y = y[folds == fold_nums[1]], weights = weights, type = type, na.rm = na.rm)
@@ -68,11 +68,11 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
         risk_vars_reduced <- vector("numeric", length = V)
         for (v in 1:V) {
           ## compute full risk on fold v, reduced risks on folds -v; also variances
-          risk_full <- risk_estimator(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
+          risk_full <- predictiveness_point_est(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
           risk_var_full <- mean(risk_update(fitted_values = full[[v]], y = y[folds == v], weights = weights[folds == v], type = type, 
                                             na.rm = na.rm)^2)
           risk_se_full <- sqrt(risk_var_full/length(y[folds == v]))
-          risks_reduced <- sapply(seq_len(V)[-v], function(x) risk_estimator(fitted_values = reduced[[x]],
+          risks_reduced <- sapply(seq_len(V)[-v], function(x) predictiveness_point_est(fitted_values = reduced[[x]],
                                                                              y = y[folds == x], type = type,
                                                                              na.rm = na.rm))
           risk_vars_reduced <- sapply(seq_len(V)[-v], function(x) mean(risk_update(fitted_values = reduced[[x]],
@@ -105,7 +105,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
           ## save off the risks and the variances
           risks_full[v] <- risk_full
           risk_vars_full[v] <- risk_var_full
-          risks_reduced[v] <- risk_estimator(fitted_values = reduced[[v]], y = y[folds == v], type = type, na.rm = na.rm)
+          risks_reduced[v] <- predictiveness_point_est(fitted_values = reduced[[v]], y = y[folds == v], type = type, na.rm = na.rm)
           risk_vars_reduced[v] <- mean(risk_update(fitted_values = reduced[[v]], y = y[folds == v], weights = weights, type = type, 
                                                    na.rm = na.rm)^2)
         }
@@ -117,33 +117,6 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
         risk_reduced <- mean(risks_reduced)
         risk_ci_full <- vimp_ci(est = risk_full, se = sqrt(mean(risk_vars_full)/length(y)), level = 1 - alpha)
         risk_ci_reduced <- vimp_ci(est = risk_reduced, se = sqrt(mean(risk_vars_reduced)/length(y)), level = 1 - alpha)
-        # ## sample the folds to compute full and reduced risk
-        # folds_full <- sample(seq_len(V), ceiling(V/2))
-        # folds_reduced <- seq_len(V)[-folds_full]
-        # 
-        # ## get full risk, vars
-        # risks_full <- sapply(folds_full, function(x) risk_estimator(fitted_values = full[[x]],
-        #                                                             y = y[folds == x],
-        #                                                             type = type, na.rm = na.rm))
-        # risk_vars_full <- sapply(folds_full, function(x) mean(risk_update(full[[x]], 
-        #                                                                   y[folds == x], 
-        #                                                                   type = type, na.rm = na.rm)^2))
-        # risk_full_n <- sum(sapply(folds_full, function(x) length(y[folds == x])))
-        # risk_full <- mean(risks_full)
-        # risk_se_full <- sqrt(mean(risk_vars_full/risk_full_n))
-        # risk_ci_full <- vimp_ci(est = risk_full, se = risk_se_full, level = 1 - alpha)
-        # 
-        # ## get full risk, vars
-        # risks_reduced <- sapply(folds_reduced, function(x) risk_estimator(fitted_values = reduced[[x]],
-        #                                                             y = y[folds == x],
-        #                                                             type = type, na.rm = na.rm))
-        # risk_vars_reduced <- sapply(folds_reduced, function(x) mean(risk_update(reduced[[x]], 
-        #                                                                   y[folds == x], 
-        #                                                                   type = type, na.rm = na.rm)^2))
-        # risk_reduced_n <- sum(sapply(folds_reduced, function(x) length(y[folds == x])))
-        # risk_reduced <- mean(risks_reduced)
-        # risk_se_reduced <- sqrt(mean(risk_vars_reduced/risk_reduced_n))
-        # risk_ci_reduced <- vimp_ci(est = risk_reduced, se = risk_se_reduced, level = 1 - alpha)
     }
   }
   return(list(test = hyp_test, p_value = p_value, risk_full = risk_full, risk_reduced = risk_reduced,
