@@ -14,47 +14,19 @@
 #' @export
 predictiveness_point_est <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
 
-  ## first calculate the naive
-  if (type == "regression" | type == "anova") {
-    est <- NA
-  } else if (type == "deviance") { 
-    if (is.null(dim(y))) { # assume that zero is in first column
-        y_mult <- cbind(1 - y, y)
-    } else {
-        y_mult <- y
+    ## get the correct measure function; if not one of the supported ones, say so
+    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+    full_type <- pmatch(type, types)
+    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
+    measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA)
+    measure_func <- measure_funcs[full_type]
+    
+    ## compute plug-in point estimate
+    if (!is.na(measure_func)) {
+        point_est <- measure_func(fitted_values, y, na.rm)$point_est
+    } else { # if type is anova, no plug-in from predictiveness
+        point_est <- NA
     }
-    if (is.null(dim(fitted_values))) { # assume predicting y = 1
-      fitted_mat <- cbind(1 - fitted_values, fitted_values)
-    } else if(dim(fitted_values)[2] < 2) {
-        fitted_mat <- cbind(1 - fitted_values, fitted_values)
-    } else {
-        fitted_mat <- fitted_values
-    }
-    p <- apply(y_mult, 2, mean)
-    num <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
-    denom <- -1*sum(log(p))
-    est <- num/denom
-  } else if (type == "r_squared"){
-    denom <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-    mse <- mean((y - fitted_values)^2, na.rm = na.rm)/denom
-    est <- (1 - mse)
-  } else if (type == "auc") {
-    if (!is.null(dim(fitted_values))) { # remove dimension
-      if (dim(fitted_values)[2] == 1) {
-        fitted_values <- as.vector(fitted_values)
-        y <- as.vector(y)
-      }
-    }
-    preds <- ROCR::prediction(predictions = fitted_values, labels = y)
-    est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
-  } else if (type == "accuracy") {
-    est <- 1 - mean((fitted_values > 1/2) != y)
-  } else if (type == "avg_value") {
-    stop("We currently do not support the entered variable importance parameter.")
-  } else {
-    stop("We currently do not support the entered variable importance parameter.")
-  }
-
-  ## return
-  return(est)
+    ## return it
+    return(point_est)
 }

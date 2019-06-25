@@ -14,9 +14,27 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-risk_update <- function(fitted_values, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
+predictiveness_update <- function(fitted_values, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
   
-  ## calculate the necessary pieces for the influence curve
+    ## get the correct measure function; if not one of the supported ones, say so
+    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+    full_type <- pmatch(type, types)
+    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
+    measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA)
+    measure_func <- measure_funcs[full_type]
+
+    ## calculate the necessary pieces for the influence curve
+    if (!is.na(measure_func)) {
+        ic <- measure_func(fitted_values, y, na.rm)
+    } else { # if type is anova, no plug-in from predictiveness
+        ic <- NA
+    }
+    ## return it
+    return(point_est)
+
+
+
+
   if (type == "regression" | type == "anova") {
     ic_update <- NA
   } else if (type == "deviance") {
