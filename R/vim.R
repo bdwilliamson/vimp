@@ -91,7 +91,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
   
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
-    full_type <- pmatch(type, types)
+    full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## if run_regression = TRUE, then fit SuperLearner

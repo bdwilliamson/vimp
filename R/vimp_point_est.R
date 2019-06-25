@@ -18,7 +18,7 @@ vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type =
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
-    full_type <- pmatch(type, types)
+    full_type <- types[pmatch(type, types)]
     if (full_type == "regression") stop("Type 'regression' has been deprecated. Please enter type = 'anova' instead.")
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
     
