@@ -184,7 +184,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   risk_updates_reduced <- vector("numeric", V)
   risk_vars_reduced <- vector("numeric", V)
   for (v in 1:V) {
-    est_cv[v] <- onestep_based_estimator(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)[2]
+    est_cv[v] <- vimp_point_est(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)[2]
     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm), na.rm = na.rm)
     vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
     ## calculate risks, risk updates/ses

@@ -162,7 +162,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
   }
   
   ## calculate the estimators 
-  ests <- onestep_based_estimator(fhat_ful, fhat_red, Y, weights = weights, type = type, na.rm = na.rm)
+  ests <- vimp_point_est(fhat_ful, fhat_red, Y, weights = weights, type = type, na.rm = na.rm)
   
   ## if type = "anova", then use onestep; else use naive
   if (type == "anova") {

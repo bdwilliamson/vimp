@@ -13,7 +13,7 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-onestep_based_estimator <- function(full, reduced, y, weights = rep(1, length(y)), type = "anova", na.rm = FALSE) {
+vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type = "anova", na.rm = FALSE) {
 
   ## first calculate the naive
   if (type == "regression" | type == "anova") {
