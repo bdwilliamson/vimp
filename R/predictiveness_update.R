@@ -20,7 +20,7 @@ predictiveness_update <- function(fitted_values, y, weights = rep(1, length(y)),
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
     full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
-    measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA)
+    measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance, measure_r_squared, NA)
     measure_func <- measure_funcs[pmatch(type, types)]
 
     ## calculate the necessary pieces for the influence curve
