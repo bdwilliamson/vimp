@@ -26,7 +26,7 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
     scales <- c("log", "identity")
     full_scale <- scales[pmatch(scale, scales)]
     if (full_scale == "log") {
-        ci[] <- 1 - exp(log(est) + (se) %o% rev(fac))
+        ci[] <- exp(log(est) + (se) %o% fac)
     } else {
         ci[] <- est + (se) %o% fac
     }
