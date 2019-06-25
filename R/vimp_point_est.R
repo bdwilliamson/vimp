@@ -23,8 +23,8 @@ vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type =
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
     
     ## compute plug-in point estimates of predictiveness
-    point_est_full <- predictiveness_point_est(full, y, type, na.rm)
-    point_est_redu <- predictiveness_point_est(reduced, y, type, na.rm)
+    point_est_full <- predictiveness_point_est(full, y, full_type, na.rm)
+    point_est_redu <- predictiveness_point_est(reduced, y, full_type, na.rm)
 
     ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
     if (type != "anova") {
