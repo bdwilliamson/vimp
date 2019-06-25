@@ -23,10 +23,14 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
     ## create the ci
     ci <- array(NA, dim = c(length(est), 2L), dimnames = list(names(est)))
     ## get scale
-    scales <- c("log", "identity")
+    scales <- c("log", "logit", "identity")
     full_scale <- scales[pmatch(scale, scales)]
     if (full_scale == "log") {
         ci[] <- exp(log(est) + (se) %o% fac)
+    } else if (full_scale == "logit") {
+        expit <- function(x) exp(x)/(1 + exp(x))
+        logit <- function(x) log(x/(1-x))
+        ci[] <- expit(logit(est) + (se) %o% fac)
     } else {
         ci[] <- est + (se) %o% fac
     }

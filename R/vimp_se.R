@@ -17,31 +17,24 @@
 vimp_se <- function(est, update, denom = NULL, n = length(update), scale = "log", na.rm = FALSE) {
 
     ## get scale
-    scales <- c("log", "identity")
+    scales <- c("log", "logit", "identity")
     full_scale <- scales[pmatch(scale, scales)]
-    ## if denom is supplied, make a matrix with both ICs; otherwise, matrix with only regular IC
-    if (!is.null(denom)) {
-        ic <- cbind(update, denom$ic)
-        if (full_scale == "log") {
-            grad <- matrix(c(1/est, (-1)/denom$point_est), nrow = 1)    
-        } else {
-            grad <- matrix(c(1/denom$point_est, -est/(denom$point_est^2)), nrow = 1)
-        }
+    ## get the influence curve
+    ic <- matrix(update, ncol = 1)
+    if (full_scale == "log") {
+        grad <- matrix(1/est, nrow = 1)
+    } else if (full_scale == "logit") {
+        grad <- matrix(1/est + 1/(1 - est), nrow = 1)
     } else {
-        ic <- matrix(update, ncol = 1)
-        if (full_scale == "log") {
-            grad <- matrix(1/est, nrow = 1)
-        } else {
-            grad <- matrix(1, nrow = 1)
-        }
+        grad <- matrix(1, nrow = 1)
     }
-    ## compute the variance
-    var <- grad %*% t(ic) %*% ic %*% t(grad)
-    
     ## calculate se
     if (na.rm) {
-  	 n <- length(update[!is.na(update)])
+        n <- length(update[!is.na(update)])
     }
+    ## compute the variance
+    var <- (grad %*% t(ic) %*% ic %*% t(grad))/n
+    ## compute the se
     se <- sqrt(var/n)
     return(se)
 }
