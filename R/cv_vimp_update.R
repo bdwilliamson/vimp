@@ -24,19 +24,25 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## get ICs
-    V <- length(unique(folds))
-    max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
-    ics_full <- matrix(NA, nrow = max_nrow, ncol = V)
-    ics_redu <- matrix(NA, nrow = max_nrow, ncol = V)
-    ## if r_squared or deviance, change to MSE or cross-entropy
     if (full_type == "r_squared") full_type <- "mse"
     if (full_type == "deviance") full_type <- "cross_entropy"
-    for (v in 1:V) {
-        ics_full[1:length(y[folds == v]), v] <- predictiveness_update(full[[v]], y[folds == v], weights[folds == v], full_type, na.rm)
-        ics_redu[1:length(y[folds == v]), v] <- predictiveness_update(reduced[[v]], y[folds == v], weights[folds == v], full_type, na.rm)    
-    }
-    ic_full <- rowMeans(ics_full, na.rm = TRUE)
-    ic_redu <- rowMeans(ics_redu, na.rm = TRUE)
+    ic_full_lst <- cv_predictiveness_update(full, y, folds, weights, type, na.rm)
+    ic_redu_lst <- cv_predictiveness_update(reduced, y, folds, weights, type, na.rm)
+    ic_full <- ic_full_lst$ic
+    ic_redu <- ic_full_lst$ic
+    # V <- length(unique(folds))
+    # max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
+    # ics_full <- matrix(NA, nrow = max_nrow, ncol = V)
+    # ics_redu <- matrix(NA, nrow = max_nrow, ncol = V)
+    # ## if r_squared or deviance, change to MSE or cross-entropy
+    # if (full_type == "r_squared") full_type <- "mse"
+    # if (full_type == "deviance") full_type <- "cross_entropy"
+    # for (v in 1:V) {
+    #     ics_full[1:length(y[folds == v]), v] <- predictiveness_update(full[[v]], y[folds == v], weights[folds == v], full_type, na.rm)
+    #     ics_redu[1:length(y[folds == v]), v] <- predictiveness_update(reduced[[v]], y[folds == v], weights[folds == v], full_type, na.rm)    
+    # }
+    # ic_full <- rowMeans(ics_full, na.rm = TRUE)
+    # ic_redu <- rowMeans(ics_redu, na.rm = TRUE)
 
     ## if type isn't anova, return
     if (full_type != "anova" & full_type != "mse" & full_type != "cross_entropy") {
@@ -53,10 +59,10 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         ic_denom <- rowSums(-1/p*((y_mult == 1) - p))
 
         ## cross-entropies
-        cross_entropy_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)
-        cross_entropy_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)
-        ic_ce_full <- cv_predictiveness_update(full, y, folds, full_type, na.rm)
-        ic_ce_redu <- cv_predictiveness_update(reduced, y, folds, full_type, na.rm)
+        cross_entropy_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)$point_est
+        cross_entropy_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)$point_est
+        ic_ce_full <- cv_predictiveness_update(full, y, folds, full_type, na.rm)$ic
+        ic_ce_redu <- cv_predictiveness_update(reduced, y, folds, full_type, na.rm)$ic
 
         ## influence curve
         grad <- matrix(c(1/denom_point_est, -cross_entropy_full/denom_point_est^2,
@@ -68,10 +74,10 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         ic_var <- (y - mean(y, na.rm = na.rm))^2 - var
 
         ## mses
-        mse_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)
-        ic_mse_full <- cv_predictiveness_update(full, y, folds, weights, full_type, na.rm)
-        mse_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)
-        ic_mse_redu <- cv_predictiveness_update(reduced, y, folds, weights, full_type, na.rm)
+        mse_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)$point_est
+        ic_mse_full <- cv_predictiveness_update(full, y, folds, weights, full_type, na.rm)$ic
+        mse_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)$point_est
+        ic_mse_redu <- cv_predictiveness_update(reduced, y, folds, weights, full_type, na.rm)$ic
 
         ## influence curve
         grad <- matrix(c(1/var, -mse_full/var^2, -1/var, mse_redu/var^2), nrow = 1)

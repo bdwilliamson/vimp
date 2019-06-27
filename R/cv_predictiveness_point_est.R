@@ -34,5 +34,5 @@ cv_predictiveness_point_est <- function(fitted_values, y, folds, type = "r_squar
         point_est <- NA
     }
     ## return it
-    return(point_est)
+    return(list(point_est = point_est, all_ests = point_ests))
 }
