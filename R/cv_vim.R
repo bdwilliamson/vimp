@@ -217,6 +217,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     #     risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
     #     risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
     # }
+    ## compute the update
+    update <- cv_vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    
     ## calculate the standard error
     se <- sqrt(mean(vars)/dim(Y)[1])
   
