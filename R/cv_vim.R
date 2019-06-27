@@ -177,19 +177,6 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         full <- reduced <- NA  
 
     }
-
-    ## calculate the estimate
-    ## loop over the folds
-    est_cv <- vector("numeric", V)
-    updates <- vector("numeric", V)
-    vars <- vector("numeric", V)
-    risks_full <- vector("numeric", V)
-    risk_updates_full <- vector("numeric", V)
-    risk_vars_full <- vector("numeric", V)
-    risks_reduced <- vector("numeric", V)
-    risk_updates_reduced <- vector("numeric", V)
-    risk_vars_reduced <- vector("numeric", V)
-    
     ## get point estimate based on cv
     ests <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
     
@@ -202,8 +189,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     } else {
         est <- ests[2]
         naive <- NA
-        predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, type = full_type, na.rm = na.rm)
-        predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, type = full_type, na.rm = na.rm)
+        predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, folds = folds, type = full_type, na.rm = na.rm)
+        predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, folds = folds, type = full_type, na.rm = na.rm)
     }
     
     ## compute the update
