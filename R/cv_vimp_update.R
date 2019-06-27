@@ -32,21 +32,9 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
     ic_redu <- ic_redu_lst$ic
     ics_full <- ic_full_lst$all_ics
     ics_redu <- ic_redu_lst$all_ics
-    # V <- length(unique(folds))
-    # max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
-    # ics_full <- matrix(NA, nrow = max_nrow, ncol = V)
-    # ics_redu <- matrix(NA, nrow = max_nrow, ncol = V)
-    # ## if r_squared or deviance, change to MSE or cross-entropy
-    # if (full_type == "r_squared") full_type <- "mse"
-    # if (full_type == "deviance") full_type <- "cross_entropy"
-    # for (v in 1:V) {
-    #     ics_full[1:length(y[folds == v]), v] <- predictiveness_update(full[[v]], y[folds == v], weights[folds == v], full_type, na.rm)
-    #     ics_redu[1:length(y[folds == v]), v] <- predictiveness_update(reduced[[v]], y[folds == v], weights[folds == v], full_type, na.rm)    
-    # }
-    # ic_full <- rowMeans(ics_full, na.rm = TRUE)
-    # ic_redu <- rowMeans(ics_redu, na.rm = TRUE)
 
     ## if type isn't anova, return
+    V <- length(unique(folds))
     if (full_type != "anova" & full_type != "mse" & full_type != "cross_entropy") {
         ic <- ic_full - ic_redu
         ics <- ics_full - ics_redu
@@ -69,7 +57,7 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         grad <- matrix(c(1/denom_point_est, -cross_entropy_full/denom_point_est^2,
                          -1/denom_point_est, cross_entropy_redu/denom_point_est^2), nrow = 1)
         ic <- as.vector(grad %*% t(cbind(ic_full, ic_denom, ic_redu, ic_denom)))
-        ics <- 
+        ics <- cbind(as.vector(apply(matrix(1:V), 1, function(x) as.vector(grad %*% t(cbind(ics_full[, x], ic_denom, ics_redu[, x], ic_denom))))))
     } else if (full_type == "mse") {
         ## variance
         var <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
@@ -82,8 +70,8 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         ## influence curve
         grad <- matrix(c(1/var, -mse_full/var^2, -1/var, mse_redu/var^2), nrow = 1)
         ic <- as.vector((-1)*(grad %*% t(cbind(ic_full, ic_var, ic_redu, ic_var))))
+        ics <- cbind(as.vector(apply(matrix(1:V), 1, function(x) as.vector(grad %*% t(cbind(ics_full[, x], ic_denom, ics_redu[, x], ic_denom))))))
     } else {
-        V <- length(unique(folds))
         max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
         # ics_full <- matrix(NA, nrow = max_nrow, ncol = V)
