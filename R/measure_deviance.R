@@ -30,5 +30,5 @@ measure_deviance <- function(fitted_values, y, na.rm = FALSE) {
     ic_denom <- rowSums(-1/p*((y_mult == 1) - p))
     ic_cross_entropy <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - est
     grad <- matrix(c(1/denom_point_est, -num/denom_point_est^2), nrow = 1)
-    return(list(point_est = est, ic = grad%*%t(cbind(ic_num, ic_denom))))
+    return(list(point_est = est, ic = as.vector(grad%*%t(cbind(ic_num, ic_denom)))))
 }

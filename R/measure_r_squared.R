@@ -16,5 +16,5 @@ measure_r_squared <- function(fitted_values, y, na.rm = FALSE) {
     ic_mse <- (y - fitted_values)^2 - mse
     ic_var <- (y - mean(y, na.rm = na.rm))^2 - var
     grad <- matrix(c(1/var, -mse/var^2), nrow = 1)
-    return(list(point_est = est, ic = grad%*%t(cbind(ic_mse, ic_var))))
+    return(list(point_est = est, ic = as.vector(grad%*%t(cbind(ic_mse, ic_var)))))
 }
