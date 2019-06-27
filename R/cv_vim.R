@@ -189,36 +189,34 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     risks_reduced <- vector("numeric", V)
     risk_updates_reduced <- vector("numeric", V)
     risk_vars_reduced <- vector("numeric", V)
-    if (full_type == "")
-    for (v in 1:V) { ## if r-squared or deviance, do CV only on numerator
-        est_cv[v] <- vimp_point_est(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)[2]
-        updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm), na.rm = na.rm)
-        vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
-        ## calculate risks, risk updates/ses
-        risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-        risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
-        risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
-        risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-        risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
-        risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
-    }
-    ## estimator, naive (if applicable)
-    if (type == "regression" | type == "anova") {
-        naive <- mean(est_cv)
-        est <- mean(est_cv) + mean(updates) 
-        risk_full <- NA
-        risk_reduced <- NA
-        risk_ci_full <- NA
-        risk_ci_reduced <- NA
+    
+    ## get point estimate based on cv
+    ests <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    
+    ## if type = "anova", then use corrected; else use plug-in
+    if (full_type == "anova" | full_type == "regression") {
+        est <- ests[1]
+        naive <- ests[2]
+        predictiveness_full <- NA
+        predictiveness_reduced <- NA
     } else {
-        est <- mean(est_cv) 
+        est <- ests[2]
         naive <- NA
-        risk_full <- mean(risks_full)
-        risk_reduced <- mean(risks_reduced)
-        risk_ci_full <- vimp_ci(risk_full, se = sqrt(mean(risk_vars_full)/dim(Y)[1]), 1 - alpha)
-        risk_ci_reduced <- vimp_ci(risk_reduced, se = sqrt(mean(risk_vars_reduced)/dim(Y)[1]), 1 - alpha)
+        predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, type = full_type, na.rm = na.rm)
+        predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, type = full_type, na.rm = na.rm)
     }
-
+    # for (v in 1:V) { ## if r-squared or deviance, do CV only on numerator
+    #     est_cv[v] <- vimp_point_est(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)[2]
+    #     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm), na.rm = na.rm)
+    #     vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
+    #     ## calculate risks, risk updates/ses
+    #     risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    #     risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
+    #     risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
+    #     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
+    #     risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
+    #     risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
+    # }
     ## calculate the standard error
     se <- sqrt(mean(vars)/dim(Y)[1])
   

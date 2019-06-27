@@ -23,7 +23,7 @@ measure_deviance <- function(fitted_values, y, na.rm = FALSE) {
         fitted_mat <- fitted_values
     }
     p <- apply(y_mult, 2, mean, na.rm = na.rm)
-    denom_point_est <- (-1)*sum(log())
+    denom_point_est <- (-1)*sum(log(p))
     cross_entropy <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
     est <- num/denom_point_est
     ## influence curve
