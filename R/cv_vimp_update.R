@@ -18,7 +18,7 @@
 cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
     
     ## get the correct measure function; if not one of the supported ones, say so
-    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+    types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
     if (full_type == "regression") stop("Type 'regression' has been deprecated. Please enter type = 'anova' instead.")
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
