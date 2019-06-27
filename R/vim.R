@@ -168,7 +168,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     ests <- vimp_point_est(fhat_ful, fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm)
   
     ## if type = "anova", then use corrected; else use plug-in
-    if (full_type == "anova") {
+    if (full_type == "anova" | full_type == "regression") {
         est <- ests[1]
         naive <- ests[2]
         predictiveness_full <- NA

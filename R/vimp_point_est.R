@@ -27,7 +27,7 @@ vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type =
     point_est_redu <- predictiveness_point_est(reduced, y, full_type, na.rm)
 
     ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
-    if (type != "anova") {
+    if (full_type != "anova") {
         point_est <- point_est_full - point_est_redu
         corrected_est <- NA
     } else {
