@@ -23,7 +23,7 @@ vimp_hypothesis_test(full, reduced, y, folds, weights = rep(1,
 
 \item{alpha}{the desired type I error rate (defaults to 0.05).}
 
-\item{cv}{was V-fold cross-validation used to estimate the risks (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.}
+\item{cv}{was V-fold cross-validation used to estimate the predictiveness (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.}
 
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
 }
@@ -32,7 +32,7 @@ vimp_hypothesis_test(full, reduced, y, folds, weights = rep(1,
 }
 \description{
 Perform a hypothesis test against the null hypothesis of zero importance by: 
-(i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the risk for both the full and reduced regression functions (these must be estimated on independent splits of the data);
+(i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the predictiveness for both the full and reduced regression functions (these must be estimated on independent splits of the data);
 (ii) if the intervals do not overlap, reject the null hypothesis.
 }
 \details{
