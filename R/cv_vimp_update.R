@@ -25,17 +25,18 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
 
     ## get ICs
     V <- length(unique(folds))
-    ics_full <- vector("numeric", V)
-    ics_redu <- vector("numeric", V)
+    max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
+    ics_full <- matrix(NA, nrow = max_nrow, ncol = V)
+    ics_redu <- matrix(NA, nrow = max_nrow, ncol = V)
     ## if r_squared or deviance, change to MSE or cross-entropy
     if (full_type == "r_squared") full_type <- "mse"
     if (full_type == "deviance") full_type <- "cross_entropy"
     for (v in 1:V) {
-        ics_full[v] <- predictiveness_update(full[[v]], y[folds == v], weights, full_type, na.rm)
-        ics_redu[v] <- predictiveness_update(reduced[[v]], y[folds == v], weights, full_type, na.rm)    
+        ics_full[1:length(y[folds == v]), v] <- predictiveness_update(full[[v]], y[folds == v], weights[folds == v], full_type, na.rm)
+        ics_redu[1:length(y[folds == v]), v] <- predictiveness_update(reduced[[v]], y[folds == v], weights[folds == v], full_type, na.rm)    
     }
-    ic_full <- mean(ics_full)
-    ic_redu <- mean(ic_redu)
+    ic_full <- rowMeans(ics_full, na.rm = TRUE)
+    ic_redu <- rowMeans(ics_redu, na.rm = TRUE)
 
     ## if type isn't anova, return
     if (full_type != "anova" & full_type != "mse" & full_type != "cross_entropy") {
@@ -68,9 +69,9 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
 
         ## mses
         mse_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)
-        ic_mse_full <- cv_predictiveness_update(full, y, folds, full_type, na.rm)
+        ic_mse_full <- cv_predictiveness_update(full, y, folds, weights, full_type, na.rm)
         mse_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)
-        ic_mse_redu <- cv_predictiveness_update(reduced, y, folds, full_type, na.rm)
+        ic_mse_redu <- cv_predictiveness_update(reduced, y, folds, weights, full_type, na.rm)
 
         ## influence curve
         grad <- matrix(c(1/var, -mse_full/var^2, -1/var, mse_redu/var^2), nrow = 1)

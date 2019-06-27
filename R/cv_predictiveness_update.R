@@ -27,11 +27,12 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
     ## calculate the necessary pieces for the influence curve
     if (!is.na(measure_func)) {
         V <- length(unique(folds))
-        ics <- vector("numeric", V)
+        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
+        ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            ics[v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], na.rm)$ic
+            ics[, v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], na.rm)$ic
         }
-        ic <- mean(ics)
+        ic <- rowMeans(ics, na.rm = TRUE)
     } else { # if type is anova, no plug-in from predictiveness
         ic <- NA
     }

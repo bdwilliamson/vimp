@@ -201,8 +201,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
   
     ## calculate the confidence interval
     ci <- vimp_ci(est, se, scale = "logit", 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, predictiveness_update(fhat_ful, Y, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, predictiveness_update(fhat_red, Y, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y, folds, weights, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, cv_predictiveness_update(fhat_red, Y, folds, weights, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
     
     ## compute a hypothesis test against the null of zero importance
     ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks
