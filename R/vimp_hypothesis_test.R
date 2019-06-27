@@ -35,8 +35,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
         ## influence curve estimates for the risk, and corresponding ses
         ic_full <- predictiveness_update(fitted_values = full, y = y[folds == fold_nums[1]], weights = weights, type = type, na.rm = na.rm)
         ic_redu <- predictiveness_update(fitted_values = reduced, y = y[folds == fold_nums[2]], weights = weights, type = type, na.rm = na.rm)
-        se_full <- vimp_se(ic_full, na.rm = na.rm)
-        se_redu <- vimp_se(ic_full, na.rm = na.rm)
+        se_full <- vimp_se(predictiveness_full, ic_full, na.rm = na.rm)
+        se_redu <- vimp_se(predictiveness_redu, ic_redu, na.rm = na.rm)
         ## CIs for both predictivenesses
         predictiveness_ci_full <- vimp_ci(est = predictiveness_full, se = vimp_se(ic_full, na.rm = na.rm), level = 1 - alpha)
         predictiveness_ci_reduced <- vimp_ci(est = predictiveness_redu, se = vimp_se(ic_redu, na.rm = na.rm), level = 1 - alpha)
