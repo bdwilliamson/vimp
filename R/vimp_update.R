@@ -28,7 +28,7 @@ vimp_update <- function(full, reduced, y, weights = rep(1, length(y)), type = "r
     ic_redu <- predictiveness_update(reduced, y, weights, full_type, na.rm)
 
     ## if type isn't anova, return
-    if (type != "anova") {
+    if (full_type != "anova") {
         ic <- ic_full - ic_redu
     } else {
         ic <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - mean((full - reduced) ^ 2, na.rm = na.rm)
