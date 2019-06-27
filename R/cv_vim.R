@@ -205,27 +205,18 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, type = full_type, na.rm = na.rm)
         predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, type = full_type, na.rm = na.rm)
     }
-    # for (v in 1:V) { ## if r-squared or deviance, do CV only on numerator
-    #     est_cv[v] <- vimp_point_est(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)[2]
-    #     updates[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm), na.rm = na.rm)
-    #     vars[v] <- mean(vimp_update(fhat_ful[[v]], fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
-    #     ## calculate risks, risk updates/ses
-    #     risks_full[v] <- risk_estimator(fhat_ful[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    #     risk_updates_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
-    #     risk_vars_full[v] <- mean(risk_update(fhat_ful[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
-    #     risks_reduced[v] <- risk_estimator(fhat_red[[v]], Y[folds == v, ], type = type, na.rm = na.rm)
-    #     risk_updates_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm))
-    #     risk_vars_reduced[v] <- mean(risk_update(fhat_red[[v]], Y[folds == v, ], weights = weights[folds == v], type = type, na.rm = na.rm)^2)
-    # }
+    
     ## compute the update
     update <- cv_vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
     
     ## calculate the standard error
-    se <- sqrt(mean(vars)/dim(Y)[1])
+    se <- vimp_se(est, update, scale = "logit", na.rm = na.rm)
   
     ## calculate the confidence interval
-    ci <- vimp_ci(est, se, 1 - alpha)
-  
+    ci <- vimp_ci(est, se, scale = "logit", 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, predictiveness_update(fhat_ful, Y, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, predictiveness_update(fhat_red, Y, type = full_type, na.rm = na.rm), scale = "logit"), scale = "logit", level = 1 - alpha)
+    
     ## compute a hypothesis test against the null of zero importance
     ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks
     if (type == "regression" | type == "anova") {
@@ -234,7 +225,6 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
         hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, weights = weights, type = type, alpha = alpha, cv = TRUE, na.rm = na.rm)
     }
-  
   
     ## get the call
     cl <- match.call()
@@ -245,19 +235,18 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  full_fit = fhat_ful, red_fit = fhat_red, 
                  est = est,
                  naive = naive,
-                 ests = est_cv,
-                 update = updates,
+                 update = update,
                  se = se, ci = ci, 
-                 risk_full = risk_full,
-                 risk_reduced = risk_reduced,
-                 risk_ci_full = risk_ci_full,
-                 risk_ci_reduced = risk_ci_reduced,
+                 predictiveness_full = predictiveness_full,
+                 predictiveness_reduced = predictiveness_redu,
+                 predictiveness_ci_full = predictiveness_ci_full,
+                 predictiveness_ci_reduced = predictiveness_ci_redu,
                  test = hyp_test$test,
                  p_value = hyp_test$p_value,
-                 hyp_test_risk_full = hyp_test$risk_full,
-                 hyp_test_risk_red = hyp_test$risk_reduced,
-                 hyp_test_risk_ci_full = hyp_test$risk_ci_full,
-                 hyp_test_risk_ci_reduced = hyp_test$risk_ci_reduced,
+                 hyp_test_predictiveness_full = hyp_test$predictiveness_full,
+                 hyp_test_predictiveness_reduced = hyp_test$predictiveness_reduced,
+                 hyp_test_predictiveness_ci_full = hyp_test$predictiveness_ci_full,
+                 hyp_test_predictiveness_ci_reduced = hyp_test$predictiveness_ci_reduced,
                  full_mod = full, 
                  red_mod = reduced,
                  alpha = alpha,
