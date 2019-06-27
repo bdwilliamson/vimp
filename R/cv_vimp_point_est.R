@@ -31,8 +31,8 @@ cv_vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y
     if (full_type == "r_squared") full_type <- "mse"
     if (full_type == "deviance") full_type <- "cross_entropy"
     for (v in 1:V) {
-        point_ests_full[v] <- predictiveness_point_est(full[[v]], y[folds == v], full_type, na.rm)
-        point_ests_redu[v] <- predictiveness_point_est(reduced[[v]], y[folds == v], full_type, na.rm)    
+        point_ests_full[v] <- predictiveness_point_est(full[[v]], y[folds == v], full_type, na.rm)$point_est
+        point_ests_redu[v] <- predictiveness_point_est(reduced[[v]], y[folds == v], full_type, na.rm)$point_est    
     }    
 
     ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
