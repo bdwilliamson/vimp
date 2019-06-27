@@ -15,10 +15,10 @@
 predictiveness_point_est <- function(fitted_values, y, type = "r_squared", na.rm = FALSE) {
 
     ## get the correct measure function; if not one of the supported ones, say so
-    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+    types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
-    measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance, measure_r_squared, NA)
+    measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance, measure_r_squared, NA, measure_mse, measure_cross_entropy)
     measure_func <- measure_funcs[pmatch(type, types)]
     
     ## compute plug-in point estimate
