@@ -51,7 +51,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         grads <- cbind(1/denom_point_est, -mse_lst$all_ests/denom_point_est^2)
         tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            tmp_ics[1:length(y[folds == v]), v] <- as.vector((-1)*(grads[v, ] %*% t(cbind(ics[, v], denom_ic))))
+            tmp_ics[1:length(y[folds == v]), v] <- as.vector((-1)*(grads[v, ] %*% t(cbind(ics[, v], denom_ic[folds == v]))))
         }
         ics <- tmp_ics
     }
@@ -75,7 +75,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         grads <- cbind(1/denom_point_est, -ce_lst$all_ests/denom_point_est^2)
         tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            tmp_ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics[, v], denom_ic)))
+            tmp_ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics[, v], denom_ic[folds == v])))
         }
         ics <- tmp_ics
     }
