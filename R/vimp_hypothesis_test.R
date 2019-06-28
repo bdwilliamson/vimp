@@ -67,15 +67,15 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             p_values <- vector("list", length = V)
 
             ## all point estimates
-            predictiveness_full_lst <- cv_predictiveness_point_est(fhat_ful, Y, folds = folds, type = full_type, na.rm = na.rm)
-            predictiveness_redu_lst <- cv_predictiveness_point_est(fhat_red, Y, folds = folds, type = full_type, na.rm = na.rm)
+            predictiveness_full_lst <- cv_predictiveness_point_est(full, y, folds = folds, type = full_type, na.rm = na.rm)
+            predictiveness_redu_lst <- cv_predictiveness_point_est(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
             predictiveness_full <- predictiveness_full_lst$point_est
             predictiveness_redu <- predictiveness_redu_lst$point_est 
             predictiveness_fulls <- predictiveness_full_lst$all_ests
             predictiveness_redus <- predictiveness_redu_lst$all_ests
             ## all ics
-            ic_full_lst <- cv_predictiveness_update(fhat_ful, Y, folds = folds, type = full_type, na.rm = na.rm)
-            ic_full_lst <- cv_predictiveness_update(fhat_red, Y, folds = folds, type = full_type, na.rm = na.rm)
+            ic_full_lst <- cv_predictiveness_update(full, y, folds = folds, type = full_type, na.rm = na.rm)
+            ic_redu_lst <- cv_predictiveness_update(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
             ic_full <- ic_full_lst$ic
             ic_redu <- ic_redu_lst$ic
             ics_full <- ic_full_lst$all_ics
