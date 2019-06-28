@@ -19,7 +19,7 @@ cv_predictiveness_point_est <- function(fitted_values, y, folds, type = "r_squar
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
-    measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance, measure_r_squared, NA, measure_mse, measure_cross_entropy)
+    measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA, measure_mse, measure_cross_entropy)
     measure_func <- measure_funcs[pmatch(type, types)]
     
     ## compute plug-in point estimate
@@ -32,6 +32,23 @@ cv_predictiveness_point_est <- function(fitted_values, y, folds, type = "r_squar
         point_est <- mean(point_ests)
     } else { # if type is anova, no plug-in from predictiveness
         point_est <- NA
+    }
+    ## if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
+    if (full_type == "r_squared") {
+        denom_point_est <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
+        point_ests <- 1 - point_ests/denom_point_est
+        point_est <- mean(point_ests) 
+    }
+    if (full_type == "deviance") {
+        if (is.null(dim(y)) | dim(y)[2] == 1) { # assume that zero is in first column
+            y_mult <- cbind(1 - y, y)
+        } else {
+            y_mult <- y
+        }
+        p <- apply(y_mult, 2, mean, na.rm = na.rm)
+        denom_point_est <- (-1)*sum(log(p))
+        point_ests <- point_ests/denom_point_est
+        point_est <- mean(point_ests)
     }
     ## return it
     return(list(point_est = point_est, all_ests = point_ests))
