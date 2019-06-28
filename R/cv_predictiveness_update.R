@@ -29,10 +29,12 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         V <- length(unique(folds))
         max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        ic <- vector("numeric", length(y))
         for (v in 1:V) {
-            ics[1:length(y[folds == v]), v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], na.rm)$ic
+            ics[1:length(y[folds == v]), v] <- weights[folds == v]*measure_func[[1]](fitted_values[[v]], y[folds == v], na.rm)$ic
+            ic[folds == v] <- ics[1:length(y[folds == v]), v]
         }
-        ic <- rowMeans(ics, na.rm = TRUE)
+        # ic <- rowMeans(ics, na.rm = TRUE)
     } else { # if type is anova, no plug-in from predictiveness
         ic <- NA
     }
@@ -51,7 +53,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         grads <- cbind(1/denom_point_est, -mse_lst$all_ests/denom_point_est^2)
         tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            tmp_ics[1:length(y[folds == v]), v] <- as.vector((-1)*(grads[v, ] %*% t(cbind(ics[, v], denom_ic[folds == v]))))
+            tmp_ics[1:length(y[folds == v]), v] <- as.vector((-1)*(grads[v, ] %*% t(cbind(ics[1:length(y[folds == v]), v], denom_ic[folds == v]))))
         }
         ics <- tmp_ics
     }
@@ -75,9 +77,9 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         grads <- cbind(1/denom_point_est, -ce_lst$all_ests/denom_point_est^2)
         tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            tmp_ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics[, v], denom_ic[folds == v])))
+            tmp_ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics[1:length(y[folds == v]), v], denom_ic[folds == v])))
         }
         ics <- tmp_ics
     }
-    return(list(ic = weights*ic, all_ics = weights*ics))
+    return(list(ic = ic, all_ics = ics))
 }
