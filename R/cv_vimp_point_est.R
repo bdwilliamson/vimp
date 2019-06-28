@@ -25,20 +25,19 @@ cv_vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y
     
     V <- length(unique(folds))
     ## compute plug-in point estimates of predictiveness
-    point_ests_full <- vector("numeric", length = V)
-    point_ests_redu <- vector("numeric", length = V)
     ## only do CV on MSE, cross-entropy if full_type is r_squared or deviance
     if (full_type == "r_squared") full_type <- "mse"
-    if (full_type == "deviance") full_type <- "cross_entropy"
-    # for (v in 1:V) {
-    #     point_ests_full[v] <- predictiveness_point_est(full[[v]], y[folds == v], full_type, na.rm)$point_est
-    #     point_ests_redu[v] <- predictiveness_point_est(reduced[[v]], y[folds == v], full_type, na.rm)$point_est    
-    # }    
-    point_est_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)$point_est
-    point_est_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)$point_est
+    if (full_type == "deviance") full_type <- "cross_entropy" 
+    point_est_full_lst <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)
+    point_est_full <- point_est_full_lst$point_est
+    point_ests_full <- point_est_full_lst$all_ests
+    point_est_redu_lst <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)
+    point_est_redu <- point_est_redu_lst$point_est
+    point_ests_redu <- point_est_redu_lst$all_ests
     ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
     if (full_type != "anova" & full_type != "mse" & full_type != "cross_entropy") {
         point_est <- point_est_full - point_est_redu
+        point_ests <- point_ests_full - point_ests_redu
         corrected_est <- NA
     } else if (full_type == "cross_entropy" ) {
         if (is.null(dim(y))) { # assume that zero is in first column
@@ -48,18 +47,18 @@ cv_vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y
         }
         p <- apply(y_mult, 2, mean, na.rm = na.rm)
         denom_point_est <- (-1)*sum(log(p))   
-        cv_diff_cross_entropy <- point_est_full - point_est_redu
-        point_est <- cv_cross_entropy/denom_point_est
+        point_est <- (point_est_full - point_est_redu)/denom_point_est
+        point_ests <- (point_ests_full - point_ests_redu)/denom_point_est
         corrected_est <- NA
     } else if (full_type == "mse") {
-        cv_mse_full <- point_est_full
-        cv_mse_redu <- point_est_redu
         denom_point_est <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-        point_est <- (1 - cv_mse_full/denom_point_est) - (1 - cv_mse_redu/denom_point_est)
+        point_est <- (1 - point_est_full/denom_point_est) - (1 - point_est_redu/denom_point_est)
+        point_ests <- (1 - point_ests_full/denom_point_est) - (1 - point_ests_redu/denom_point_est)
         corrected_est <- NA
     } else {
         point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)
         corrected_est <- point_est + mean(vimp_update(full, reduced, y, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)   
+        point_ests <- NA
     }
-    return(c(corrected_est, point_est))
+    return(list(point_est = c(corrected_est, point_est), all_ests = point_ests))
 }
