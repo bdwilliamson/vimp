@@ -21,7 +21,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
-    measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance, measure_r_squared, NA, measure_mse, measure_cross_entropy)
+    measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA, measure_mse, measure_cross_entropy)
     measure_func <- measure_funcs[pmatch(type, types)]
 
     ## calculate the necessary pieces for the influence curve
@@ -35,6 +35,49 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         ic <- rowMeans(ics, na.rm = TRUE)
     } else { # if type is anova, no plug-in from predictiveness
         ic <- NA
+    }
+    ## if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
+    if (full_type == "r_squared") {
+        denom_point_est <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
+        denom_ic <- (y - mean(y, na.rm = na.rm))^2 - denom_point_est
+        mse_lst <- cv_predictiveness_point_est(fitted_values, y, folds, type, na.rm)
+        
+        point_ests <- 1 - mse_lst$all_ests/denom_point_est
+        point_est <- mean(point_ests) 
+
+        ## influence curve
+        grad <- matrix(c(1/denom_point_est, -mse_lst$point_est/denom_point_est^2), nrow = 1)
+        ic <- as.vector((-1)*(grad %*% t(cbind(ic, denom_ic))))
+        grads <- cbind(1/denom_point_est, -mse_lst$all_ests/denom_point_est^2)
+        tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        for (v in 1:V) {
+            tmp_ics[1:length(y[folds == v]), v] <- as.vector((-1)*(grads[v, ] %*% t(cbind(ics[, v], denom_ic))))
+        }
+        ics <- tmp_ics
+    }
+    if (full_type == "deviance") {
+        if (is.null(dim(y)) | dim(y)[2] == 1) { # assume that zero is in first column
+            y_mult <- cbind(1 - y, y)
+        } else {
+            y_mult <- y
+        }
+        p <- apply(y_mult, 2, mean, na.rm = na.rm)
+        denom_point_est <- (-1)*sum(log(p))
+        denom_ic <- rowSums(-1/p*((y_mult == 1) - p))
+        ce_lst <- cv_predictiveness_point_est(fitted_values, y, folds, type, na.rm)
+
+        point_ests <- ce_lst$all_ests/denom_point_est
+        point_est <- mean(point_ests)
+
+        ## influence curve
+        grad <- matrix(c(1/denom_point_est, -ce_lst$point_est/denom_point_est^2), nrow = 1)
+        ic <- as.vector(grad %*% t(cbind(ic, denom_ic)))
+        grads <- cbind(1/denom_point_est, -ce_lst$all_ests/denom_point_est^2)
+        tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        for (v in 1:V) {
+            tmp_ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics[, v], denom_ic)))
+        }
+        ics <- tmp_ics
     }
     return(list(ic = weights*ic, all_ics = weights*ics))
 }
