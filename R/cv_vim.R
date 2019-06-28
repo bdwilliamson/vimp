@@ -16,6 +16,7 @@
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
+#' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
@@ -108,7 +109,7 @@
 
 
 cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, 
-                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, scale = "logit", na.rm = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -201,16 +202,16 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     updates <- update_lst$all_ics
     
     ## calculate the standard error
-    se <- vimp_se(est, update, scale = "logit", na.rm = na.rm)
+    se <- vimp_se(est, update, scale = scale, na.rm = na.rm)
     ses <- vector("numeric", length = V) 
     for (v in 1:V) {
-        ses[v] <- vimp_se(all_ests[v], updates[, v], scale = "logit", na.rm = na.rm)
+        ses[v] <- vimp_se(all_ests[v], updates[, v], scale = scale, na.rm = na.rm)
     }
   
     ## calculate the confidence interval
-    ci <- vimp_ci(est, se, scale = "logit", 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y, folds, weights, type = full_type, na.rm = na.rm)$ic, scale = "logit"), scale = "logit", level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, cv_predictiveness_update(fhat_red, Y, folds, weights, type = full_type, na.rm = na.rm)$ic, scale = "logit"), scale = "logit", level = 1 - alpha)
+    ci <- vimp_ci(est, se, scale = scale, 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y, folds, weights, type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, cv_predictiveness_update(fhat_red, Y, folds, weights, type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
 
     ## compute a hypothesis test against the null of zero importance
     ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks
@@ -218,7 +219,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
     } else {
         ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
-        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, weights = weights, type = type, alpha = alpha, cv = TRUE, na.rm = na.rm)
+        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, weights = weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm)
     }
   
     ## get the call
