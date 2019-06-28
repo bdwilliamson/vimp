@@ -28,7 +28,7 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
     if (full_scale == "log") {
         tmp <- suppressWarnings(log(est))
         is_zero <- FALSE
-        if (is.infinite(tmp)) {
+        if (is.na(tmp) | is.infinite(tmp)) {
             tmp <- 0
             is_zero <- TRUE 
         }
@@ -41,7 +41,7 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
         logit <- function(x) log(x/(1-x))
         tmp <- suppressWarnings(logit(est))
         is_zero <- FALSE
-        if (is.infinite(tmp)) {
+        if (is.na(tmp) | is.infinite(tmp)) {
             tmp <- 0
             is_zero <- TRUE 
         }
@@ -51,6 +51,9 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
         }
     } else {
         ci[] <- est + (se) %o% fac
+        if (ci[, 1] < 0) {
+            ci[, 1] <- 0
+        }
     }
     
     return(ci)
