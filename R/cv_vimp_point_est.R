@@ -30,11 +30,12 @@ cv_vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y
     ## only do CV on MSE, cross-entropy if full_type is r_squared or deviance
     if (full_type == "r_squared") full_type <- "mse"
     if (full_type == "deviance") full_type <- "cross_entropy"
-    for (v in 1:V) {
-        point_ests_full[v] <- predictiveness_point_est(full[[v]], y[folds == v], full_type, na.rm)$point_est
-        point_ests_redu[v] <- predictiveness_point_est(reduced[[v]], y[folds == v], full_type, na.rm)$point_est    
-    }    
-
+    # for (v in 1:V) {
+    #     point_ests_full[v] <- predictiveness_point_est(full[[v]], y[folds == v], full_type, na.rm)$point_est
+    #     point_ests_redu[v] <- predictiveness_point_est(reduced[[v]], y[folds == v], full_type, na.rm)$point_est    
+    # }    
+    point_est_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)$point_est
+    point_est_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)$point_est
     ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
     if (full_type != "anova" & full_type != "mse" & full_type != "cross_entropy") {
         point_est <- point_est_full - point_est_redu
@@ -47,12 +48,12 @@ cv_vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y
         }
         p <- apply(y_mult, 2, mean, na.rm = na.rm)
         denom_point_est <- (-1)*sum(log(p))   
-        cv_diff_cross_entropy <- (mean(point_ests_full) - mean(point_ests_redu))
+        cv_diff_cross_entropy <- point_est_full - point_est_redu
         point_est <- cv_cross_entropy/denom_point_est
         corrected_est <- NA
     } else if (full_type == "mse") {
-        cv_mse_full <- mean(point_ests_full)
-        cv_mse_redu <- mean(point_ests_redu)
+        cv_mse_full <- point_est_full
+        cv_mse_redu <- point_est_redu
         denom_point_est <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
         point_est <- (1 - cv_mse_full/denom_point_est) - (1 - cv_mse_redu/denom_point_est)
         corrected_est <- NA

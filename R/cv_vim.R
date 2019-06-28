@@ -189,8 +189,23 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     } else {
         est <- ests[2]
         naive <- NA
-        predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, folds = folds, type = full_type, na.rm = na.rm)$point_est
-        predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, folds = folds, type = full_type, na.rm = na.rm)$point_est
+        if (full_type != "r_squared" & full_type != "deviance") {
+            predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, folds = folds, type = full_type, na.rm = na.rm)$point_est
+            predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, folds = folds, type = full_type, na.rm = na.rm)$point_est    
+        } else if (full_type == "r_squared") {
+            mse_full <- cv_predictiveness_point_est(fhat_ful, Y, folds = folds, type = "mse", na.rm = na.rm)$point_est
+            mse_redu <- cv_predictiveness_point_est(fhat_red, Y, folds = folds, type = "mse", na.rm = na.rm)$point_est
+            var <- mean((Y - mean(Y, na.rm = na.rm))^2, na.rm = na.rm)
+            predictiveness_full <- 1 - mse_full/var
+            predictiveness_redu <- 1 - mse_redu/var
+        } else if (full_type == "deviance") {
+            ce_full <- cv_predictiveness_point_est(fhat_ful, Y, folds = folds, type = "cross_entropy", na.rm = na.rm)$point_est
+            ce_redu <- cv_predictiveness_point_est(fhat_red, Y, folds = folds, type = "cross_entropy", na.rm = na.rm)$point_est
+            denom <- (-1)*sum(log(cbind(1 - as.vector(Y), as.vector(Y))))
+            predictiveness_full <- ce_full/denom
+            predictiveness_redu <- ce_redu/denom
+        }
+        
     }
     
     ## compute the update
