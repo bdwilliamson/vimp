@@ -66,116 +66,52 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             V <- length(unique(folds))
             p_values <- vector("list", length = V)
 
-            ## get full and reduced predictiveness, CIs
-            ## point estimates: if r-squared or deviance, special treatment
-            if (full_type == "r_squared" | full_type == "deviance") {
-                comp_full_lst <- cv_predictiveness_point_est(fitted_values = full, y = y, folds = folds, type = ifelse(full_type == "r_squared", "mse", "cross_entropy"), na.rm = na.rm)
-                comp_redu_lst <- cv_predictiveness_point_est(fitted_values = redu, y = y, folds = folds, type = ifelse(full_type == "r_squared", "mse", "cross_entropy"), na.rm = na.rm)
-                comp_full <- comp_full_lst$point_est
-                comp_redu <- comp_full_lst$point_est
-                comp_fulls <- comp_full_lst$all_ests
-                comp_redus <- comp_full_lst$all_ests
-                if (full_type == "r_squared") {
-                    denom <- mean(y - mean(y, na.rm = na.rm)^2, na.rm = na.rm)
-                    ic_denom <- y - mean(y, na.rm = na.rm)^2 - denom
-                    predictiveness_full <- 1 - comp_full/denom
-                    predictiveness_redu <- 1 - comp_redu/denom
-                    predictiveness_fulls <- 1 - comp_fulls/denom
-                    predictiveness_redus <- 1 - comp_redus/denom
-                    grad <- matrix(c(-1/denom, comp_full/denom^2))
-                    ic_mse_full_lst <- cv_predictiveness_update
-                    ic_full <- as.vector(grad %*% t(cbind(ic_mse_full, ic_denom)))
-                    ic_redu <- as.vector(grad %*% t(cbind(ic_mse_redu, ic_denom)))
-                } else {
-                    y_mult <- cbind(1 - y, y)
-                    p <- colMeans(y_mult, na.rm = na.rm)
-                    denom <- (-1)*sum(log(p))
-                    ic_denom <- rowSums(-1/p*((y_mult == 1) - p))
-                    predictiveness_full <- comp_full/denom
-                    predictiveness_redu <- comp_redu/denom
-                    predictiveness_fulls <- comp_fulls/denom
-                    predictiveness_redus <- comp_redus/denom
+            ## all point estimates
+            predictiveness_full_lst <- cv_predictiveness_point_est(fhat_ful, Y, folds = folds, type = full_type, na.rm = na.rm)
+            predictiveness_redu_lst <- cv_predictiveness_point_est(fhat_red, Y, folds = folds, type = full_type, na.rm = na.rm)
+            predictiveness_full <- predictiveness_full_lst$point_est
+            predictiveness_redu <- predictiveness_redu_lst$point_est 
+            predictiveness_fulls <- predictiveness_full_lst$all_ests
+            predictiveness_redus <- predictiveness_redu_lst$all_ests
+            ## all ics
+            ic_full_lst <- cv_predictiveness_update(fhat_ful, Y, folds = folds, type = full_type, na.rm = na.rm)
+            ic_full_lst <- cv_predictiveness_update(fhat_red, Y, folds = folds, type = full_type, na.rm = na.rm)
+            ic_full <- ic_full_lst$ic
+            ic_redu <- ic_redu_lst$ic
+            ics_full <- ic_full_lst$all_ics
+            ics_redu <- ic_redu_lst$all_ics    
+            ## compute CI, hypothesis test for each fold
+            for (v in 1:V) {
+                se_full <- vimp_se(predictiveness_fulls[v], ics_full[, v], scale = "logit", na.rm = na.rm)
+                ses_redu <- sapply(1:length(seq_len(V)[-v]), function(x) vimp_se(predictiveness_redus[x], ics_redu[, x], scale = "logit", na.rm = na.rm))
+                ## compute a p-value
+                levels <- seq(0.0001, 1 - 0.0001, 0.0001)
+                ## get the lower limit of the full predictiveness CI; vector of length(levels)
+                predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = predictiveness_se_full, level = x, scale = "logit")[, 1])
+                ## get the upper limit of the reduced predictiveness CI for each fold; dimension length(levels) by V - 1 
+                predictiveness_cis_ul_redu <- t(apply(matrix(1 - levels), 1, function(x) sapply(1:(V - 1), function(v) vimp_ci(est = predictivenesss_reduced[v], se = predictiveness_ses_reduced[v],
+                                                                                                                level = x, scale = "logit")[, 2])))
+                ## compare lower limit of full predictiveness CI to all upper limits of reduced predictiveness cis
+                hyp_tests <- t(apply(matrix(1:dim(predictiveness_cis_ul_redu)[1]), 1, function(x) predictiveness_cis_ll_full[x] > predictiveness_cis_ul_redu[x, ]))
+                ## compute a p-value for each fold
+                check_fold_hyp_tests <- function(fold_hyp_tests) {
+                    if (all(fold_hyp_tests)) {
+                        fold_p_value <- 0.0001
+                    } else if (!any(fold_hyp_tests)) {
+                        fold_p_value <- 1
+                    } else {
+                    fold_p_value <- min(levels[fold_hyp_tests])
+                    }
+                    return(fold_p_value)
                 }
-            } else {
-                ## point estimates
-                predictiveness_full_lst <- cv_predictiveness_point_est(fitted_values = full, y = y, folds = folds, type = full_type, na.rm = na.rm)
-                predictiveness_redu_lst <- cv_predictiveness_point_est(fitted_values = reduced, y = y, folds = folds, type = full_type, na.rm = na.rm)
-                predictiveness_full <- predictiveness_full_lst$point_est 
-                predictiveness_redu <- predictiveness_redu_lst$point_est 
-                predictiveness_fulls <- predictiveness_full_lst$all_ests
-                predictiveness_redus <- predictiveness_redu_lst$all_ests 
-                ## ics
-                ic_full_lst <- cv_predictiveness_update(fitted_values = full, y = y, folds = folds, type = full_type, na.rm = na.rm)
-                ic_redu_lst <- cv_predictiveness_update(fitted_values = reduced, y = y, folds = folds, type = full_type, na.rm = na.rm)
-                ic_full <- ic_full_lst$ic 
-                ic_redu <- ic_redu_lst$ic 
-                ics_full <- ic_full_lst$all_ics
-                ics_redu <- ic_redu_lst$all_ics   
+                ## save off the p-value
+                p_values[[v]] <- mean(apply(hyp_tests, 2, check_fold_hyp_tests))
             }
-            
-            ## SEs
-            se_full <- vimp_se(predictiveness_full, ic_full, scale = "logit", na.rm = na.rm)
-            se_redu <- vimp_se(predictiveness_redu, ic_redu, scale = "logit", na.rm = na.rm)
-            ses_full <- sapply(1:V, function(x) vimp_se(predictiveness_fulls[x], ics_full[, x], scale = "logit", na.rm = na.rm))
-            ses_redu <- sapply(1:V, function(x) vimp_se(predictiveness_redus[x], ics_redu[, x], scale = "logit", na.rm = na.rm))
-            
-            ## CIs
-            predictiveness_ci_full <- vimp_ci(predictiveness_full, se_full, scale = "logit", level = 1 - alpha)
-            predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se_redu, scale = "logit", level = 1 - alpha)
-            predictiveness_fulls <- vector("numeric", length = V)
-        
-        predictiveness_redus <- vector("numeric", length = V)
-        predictiveness_vars_full <- vector("numeric", length = V)
-        predictiveness_vars_redu <- vector("numeric", length = V)
-        for (v in 1:V) {
-          ## compute full predictiveness on fold v, reduced predictivenesses on folds -v; also variances
-          predictiveness_full <- predictiveness_point_est(fitted_values = full[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-          ic_full <- predictiveness_update(fitted_values = full[[v]], y = y[folds == v], weights = weights[folds == v], type = type, na.rm = na.rm)
-          predictiveness_se_full <- vimp_se(predictiveness_full, ic_full, scale = "logit", na.rm = na.rm)
-          predictiveness_redus <- sapply(seq_len(V)[-v], function(x) predictiveness_point_est(fitted_values = reduced[[x]],
-                                                                             y = y[folds == x], type = type,
-                                                                             na.rm = na.rm))
-          ics_redu <- sapply(seq_len(V)[-v], function(x) predictiveness_update(fitted_values = reduced[[x]], y = y[folds == x], type = type, na.rm = na.rm))
-          predictiveness_ses_redu <- sapply(1:length(seq_len(V)[-v]), function(x) vimp_se(predictiveness_redus[x], ))
-          predictiveness_vars_redu <- sapply(seq_len(V)[-v], function(x) mean(predictiveness_update(fitted_values = reduced[[x]],
-                                                                                 y = y[folds == x], weights = weights[folds == v], type = type,
-                                                                                 na.rm = na.rm)^2))
-          predictiveness_ses_redu <- sapply(1:length(seq_len(V)[-v]), function(x) sqrt(predictiveness_vars_redu[x]/length(y[folds == x])))
-
-          ## compute a p-value
-          levels <- seq(0.0001, 1 - 0.0001, 0.0001)
-          ## get the lower limit of the full predictiveness CI; vector of length(levels)
-          predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = predictiveness_se_full, level = x)[, 1])
-          ## get the upper limit of the reduced predictiveness CI for each fold; dimension length(levels) by V - 1 
-          predictiveness_cis_ul_redu <- t(apply(matrix(1 - levels), 1, function(x) sapply(1:(V - 1), function(v) vimp_ci(est = predictivenesss_reduced[v], se = predictiveness_ses_reduced[v],
-                                                                                                            level = x)[, 2])))
-          ## compare lower limit of full predictiveness CI to all upper limits of reduced predictiveness cis
-          hyp_tests <- t(apply(matrix(1:dim(predictiveness_cis_ul_redu)[1]), 1, function(x) predictiveness_cis_ll_full[x] > predictiveness_cis_ul_redu[x, ]))
-          ## compute a p-value for each fold
-          check_fold_hyp_tests <- function(fold_hyp_tests) {
-            if (all(fold_hyp_tests)) {
-              fold_p_value <- 0.0001
-            } else if (!any(fold_hyp_tests)) {
-              fold_p_value <- 1
-            } else {
-              fold_p_value <- min(levels[fold_hyp_tests])
-            }
-            return(fold_p_value)
-          }
-          ## save off the p-value
-          p_values[[v]] <- mean(apply(hyp_tests, 2, check_fold_hyp_tests))
-          ## save off the predictivenesses and the variances
-          predictiveness_fulls[v] <- predictiveness_full
-          predictiveness_vars_full[v] <- predictiveness_var_full
-          predictiveness_redus[v] <- predictiveness_point_est(fitted_values = reduced[[v]], y = y[folds == v], type = type, na.rm = na.rm)
-          predictiveness_vars_redu[v] <- mean(predictiveness_update(fitted_values = reduced[[v]], y = y[folds == v], weights = weights, type = type, 
-                                                   na.rm = na.rm)^2)
+            ## average the p-values, make a testing decision
+            p_value <- mean(unlist(p_values))
+            hyp_test <- p_value < alpha
         }
-        ## average the p-values, make a testing decision
-        p_value <- mean(unlist(p_values))
-        hyp_test <- p_value < alpha
     }
-  }
-  return(list(test = hyp_test, p_value = p_value, predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu,
+    return(list(test = hyp_test, p_value = p_value, predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu,
               predictiveness_ci_full = predictiveness_ci_full, predictiveness_ci_reduced = predictiveness_ci_redu))
 }
