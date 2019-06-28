@@ -84,6 +84,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             ## compute CI, hypothesis test for each fold
             for (v in 1:V) {
                 se_full <- vimp_se(predictiveness_fulls[v], ics_full[, v], scale = scale, na.rm = na.rm)
+                if (is.na(se_full)) stop("Estimated standard error is NA. Consider re-running with na.rm = TRUE.")
                 ses_redu <- sapply(1:length(seq_len(V)[-v]), function(x) vimp_se(predictiveness_redus[x], ics_redu[, x], scale = scale, na.rm = na.rm))
                 ## compute a p-value
                 levels <- seq(0.0001, 1 - 0.0001, 0.0001)

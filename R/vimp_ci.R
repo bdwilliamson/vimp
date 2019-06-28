@@ -28,26 +28,26 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
     if (full_scale == "log") {
         tmp <- suppressWarnings(log(est))
         is_zero <- FALSE
-        if ((is.na(tmp) & est < 0 )| is.infinite(tmp)) {
+        if ((is.na(tmp) & est < 0 & !is.na(est))| is.infinite(tmp)) {
             tmp <- 0
             is_zero <- TRUE 
         }
         ci[] <- exp(tmp + (se) %o% fac)
         if (is_zero) {
-            ci[ci[, 1] < 0, 1] <- 0
+            ci[, 1] <- 0
         }
     } else if (full_scale == "logit") {
         expit <- function(x) exp(x)/(1 + exp(x))
         logit <- function(x) log(x/(1-x))
         tmp <- suppressWarnings(logit(est))
         is_zero <- FALSE
-        if ((is.na(tmp) & est < 0) | is.infinite(tmp)) {
+        if ((is.na(tmp) & est < 0 & !is.na(est)) | is.infinite(tmp)) {
             tmp <- 0
             is_zero <- TRUE 
         }
         ci[] <- expit(tmp + (se) %o% fac)
         if (is_zero) {
-            ci[ci[, 1] < 0, 1] <- 0
+            ci[, 1] <- 0
         }
     } else {
         ci[] <- est + (se) %o% fac
