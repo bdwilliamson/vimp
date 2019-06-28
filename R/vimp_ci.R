@@ -34,7 +34,7 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
         }
         ci[] <- exp(tmp + (se) %o% fac)
         if (is_zero) {
-            ci[1] <- 0
+            ci[ci[, 1] < 0, 1] <- 0
         }
     } else if (full_scale == "logit") {
         expit <- function(x) exp(x)/(1 + exp(x))
@@ -47,12 +47,12 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
         }
         ci[] <- expit(tmp + (se) %o% fac)
         if (is_zero) {
-            ci[1] <- 0
+            ci[ci[, 1] < 0, 1] <- 0
         }
     } else {
         ci[] <- est + (se) %o% fac
-        if (ci[, 1] < 0) {
-            ci[, 1] <- 0
+        if (any(ci[, 1] < 0)) {
+            ci[ci[, 1] < 0, 1] <- 0
         }
     }
     
