@@ -178,7 +178,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     }
     ## get point estimate based on cv
-    ests <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    ests_lst <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    ests <- ests_lst$point_est
+    all_ests <- ests_lst$all_ests
     
     ## if type = "anova", then use corrected; else use plug-in
     if (full_type == "anova" | full_type == "regression") {
