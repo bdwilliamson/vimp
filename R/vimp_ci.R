@@ -26,11 +26,15 @@ vimp_ci <- function(est, se, scale = "log", level = 0.95) {
     scales <- c("log", "logit", "identity")
     full_scale <- scales[pmatch(scale, scales)]
     if (full_scale == "log") {
-        ci[] <- exp(log(est) + (se) %o% fac)
+        tmp <- log(est)
+        if (is.na(tmp)) tmp <- 0
+        ci[] <- exp(tmp + (se) %o% fac)
     } else if (full_scale == "logit") {
         expit <- function(x) exp(x)/(1 + exp(x))
         logit <- function(x) log(x/(1-x))
-        ci[] <- expit(logit(est) + (se) %o% fac)
+        tmp <- logit(est)
+        if (is.na(tmp)) tmp <- 0
+        ci[] <- expit(tmp + (se) %o% fac)
     } else {
         ci[] <- est + (se) %o% fac
     }

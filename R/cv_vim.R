@@ -188,7 +188,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         est <- ests[1]
         naive <- ests[2]
         predictiveness_full <- NA
-        predictiveness_reduced <- NA
+        predictiveness_redu <- NA
     } else { # compute all point ests, ics for hypothesis test
         est <- ests[2]
         naive <- NA
@@ -206,6 +206,11 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     ses <- vector("numeric", length = V) 
     for (v in 1:V) {
         ses[v] <- vimp_se(all_ests[v], updates[, v], scale = scale, na.rm = na.rm)
+    }
+    ## if est < 0, set to zero and print warning
+    if (est < 0) {
+        est <- 0
+        warning("Original estimate < 0; returning zero.")
     }
   
     ## calculate the confidence interval

@@ -173,7 +173,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         est <- ests[1]
         naive <- ests[2]
         predictiveness_full <- NA
-        predictiveness_reduced <- NA
+        predictiveness_redu <- NA
     } else {
         est <- ests[2]
         naive <- NA
@@ -185,6 +185,12 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     
     ## compute the standard error
     se <- vimp_se(est, update, scale = scale, na.rm = na.rm)
+
+    ## if est < 0, set to zero and print warning
+    if (est < 0) {
+        est <- 0
+        warning("Original estimate < 0; returning zero.")
+    }
   
     ## compute the confidence interval
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
