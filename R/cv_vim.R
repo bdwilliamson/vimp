@@ -209,7 +209,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     }
     
     ## compute the update
-    update <- cv_vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    update_lst <- cv_vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    update <- update_lst$ic
+    updates <- update_lst$all_ics
     
     ## calculate the standard error
     se <- vimp_se(est, update, scale = "logit", na.rm = na.rm)

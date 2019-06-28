@@ -70,7 +70,7 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         ## influence curve
         grad <- matrix(c(1/var, -mse_full/var^2, -1/var, mse_redu/var^2), nrow = 1)
         ic <- as.vector((-1)*(grad %*% t(cbind(ic_full, ic_var, ic_redu, ic_var))))
-        ics <- cbind(as.vector(apply(matrix(1:V), 1, function(x) as.vector(grad %*% t(cbind(ics_full[, x], ic_denom, ics_redu[, x], ic_denom))))))
+        ics <- cbind(as.vector(apply(matrix(1:V), 1, function(x) as.vector(grad %*% t(cbind(ics_full[, x], ic_var, ics_redu[, x], ic_var))))))
     } else {
         max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)

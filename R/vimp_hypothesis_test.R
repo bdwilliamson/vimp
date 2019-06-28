@@ -67,15 +67,32 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             p_values <- vector("list", length = V)
 
             ## get full and reduced predictiveness, CIs
-            predictiveness_full <- cv_predictiveness_point_est(fitted_values = full, y = y, folds = folds, type = full_type, na.rm = na.rm)
-            predictiveness_redu <- cv_predictiveness_point_est(fitted_values = reduced, y = y, folds = folds, type = full_type, na.rm = na.rm)
-            ic_full <- cv_predictiveness_update(fitted_values = full, y = y, folds = folds, type = full_type, na.rm = na.rm)
-            ic_redu <- cv_predictiveness_update(fitted_values = reduced, y = y, folds = folds, type = full_type, na.rm = na.rm)
+            ## point estimates
+            predictiveness_full_lst <- cv_predictiveness_point_est(fitted_values = full, y = y, folds = folds, type = full_type, na.rm = na.rm)
+            predictiveness_redu_lst <- cv_predictiveness_point_est(fitted_values = reduced, y = y, folds = folds, type = full_type, na.rm = na.rm)
+            predictiveness_full <- predictiveness_full_lst$point_est 
+            predictiveness_redu <- predictiveness_redu_lst$point_est 
+            predictiveness_fulls <- predictiveness_full_lst$all_ests
+            predictiveness_redus <- predictiveness_redu_lst$all_ests
+            
+            ic_full_lst <- cv_predictiveness_update(fitted_values = full, y = y, folds = folds, type = full_type, na.rm = na.rm)
+            ic_redu_lst <- cv_predictiveness_update(fitted_values = reduced, y = y, folds = folds, type = full_type, na.rm = na.rm)
+            ic_full <- ic_full_lst$ic 
+            ic_redu <- ic_redu_lst$ic 
+            ics_full <- ic_full_lst$all_ics
+            ics_redu <- ic_redu_lst$all_ics
+            
+            ## SEs
             se_full <- vimp_se(predictiveness_full, ic_full, scale = "logit", na.rm = na.rm)
             se_redu <- vimp_se(predictiveness_redu, ic_redu, scale = "logit", na.rm = na.rm)
+            ses_full <- sapply(1:V, function(x) vimp_se(predictiveness_fulls[x], ics_full[, x], scale = "logit", na.rm = na.rm))
+            ses_redu <- sapply(1:V, function(x) vimp_se(predictiveness_redus[x], ics_redu[, x], scale = "logit", na.rm = na.rm))
+            
+            ## CIs
             predictiveness_ci_full <- vimp_ci(predictiveness_full, se_full, scale = "logit", level = 1 - alpha)
             predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se_redu, scale = "logit", level = 1 - alpha)
             predictiveness_fulls <- vector("numeric", length = V)
+        
         predictiveness_redus <- vector("numeric", length = V)
         predictiveness_vars_full <- vector("numeric", length = V)
         predictiveness_vars_redu <- vector("numeric", length = V)
