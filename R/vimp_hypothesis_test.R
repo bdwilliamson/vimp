@@ -12,6 +12,7 @@
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?
 #' @param alpha the desired type I error rate (defaults to 0.05).
 #' @param cv was V-fold cross-validation used to estimate the predictiveness (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.
+#' @param scale scale to compute CI on ("identity" for identity scale, "logit" for logit scale and back-transform)
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return \code{TRUE} if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, \code{FALSE}.
@@ -41,8 +42,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             se_full <- vimp_se(predictiveness_full, ic_full, na.rm = na.rm)
             se_redu <- vimp_se(predictiveness_redu, ic_redu, na.rm = na.rm)
             ## CIs for both predictivenesses
-            predictiveness_ci_full <- vimp_ci(est = predictiveness_full, se = vimp_se(ic_full, scale = "logit", na.rm = na.rm), scale = "logit", level = 1 - alpha)
-            predictiveness_ci_reduced <- vimp_ci(est = predictiveness_redu, se = vimp_se(ic_redu, scale = "logit", na.rm = na.rm), scale = "logit", level = 1 - alpha)
+            predictiveness_ci_full <- vimp_ci(est = predictiveness_full, se = vimp_se(ic_full, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
+            predictiveness_ci_reduced <- vimp_ci(est = predictiveness_redu, se = vimp_se(ic_redu, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
         
             ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
             ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
@@ -50,8 +51,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
         
             ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
             levels <- seq(0.0001, 1 - 0.0001, 0.0001)
-            predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = predictiveness_se_full, scale = "logit", level = x)))
-            predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_redu, se = predictiveness_se_redu, scale = "logit", level = x)))
+            predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = predictiveness_se_full, scale = scale, level = x)))
+            predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_redu, se = predictiveness_se_redu, scale = scale, level = x)))
             hyp_tests <- predictiveness_cis_full[, 1] > predictiveness_cis_redu[, 2]
             if (all(hyp_tests)) {
                 p_value <- 0.0001
@@ -82,15 +83,15 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             ics_redu <- ic_redu_lst$all_ics    
             ## compute CI, hypothesis test for each fold
             for (v in 1:V) {
-                se_full <- vimp_se(predictiveness_fulls[v], ics_full[, v], scale = "logit", na.rm = na.rm)
-                ses_redu <- sapply(1:length(seq_len(V)[-v]), function(x) vimp_se(predictiveness_redus[x], ics_redu[, x], scale = "logit", na.rm = na.rm))
+                se_full <- vimp_se(predictiveness_fulls[v], ics_full[, v], scale = scale, na.rm = na.rm)
+                ses_redu <- sapply(1:length(seq_len(V)[-v]), function(x) vimp_se(predictiveness_redus[x], ics_redu[, x], scale = scale, na.rm = na.rm))
                 ## compute a p-value
                 levels <- seq(0.0001, 1 - 0.0001, 0.0001)
                 ## get the lower limit of the full predictiveness CI; vector of length(levels)
-                predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = predictiveness_se_full, level = x, scale = "logit")[, 1])
+                predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = se_full, level = x, scale = scale)[, 1])
                 ## get the upper limit of the reduced predictiveness CI for each fold; dimension length(levels) by V - 1 
-                predictiveness_cis_ul_redu <- t(apply(matrix(1 - levels), 1, function(x) sapply(1:(V - 1), function(v) vimp_ci(est = predictivenesss_reduced[v], se = predictiveness_ses_reduced[v],
-                                                                                                                level = x, scale = "logit")[, 2])))
+                predictiveness_cis_ul_redu <- t(apply(matrix(1 - levels), 1, function(x) sapply(1:(V - 1), function(v) vimp_ci(est = predictiveness_redus[v], se = ses_redu[v],
+                                                                                                                level = x, scale = scale)[, 2])))
                 ## compare lower limit of full predictiveness CI to all upper limits of reduced predictiveness cis
                 hyp_tests <- t(apply(matrix(1:dim(predictiveness_cis_ul_redu)[1]), 1, function(x) predictiveness_cis_ll_full[x] > predictiveness_cis_ul_redu[x, ]))
                 ## compute a p-value for each fold
