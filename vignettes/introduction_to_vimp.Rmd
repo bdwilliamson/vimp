@@ -122,7 +122,12 @@ The author of the `vimp` package is Brian Williamson.
 
 ## Installation
 
-Currently, the package may only be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console:
+A stable version of the package may be downloaded and installed from CRAN. Type the following command in your R console to install the stable version of `vimp`:
+```{r, eval = FALSE}
+install.packages("vimp")
+```
+
+A development version of the package may be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console to install the development version of `vimp`:
 
 ```{r, eval = FALSE}
 # only run if you don't have devtools
