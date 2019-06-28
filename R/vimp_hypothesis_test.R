@@ -111,6 +111,9 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             ## average the p-values, make a testing decision
             p_value <- mean(unlist(p_values))
             hyp_test <- p_value < alpha
+            ## compute cis
+            predictiveness_ci_full <- vimp_ci(predictiveness_full, vimp_se(predictiveness_full, ic_full, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
+            predictiveness_ci_redu <- vimp_ci(predictiveness_redu, vimp_se(predictiveness_redu, ic_redu, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
         }
     }
     return(list(test = hyp_test, p_value = p_value, predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu,
