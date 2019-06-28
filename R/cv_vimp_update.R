@@ -74,18 +74,9 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
     } else {
         max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
-        # ics_full <- matrix(NA, nrow = max_nrow, ncol = V)
-        # ics_redu <- matrix(NA, nrow = max_nrow, ncol = V)
-        # ## if r_squared or deviance, change to MSE or cross-entropy
-        # if (full_type == "r_squared") full_type <- "mse"
-        # if (full_type == "deviance") full_type <- "cross_entropy"
         for (v in 1:V) {
-        #     ics_full[1:length(y[folds == v]), v] <- predictiveness_update(full[[v]], y[folds == v], weights[folds == v], full_type, na.rm)
-        #     ics_redu[1:length(y[folds == v]), v] <- predictiveness_update(reduced[[v]], y[folds == v], weights[folds == v], full_type, na.rm)    
             ics[1:length(y[folds == v]), v] <- 2*(y[folds == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm)
         }
-        # ic_full <- rowMeans(ics_full, na.rm = TRUE)
-        # ic_redu <- rowMeans(ics_redu, na.rm = TRUE)
         ic <- rowMeans(ics, na.rm = TRUE)
     }
     return(list(ic = weights*ic, all_ics = ics))
