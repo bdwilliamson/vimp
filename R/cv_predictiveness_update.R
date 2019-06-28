@@ -30,7 +30,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            ics[1:max_nrow, v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], na.rm)$ic
+            ics[1:length(y[folds == v]), v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], na.rm)$ic
         }
         ic <- rowMeans(ics, na.rm = TRUE)
     } else { # if type is anova, no plug-in from predictiveness

@@ -50,27 +50,46 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         ic_denom <- rowSums(-1/p*((y_mult == 1) - p))
 
         ## cross-entropies
-        cross_entropy_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)$point_est
-        cross_entropy_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)$point_est
+        cross_entropy_full_lst <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)
+        cross_entropy_redu_lst <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)
+        cross_entropy_full <- cross_entropy_full_lst$point_est
+        cross_entropy_redu <- cross_entropy_redu_lst$point_est
+        cross_entropies_full <- cross_entropy_full_lst$all_ests
+        cross_entropies_redu <- cross_entropy_redu_lst$all_ests
 
         ## influence curve
         grad <- matrix(c(1/denom_point_est, -cross_entropy_full/denom_point_est^2,
                          -1/denom_point_est, cross_entropy_redu/denom_point_est^2), nrow = 1)
         ic <- as.vector(grad %*% t(cbind(ic_full, ic_denom, ic_redu, ic_denom)))
-        ics <- cbind(as.vector(apply(matrix(1:V), 1, function(x) as.vector(grad %*% t(cbind(ics_full[, x], ic_denom, ics_redu[, x], ic_denom))))))
+        grads <- cbind(1/denom_point_est, -cross_entropies_full/denom_point_est^2,
+                       -1/denom_point_est, cross_entropies_redu/denom_point_est^2)
+        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
+        ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        for (v in 1:V) {
+            ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics_full[, v], ic_denom[folds == v], ics_redu[, v], ic_denom[folds == v])))
+        }
     } else if (full_type == "mse") {
         ## variance
         var <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
         ic_var <- (y - mean(y, na.rm = na.rm))^2 - var
 
         ## mses
-        mse_full <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)$point_est
-        mse_redu <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)$point_est
+        mse_full_lst <- cv_predictiveness_point_est(full, y, folds, full_type, na.rm)
+        mse_redu_lst <- cv_predictiveness_point_est(reduced, y, folds, full_type, na.rm)
+        mse_full <- mse_full_lst$point_est
+        mse_redu <- mse_redu_lst$point_est
+        mses_full <- mse_full_lst$all_ests
+        mses_redu <- mse_redu_lst$all_ests
 
         ## influence curve
         grad <- matrix(c(1/var, -mse_full/var^2, -1/var, mse_redu/var^2), nrow = 1)
         ic <- as.vector((-1)*(grad %*% t(cbind(ic_full, ic_var, ic_redu, ic_var))))
-        ics <- cbind(as.vector(apply(matrix(1:V), 1, function(x) as.vector(grad %*% t(cbind(ics_full[, x], ic_var, ics_redu[, x], ic_var))))))
+        grads <- cbind(1/var, -mses_full/var^2, -1/var, mses_redu/var^2)
+        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
+        ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        for (v in 1:V) {
+            ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics_full[, v], ic_var[folds == v], ics_redu[, v], ic_var[folds == v])))
+        }
     } else {
         max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
