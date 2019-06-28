@@ -24,15 +24,15 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## get ICs
-    ic_full_lst <- cv_predictiveness_update(full, y, folds, weights, type, na.rm)
-    ic_redu_lst <- cv_predictiveness_update(reduced, y, folds, weights, type, na.rm)
+    ic_full_lst <- cv_predictiveness_update(full, y, folds, weights, full_type, na.rm)
+    ic_redu_lst <- cv_predictiveness_update(reduced, y, folds, weights, full_type, na.rm)
     ic_full <- ic_full_lst$ic
     ic_redu <- ic_redu_lst$ic
     ics_full <- ic_full_lst$all_ics
     ics_redu <- ic_redu_lst$all_ics
 
     ## if type isn't anova, return
-    if (full_type != "anova" & full_type != "mse" & full_type != "cross_entropy") {
+    if (full_type != "anova") {
         ic <- ic_full - ic_redu
         ics <- ics_full - ics_redu
     } else {
