@@ -66,14 +66,14 @@ merge_vim <- function(...) {
   ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
   tests <- do.call(rbind.data.frame, lapply(L, function(z) z$test))
   p_values <- do.call(rbind.data.frame, lapply(L, function(z) z$p_value))
-  risks_full <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_full))
-  risks_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_reduced))
-  risk_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_ci_full))
-  risk_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$risk_ci_reduced))
-  hyp_test_risks_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_full))
-  hyp_test_risks_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_red))
-  hyp_test_risk_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_ci_full))
-  hyp_test_risk_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_risk_ci_reduced))
+  predictivenesses_full <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_full))
+  predictivenesses_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_reduced))
+  predictiveness_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_ci_full))
+  predictiveness_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_ci_reduced))
+  hyp_test_predictivenesses_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_full))
+  hyp_test_predictivenesses_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_red))
+  hyp_test_predictiveness_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
+  hyp_test_predictiveness_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
   
   ## put on names
   names(ests) <- "est"
@@ -94,25 +94,27 @@ merge_vim <- function(...) {
   full_mod <- lapply(L, function(z) z$full_mod)
   red_mod <- lapply(L, function(z) z$red_mod)
   alpha <- min(unlist(lapply(L, function(z) z$alpha)))
+  scale <- unique(unlist(lapply(L, function(z) z$scale)))
 
   ## create output list
   output <- list(call = call,
               s = s, SL.library = SL.library, full_fit = full_fit,
               red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
-              risk_full = risks_full,
-              risk_reduced = risks_reduced,
-              risk_ci_full = risk_cis_full,
-              risk_ci_reduced = risk_cis_reduced,
+              predictiveness_full = predictivenesses_full,
+              predictiveness_reduced = predictivenesses_reduced,
+              predictiveness_ci_full = predictiveness_cis_full,
+              predictiveness_ci_reduced = predictiveness_cis_reduced,
               test = mat$test,
               p_value = mat$p_value,
-              hyp_test_risk_full = hyp_test_risks_full,
-              hyp_test_risk_red = hyp_test_risks_reduced,
-              hyp_test_risk_ci_full = hyp_test_risk_cis_full,
-              hyp_test_risk_ci_reduced = hyp_test_risk_cis_reduced,
+              hyp_test_predictiveness_full = hyp_test_predictivenesses_full,
+              hyp_test_predictiveness_red = hyp_test_predictivenesses_reduced,
+              hyp_test_predictiveness_ci_full = hyp_test_predictiveness_cis_full,
+              hyp_test_predictiveness_ci_reduced = hyp_test_predictiveness_cis_reduced,
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
-              alpha = alpha)
+              alpha = alpha,
+              scale = scale)
   tmp <- class(output)
   classes <- unlist(lapply(L, function(z) class(z)[2]))
   class(output) <- c("vim", classes, tmp)

@@ -43,18 +43,18 @@ format.vim <- function(x, ...) {
                       paste(c(x$s[1:10], "..."), collapse = ", "))
     rownames(output) <- paste("s = ", print_s, sep = "")
   }
+  col_nms <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
   if (!any(grepl("anova", class(x)))) {
-    colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""), 
-                          "VIMP > 0", "p_value")
-  } else {
-    colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
-  }
+    tmp <- c(col_nms, "VIMP > 0", "p_value")
+    col_nms <- tmp
+  } 
   if (grepl("log", x$scale) & !grepl("logit", x$scale)) {
-    colnames(output)[2] <- "SE (log scale)"
+    col_nms[2] <- "SE (log scale)"
   } else if (grepl("logit", x$scale)) {
-    colnames(output)[2] <- "SE (logit scale)"
+    col_nms[2] <- "SE (logit scale)"
   } else {
-    
+
   }
+  colnames(output) <- col_nms
   return(output)
 }
