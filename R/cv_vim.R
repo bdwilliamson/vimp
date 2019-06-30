@@ -253,7 +253,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  alpha = alpha,
                  folds = folds,
                  y = Y,
-                 weights = weights)
+                 weights = weights,
+                 scale = scale)
 
     ## make it also an vim object
     tmp.cls <- class(output)

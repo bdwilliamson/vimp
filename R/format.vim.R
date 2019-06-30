@@ -49,5 +49,12 @@ format.vim <- function(x, ...) {
   } else {
     colnames(output) <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
   }
+  if (grepl("log", x$scale) & !grepl("logit", x$scale)) {
+    colnames(output)[2] <- "SE (log scale)"
+  } else if (grepl("logit", x$scale)) {
+    colnames(output)[2] <- "SE (logit scale)"
+  } else {
+    
+  }
   return(output)
 }

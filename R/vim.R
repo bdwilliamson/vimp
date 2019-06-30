@@ -229,7 +229,8 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
                  red_mod = reduced,
                  alpha = alpha,
                  y = Y,
-                 weights = weights)
+                 weights = weights,
+                 scale = scale)
   
     ## make it also an vim and vim_type object
     tmp.cls <- class(output)
