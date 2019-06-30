@@ -31,6 +31,7 @@ vimp_se <- function(est, update, denom = NULL, n = length(update), scale = "log"
     ## calculate se
     if (na.rm) {
         n <- length(update[!is.na(update)])
+        ic <- ic[complete.cases(ic), ]
     }
     ## compute the variance
     var <- (grad %*% t(ic) %*% ic %*% t(grad))/n
