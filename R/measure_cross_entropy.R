@@ -24,6 +24,6 @@ measure_cross_entropy <- function(fitted_values, y, na.rm = FALSE) {
     }
     cross_entropy <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
     ## influence curve
-    ic_cross_entropy <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - est
+    ic_cross_entropy <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - cross_entropy
     return(list(point_est = cross_entropy, ic = ic_cross_entropy))
 }
