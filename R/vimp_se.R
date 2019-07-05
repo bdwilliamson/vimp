@@ -7,7 +7,7 @@
 #' @param denom a list of point estimate and influence curve for the denominator (if any) to make the measure of predictiveness interpretable.
 #' @param n the sample size.
 #' @param scale the scale to compute SEs on (either "log", for log-scale, or "identity", for same scale as point estimate).
-#' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE}). 
+#' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE}).
 #'
 #' @return The standard error for the estimated variable importance for the given group of left-out covariates.
 #'
@@ -22,8 +22,16 @@ vimp_se <- function(est, update, denom = NULL, n = length(update), scale = "log"
     ## get the influence curve
     ic <- matrix(update, ncol = 1)
     if (full_scale == "log") {
+        if (est == 0) {
+            tmp <- 1e-6
+            est <- tmp
+        }
         grad <- matrix(1/est, nrow = 1)
     } else if (full_scale == "logit") {
+        if (est == 0) {
+            tmp <- 1e-6
+            est <- tmp
+        }
         grad <- matrix(1/est + 1/(1 - est), nrow = 1)
     } else {
         grad <- matrix(1, nrow = 1)
