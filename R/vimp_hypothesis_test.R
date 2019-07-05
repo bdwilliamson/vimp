@@ -1,6 +1,6 @@
 #' Perform a hypothesis test against the null hypothesis of zero importance
 #'
-#' Perform a hypothesis test against the null hypothesis of zero importance by: 
+#' Perform a hypothesis test against the null hypothesis of zero importance by:
 #' (i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the predictiveness for both the full and reduced regression functions (these must be estimated on independent splits of the data);
 #' (ii) if the intervals do not overlap, reject the null hypothesis.
 #'
@@ -22,7 +22,7 @@
 #'
 #' @export
 vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, length(y)), type = "r_squared", alpha = 0.05, cv = FALSE, scale = "logit", na.rm = FALSE) {
-  
+
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
@@ -44,24 +44,24 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             ## CIs for both predictivenesses
             predictiveness_ci_full <- vimp_ci(est = predictiveness_full, se = vimp_se(ic_full, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
             predictiveness_ci_reduced <- vimp_ci(est = predictiveness_redu, se = vimp_se(ic_redu, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
-        
+
             ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
             ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
             hyp_test <- predictiveness_ci_full[1] > predictiveness_ci_reduced[2]
-        
+
             ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
             levels <- seq(0.0001, 1 - 0.0001, 0.0001)
             predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = predictiveness_se_full, scale = scale, level = x)))
             predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_redu, se = predictiveness_se_redu, scale = scale, level = x)))
             hyp_tests <- predictiveness_cis_full[, 1] > predictiveness_cis_redu[, 2]
-            if (all(hyp_tests)) {
+            if (all(hyp_tests, na.rm = na.rm)) {
                 p_value <- 0.0001
-            } else if (!any(hyp_tests)) {
+            } else if (!any(hyp_tests, na.rm = na.rm)) {
                 p_value <- 1
             } else {
-                p_value <- min(levels[hyp_tests])
-            } 
-        
+                p_value <- min(levels[hyp_tests], na.rm = na.rm)
+            }
+
         } else { ## V-fold CV; compute a p-value comparing predictiveness on each fold v = 1,...,V with reduced ones, average
                  ## testing decision is based on average p-value
             V <- length(unique(folds))
@@ -71,7 +71,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             predictiveness_full_lst <- cv_predictiveness_point_est(full, y, folds = folds, type = full_type, na.rm = na.rm)
             predictiveness_redu_lst <- cv_predictiveness_point_est(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
             predictiveness_full <- predictiveness_full_lst$point_est
-            predictiveness_redu <- predictiveness_redu_lst$point_est 
+            predictiveness_redu <- predictiveness_redu_lst$point_est
             predictiveness_fulls <- predictiveness_full_lst$all_ests
             predictiveness_redus <- predictiveness_redu_lst$all_ests
             ## all ics
@@ -80,7 +80,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             ic_full <- ic_full_lst$ic
             ic_redu <- ic_redu_lst$ic
             ics_full <- ic_full_lst$all_ics
-            ics_redu <- ic_redu_lst$all_ics    
+            ics_redu <- ic_redu_lst$all_ics
             ## compute CI, hypothesis test for each fold
             for (v in 1:V) {
                 se_full <- vimp_se(predictiveness_fulls[v], ics_full[, v], scale = scale, na.rm = na.rm)
@@ -90,19 +90,19 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
                 levels <- seq(0.0001, 1 - 0.0001, 0.0001)
                 ## get the lower limit of the full predictiveness CI; vector of length(levels)
                 predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = se_full, level = x, scale = scale)[, 1])
-                ## get the upper limit of the reduced predictiveness CI for each fold; dimension length(levels) by V - 1 
+                ## get the upper limit of the reduced predictiveness CI for each fold; dimension length(levels) by V - 1
                 predictiveness_cis_ul_redu <- t(apply(matrix(1 - levels), 1, function(x) sapply(1:(V - 1), function(v) vimp_ci(est = predictiveness_redus[v], se = ses_redu[v],
                                                                                                                 level = x, scale = scale)[, 2])))
                 ## compare lower limit of full predictiveness CI to all upper limits of reduced predictiveness cis
                 hyp_tests <- t(apply(matrix(1:dim(predictiveness_cis_ul_redu)[1]), 1, function(x) predictiveness_cis_ll_full[x] > predictiveness_cis_ul_redu[x, ]))
                 ## compute a p-value for each fold
                 check_fold_hyp_tests <- function(fold_hyp_tests) {
-                    if (all(fold_hyp_tests)) {
+                    if (all(fold_hyp_tests, na.rm = na.rm)) {
                         fold_p_value <- 0.0001
-                    } else if (!any(fold_hyp_tests)) {
+                    } else if (!any(fold_hyp_tests, na.rm = na.rm)) {
                         fold_p_value <- 1
                     } else {
-                    fold_p_value <- min(levels[fold_hyp_tests])
+                    fold_p_value <- min(levels[fold_hyp_tests], na.rm = na.rm)
                     }
                     return(fold_p_value)
                 }
