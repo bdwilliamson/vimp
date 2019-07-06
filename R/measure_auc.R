@@ -10,8 +10,16 @@
 #' @return A named list of: (1) the estimated AUC of the fitted regression function, and (2) the estimated influence function.
 #' @export
 measure_auc <- function(fitted_values, y, weights = rep(1, length(y)), na.rm = FALSE) {
-    preds <- ROCR::prediction(predictions = fitted_values, labels = y)
-    est <- mean(weights)*unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
+    if (sum(weights) = length(y)) { # weights are all one
+        preds <- ROCR::prediction(predictions = fitted_values, labels = y)
+        est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
+    } else {
+        cases <- y == 1
+        controls <- y == 0
+        numerator <- mean(weights[cases]*weights[controls]*(fitted_values[cases] > fitted_values[controls]))
+        denominator <- mean(weights[cases]*weights[controls])
+        est <- numerator/denominator
+    }
 
     ## marginal probabilities
     p_0 <- mean(y == 0)
