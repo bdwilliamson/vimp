@@ -192,8 +192,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     } else { # compute all point ests, ics for hypothesis test
         est <- ests[2]
         naive <- NA
-        predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, folds, type = full_type, na.rm = na.rm)$point_est
-        predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, folds, type = full_type, na.rm = na.rm)$point_est
+        predictiveness_full <- cv_predictiveness_point_est(fitted_values = fhat_ful, y = Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)$point_est
+        predictiveness_redu <- cv_predictiveness_point_est(fitted_values = fhat_red, y = Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)$point_est
     }
 
     ## compute the update

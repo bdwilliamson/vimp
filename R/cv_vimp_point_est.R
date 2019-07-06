@@ -26,7 +26,7 @@ cv_vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y
     V <- length(unique(folds))
     ## compute plug-in point estimates of predictiveness
     point_est_full_lst <- cv_predictiveness_point_est(fitted_values = full, y = y, weights = weights, folds = folds, type = full_type, na.rm = na.rm)
-    point_est_redu_lst <- cv_predictiveness_point_est(fitted_values = reduced, y = y, folds = folds, full_type = full_type, na.rm = na.rm)
+    point_est_redu_lst <- cv_predictiveness_point_est(fitted_values = reduced, y = y, folds = folds, type = full_type, na.rm = na.rm)
     ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
     if (full_type != "anova") {
         point_est <- point_est_full_lst$point_est - point_est_redu_lst$point_est
