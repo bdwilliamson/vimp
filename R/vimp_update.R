@@ -16,7 +16,7 @@
 #'
 #' @export
 vimp_update <- function(full, reduced, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
-    
+
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
@@ -33,5 +33,5 @@ vimp_update <- function(full, reduced, y, weights = rep(1, length(y)), type = "r
     } else {
         ic <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - mean((full - reduced) ^ 2, na.rm = na.rm)
     }
-    return(weights*ic)
+    return(ic)
 }

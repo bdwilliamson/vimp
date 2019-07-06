@@ -21,10 +21,10 @@ vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type =
     full_type <- types[pmatch(type, types)]
     if (full_type == "regression") stop("Type 'regression' has been deprecated. Please enter type = 'anova' instead.")
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
-    
+
     ## compute plug-in point estimates of predictiveness
-    point_est_full <- predictiveness_point_est(full, y, full_type, na.rm)
-    point_est_redu <- predictiveness_point_est(reduced, y, full_type, na.rm)
+    point_est_full <- predictiveness_point_est(fitted_values = full, y = y, weights = weights, type = full_type, na.rm = na.rm)
+    point_est_redu <- predictiveness_point_est(fitted_values = reduced, y = y, weights = weights, type = full_type, na.rm = na.rm)
 
     ## if type isn't anova, return the plug-in; otherwise, get plug-in and corrected
     if (full_type != "anova") {
@@ -32,7 +32,7 @@ vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type =
         corrected_est <- NA
     } else {
         point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)
-        corrected_est <- point_est + mean(vimp_update(full, reduced, y, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)   
+        corrected_est <- point_est + mean(vimp_update(full, reduced, y, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)
     }
     return(c(corrected_est, point_est))
 }

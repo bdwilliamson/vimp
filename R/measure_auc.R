@@ -4,13 +4,14 @@
 #'
 #' @param fitted_values fitted values from a regression function.
 #' @param y the outcome.
+#' @param weights weights (IPW, etc.).
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return A named list of: (1) the estimated AUC of the fitted regression function, and (2) the estimated influence function.
 #' @export
-measure_auc <- function(fitted_values, y, na.rm = FALSE) {
+measure_auc <- function(fitted_values, y, weights = rep(1, length(y)), na.rm = FALSE) {
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
-    est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
+    est <- mean(weights)*unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
 
     ## marginal probabilities
     p_0 <- mean(y == 0)
@@ -25,6 +26,6 @@ measure_auc <- function(fitted_values, y, na.rm = FALSE) {
     contrib_0 <- (y == 0)/p_0*spec
 
     ## gradient
-    grad <- contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1)*est
+    grad <- weights*(contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1)*est)
     return(list(point_est = est, ic = grad))
 }

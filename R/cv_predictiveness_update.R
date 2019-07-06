@@ -16,7 +16,7 @@
 #'
 #' @export
 cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
-  
+
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
@@ -31,7 +31,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
         ic <- vector("numeric", length(y))
         for (v in 1:V) {
-            ics[1:length(y[folds == v]), v] <- weights[folds == v]*measure_func[[1]](fitted_values[[v]], y[folds == v], na.rm)$ic
+            ics[1:length(y[folds == v]), v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], weights[folds == v], na.rm)$ic
             ic[folds == v] <- ics[1:length(y[folds == v]), v]
         }
         # ic <- rowMeans(ics, na.rm = TRUE)
@@ -40,12 +40,12 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
     }
     ## if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
     if (full_type == "r_squared") {
-        denom_point_est <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-        denom_ic <- (y - mean(y, na.rm = na.rm))^2 - denom_point_est
-        mse_lst <- cv_predictiveness_point_est(fitted_values, y, folds, type, na.rm)
-        
+        denom_point_est <- mean(weights*(y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
+        denom_ic <- weights*((y - mean(y, na.rm = na.rm))^2 - denom_point_est)
+        mse_lst <- cv_predictiveness_point_est(fitted_values = fitted_values, y = y, weights = weights, folds = folds, type = type, na.rm = na.rm)
+
         point_ests <- 1 - mse_lst$all_ests/denom_point_est
-        point_est <- mean(point_ests) 
+        point_est <- mean(point_ests)
 
         ## influence curve
         grad <- matrix(c(1/denom_point_est, -mse_lst$point_est/denom_point_est^2), nrow = 1)
@@ -63,10 +63,10 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         } else {
             y_mult <- y
         }
-        p <- apply(y_mult, 2, mean, na.rm = na.rm)
+        p <- apply(weights*y_mult, 2, mean, na.rm = na.rm)
         denom_point_est <- (-1)*sum(log(p))
-        denom_ic <- rowSums(-1/p*((y_mult == 1) - p))
-        ce_lst <- cv_predictiveness_point_est(fitted_values, y, folds, type, na.rm)
+        denom_ic <- weights*rowSums(-1/p*((y_mult == 1) - p))
+        ce_lst <- cv_predictiveness_point_est(fitted_values = fitted_values, y = y, weights = weights, folds = folds, type = type, na.rm = na.rm)
 
         point_ests <- ce_lst$all_ests/denom_point_est
         point_est <- mean(point_ests)

@@ -15,7 +15,7 @@
 #'
 #' @export
 predictiveness_update <- function(fitted_values, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
-  
+
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
@@ -25,9 +25,9 @@ predictiveness_update <- function(fitted_values, y, weights = rep(1, length(y)),
 
     ## calculate the necessary pieces for the influence curve
     if (!is.na(measure_func)) {
-        ic <- measure_func[[1]](fitted_values, y, na.rm)$ic
+        ic <- measure_func[[1]](fitted_values, y, weights, na.rm)$ic
     } else { # if type is anova, no plug-in from predictiveness
         ic <- NA
     }
-    return(weights*ic)
+    return(ic)
 }

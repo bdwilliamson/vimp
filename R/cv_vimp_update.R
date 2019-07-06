@@ -16,7 +16,7 @@
 #'
 #' @export
 cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
-    
+
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
@@ -24,8 +24,8 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## get ICs
-    ic_full_lst <- cv_predictiveness_update(full, y, folds, weights, full_type, na.rm)
-    ic_redu_lst <- cv_predictiveness_update(reduced, y, folds, weights, full_type, na.rm)
+    ic_full_lst <- cv_predictiveness_update(fitted_values = full, y = y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    ic_redu_lst <- cv_predictiveness_update(fitted_values = reduced, y = y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
     ic_full <- ic_full_lst$ic
     ic_redu <- ic_redu_lst$ic
     ics_full <- ic_full_lst$all_ics
@@ -40,9 +40,9 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            ics[1:length(y[folds == v]), v] <- 2*(y[folds == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm)
+            ics[1:length(y[folds == v]), v] <- weights[folds == v]*(2*(y[folds == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))
         }
         ic <- rowMeans(ics, na.rm = TRUE)
     }
-    return(list(ic = weights*ic, all_ics = ics))
+    return(list(ic = ic, all_ics = ics))
 }
