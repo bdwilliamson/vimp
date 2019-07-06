@@ -16,8 +16,9 @@ measure_auc <- function(fitted_values, y, weights = rep(1, length(y)), na.rm = F
     } else {
         cases <- y == 1
         controls <- y == 0
-        numerator <- mean(weights[cases]*weights[controls]*(fitted_values[cases] > fitted_values[controls]))
-        denominator <- mean(weights[cases]*weights[controls])
+        case_control_comparison <- apply(matrix(fitted_values[cases]), 1, function(x) x > fitted_values[controls])
+        numerator <- sum(sweep(sweep(case_control_comparison, 2, weights[cases], "*"), 1, weights[controls], "*"))
+        denominator <- sum(sweep(sweep(matrix(1, nrow = nrow(case_control_comparison), ncol = ncol(case_control_comparison)), 1, weights[controls], "*"), 2, weights[cases], "*"))
         est <- numerator/denominator
     }
 
