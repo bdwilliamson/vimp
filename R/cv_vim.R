@@ -2,10 +2,10 @@
 #'
 #' Compute estimates and confidence intervals for the
 #' nonparametric variable importance parameter of interest, using cross-validation with two validation folds in the updating procedure.
-#' This essentially involves splitting the data into V train/test1/test2 splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
+#' This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 #'
 #' @param Y the outcome.
-#' @param X the covariates. 
+#' @param X the covariates.
 #' @param f1 the predicted values on validation data from a flexible estimation technique regressing Y on X in the training data; a list of length V, where each object is a set of predictions on the validation data.
 #' @param f2 the predicted values on validation data from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, where each object is a set of predictions on the validation data.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
@@ -13,7 +13,7 @@
 #' @param folds the folds to use, if f1 and f2 are supplied.
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
-#' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
+#' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
@@ -61,18 +61,18 @@
 #'
 #' ## generate Y ~ Normal (smooth, 1)
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
-#' 
+#'
 #' ## set up a library for SuperLearner
 #' learners <- c("SL.mean", "SL.gam")
-#' 
+#'
 #' ## -----------------------------------------
 #' ## using Super Learner
 #' ## -----------------------------------------
 #' set.seed(4747)
-#' est <- cv_vim(Y = y, X = x, indx = 2, V = 5, 
-#' type = "r_squared", run_regression = TRUE, 
+#' est <- cv_vim(Y = y, X = x, indx = 2, V = 5,
+#' type = "r_squared", run_regression = TRUE,
 #' SL.library = learners, alpha = 0.05)
-#' 
+#'
 #' ## ------------------------------------------
 #' ## doing things by hand, and plugging them in
 #' ## ------------------------------------------
@@ -91,13 +91,13 @@
 #'      X = x[folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 5))
 #'     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
 #'     ## get predictions on the validation fold
-#'     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
+#'     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
 #'      newdata = x[folds == v, , drop = FALSE])$pred
 #'     ## fit the super learner on the reduced covariates
 #'     red <- SuperLearner::SuperLearner(Y = fitted_v,
 #'      X = x[folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 5))
 #'     ## get predictions on the validation fold
-#'     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
+#'     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
 #'      newdata = x[folds == v, -indx, drop = FALSE])$pred
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
@@ -108,7 +108,7 @@
 #' @export
 
 
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, 
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE,
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, scale = "logit", na.rm = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
@@ -138,7 +138,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                                         X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
             fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
             ## get predictions on the validation fold
-            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
+            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
                                                           newdata = X[folds == v, , drop = FALSE])$pred
             ## fit the super learner on the reduced covariates:
             ## if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
@@ -147,7 +147,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                 arg_lst$Y <- Y[folds != v, , drop = FALSE]
             } else if (type == "r_squared" | type == "anova") {
                 arg_lst$family <- stats::gaussian()
-                arg_lst$Y <- fitted_v 
+                arg_lst$Y <- fitted_v
             } else {
                 # do nothing
             }
@@ -155,7 +155,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
             arg_lst$SL.library <- SL.library
             red <- do.call(SuperLearner::SuperLearner, arg_lst)
             ## get predictions on the validation fold
-            fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
+            fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
                                                           newdata = X[folds == v, -indx, drop = FALSE])$pred
 
         }
@@ -174,15 +174,15 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         ## set up the fitted value objects (both are lists!)
         fhat_ful <- f1
         fhat_red <- f2
-    
-        full <- reduced <- NA  
+
+        full <- reduced <- NA
 
     }
     ## get point estimate based on cv
     ests_lst <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
     ests <- ests_lst$point_est
     all_ests <- ests_lst$all_ests
-    
+
     ## if type = "anova", then use corrected; else use plug-in
     if (full_type == "anova" | full_type == "regression") {
         est <- ests[1]
@@ -195,15 +195,15 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         predictiveness_full <- cv_predictiveness_point_est(fhat_ful, Y, folds, type = full_type, na.rm = na.rm)$point_est
         predictiveness_redu <- cv_predictiveness_point_est(fhat_red, Y, folds, type = full_type, na.rm = na.rm)$point_est
     }
-    
+
     ## compute the update
     update_lst <- cv_vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
     update <- update_lst$ic
     updates <- update_lst$all_ics
-    
+
     ## calculate the standard error
     se <- vimp_se(est, update, scale = scale, na.rm = na.rm)
-    ses <- vector("numeric", length = V) 
+    ses <- vector("numeric", length = V)
     for (v in 1:V) {
         ses[v] <- vimp_se(all_ests[v], updates[, v], scale = scale, na.rm = na.rm)
     }
@@ -212,7 +212,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         est <- 0
         warning("Original estimate < 0; returning zero.")
     }
-  
+
     ## calculate the confidence interval
     ci <- vimp_ci(est, se, scale = scale, 1 - alpha)
     predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y, folds, weights, type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
@@ -226,18 +226,18 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
         hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, weights = weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm)
     }
-  
+
     ## get the call
     cl <- match.call()
-  
+
     ## create the output and return it
     output <- list(call = cl, s = indx,
                  SL.library = SL.library,
-                 full_fit = fhat_ful, red_fit = fhat_red, 
+                 full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,
                  naive = naive,
                  update = update,
-                 se = se, ci = ci, 
+                 se = se, ci = ci,
                  predictiveness_full = predictiveness_full,
                  predictiveness_reduced = predictiveness_redu,
                  predictiveness_ci_full = predictiveness_ci_full,
@@ -248,7 +248,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  hyp_test_predictiveness_reduced = hyp_test$predictiveness_reduced,
                  hyp_test_predictiveness_ci_full = hyp_test$predictiveness_ci_full,
                  hyp_test_predictiveness_ci_reduced = hyp_test$predictiveness_ci_reduced,
-                 full_mod = full, 
+                 full_mod = full,
                  red_mod = reduced,
                  alpha = alpha,
                  folds = folds,
