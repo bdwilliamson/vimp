@@ -10,7 +10,7 @@
 #' @return A named list of: (1) the estimated AUC of the fitted regression function, and (2) the estimated influence function.
 #' @export
 measure_auc <- function(fitted_values, y, weights = rep(1, length(y)), na.rm = FALSE) {
-    if (sum(weights) = length(y)) { # weights are all one
+    if (sum(weights) == length(y)) { # weights are all one
         preds <- ROCR::prediction(predictions = fitted_values, labels = y)
         est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
     } else {
