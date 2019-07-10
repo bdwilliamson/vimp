@@ -78,7 +78,8 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	hyp_test_predictivenesses_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_red))
   	hyp_test_predictiveness_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
   	hyp_test_predictiveness_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
-
+  	scale <- unique(unlist(lapply(L, function(z) z$scale)))
+  	
   	names(ests) <- "est"
   	names(ses) <- "se"
     names(naives) <- "naive"
@@ -94,7 +95,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
 
   	## create a CI
   	alpha <- min(unlist(lapply(L, function(z) z$alpha)))
-  	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha)
+  	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha, scale = scale[1])
 
   	## hypothesis test:
   	p_value <- sum(weights*p_values)
@@ -114,8 +115,6 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
     red_fit <- lapply(L, function(z) z$red_fit)
     full_mod <- lapply(L, function(z) z$full_mod)
     red_mod <- lapply(L, function(z) z$red_mod)
-    alpha <- min(unlist(lapply(L, function(z) z$alpha)))
-    scale <- unique(unlist(lapply(L, function(z) z$scale)))
 
     ## create output list
     output <- list(call = call,
