@@ -3,6 +3,7 @@ context("test_average_vimp_regression.R")
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
+library("xgboost")
 library("vimp")
 
 ## generate the data
@@ -17,7 +18,7 @@ y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 samp <- sample(1:n, n/2, replace = FALSE)
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- "SL.xgboost"
 
 ## fit the data with all covariates
 full_fit_1 <- SuperLearner(Y = y[samp], X = x[samp, ], SL.library = learners)

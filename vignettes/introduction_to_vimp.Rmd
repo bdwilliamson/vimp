@@ -399,7 +399,7 @@ library("vimp")
 Boston2 <- Boston[, 1:13]
 
 ## new learners library, with only one learner for illustration only
-learners.2 <- c("SL.gam", "SL.glmnet")
+learners.2 <- c("SL.xgboost", "SL.glmnet")
 
 ## now estimate variable importance
 nox.vim <- vimp_regression(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
