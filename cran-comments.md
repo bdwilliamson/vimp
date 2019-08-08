@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Added an object to the list returned by cv_vim and cv_vim_nodonsker
+* Changed all tests to run on SL.xgboost rather than SL.gam (handles gam package updates)
 
 ## Test environments
 * local ubuntu 18.04, R 3.5.1
