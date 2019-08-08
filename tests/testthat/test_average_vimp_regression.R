@@ -40,5 +40,5 @@ test_that("Test averaging of ANOVA-based variable importance", {
   est_2 <- vimp_regression(Y = y[-samp], f1 = full_fitted_2, f2 = reduced_fitted_2, run_regression = FALSE, indx = 2)
 
   est <- average_vim(est_1, est_2)
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.02)
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
 })
