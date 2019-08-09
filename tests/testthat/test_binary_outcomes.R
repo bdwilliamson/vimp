@@ -1,4 +1,4 @@
-context("test_vimp_deviance.R")
+context("Test variable importance measures for binary outcomes")
 
 ## load required functions and packages
 library("testthat")
@@ -24,13 +24,15 @@ gen_data <- function(a, mu_0, mu_1, sigma, p, j) {
   # x <- make_x(a)
   x <- make_x(a, mu_0, mu_1, sigma, y)
   red_x <- x[, -j]
-  
+
   return(list(x = x, red_x = red_x, y = y, j = j))
 }
 mu_0 <- matrix(c(0, 0), nrow = 1)
 mu_1 <- matrix(c(1.5, 2), nrow = 1)
 Sigma <- diag(1, nrow = 2)
-t <- c(0.14293485, 0.3001422)
+t_acc <- c(0.05110135, 0.1158337)
+t_dev <- c(0.14293485, 0.3001422)
+t_auc <- c(0.04011305, 0.1058621)
 n <- 10000
 set.seed(4747)
 dat <- gen_data(n, mu_0, mu_1, Sigma, p = 0.6, j = 1)
@@ -48,7 +50,17 @@ full_fitted <- predict(full_fit)$pred
 reduced_fit <- SuperLearner(Y = y, X = x[, -1, drop = FALSE], SL.library = learners, family = "binomial")
 reduced_fitted <- predict(reduced_fit)$pred
 
-test_that("Test deviance-based variable importance", {
+test_that("Accuracy-based variable importance works", {
+  est <- vimp_accuracy(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
+  expect_equal(est$est, t_acc[1], tolerance = 0.02)
+})
+
+test_that("AUC-based variable importance works", {
+  est <- vimp_auc(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
+  expect_equal(est$est, t_auc[1], tolerance = 0.02)
+})
+
+test_that("Deviance-based variable importance works", {
   est <- vimp_deviance(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
-  expect_equal(est$est, t[1], tolerance = 0.02)
+  expect_equal(est$est, t_dev[1], tolerance = 0.02)
 })

@@ -1,0 +1,59 @@
+context("Test variable importance measures for continuous outcomes")
+
+## load required functions and packages
+library("testthat")
+library("SuperLearner")
+library("vimp")
+
+## generate the data
+set.seed(4747)
+p <- 2
+n <- 10000
+x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
+## apply the function to the x's
+y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + stats::rnorm(n, 0, 1)
+
+## set up a library for SuperLearner
+learners <- c("SL.step", "SL.gam", "SL.mean")
+
+## fit the data with all covariates
+full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
+full_fitted <- predict(full_fit)$pred
+
+## fit the data with only X1
+reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners)
+reduced_fitted <- predict(reduced_fit)$pred
+
+test_that("ANOVA-based R^2 with pre-computed fitted values and old function name works", {
+  ## check deprecated message
+  expect_warning(vimp_regression(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2), )
+})
+
+test_that("ANOVA-based R^2 with pre-computed fitted values works", {
+    est <- vimp_anova(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2)
+    ## check that the estimate is nearly correct
+    expect_equal(est$est, 1 - (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
+    ## check that the formatted object works
+    expect_silent(format(est)[1])
+    expect_output(print(est), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
+    ## check that the SE, CI work
+    expect_length(est$ci, 2)
+    expect_length(est$se, 1)
+    ## check that influence curve worked
+    expect_length(est$update, length(y))
+})
+
+test_that("R^2-based variable importance works", {
+  est <- vimp_rsquared(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2)
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.02)
+  ## check that the estimate is nearly correct
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
+  ## check that the formatted object works
+  expect_silent(format(est)[1])
+  expect_output(print(est), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
+  ## check that the SE, CI work
+  expect_length(est$ci, 2)
+  expect_length(est$se, 1)
+  ## check that influence curve worked
+  expect_length(est$update, length(y))
+})
