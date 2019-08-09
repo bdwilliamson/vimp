@@ -131,8 +131,9 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         ## get the fitted values on splits for hypothesis testing; not if full_type == "anova"
         if (full_type != "anova") {
             folds <- sample(1:2, length(fhat_ful), replace = TRUE, prob = c(0.5, 0.5))
-            split_full <- SuperLearner::SuperLearner(Y = Y[folds == 1], X = X[folds == 1, , drop = FALSE], SL.library = SL.library, ...)
-            split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == 2], X = X_minus_s[folds == 2, , drop = FALSE], SL.library = SL.library, ...)
+            fold_nums <- unique(folds)
+            split_full <- SuperLearner::SuperLearner(Y = Y[folds == fold_nums[1]], X = X[folds == fold_nums[1], , drop = FALSE], SL.library = SL.library, ...)
+            split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == fold_nums[2]], X = X_minus_s[folds == fold_nums[2], , drop = FALSE], SL.library = SL.library, ...)
 
             fhat_split_ful <- SuperLearner::predict.SuperLearner(split_full)$pred
             fhat_split_red <- SuperLearner::predict.SuperLearner(split_reduced)$pred
