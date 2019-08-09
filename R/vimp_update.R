@@ -31,7 +31,11 @@ vimp_update <- function(full, reduced, y, weights = rep(1, length(y)), type = "r
     if (full_type != "anova") {
         ic <- ic_full - ic_redu
     } else {
-        ic <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - mean((full - reduced) ^ 2, na.rm = na.rm)
+        num <- mean((full - reduced) ^ 2, na.rm = na.rm)
+        denom <- mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm )
+        ic_num <- 2*(y - full)*(full - reduced) + (full - reduced) ^ 2 - num
+        ic_denom <- (y - mean(y, na.rm = na.rm)) ^ 2 - denom
+        ic <- ic_num / denom - num / (denom ^ 2) * ic_denom
     }
     return(ic)
 }

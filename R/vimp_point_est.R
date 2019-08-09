@@ -31,7 +31,7 @@ vimp_point_est <- function(full, reduced, y, weights = rep(1, length(y)), type =
         point_est <- point_est_full - point_est_redu
         corrected_est <- NA
     } else {
-        point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)
+        point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
         corrected_est <- point_est + mean(vimp_update(full, reduced, y, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)
     }
     return(c(corrected_est, point_est))
