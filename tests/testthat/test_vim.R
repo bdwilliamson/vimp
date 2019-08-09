@@ -34,17 +34,16 @@ test_that("General variable importance estimates using internally-computed fitte
   expect_length(est$update, length(y))
 })
 
+## fit the data with all covariates
+full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
+full_fitted <- predict(full_fit)$pred
+## fit the data with only X1
+reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners)
+reduced_fitted <- predict(reduced_fit)$pred
+## some folds
+folds <- sample(1:2, length(full_fitted), replace = TRUE, prob = c(0.5, 0.5))
+fold_nums <- unique(folds)
 test_that("General variable importance estimates using externally-computed fitted values work", {
-    ## fit the data with all covariates
-    full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
-    full_fitted <- predict(full_fit)$pred
-    ## fit the data with only X1
-    reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners)
-    reduced_fitted <- predict(reduced_fit)$pred
-    ## some folds
-    folds <- sample(1:2, length(full_fitted), replace = TRUE, prob = c(0.5, 0.5))
-    fold_nums <- unique(folds)
-    
     ## expect a warning with no folds
     expect_warning(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE))
     ## check that estimate worked

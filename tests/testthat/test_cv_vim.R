@@ -36,32 +36,32 @@ test_that("Cross-validated variable importance using internally-computed regress
   expect_length(est$update, length(y))
 })
 
+## set up the folds
+indx <- 2
+V <- 5
+set.seed(4747)
+folds <- rep(seq_len(V), length = n)
+folds <- sample(folds)
+## get the fitted values by fitting the super learner on each pair
+fhat_ful <- list()
+fhat_red <- list()
+Y <- matrix(y)
+for (v in 1:V) {
+  ## fit super learner
+  fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
+                                    X = x[folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 5))
+  fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
+  ## get predictions on the validation fold
+  fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
+                                                      newdata = x[folds == v, , drop = FALSE])$pred
+  ## fit the super learner on the reduced covariates
+  red <- SuperLearner::SuperLearner(Y = fitted_v,
+                                    X = x[folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 5))
+  ## get predictions on the validation fold
+  fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
+                                                      newdata = x[folds == v, -indx, drop = FALSE])$pred
+}
 test_that("Cross-validated variable importance using externally-computed regressions works", {
-  ## set up the folds
-  indx <- 2
-  V <- 5
-  set.seed(4747)
-  folds <- rep(seq_len(V), length = n)
-  folds <- sample(folds)
-  ## get the fitted values by fitting the super learner on each pair
-  fhat_ful <- list()
-  fhat_red <- list()
-  Y <- matrix(y)
-  for (v in 1:V) {
-      ## fit super learner
-      fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
-       X = x[folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 5))
-      fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-      ## get predictions on the validation fold
-      fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
-       newdata = x[folds == v, , drop = FALSE])$pred
-      ## fit the super learner on the reduced covariates
-      red <- SuperLearner::SuperLearner(Y = fitted_v,
-       X = x[folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 5))
-      ## get predictions on the validation fold
-      fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
-       newdata = x[folds == v, -indx, drop = FALSE])$pred
-  }
   est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
   V = 5, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05)
   ## check variable importance estimate
