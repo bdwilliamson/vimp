@@ -6,7 +6,9 @@
 [![Coverage status](https://codecov.io/gh/bdwilliamson/vimp/branch/master/graph/badge.svg)](https://codecov.io/github/bdwilliamson/vimp?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Author:** Brian Williamson
+**Software author:** [Brian Williamson](https://bdwilliamson.github.io/)
+
+**Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Peter Gilbert](https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html), [Noah Simon](http://faculty.washington.edu/nrsimon/), [Marco Carone](http://faculty.washington.edu/mcarone/about.html)
 
 ## Introduction
 

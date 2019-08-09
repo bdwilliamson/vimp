@@ -118,7 +118,7 @@ Variable importance estimates may be computed quickly, depending on the techniqu
 
 The code can handle arbitrary dimensions of features, and may be used to estimate the importance of any single feature or group of features for predicting the outcome. The package also includes functions for cross-validated importance and plotting.
 
-The author of the `vimp` package is Brian Williamson.
+The author and maintainer of the `vimp` package is [Brian Williamson](https://bdwilliamson.github.io/).
 
 ## Installation
 
