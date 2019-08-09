@@ -1,7 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Changed all tests to run on SL.xgboost rather than SL.gam (handles gam package updates)
+* Changed all tests to run with a small library rather than SL.gam (handles gam package updates) only or SL.xgboost only
+* Added small unit tests for internal functions
 
 ## Test environments
 * local ubuntu 18.04, R 3.5.1

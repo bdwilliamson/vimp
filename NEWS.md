@@ -1,3 +1,14 @@
+# vimp 1.1.5
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Changed tests to handle `gam` package update by switching library to `SL.gam`, `SL.step`, and `SL.mean`
+* Added small unit tests for internal functions
+
 # vimp 1.1.4
 
 ## Major changes

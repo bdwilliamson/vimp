@@ -1,10 +1,9 @@
-context("test_merge_vimp_regression.R")
+context("Test merging two nonparametric R^2 objects")
 
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
 library("gam")
-library("xgboost")
 library("vimp")
 
 ## generate the data
@@ -16,7 +15,7 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- c("SL.xgboost")
+learners <- c("SL.step", "SL.gam", "SL.mean")
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
@@ -37,4 +36,5 @@ test_that("Test merging of ANOVA-based variable importance", {
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
   expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
+  expect_output(print(merged_ests), "Estimate  SE          95% CI", fixed = TRUE)
 })
