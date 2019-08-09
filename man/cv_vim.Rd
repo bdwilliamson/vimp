@@ -7,7 +7,7 @@
 cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
   folds = NULL, weights = rep(1, length(Y)), type = "r_squared",
   run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
+  "SL.mean"), alpha = 0.05, scale = "logit", na.rm = FALSE, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -34,6 +34,8 @@ cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
 
 \item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
+\item{scale}{should CIs be computed on original ("identity") or logit ("logit") scale?}
+
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
@@ -43,8 +45,8 @@ An object of class \code{vim}. See Details for more information.
 }
 \description{
 Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-validation with two validation folds in the updating procedure.
-This essentially involves splitting the data into V train/test1/test2 splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
+nonparametric variable importance parameter of interest, using cross-validation.
+This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more
@@ -94,8 +96,8 @@ learners <- c("SL.mean", "SL.gam")
 ## using Super Learner
 ## -----------------------------------------
 set.seed(4747)
-est <- cv_vim(Y = y, X = x, indx = 2, V = 5, 
-type = "r_squared", run_regression = TRUE, 
+est <- cv_vim(Y = y, X = x, indx = 2, V = 5,
+type = "r_squared", run_regression = TRUE,
 SL.library = learners, alpha = 0.05)
 
 ## ------------------------------------------
@@ -116,13 +118,13 @@ for (v in 1:V) {
      X = x[folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 5))
     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
     ## get predictions on the validation fold
-    fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
+    fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
      newdata = x[folds == v, , drop = FALSE])$pred
     ## fit the super learner on the reduced covariates
     red <- SuperLearner::SuperLearner(Y = fitted_v,
      X = x[folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 5))
     ## get predictions on the validation fold
-    fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
+    fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
      newdata = x[folds == v, -indx, drop = FALSE])$pred
 }
 est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,

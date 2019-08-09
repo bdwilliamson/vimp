@@ -6,7 +6,7 @@
 \usage{
 vimp_hypothesis_test(full, reduced, y, folds, weights = rep(1,
   length(y)), type = "r_squared", alpha = 0.05, cv = FALSE,
-  na.rm = FALSE)
+  scale = "logit", na.rm = FALSE)
 }
 \arguments{
 \item{full}{either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
@@ -25,13 +25,15 @@ vimp_hypothesis_test(full, reduced, y, folds, weights = rep(1,
 
 \item{cv}{was V-fold cross-validation used to estimate the predictiveness (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.}
 
+\item{scale}{scale to compute CI on ("identity" for identity scale, "logit" for logit scale and back-transform)}
+
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
 }
 \value{
 \code{TRUE} if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, \code{FALSE}.
 }
 \description{
-Perform a hypothesis test against the null hypothesis of zero importance by: 
+Perform a hypothesis test against the null hypothesis of zero importance by:
 (i) for a user-specified level \eqn{\alpha}, compute a \eqn{(1 - \alpha)\times 100}\% confidence interval around the predictiveness for both the full and reduced regression functions (these must be estimated on independent splits of the data);
 (ii) if the intervals do not overlap, reject the null hypothesis.
 }

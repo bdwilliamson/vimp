@@ -4,12 +4,15 @@
 \alias{measure_accuracy}
 \title{Estimate the classification accuracy}
 \usage{
-measure_accuracy(fitted_values, y, na.rm = FALSE)
+measure_accuracy(fitted_values, y, weights = rep(1, length(y)),
+  na.rm = FALSE)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}
 
 \item{y}{the outcome.}
+
+\item{weights}{weights (IPW, etc.).}
 
 \item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE})}
 }
