@@ -37,13 +37,13 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             predictiveness_redu <- predictiveness_point_est(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
 
             ## influence curve estimates for the risk, and corresponding ses
-            ic_full <- predictiveness_update(fitted_values = full, y = y[folds == fold_nums[1]], weights = weights, type = type, na.rm = na.rm)
-            ic_redu <- predictiveness_update(fitted_values = reduced, y = y[folds == fold_nums[2]], weights = weights, type = type, na.rm = na.rm)
+            ic_full <- predictiveness_update(fitted_values = full, y = y[folds == fold_nums[1]], weights = weights[folds == fold_nums[1]], type = type, na.rm = na.rm)
+            ic_redu <- predictiveness_update(fitted_values = reduced, y = y[folds == fold_nums[2]], weights = weights[folds == fold_nums[2]], type = type, na.rm = na.rm)
             se_full <- vimp_se(predictiveness_full, ic_full, na.rm = na.rm)
             se_redu <- vimp_se(predictiveness_redu, ic_redu, na.rm = na.rm)
             ## CIs for both predictivenesses
-            predictiveness_ci_full <- vimp_ci(est = predictiveness_full, se = vimp_se(ic_full, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
-            predictiveness_ci_reduced <- vimp_ci(est = predictiveness_redu, se = vimp_se(ic_redu, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
+            predictiveness_ci_full <- vimp_ci(est = predictiveness_full, se = vimp_se(predictiveness_full, ic_full, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
+            predictiveness_ci_reduced <- vimp_ci(est = predictiveness_redu, se = vimp_se(predictiveness_redu, ic_redu, scale = scale, na.rm = na.rm), scale = scale, level = 1 - alpha)
 
             ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
             ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
@@ -51,8 +51,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
 
             ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
             levels <- seq(0.0001, 1 - 0.0001, 0.0001)
-            predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = predictiveness_se_full, scale = scale, level = x)))
-            predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_redu, se = predictiveness_se_redu, scale = scale, level = x)))
+            predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = se_full, scale = scale, level = x)))
+            predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_redu, se = se_redu, scale = scale, level = x)))
             hyp_tests <- predictiveness_cis_full[, 1] > predictiveness_cis_redu[, 2]
             if (all(hyp_tests, na.rm = na.rm)) {
                 p_value <- 0.0001
