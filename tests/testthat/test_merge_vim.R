@@ -1,4 +1,4 @@
-context("test_merge_vimp_rsquared.R")
+context("Test merging variable importance estimates")
 
 ## load required functions and packages
 library("testthat")
@@ -15,7 +15,7 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- "SL.glm"
+learners <- c("SL.step", "SL.gam", "SL.mean")
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
@@ -29,7 +29,7 @@ reduced_fitted_1 <- predict(reduced_fit_1)$pred
 reduced_fit_2 <- SuperLearner(Y = full_fitted, X = x[, -1, drop = FALSE], SL.library = learners)
 reduced_fitted_2 <- predict(reduced_fit_2)$pred
 
-test_that("Test merging of ANOVA-based variable importance", {
+test_that("Merging variable importance estimates works", {
   est_1 <- vimp_rsquared(Y = y, f1 = full_fitted, f2 = reduced_fitted_1, run_regression = FALSE, indx = 2)
   est_2 <- vimp_rsquared(Y = y, f1 = full_fitted, f2 = reduced_fitted_2, run_regression = FALSE, indx = 1)
   

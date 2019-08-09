@@ -1,4 +1,4 @@
-context("test_cv_vimp_rsquared.R")
+context("Test cross-validated variable importance estimates")
 
 ## load required functions and packages
 library("testthat")
@@ -14,9 +14,9 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- c("SL.gam", "SL.mean")
+learners <- c("SL.step", "SL.gam", "SL.mean")
 
-test_that("Test cross-validated estimator of ANOVA-based variable importance", {
+test_that("Cross-validated variable importance works", {
   est <- cv_vim(Y = y, X = x, indx = 2, V = 5, type = "r_squared", run_regression = TRUE,
                 SL.library = learners, alpha = 0.05)
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)

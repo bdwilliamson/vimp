@@ -40,7 +40,7 @@ y <- dat$y
 x <- as.data.frame(dat$x)
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- c("SL.step", "SL.gam", "SL.mean")
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, family = "binomial")
