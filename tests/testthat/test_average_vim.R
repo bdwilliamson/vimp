@@ -40,4 +40,6 @@ test_that("Averaging variable importance estimates works", {
   
   est <- average_vim(est_1, est_2)
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.02)
+  expect_length(est$mat, 6)
+  expect_output(print(est), "\n\nVariable importance estimates:\n", fixed = TRUE)
 })

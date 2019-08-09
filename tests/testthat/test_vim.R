@@ -21,27 +21,53 @@ test_that("General variable importance estimates using internally-computed fitte
                 SL.library = learners, alpha = 0.05, cvControl = list(V = 5))
   ## check that the estimate is approximately correct
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
-  ## check that printing, plotting, etc. work
-  expect_silent(format(est)[1])
-  expect_output(print(est), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
   ## check that the SE, CI work
   expect_length(est$ci, 2)
   expect_length(est$se, 1)
+  ## check that the p-value worked
+  expect_length(est$p_value, 1)
+  expect_true(est$test)
+  ## check that printing, plotting, etc. work
+  expect_silent(format(est)[1])
+  expect_output(print(est), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
   ## check that influence curve worked
   expect_length(est$update, length(y))
-  ## check that warning for hypothesis test works with no splits
-  expect_warning(vim(Y = y, X = x, indx = 2, V = 5, type = "r_squared", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05))
 })
 
-test_that("Hypothesis testing works", {
-    folds <-
-    est <- vim(Y = y, X = x, SL.library = learners, run_regression = TRUE)
+test_that("General variable importance estimates using externally-computed fitted values work", {
+    ## fit the data with all covariates
+    full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
+    full_fitted <- predict(full_fit)$pred
+    ## fit the data with only X1
+    reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners)
+    reduced_fitted <- predict(reduced_fit)$pred
+    ## some folds
+    folds <- sample(1:2, length(full_fitted), replace = TRUE, prob = c(0.5, 0.5))
+    fold_nums <- unique(folds)
+    
+    ## expect a warning with no folds
+    expect_warning(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE))
+    ## check that estimate worked
+    expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
+    ## check that p-value is NA
+    expect_equal(est$p_value, NA)
+    
+    ## expect that it works given folds
+    full_split <- SuperLearner(Y = y[folds == fold_nums[1]], X = x[folds == fold_nums[1], ], SL.library = learners)
+    full_fitted_split <- predict(full_split)$pred
+    reduced_split <- SuperLearner(Y = y[folds == fold_nums[2]], X = x[folds == fold_nums[2], -2, drop = FALSE], SL.library = learners)
+    reduced_fitted_split <- predict(reduced_split)$pred
+    expect_silent(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, 
+                             f1_split = full_fitted_split, f2_split = reduced_fitted_split,
+                             run_regression = FALSE, folds = folds))
 })
 
 
 test_that("Measures of predictiveness work", {
-
+  full_rsquared <- predictiveness_point_est(full_fitted, y, type = "r_squared")
+  expect_equal(full_rsquared, 0.44, tolerance = 0.05)
+  full_update <- predictiveness_update(full_fitted, y, type = "r_squared")
+  expect_length(full_update, length(y))
 })
 
 test_that("Error messages work", {

@@ -36,4 +36,15 @@ test_that("Merging variable importance estimates works", {
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
   expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
+  expect_output(print(merged_ests), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
+})
+
+test_that("Merging cross-validated variable importance estimates works", {
+  est_1 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 2, V = 2, cvControl = list(V = 2), SL.library = learners)
+  est_2 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 1, V = 2, cvControl = list(V = 2), SL.library = learners)
+  
+  merged_ests <- merge_vim(est_1, est_2)
+  expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
+  expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
+  expect_output(print(merged_ests), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
 })
