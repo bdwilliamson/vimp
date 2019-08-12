@@ -15,14 +15,19 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- c("SL.step", "SL.gam", "SL.mean")
+boosted_trees <- create.Learner("SL.xgboost", params = list(ntree = 500, max_depth = 1),
+                      tune = list(shrinkage = c(0.1, 0.01)),
+                      detailed_names = TRUE,
+                      name_prefix = "xgb")
+learners <- c("SL.glm.interaction", boosted_trees$names, "SL.mean")
 
 ## fit the data with all covariates
-full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
+full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, method = "method.CC_LS")
 full_fitted <- predict(full_fit)$pred
 
 ## fit the data with only X1
-reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners)
+reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners,
+                            method = "method.CC_LS")
 reduced_fitted <- predict(reduced_fit)$pred
 
 test_that("Nonparametric R^2 with pre-computed fitted values works", {
