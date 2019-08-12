@@ -3,7 +3,7 @@ context("Test cross-validated difference in R^2")
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
-library("gam")
+library("xgboost")
 library("vimp")
 
 ## generate the data
@@ -15,21 +15,22 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-boosted_trees <- create.Learner("SL.xgboost", 
-                                params = list(ntree = 500, max_depth = 1, shrinkage = 0.1),
-                                detailed_names = TRUE,
-                                name_prefix = "xgb")
-learners <- c("SL.glm.interaction", boosted_trees$names, "SL.mean")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
+learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 test_that("Test cross-validated estimator of ANOVA-based variable importance with single cv folds", {
   est <- cv_vim_nodonsker(Y = y, X = x, indx = 2, V = 5, type = "regression", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, method = "method.CC_LS")
+                SL.library = learners, alpha = 0.05, method = "method.CC_LS",
+                env = environment())
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
 })
 
 test_that("Test cross-validated estimator of ANOVA-based variable importance with double cv folds", {
   est <- cv_vim(Y = y, X = x, indx = 2, V = 5, type = "regression", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, method = "method.CC_LS")
+                SL.library = learners, alpha = 0.05, method = "method.CC_LS",
+                env = environment())
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
 })
 
