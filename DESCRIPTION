@@ -25,6 +25,7 @@ Suggests:
     MASS,
     gam,
     xgboost,
+    glmnet,
     quadprog,
     covr,
     testthat
