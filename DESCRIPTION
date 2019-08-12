@@ -24,8 +24,8 @@ Suggests:
     rmarkdown,
     MASS,
     gam,
-    glmnet,
     xgboost,
+    quadprog,
     covr,
     testthat
 VignetteBuilder: knitr

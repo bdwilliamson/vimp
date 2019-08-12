@@ -3,6 +3,7 @@ context("Test merging two nonparametric R^2 objects")
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
+library("quadprog")
 library("xgboost")
 library("vimp")
 

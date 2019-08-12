@@ -3,6 +3,7 @@ context("Test cross-validated difference in R^2")
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
+library("quadprog")
 library("xgboost")
 library("vimp")
 

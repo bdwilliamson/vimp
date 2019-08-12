@@ -3,6 +3,7 @@ context("Test difference in nonparametric R^2, continuous outcome")
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
+library("quadprog")
 library("xgboost")
 library("vimp")
 
