@@ -15,8 +15,8 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-boosted_trees <- create.Learner("SL.xgboost", params = list(ntree = 500, max_depth = 1),
-                                tune = list(shrinkage = c(0.1, 0.01)),
+boosted_trees <- create.Learner("SL.xgboost", 
+                                params = list(ntree = 500, max_depth = 1, shrinkage = 0.1),
                                 detailed_names = TRUE,
                                 name_prefix = "xgb")
 learners <- c("SL.glm.interaction", boosted_trees$names, "SL.mean")
