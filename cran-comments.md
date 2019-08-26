@@ -8,7 +8,9 @@ This is a resubmission. In this version, I have:
 * local ubuntu 18.04, R 3.6.1
 * ubuntu 14.04 (on travis-ci), R 3.6.1
 * windows server 2012 (on appveyor), R 3.6.1
-* win-builder (devel)
+* R-hub windows-x86_64-devel (r-devel)
+* R-hub ubuntu-gcc-release (r-release)
+* R-hub fedora-clang-devel (r-devel)
 
 ## R CMD check results
 There were no ERRORs or WARNINGs; there was one NOTE, that I (Brian D. Williamson) am the package maintainer, and that "et al." may be misspelled in the DESCRIPTION.
