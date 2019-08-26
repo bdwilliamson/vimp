@@ -1,5 +1,3 @@
-context("Test cross-validated difference in R^2")
-
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
@@ -12,6 +10,7 @@ set.seed(4747)
 p <- 2
 n <- 10000
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
+V <- 3
 ## apply the function to the x's
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
@@ -21,15 +20,15 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
 }
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
-test_that("Test cross-validated estimator of ANOVA-based variable importance with single cv folds", {
-  est <- cv_vim_nodonsker(Y = y, X = x, indx = 2, V = 5, type = "regression", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, method = "method.CC_LS",
-                env = environment())
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
-})
+# test_that("Test cross-validated estimator of ANOVA-based variable importance with single cv folds", {
+#   est <- cv_vim_nodonsker(Y = y, X = x, indx = 2, V = V, type = "regression", run_regression = TRUE,
+#                 SL.library = learners, alpha = 0.05, method = "method.CC_LS",
+#                 env = environment())
+#   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
+# })
 
 test_that("Test cross-validated estimator of ANOVA-based variable importance with double cv folds", {
-  est <- cv_vim(Y = y, X = x, indx = 2, V = 5, type = "regression", run_regression = TRUE,
+  est <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "regression", run_regression = TRUE,
                 SL.library = learners, alpha = 0.05, method = "method.CC_LS",
                 env = environment())
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
@@ -37,38 +36,37 @@ test_that("Test cross-validated estimator of ANOVA-based variable importance wit
 
 ## create cv folds
 set.seed(4747)
-V <- 5
-two_folds <- two_validation_set_cv(length(y), V = 5)
+two_folds <- two_validation_set_cv(length(y), V = V)
 one_folds <- rep(seq_len(V), length = length(y))
 one_folds <- sample(one_folds)
 Y <- matrix(y)
 indx <- 2
 
-test_that("Test cross-validated vimp with single cv folds, pre-computed SL", {
-  ## get the fitted values by fitting the super learner on each pair
-  fhat_ful <- list()
-  fhat_red <- list()
-  for (v in 1:V) {
-     ## fit super learner
-     fit <- SuperLearner::SuperLearner(Y = Y[one_folds != v, , drop = FALSE],
-      X = x[one_folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 5), 
-      method = "method.CC_LS")
-     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-     ## get predictions on the validation fold
-     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
-      newdata = x[one_folds == v, , drop = FALSE])$pred
-     ## fit the super learner on the reduced covariates
-     red <- SuperLearner::SuperLearner(Y = fitted_v,
-      X = x[one_folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 5), 
-      method = "method.CC_LS")
-     ## get predictions on the validation fold
-     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
-      newdata = x[one_folds == v, -indx, drop = FALSE])$pred
-  }
-  est <- cv_vim_nodonsker(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-                          V = 5, folds = one_folds, type = "regression", run_regression = FALSE, alpha = 0.05)
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
-})
+# test_that("Test cross-validated vimp with single cv folds, pre-computed SL", {
+#   ## get the fitted values by fitting the super learner on each pair
+#   fhat_ful <- list()
+#   fhat_red <- list()
+#   for (v in 1:V) {
+#      ## fit super learner
+#      fit <- SuperLearner::SuperLearner(Y = Y[one_folds != v, , drop = FALSE],
+#       X = x[one_folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = V), 
+#       method = "method.CC_LS")
+#      fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
+#      ## get predictions on the validation fold
+#      fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, 
+#       newdata = x[one_folds == v, , drop = FALSE])$pred
+#      ## fit the super learner on the reduced covariates
+#      red <- SuperLearner::SuperLearner(Y = fitted_v,
+#       X = x[one_folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = V), 
+#       method = "method.CC_LS")
+#      ## get predictions on the validation fold
+#      fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, 
+#       newdata = x[one_folds == v, -indx, drop = FALSE])$pred
+#   }
+#   est <- cv_vim_nodonsker(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
+#                           V = V, folds = one_folds, type = "regression", run_regression = FALSE, alpha = 0.05)
+#   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
+# })
 
 test_that("Test cross-validated vimp with double cv folds, pre-computed SL", {
   ## get the fitted values by fitting the super learner on each pair
@@ -100,7 +98,7 @@ test_that("Test cross-validated vimp with double cv folds, pre-computed SL", {
        newdata = x[two_folds[, v] == 2, -indx, drop = FALSE])$pred
   }
   est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-  V = 5, folds = two_folds, type = "regression", run_regression = FALSE, alpha = 0.05)
+  V = V, folds = two_folds, type = "regression", run_regression = FALSE, alpha = 0.05)
     expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
 })
 

@@ -1,4 +1,4 @@
-# vimp 1.1.5
+# vimp 1.1.6
 
 ## Major changes
 
@@ -8,6 +8,16 @@ None
 
 * Changed tests to handle `gam` package update by switching library to `SL.xgboost`, `SL.step`, and `SL.mean`
 * Added small unit tests for internal functions
+
+# vimp 1.1.5
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Attempt to handle `gam` package update in unit tests
 
 # vimp 1.1.4
 

@@ -1,7 +1,7 @@
 Package: vimp
 Type: Package
 Title: Nonparametric Variable Importance
-Version: 1.1.5
+Version: 1.1.6
 Authors@R: c(person("Brian D.", "Williamson", email = "brianw26@uw.edu", role = c("aut", "cre")),
             person("Noah", "Simon", role = c("aut")), person("Marco", "Carone", role = c("aut")))
 Author: Brian D. Williamson [aut, cre], Noah Simon [aut], Marco Carone [aut]

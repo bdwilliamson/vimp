@@ -1,5 +1,3 @@
-context("Test averaging of difference in nonparametric R^2 values")
-
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
