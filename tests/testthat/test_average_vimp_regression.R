@@ -50,5 +50,5 @@ test_that("Test averaging of ANOVA-based variable importance", {
   est <- average_vim(est_1, est_2)
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
   expect_length(est$mat, 4)
-  expect_output(print(est), "\n\nVariable importance estimates:\n", fixed = TRUE)
+  expect_output(print(est), "Estimate")
 })

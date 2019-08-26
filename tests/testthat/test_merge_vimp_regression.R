@@ -42,5 +42,5 @@ test_that("Test merging of ANOVA-based variable importance", {
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
   expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
-  expect_output(print(merged_ests), "Estimate  SE          95% CI", fixed = TRUE)
+  expect_output(print(merged_ests), "Estimate")
 })
