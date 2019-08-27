@@ -20,8 +20,7 @@ Imports:
     ROCR,
     tibble,
     dplyr,
-    magrittr,
-    cowplot
+    magrittr
 LazyData: TRUE
 RoxygenNote: 6.1.1
 Suggests:
@@ -32,5 +31,6 @@ Suggests:
     glmnet,
     xgboost,
     covr,
-    testthat
+    testthat,
+    cowplot
 VignetteBuilder: knitr

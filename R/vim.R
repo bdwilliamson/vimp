@@ -211,7 +211,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
     ## create the output and return it
     ## create output tibble
-    mat <- tibble::tibble(s = indx, est = est, se = se, cil = ci[1], ciu = ci[2], 
+    mat <- tibble::tibble(s = indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], 
                           test = hyp_test$test, p_value = hyp_test$p_value)
     output <- list(call = cl, s = indx,
                  SL.library = SL.library,

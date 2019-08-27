@@ -72,6 +72,7 @@ within the \code{vim} object. This results in a list containing:
  \item{folds}{ - the folds used for cross-validation}
  \item{y}{ - the outcome}
  \item{weights}{ - the weights}
+ \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }
 \examples{

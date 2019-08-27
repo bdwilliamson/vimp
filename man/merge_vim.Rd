@@ -23,7 +23,7 @@ from the individual \code{vim} objects. This results in a list containing:
  \item{update}{- a list with the influence curve-based updates}
  \item{se}{- a vector with the standard errors}
  \item{ci}{- a matrix with the CIs}
- \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) \times 100}\% confidence intervals}
+ \item{mat}{ - a tibble with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) \times 100}\% confidence intervals}
  \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - a list of the levels, for confidence interval calculation}
