@@ -13,7 +13,10 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- c("SL.step", "SL.gam", "SL.mean")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
+learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 test_that("General variable importance estimates using internally-computed fitted values work", {
   est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
@@ -28,7 +31,7 @@ test_that("General variable importance estimates using internally-computed fitte
   expect_true(est$test)
   ## check that printing, plotting, etc. work
   expect_silent(format(est)[1])
-  expect_output(print(est), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
+  expect_output(print(est), "Estimate", fixed = TRUE)
   ## check that influence curve worked
   expect_length(est$update, length(y))
 })

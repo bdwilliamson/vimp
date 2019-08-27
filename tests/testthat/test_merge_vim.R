@@ -13,8 +13,10 @@ x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-SL.xgboost1 <- function(..., max_depth = 1) SL.xgboost(..., max_depth = max_depth)
-learners <- c("SL.step", "SL.gam", "SL.mean")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
+learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
@@ -35,7 +37,7 @@ test_that("Merging variable importance estimates works", {
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
   expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
-  expect_output(print(merged_ests), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
+  expect_output(print(merged_ests), "Estimate", fixed = TRUE)
 })
 
 test_that("Merging cross-validated variable importance estimates works", {
@@ -45,5 +47,5 @@ test_that("Merging cross-validated variable importance estimates works", {
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
   expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
-  expect_output(print(merged_ests), "Estimate  SE (logit scale) 95% CI", fixed = TRUE)
+  expect_output(print(merged_ests), "Estimate", fixed = TRUE)
 })

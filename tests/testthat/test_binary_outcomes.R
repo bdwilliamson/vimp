@@ -39,7 +39,10 @@ y <- dat$y
 x <- as.data.frame(dat$x)
 
 ## set up a library for SuperLearner
-learners <- c("SL.step", "SL.gam", "SL.mean")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
+learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, family = "binomial")
