@@ -1,8 +1,7 @@
-context("Test variable importance measures for binary outcomes")
-
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
+library("xgboost")
 library("vimp")
 
 ## generate the data

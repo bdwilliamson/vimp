@@ -1,8 +1,7 @@
-context("Test cross-validated variable importance estimates")
-
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
+library("xgboost")
 library("vimp")
 
 ## generate the data
@@ -98,4 +97,3 @@ test_that("Error messages work", {
   expect_error(cv_vim(Y = y, f1 = mean(y)))
   expect_error(cv_vim(Y = y, f1 = rep(mean(y), length(y)), f2 = mean(y)))
 })
-

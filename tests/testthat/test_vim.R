@@ -1,9 +1,8 @@
-context("Test general variable importance estimates")
-
 ## load required functions and packages
 library("testthat")
 library("SuperLearner")
 library("vimp")
+library("xgboost")
 
 ## generate the data
 set.seed(4747)
@@ -50,13 +49,13 @@ test_that("General variable importance estimates using externally-computed fitte
     expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
     ## check that p-value is NA
     expect_equal(est$p_value, NA)
-    
+
     ## expect that it works given folds
     full_split <- SuperLearner(Y = y[folds == fold_nums[1]], X = x[folds == fold_nums[1], ], SL.library = learners)
     full_fitted_split <- predict(full_split)$pred
     reduced_split <- SuperLearner(Y = y[folds == fold_nums[2]], X = x[folds == fold_nums[2], -2, drop = FALSE], SL.library = learners)
     reduced_fitted_split <- predict(reduced_split)$pred
-    expect_silent(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, 
+    expect_silent(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted,
                              f1_split = full_fitted_split, f2_split = reduced_fitted_split,
                              run_regression = FALSE, folds = folds))
 })
