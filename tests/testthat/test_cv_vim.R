@@ -20,11 +20,12 @@ learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 test_that("Cross-validated variable importance using internally-computed regressions works", {
   est <- cv_vim(Y = y, X = x, indx = 2, V = 3, type = "r_squared", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, cvControl = list(V = 3))
+                SL.library = learners, alpha = 0.05, cvControl = list(V = 3),
+                env = environment(), na.rm = TRUE)
   ## check variable importance estimate
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
   ## check full predictiveness estimate
-  expect_equal(est$predictiveness_full, 0.44, tolerance = 0.05)
+  expect_equal(est$predictiveness_full, 0.44, tolerance = 0.1)
   ## check that the SE, CI work
   expect_length(est$ci, 2)
   expect_length(est$se, 1)
@@ -65,11 +66,11 @@ for (v in 1:V) {
 }
 test_that("Cross-validated variable importance using externally-computed regressions works", {
   est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-  V = 3, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05)
+  V = 3, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
   ## check variable importance estimate
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
   ## check full predictiveness estimate
-  expect_equal(est$predictiveness_full, 0.44, tolerance = 0.05)
+  expect_equal(est$predictiveness_full, 0.44, tolerance = 0.1)
   ## check that the SE, CI work
   expect_length(est$ci, 2)
   expect_length(est$se, 1)
@@ -84,10 +85,10 @@ test_that("Cross-validated variable importance using externally-computed regress
 })
 
 test_that("Measures of predictiveness work", {
-  full_rsquared <- cv_predictiveness_point_est(fhat_ful, y, folds = folds, type = "r_squared")
-  expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.05)
+  full_rsquared <- cv_predictiveness_point_est(fhat_ful, y, folds = folds, type = "r_squared", na.rm = TRUE)
+  expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
   expect_length(full_rsquared$all_ests, V)
-  full_update <- cv_predictiveness_update(fhat_red, y, folds = folds, type = "r_squared")
+  full_update <- cv_predictiveness_update(fhat_red, y, folds = folds, type = "r_squared", na.rm = TRUE)
   expect_length(full_update$ic, length(y))
   expect_equal(dim(full_update$all_ics)[2], V)
 })

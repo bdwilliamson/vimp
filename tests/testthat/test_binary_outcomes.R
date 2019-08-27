@@ -45,11 +45,11 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 ## fit the data with all covariates
-full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, family = "binomial")
+full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, family = "binomial", cvControl = list(V = 3))
 full_fitted <- predict(full_fit)$pred
 
 ## fit the data with only X1
-reduced_fit <- SuperLearner(Y = y, X = x[, -1, drop = FALSE], SL.library = learners, family = "binomial")
+reduced_fit <- SuperLearner(Y = y, X = x[, -1, drop = FALSE], SL.library = learners, family = "binomial", cvControl = list(V = 3))
 reduced_fitted <- predict(reduced_fit)$pred
 
 test_that("Accuracy-based variable importance works", {

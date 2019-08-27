@@ -23,11 +23,11 @@ full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
 full_fitted <- predict(full_fit)$pred
 
 ## fit the data with only X1
-reduced_fit_1 <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners)
+reduced_fit_1 <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
 reduced_fitted_1 <- predict(reduced_fit_1)$pred
 
 ## fit the data with only X2
-reduced_fit_2 <- SuperLearner(Y = full_fitted, X = x[, -1, drop = FALSE], SL.library = learners)
+reduced_fit_2 <- SuperLearner(Y = full_fitted, X = x[, -1, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
 reduced_fitted_2 <- predict(reduced_fit_2)$pred
 
 test_that("Merging variable importance estimates works", {
@@ -41,8 +41,10 @@ test_that("Merging variable importance estimates works", {
 })
 
 test_that("Merging cross-validated variable importance estimates works", {
-  est_1 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 2, V = 2, cvControl = list(V = 2), SL.library = learners)
-  est_2 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 1, V = 2, cvControl = list(V = 2), SL.library = learners)
+  est_1 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 2, V = 2, cvControl = list(V = 2), SL.library = learners,
+                  env = environment(), na.rm = TRUE)
+  est_2 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 1, V = 2, cvControl = list(V = 2), SL.library = learners,
+                  env = environment(), na.rm = TRUE)
 
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)

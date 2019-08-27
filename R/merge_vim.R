@@ -60,28 +60,30 @@ merge_vim <- function(...) {
   p <- length(L)
 
   ## extract the estimates and CIs from each element of the list
-  ests <- do.call(rbind.data.frame, lapply(L, function(z) z$est))
-  naives <- do.call(rbind.data.frame, lapply(L, function(z) z$naive))
-  cis <- do.call(rbind.data.frame, lapply(L, function(z) z$ci))
-  ses <- do.call(rbind.data.frame, lapply(L, function(z) z$se))
-  tests <- do.call(rbind.data.frame, lapply(L, function(z) z$test))
-  p_values <- do.call(rbind.data.frame, lapply(L, function(z) z$p_value))
-  predictivenesses_full <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_full))
-  predictivenesses_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_reduced))
-  predictiveness_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_ci_full))
-  predictiveness_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$predictiveness_ci_reduced))
-  hyp_test_predictivenesses_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_full))
-  hyp_test_predictivenesses_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_red))
-  hyp_test_predictiveness_cis_full <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
-  hyp_test_predictiveness_cis_reduced <- do.call(rbind.data.frame, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
+  ests <- do.call(c, lapply(L, function(z) z$est))
+  naives <- do.call(c, lapply(L, function(z) z$naive))
+  cis <- do.call(rbind, lapply(L, function(z) z$ci))
+  ses <- do.call(c, lapply(L, function(z) z$se))
+  tests <- do.call(c, lapply(L, function(z) z$test))
+  p_values <- do.call(c, lapply(L, function(z) z$p_value))
+  predictivenesses_full <- do.call(c, lapply(L, function(z) z$predictiveness_full))
+  predictivenesses_reduced <- do.call(c, lapply(L, function(z) z$predictiveness_reduced))
+  predictiveness_cis_full <- do.call(rbind, lapply(L, function(z) z$predictiveness_ci_full))
+  predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$predictiveness_ci_reduced))
+  hyp_test_predictivenesses_full <- do.call(c, lapply(L, function(z) z$hyp_test_predictiveness_full))
+  hyp_test_predictivenesses_reduced <- do.call(c, lapply(L, function(z) z$hyp_test_predictiveness_red))
+  hyp_test_predictiveness_cis_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
+  hyp_test_predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
   
   ## put on names
   names(ests) <- "est"
+  names(tests) <- "test"
+  names(p_values) <- "p_value"
   
   ## now get lists of the remaining components
   call <- match.call()
   updates <- lapply(L, function(z) z$update)
-  s <- do.call(c, lapply(L, function(z) z$s)[order(tmp$est, decreasing = TRUE)])
+  s <- do.call(c, lapply(L, function(z) z$s))
   SL.library <- lapply(L, function(z) z$SL.library)
   full_fit <- lapply(L, function(z) z$full_fit)
   red_fit <- lapply(L, function(z) z$red_fit)
@@ -93,7 +95,7 @@ merge_vim <- function(...) {
   ## combine into a tibble
   mat <- tibble::tibble(s = s, est = ests, se = ses, cil = cis[, 1], ciu = cis[, 2],
                         test = tests, p_value = p_values) %>% 
-    arrange(desc(est))
+    dplyr::arrange(desc(est))
 
   ## create output list
   output <- list(call = call,

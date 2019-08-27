@@ -19,16 +19,16 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 ## fit the data with all covariates
-full_fit <- SuperLearner(Y = y, X = x, SL.library = learners)
+full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, cvControl = list(V = 3))
 full_fitted <- predict(full_fit)$pred
 
 ## fit the data with only X1
-reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners)
+reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
 reduced_fitted <- predict(reduced_fit)$pred
 
 test_that("ANOVA-based R^2 with pre-computed fitted values and old function name works", {
   ## check deprecated message
-  expect_warning(vimp_regression(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2), )
+  expect_warning(vimp_regression(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2))
 })
 
 test_that("ANOVA-based R^2 with pre-computed fitted values works", {
