@@ -82,7 +82,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	
   	names(ests) <- "est"
   	names(ses) <- "se"
-    names(naives) <- "naive"
+   names(naives) <- "naive"
 
   	## create the (weighted) average
   	est_avg <- sum(weights*ests)
@@ -100,23 +100,24 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	## hypothesis test:
   	p_value <- sum(weights*p_values)
   	hyp_test <- p_value < alpha
-
-  	## create the output matrix
-  	mat <- cbind.data.frame(est_avg, se_avg, ci_avg, hyp_test, p_value)
-  	colnames(mat) <- c("est", "se", "cil", "ciu", "test", "p_value")
-
+  	
   	## now get lists of the remaining components
-    call <- match.call()
-    updates <- lapply(L, function(z) z$update)
-    s_lst <- lapply(L, function(z) z$s)
-    s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))
-    SL.library <- lapply(L, function(z) z$SL.library)
-    full_fit <- lapply(L, function(z) z$full_fit)
-    red_fit <- lapply(L, function(z) z$red_fit)
-    full_mod <- lapply(L, function(z) z$full_mod)
-    red_mod <- lapply(L, function(z) z$red_mod)
+  	call <- match.call()
+  	updates <- lapply(L, function(z) z$update)
+  	s_lst <- lapply(L, function(z) z$s)
+  	s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))
+  	SL.library <- lapply(L, function(z) z$SL.library)
+  	full_fit <- lapply(L, function(z) z$full_fit)
+  	red_fit <- lapply(L, function(z) z$red_fit)
+  	full_mod <- lapply(L, function(z) z$full_mod)
+  	red_mod <- lapply(L, function(z) z$red_mod)
 
-    ## create output list
+  	## combine into a tibble
+  	mat <- tibble::tibble(s = s, est = ests, se = ses, cil = cis[, 1], ciu = cis[, 2],
+  	                      test = tests, p_value = p_values) %>% 
+  	   arrange(desc(est))
+
+  	## create output list
     output <- list(call = call,
               s = s, SL.library = SL.library, full_fit = full_fit,
               red_fit = red_fit, est = mat$est, naive = naives, update = updates,

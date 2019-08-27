@@ -20,7 +20,7 @@ learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 test_that("General variable importance estimates using internally-computed fitted values work", {
   est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, cvControl = list(V = 5))
+                SL.library = learners, alpha = 0.05, cvControl = list(V = 3))
   ## check that the estimate is approximately correct
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
   ## check that the SE, CI work

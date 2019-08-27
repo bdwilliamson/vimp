@@ -499,6 +499,8 @@ lstat.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_lstat,
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
 ```{r, fig.width = 8.5, fig.height = 8}
+library("dplyr")
+library("tibble")
 ## combine the objects together
 ests <- merge_vim(crim.vim, zn.vim, indus.vim, chas.vim,
                 nox.vim, rm.vim, age.vim, dis.vim, rad.vim,
@@ -509,7 +511,7 @@ ests <- merge_vim(crim.vim, zn.vim, indus.vim, chas.vim,
 nms <- c("Prop. lower status", "Avg. num. rooms", "Pupil-teacher ratio", "Nitrogen oxide", "Distance", "Crime", "Access to radial hwys", "Property tax rate", "Charles riv.", "Prop. black", "Prop. business", "Prop. large zoned", "Age")
 
 ## plot
-plot(ests, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for individual features", xlim = c(0, 0.2))
+#plot(ests, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for individual features", xlim = c(0, 0.2))
 ```
 
 ## Estimating variable importance for a group of variables
@@ -533,7 +535,7 @@ neigh.vim <- vimp_anova(Y = Boston$medv, f1 = full.fit, f2 = reduced_access,
 ## combine and plot
 groups <- merge_vim(structure.vim, access.vim, neigh.vim, nox.vim)
 nms.2 <- c("Neighborhood", "Structure", "Accessibility", "Nitrogen oxide")
-plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.5))
+#plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.5))
 ```
 
 ## References

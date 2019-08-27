@@ -19,8 +19,8 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 test_that("Cross-validated variable importance using internally-computed regressions works", {
-  est <- cv_vim(Y = y, X = x, indx = 2, V = 5, type = "r_squared", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, cvControl = list(V = 5))
+  est <- cv_vim(Y = y, X = x, indx = 2, V = 3, type = "r_squared", run_regression = TRUE,
+                SL.library = learners, alpha = 0.05, cvControl = list(V = 3))
   ## check variable importance estimate
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
   ## check full predictiveness estimate
@@ -40,7 +40,7 @@ test_that("Cross-validated variable importance using internally-computed regress
 
 ## set up the folds
 indx <- 2
-V <- 5
+V <- 3
 set.seed(4747)
 folds <- rep(seq_len(V), length = n)
 folds <- sample(folds)
@@ -51,21 +51,21 @@ Y <- matrix(y)
 for (v in 1:V) {
   ## fit super learner
   fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
-                                    X = x[folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 5))
+                                    X = x[folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 3))
   fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
   ## get predictions on the validation fold
   fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
                                                       newdata = x[folds == v, , drop = FALSE])$pred
   ## fit the super learner on the reduced covariates
   red <- SuperLearner::SuperLearner(Y = fitted_v,
-                                    X = x[folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 5))
+                                    X = x[folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
   ## get predictions on the validation fold
   fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
                                                       newdata = x[folds == v, -indx, drop = FALSE])$pred
 }
 test_that("Cross-validated variable importance using externally-computed regressions works", {
   est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-  V = 5, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05)
+  V = 3, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05)
   ## check variable importance estimate
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
   ## check full predictiveness estimate

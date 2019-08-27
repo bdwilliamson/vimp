@@ -18,7 +18,7 @@
 #'  \item{update}{- a list with the influence curve-based updates}
 #'  \item{se}{- a vector with the standard errors}
 #'  \item{ci}{- a matrix with the CIs}
-#'  \item{mat}{ - a matrix with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) \times 100}\% confidence intervals}
+#'  \item{mat}{ - a tibble with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) \times 100}\% confidence intervals}
 #'  \item{full_mod}{ - a list of the objects returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red_mod}{ - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - a list of the levels, for confidence interval calculation}
@@ -77,13 +77,7 @@ merge_vim <- function(...) {
   
   ## put on names
   names(ests) <- "est"
-
-  ## combine into a matrix
-  tmp <- cbind.data.frame(ests, ses, cis, tests, p_values)
-  names(tmp) <- c("est", "se", "cil", "ciu", "test", "p_value")
-  ## put in decreasing order
-  mat <- tmp[order(tmp$est, decreasing = TRUE), ]
-
+  
   ## now get lists of the remaining components
   call <- match.call()
   updates <- lapply(L, function(z) z$update)
@@ -95,6 +89,11 @@ merge_vim <- function(...) {
   red_mod <- lapply(L, function(z) z$red_mod)
   alpha <- min(unlist(lapply(L, function(z) z$alpha)))
   scale <- unique(unlist(lapply(L, function(z) z$scale)))
+
+  ## combine into a tibble
+  mat <- tibble::tibble(s = s, est = ests, se = ses, cil = cis[, 1], ciu = cis[, 2],
+                        test = tests, p_value = p_values) %>% 
+    arrange(desc(est))
 
   ## create output list
   output <- list(call = call,

@@ -45,6 +45,7 @@
 #'  \item{folds}{ - the folds used for cross-validation}
 #'  \item{y}{ - the outcome}
 #'  \item{weights}{ - the weights}
+#'  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 #' }
 #'
 #' @examples
@@ -231,6 +232,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     cl <- match.call()
 
     ## create the output and return it
+    ## create output tibble
+    mat <- tibble::tibble(s = indx, est = est, se = se, cil = ci[1], ciu = ci[2], 
+                          test = hyp_test$test, p_value = hyp_test$p_value)
     output <- list(call = cl, s = indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red,
@@ -254,7 +258,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  folds = folds,
                  y = Y,
                  weights = weights,
-                 scale = scale)
+                 scale = scale,
+                 mat = mat)
 
     ## make it also an vim object
     tmp.cls <- class(output)
