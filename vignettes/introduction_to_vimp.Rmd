@@ -276,6 +276,7 @@ red.fit.lstat <- predict(red.mod.lstat)
 
 ## load the library
 library("vimp")
+library("dplyr")
 
 ## plug these into vim
 lm.vim.crim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.crim, indx = 1, run_regression = FALSE)
@@ -541,7 +542,7 @@ neigh.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_access,
                 indx = c(1, 2, 3, 4, 10, 11, 12, 13), run_regression = FALSE)
 
 ## combine and plot
-groups <- merge_vim(structure.vim, access.vim, neigh.vim, nox.vim)
+groups <- merge_vim(structure.vim, access.vim, neigh.vim, nox.vim) 
 nms.2 <- c("Neighborhood", "Structure", "Accessibility", "Nitrogen oxide")
 groups$mat %>% 
   mutate(plot_labels = nms.2) %>% 
