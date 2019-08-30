@@ -31,7 +31,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
         hyp_test <- NA
     } else {
         if (!cv) {
-            fold_nums <- unique(folds)
+            fold_nums <- unique(folds)[order(unique(folds))]
             ## point estimates of the risk
             predictiveness_full <- predictiveness_point_est(fitted_values = full, y = y[folds == fold_nums[1]], type = type, na.rm = na.rm)
             predictiveness_redu <- predictiveness_point_est(fitted_values = reduced, y = y[folds == fold_nums[2]], type = type, na.rm = na.rm)
