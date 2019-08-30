@@ -1,37 +1,39 @@
-# vimp 1.3.0
-
-## Major changes
-
-* added new function `vim`; each variable importance function is now a wrapper function around `vim` with the `type` argument filled in
-* each variable importance function now returns a p-value based on the (possibly conservative) hypothesis test against the null of zero importance (with the exception of `vimp_anova`)
-* each variable importance function now returns the estimates of the individual risks (with the exception of `vimp_anova`)
-
-## Minor changes
-
-None
-
-# vimp 1.2.1
-
-## Major changes
-
-* Added new functions `risk_estimator`, `risk_update`, `vimp_hypothesis_test`, `vimp_avg_value`
-* `cv_vim_nodonsker` is now deprecated; use `cv_vim` instead
-* All variable importance functions with the exception of `vimp_anova` now return the results of a (potentially conservative) hypothesis test against the null of zero importance
-
-## Minor changes
-
-None
-
-# vimp 1.2.0
+# vimp 2.0.0
 
 ## Major changes
 
 * Added new functions `vimp_auc`, `vimp_accuracy`, `vimp_deviance`, `vimp_rsquared`
 * `vimp_regression` is now deprecated; use `vimp_anova` instead
+* added new function `vim`; each variable importance function is now a wrapper function around `vim` with the `type` argument filled in
+* `cv_vim_nodonsker` is now deprecated; use `cv_vim` instead
+* each variable importance function now returns a p-value based on the (possibly conservative) hypothesis test against the null of zero importance (with the exception of `vimp_anova`)
+* each variable importance function now returns the estimates of the individual risks (with the exception of `vimp_anova`)
+* added new functions to compute measures of predictiveness (and cross-validated measures of predictiveness), along with their influence functions
 
 ## Minor changes
 
 None
+
+# vimp 1.1.6
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Changed tests to handle `gam` package update by switching library to `SL.xgboost`, `SL.step`, and `SL.mean`
+* Added small unit tests for internal functions
+
+# vimp 1.1.5
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Attempt to handle `gam` package update in unit tests
 
 # vimp 1.1.4
 
