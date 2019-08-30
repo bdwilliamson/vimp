@@ -44,8 +44,9 @@ full_fitted <- predict(full_fit)$pred
 reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
 reduced_fitted <- predict(reduced_fit)$pred
 ## some folds
-folds <- sample(1:2, length(full_fitted), replace = TRUE, prob = c(0.5, 0.5))
-fold_nums <- unique(folds)
+folds <- rep(seq_len(2), length = length(y))
+folds <- sample(folds)
+fold_nums <- seq_len(2)
 test_that("General variable importance estimates using externally-computed fitted values work", {
     ## expect a warning with no folds
     expect_warning(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE))
