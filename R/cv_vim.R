@@ -233,9 +233,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     ## create the output and return it
     ## create output tibble
-    mat <- tibble::tibble(s = indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], 
+    chr_indx <- paste(as.character(indx), collapse = ",")
+    mat <- tibble::tibble(s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], 
                           test = hyp_test$test, p_value = hyp_test$p_value)
-    output <- list(call = cl, s = indx,
+    output <- list(call = cl, s = chr_indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,

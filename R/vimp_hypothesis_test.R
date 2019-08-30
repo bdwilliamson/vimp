@@ -47,8 +47,6 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
 
             ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
             ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
-            hyp_test <- predictiveness_ci_full[1] > predictiveness_ci_redu[2]
-
             ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
             levels <- seq(0.0001, 1 - 0.0001, 0.0001)
             predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) vimp_ci(est = predictiveness_full, se = se_full, scale = scale, level = x)))
@@ -61,6 +59,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             } else {
                 p_value <- min(levels[hyp_tests], na.rm = na.rm)
             }
+            hyp_test <- p_value < alpha
 
         } else { ## V-fold CV; compute a p-value comparing predictiveness on each fold v = 1,...,V with reduced ones, average
                  ## testing decision is based on average p-value

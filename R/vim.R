@@ -131,8 +131,9 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
         ## get the fitted values on splits for hypothesis testing; not if full_type == "anova"
         if (full_type != "anova") {
-            folds <- sample(1:2, length(fhat_ful), replace = TRUE, prob = c(0.5, 0.5))
-            fold_nums <- unique(folds)
+            folds <- rep(seq_len(2), length = dim(Y)[1])
+            folds <- sample(folds)
+            fold_nums <- seq_len(2)
             split_full <- SuperLearner::SuperLearner(Y = Y[folds == fold_nums[1]], X = X[folds == fold_nums[1], , drop = FALSE], SL.library = SL.library, ...)
             split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == fold_nums[2]], X = X_minus_s[folds == fold_nums[2], , drop = FALSE], SL.library = SL.library, ...)
 
@@ -211,9 +212,10 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
     ## create the output and return it
     ## create output tibble
-    mat <- tibble::tibble(s = indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], 
+    chr_indx <- paste(as.character(indx), collapse = ",")
+    mat <- tibble::tibble(s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], 
                           test = hyp_test$test, p_value = hyp_test$p_value)
-    output <- list(call = cl, s = indx,
+    output <- list(call = cl, s = chr_indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,
