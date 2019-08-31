@@ -150,7 +150,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                 arg_lst$family <- stats::gaussian()
                 arg_lst$Y <- fitted_v
             } else {
-                # do nothing
+                arg_lst$Y <- Y[folds != v, , drop = FALSE]
+                # get the family
+                if (is.character(arg_lst$family)) 
+                    arg_lst$family <- get(arg_lst$family, mode = "function", envir = parent.frame())
             }
             arg_lst$X <- X[folds != v, -indx, drop = FALSE]
             arg_lst$SL.library <- SL.library
