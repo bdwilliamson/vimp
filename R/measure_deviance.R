@@ -26,10 +26,10 @@ measure_deviance <- function(fitted_values, y, weights = rep(1, length(y)), na.r
     p <- apply(weights*y_mult, 2, mean, na.rm = na.rm)
     denom_point_est <- (-1)*sum(log(p))
     cross_entropy <- 2*sum(diag(t(weights*y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
-    est <- cross_entropy/denom_point_est
+    est <- 1 - cross_entropy/denom_point_est
     ## influence curve
     ic_denom <- rowSums(-1/p*((y_mult == 1) - p))
     ic_cross_entropy <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - cross_entropy
-    grad <- matrix(c(1/denom_point_est, -cross_entropy/denom_point_est^2), nrow = 1)
+    grad <- matrix(c(-1/denom_point_est, cross_entropy/denom_point_est^2), nrow = 1)
     return(list(point_est = est, ic = weights*as.vector(grad%*%t(cbind(ic_cross_entropy, ic_denom)))))
 }

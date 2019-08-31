@@ -48,7 +48,7 @@ cv_predictiveness_point_est <- function(fitted_values, y, weights = rep(1, lengt
         }
         p <- apply(weights*y_mult, 2, mean, na.rm = na.rm)
         denom_point_est <- (-1)*sum(log(p))
-        point_ests <- point_ests/denom_point_est
+        point_ests <- 1 - point_ests/denom_point_est
         point_est <- mean(point_ests)
     }
     ## return it
