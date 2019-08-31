@@ -68,13 +68,13 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         denom_ic <- weights*rowSums(-1/p*((y_mult == 1) - p))
         ce_lst <- cv_predictiveness_point_est(fitted_values = fitted_values, y = y, weights = weights, folds = folds, type = type, na.rm = na.rm)
 
-        point_ests <- 1 - ce_lst$all_ests/denom_point_est
+        point_ests <- ce_lst$all_ests/denom_point_est
         point_est <- mean(point_ests)
 
         ## influence curve
-        grad <- matrix(c(-1/denom_point_est, ce_lst$point_est/denom_point_est^2), nrow = 1)
+        grad <- matrix(c(1/denom_point_est, -ce_lst$point_est/denom_point_est^2), nrow = 1)
         ic <- as.vector(grad %*% t(cbind(ic, denom_ic)))
-        grads <- cbind(-1/denom_point_est, ce_lst$all_ests/denom_point_est^2)
+        grads <- cbind(1/denom_point_est, -ce_lst$all_ests/denom_point_est^2)
         tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
             tmp_ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics[1:length(y[folds == v]), v], denom_ic[folds == v])))
