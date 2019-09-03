@@ -8,10 +8,14 @@
 #' @param f2 the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
-#' @param run_regression if outcome Y and covariates X are passed to \code{vimp_avg_value}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values. 
+#' @param run_regression if outcome Y and covariates X are passed to \code{vimp_avg_value}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
+#' @param f1_split the fitted values from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing).
+#' @param f2_split the fitted values from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).
+#' @param folds the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.
+#' @param scale scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and \code{vim_avg_value}. See Details for more information.
@@ -55,8 +59,8 @@
 #' learners <- "SL.gam"
 #'
 #' ## using Y and X
-#' est <- vimp_avg_value(y, x, indx = 2, 
-#'            alpha = 0.05, run_regression = TRUE, 
+#' est <- vimp_avg_value(y, x, indx = 2,
+#'            alpha = 0.05, run_regression = TRUE,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ## using pre-computed fitted values
@@ -67,14 +71,14 @@
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vimp_avg_value(Y = y, f1 = full.fit, f2 = red.fit, 
+#' est <- vimp_avg_value(Y = y, f1 = full.fit, f2 = red.fit,
 #'             indx = 2, run_regression = FALSE, alpha = 0.05)
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
 
 
-vimp_avg_value <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...) {
+vimp_avg_value <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, f1_split = NULL, f2_split = NULL, folds = NULL, scale = "identity", ...) {
   vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, weights = weights, type = "avg_value", run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm,
-        f1_split = f1_split, f2_split = f2_split, folds = folds, ...)
+        f1_split = f1_split, f2_split = f2_split, folds = folds, scale = scale, ...)
 }
