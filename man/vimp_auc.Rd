@@ -7,7 +7,8 @@
 vimp_auc(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
   length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet",
   "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
-  f1_split = NULL, f2_split = NULL, folds = NULL, ...)
+  f1_split = NULL, f2_split = NULL, folds = NULL, scale = "logit",
+  ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -36,6 +37,8 @@ vimp_auc(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
 
 \item{folds}{the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.}
 
+\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "logit")}
+
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
@@ -45,7 +48,7 @@ An object of classes \code{vim} and \code{vim_auc}. See Details for more informa
 Compute estimates of and confidence intervals for nonparametric difference in $AUC$-based variable importance.
 }
 \details{
-AUC for each regression (full and reduced) is computed using \code{\link[ROCR]{performance}}. 
+AUC for each regression (full and reduced) is computed using \code{\link[ROCR]{performance}}.
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
@@ -85,8 +88,8 @@ y <- matrix(rbinom(n, size = 1, prob = smooth))
 learners <- "SL.gam"
 
 ## using Y and X
-est <- vimp_auc(y, x, indx = 2, 
-           alpha = 0.05, run_regression = TRUE, 
+est <- vimp_auc(y, x, indx = 2,
+           alpha = 0.05, run_regression = TRUE,
            SL.library = learners, cvControl = list(V = 10))
 
 ## using pre-computed fitted values
@@ -97,7 +100,7 @@ reduced <- SuperLearner(Y = y, X = x[, -2, drop = FALSE],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vimp_auc(Y = y, f1 = full.fit, f2 = red.fit, 
+est <- vimp_auc(Y = y, f1 = full.fit, f2 = red.fit,
             indx = 2, run_regression = FALSE, alpha = 0.05)
 
 }

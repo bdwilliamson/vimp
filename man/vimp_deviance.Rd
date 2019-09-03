@@ -8,7 +8,7 @@ vimp_deviance(Y, X, f1 = NULL, f2 = NULL, indx = 1,
   weights = rep(1, length(Y)), run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
   na.rm = FALSE, f1_split = NULL, f2_split = NULL, folds = NULL,
-  ...)
+  scale = "identity", ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -36,6 +36,8 @@ vimp_deviance(Y, X, f1 = NULL, f2 = NULL, indx = 1,
 \item{f2_split}{the fitted values from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).}
 
 \item{folds}{the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.}
+
+\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -85,8 +87,8 @@ y <- matrix(stats::rbinom(n, size = 1, prob = smooth))
 learners <- "SL.gam"
 
 ## using Y and X
-est <- vimp_deviance(y, x, indx = 2, 
-           alpha = 0.05, run_regression = TRUE, 
+est <- vimp_deviance(y, x, indx = 2,
+           alpha = 0.05, run_regression = TRUE,
            SL.library = learners, cvControl = list(V = 10))
 
 ## using pre-computed fitted values
@@ -97,7 +99,7 @@ reduced <- SuperLearner(Y = y, X = x[, -2, drop = FALSE],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vimp_deviance(Y = y, f1 = full.fit, f2 = red.fit, 
+est <- vimp_deviance(Y = y, f1 = full.fit, f2 = red.fit,
             indx = 2, run_regression = FALSE, alpha = 0.05)
 
 }

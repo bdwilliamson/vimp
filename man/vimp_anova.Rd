@@ -6,7 +6,8 @@
 \usage{
 vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
   length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet",
-  "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, ...)
+  "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
+  scale = "logit", ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -28,6 +29,8 @@ vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
 \item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
+
+\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "logit")}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -79,8 +82,8 @@ y <- smooth + stats::rnorm(n, 0, 1)
 learners <- "SL.gam"
 
 ## using Y and X
-est <- vimp_anova(y, x, indx = 2, 
-           alpha = 0.05, run_regression = TRUE, 
+est <- vimp_anova(y, x, indx = 2,
+           alpha = 0.05, run_regression = TRUE,
            SL.library = learners, cvControl = list(V = 10))
 
 ## using pre-computed fitted values
@@ -91,7 +94,7 @@ reduced <- SuperLearner(Y = full.fit, X = x[, -2, drop = FALSE],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vimp_anova(Y = y, f1 = full.fit, f2 = red.fit, 
+est <- vimp_anova(Y = y, f1 = full.fit, f2 = red.fit,
             indx = 2, run_regression = FALSE, alpha = 0.05)
 
 }
