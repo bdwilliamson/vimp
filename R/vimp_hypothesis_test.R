@@ -48,12 +48,12 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
             ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
             ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
-            levels <- seq(0.0001, 1 - 0.0001, 0.0001)
+            levels <- seq(0.001, 1 - 0.001, 0.001)
             predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_full, se = se_full, level = x)))
             predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_redu, se = se_redu, level = x)))
             hyp_tests <- predictiveness_cis_full[, 1] > predictiveness_cis_redu[, 2]
             if (all(hyp_tests, na.rm = na.rm)) {
-                p_value <- 0.0001
+                p_value <- 0.001
             } else if (!any(hyp_tests, na.rm = na.rm)) {
                 p_value <- 1
             } else {
@@ -86,7 +86,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
                 if (is.na(se_full)) stop("Estimated standard error is NA. Consider re-running with na.rm = TRUE.")
                 ses_redu <- sapply(1:length(seq_len(V)[-v]), function(x) predictiveness_se(predictiveness_redus[x], ics_redu[, x], na.rm = na.rm))
                 ## compute a p-value
-                levels <- seq(0.0001, 1 - 0.0001, 0.0001)
+                levels <- seq(0.001, 1 - 0.001, 0.001)
                 ## get the lower limit of the full predictiveness CI; vector of length(levels)
                 predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_full, se = se_full, level = x)[, 1])
                 ## get the upper limit of the reduced predictiveness CI for each fold; dimension length(levels) by V - 1
@@ -97,7 +97,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
                 ## compute a p-value for each fold
                 check_fold_hyp_tests <- function(fold_hyp_tests) {
                     if (all(fold_hyp_tests, na.rm = na.rm)) {
-                        fold_p_value <- 0.0001
+                        fold_p_value <- 0.001
                     } else if (!any(fold_hyp_tests, na.rm = na.rm)) {
                         fold_p_value <- 1
                     } else {

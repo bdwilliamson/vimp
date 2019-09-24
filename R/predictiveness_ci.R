@@ -12,6 +12,15 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
 predictiveness_ci <- function(est, se, level = 0.95) {
-  ci <- vimp_ci(est, se, scale = "identity", level = level)
+  ## set up the level
+  a <- (1 - level)/2
+  a <- c(a, 1 - a)
+  
+  ## get the quantiles
+  fac <- stats::qnorm(a)
+  
+  ## create the ci
+  ci <- array(NA, dim = c(length(est), 2L), dimnames = list(names(est)))
+  ci[] <- est + (se) %o% fac
   return(ci)
 }
