@@ -7,6 +7,7 @@
 #' @export
 format.vim <- function(x, ...) {
   ## create the output matrix
+  nice_s <- function(x) ifelse(length(x) <= 10, paste(x, collapse = ", "), paste(c(x[1:10], "..."), collapse = ", "))
   ## if it is a combined object, we need to print the matrix instead
   if (!is.null(x$mat)) {
     ## combine the columns for cis
@@ -22,10 +23,11 @@ format.vim <- function(x, ...) {
     }
     
     ## tag on row names
-    print_s <- apply(matrix(x$s), 1, 
-                     function(x) ifelse(length(x) <= 10, 
-                                        paste(x, collapse = ", "), 
-                                        paste(c(x[1:10], "..."), collapse = ", ")))
+    print_s <- lapply(as.list(x$s), function(x) nice_s(strsplit(x, ",", fixed = TRUE)[[1]]))
+    # print_s <- apply(matrix(x$s), 1, 
+    #                  function(x) ifelse(length(x) <= 10, 
+    #                                     paste(x, collapse = ", "), 
+    #                                     paste(c(x[1:10], "..."), collapse = ", ")))
     rownames(output) <- paste("s = ", print_s, sep = "")
   } else {
     if (!any(grepl("anova", class(x)))) {
@@ -38,9 +40,7 @@ format.vim <- function(x, ...) {
                       paste("[", paste(format(x$ci, ...), collapse = ", "), "]", sep = ""))
     }
     
-    print_s <- ifelse(length(x$s) <= 10, 
-                      paste(x$s, collapse = ", "), 
-                      paste(c(x$s[1:10], "..."), collapse = ", "))
+    print_s <- nice_s(x$s)
     rownames(output) <- paste("s = ", print_s, sep = "")
   }
   col_nms <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))

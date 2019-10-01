@@ -128,7 +128,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     ## if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
         ## set up the cross-validation
-        folds <- rep(seq_len(V), length = dim(Y)[1])
+        folds <- rep_len(seq_len(V), dim(Y)[1])
         folds <- sample(folds)
         ## fit the super learner on each full/reduced pair
         fhat_ful <- list()
@@ -152,7 +152,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
             } else {
                 arg_lst$Y <- Y[folds != v, , drop = FALSE]
                 # get the family
-                if (is.character(arg_lst$family)) 
+                if (is.character(arg_lst$family))
                     arg_lst$family <- get(arg_lst$family, mode = "function", envir = parent.frame())
             }
             arg_lst$X <- X[folds != v, -indx, drop = FALSE]
@@ -237,7 +237,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     ## create the output and return it
     ## create output tibble
     chr_indx <- paste(as.character(indx), collapse = ",")
-    mat <- tibble::tibble(s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], 
+    mat <- tibble::tibble(s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2],
                           test = hyp_test$test, p_value = hyp_test$p_value)
     output <- list(call = cl, s = chr_indx,
                  SL.library = SL.library,

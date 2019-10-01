@@ -43,15 +43,16 @@
 #' learners <- "SL.gam"
 #'
 #' ## using Super Learner
-#' est_2 <- vimp_regression(Y = y, X = x, indx = 2, 
+#' est_2 <- vimp_regression(Y = y, X = x, indx = 2,
 #'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
-#' est_1 <- vimp_regression(Y = y, X = x, indx = 1, 
-#'            run_regression = TRUE, alpha = 0.05, 
+#' est_1 <- vimp_regression(Y = y, X = x, indx = 1,
+#'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ests <- merge_vim(est_1, est_2)
+#' @importFrom magrittr "%>%"
 #' @export
 merge_vim <- function(...) {
   ## capture the arguments
@@ -74,12 +75,12 @@ merge_vim <- function(...) {
   hyp_test_predictivenesses_reduced <- do.call(c, lapply(L, function(z) z$hyp_test_predictiveness_red))
   hyp_test_predictiveness_cis_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
   hyp_test_predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
-  
+
   ## put on names
   names(ests) <- "est"
   names(tests) <- "test"
   names(p_values) <- "p_value"
-  
+
   ## now get lists of the remaining components
   call <- match.call()
   updates <- lapply(L, function(z) z$update)
@@ -94,13 +95,13 @@ merge_vim <- function(...) {
 
   ## combine into a tibble
   mat <- tibble::tibble(s = s, est = ests, se = ses, cil = cis[, 1], ciu = cis[, 2],
-                        test = tests, p_value = p_values) %>% 
+                        test = tests, p_value = p_values, print_name = names(L)) %>%
     dplyr::arrange(desc(est))
 
   ## create output list
   output <- list(call = call,
               s = s, SL.library = SL.library, full_fit = full_fit,
-              red_fit = red_fit, est = mat$est, naive = naives, update = updates, 
+              red_fit = red_fit, est = mat$est, naive = naives, update = updates,
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
               predictiveness_full = predictivenesses_full,
               predictiveness_reduced = predictivenesses_reduced,

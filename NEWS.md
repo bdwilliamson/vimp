@@ -12,7 +12,7 @@
 
 ## Minor changes
 
-None
+* Return tibbles in cv_vim, vim, merge_vim, and average_vim
 
 # vimp 1.1.6
 
@@ -43,7 +43,7 @@ None
 
 ## Minor changes
 
-* `cv_vim` and`cv_vim_nodonsker` now return the cross-validation folds used within the function 
+* `cv_vim` and`cv_vim_nodonsker` now return the cross-validation folds used within the function
 
 # vimp 1.1.3
 
@@ -92,7 +92,7 @@ None
 
 ## Major changes
 
-* removed function `vim`, replaced with individual-parameter functions 
+* removed function `vim`, replaced with individual-parameter functions
 * added function `vimp_regression` to match Python package
 * `cv_vim` now can compute regression estimators
 * renamed all internal functions; these are now `vimp_ci`, `vimp_se`, `vimp_update`, `onestep_based_estimator`
