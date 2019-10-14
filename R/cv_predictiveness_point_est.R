@@ -32,7 +32,7 @@ cv_predictiveness_point_est <- function(fitted_values, y, weights = rep(1, lengt
         }
         point_est <- mean(point_ests)
     } else { # if type is anova, no plug-in from predictiveness
-        point_est <- NA
+        point_est <- point_ests <- NA
     }
     ## if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
     if (full_type == "r_squared") {
