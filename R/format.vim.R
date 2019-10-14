@@ -45,7 +45,7 @@ format.vim <- function(x, ...) {
   }
   col_nms <- c("Estimate", "SE", paste(100 - 100*x$alpha[[1]], "% CI", sep = ""))
   if (!any(grepl("anova", class(x)))) {
-    tmp <- c(col_nms, "VIMP > 0", "p_value")
+    tmp <- c(col_nms, paste0("VIMP > ", x$delta), "p-value")
     col_nms <- tmp
   } 
   if (grepl("log", x$scale) & !grepl("logit", x$scale)) {

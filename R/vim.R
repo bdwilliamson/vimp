@@ -12,6 +12,7 @@
 #' @param run_regression if outcome Y and covariates X are passed to \code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
+#' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param f1_split the fitted values from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing).
@@ -85,7 +86,7 @@
 #' @export
 
 
-vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, scale = "logit", na.rm = FALSE, f1_split = NULL, f2_split = NULL, folds = NULL, pval_tol = 1e-3, ...) {
+vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "logit", na.rm = FALSE, f1_split = NULL, f2_split = NULL, folds = NULL, pval_tol = 1e-3, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -202,7 +203,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
     ## perform a hypothesis test against the null of zero importance
     if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & full_type != "anova") {
-        hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, weights = weights, type = full_type, alpha = alpha, scale = scale, na.rm = na.rm, pval_tol = pval_tol)
+        hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, delta = delta, weights = weights, type = full_type, alpha = alpha, scale = scale, na.rm = na.rm, pval_tol = pval_tol)
     } else {
         hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA)
     }
@@ -234,6 +235,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
                  full_mod = full,
                  red_mod = reduced,
                  alpha = alpha,
+                 delta = delta,
                  y = Y,
                  weights = weights,
                  scale = scale,

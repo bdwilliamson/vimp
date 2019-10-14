@@ -16,6 +16,7 @@
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
+#' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param pval_tol tolerance level for p-value detection (defaults to 0.001)
@@ -111,7 +112,7 @@
 
 
 cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE,
-                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, scale = "logit", na.rm = FALSE, pval_tol = 1e-3, ...) {
+                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "logit", na.rm = FALSE, pval_tol = 1e-3, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -229,7 +230,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
     } else {
         ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
-        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, weights = weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm, pval_tol = pval_tol)
+        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, weights = weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm, pval_tol = pval_tol)
     }
 
     ## get the call
@@ -259,6 +260,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  full_mod = full,
                  red_mod = reduced,
                  alpha = alpha,
+                 delta = delta,
                  folds = folds,
                  y = Y,
                  weights = weights,

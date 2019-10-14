@@ -69,7 +69,7 @@
 #' @export
 
 
-vimp_regression <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, pval_tol = 1e-3, ...) {
+vimp_regression <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, pval_tol = 1e-3, ...) {
   .Deprecated("vimp_anova", package = "vimp", msg = "vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!")
-  vimp_anova(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, weights = weights, run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm, pval_tol = pval_tol, ...)
+  vimp_anova(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm, pval_tol = pval_tol, ...)
 }
