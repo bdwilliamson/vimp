@@ -1,14 +1,17 @@
 #' Nonparametric Variable Importance Estimates
 #'
-#' Compute estimates of and confidence intervals for nonparametric $R^2$- or ANOVA-based variable importance.
+#' Compute estimates of and confidence intervals for nonparametric ANOVA-based variable importance. This is a wrapper function for \code{cv_vim}, with \code{type = "anova"}. This function is deprecated in \code{vimp} version 2.0.0.
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
-#' @param f1 the fitted values from a flexible estimation technique regressing Y on X.
-#' @param f2 the fitted values from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}.
+#' @param f1 the predicted values on validation data from a flexible estimation technique regressing Y on X in the training data; a list of length V, where each object is a set of predictions on the validation data.
+#' @param f2 the predicted values on validation data from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, where each object is a set of predictions on the validation data.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
+#' @param V the number of folds for cross-validation, defaults to 10.
+#' @param folds the folds to use, if f1 and f2 are supplied.
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
-#' @param run_regression if outcome Y and covariates X are passed to \code{vimp_regression}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
+#' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
+#' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
@@ -57,21 +60,10 @@
 #' ## set up a library for SuperLearner
 #' learners <- "SL.gam"
 #'
-#' ## using Y and X
+#' ## estimate
 #' est <- vimp_regression(y, x, indx = 2,
 #'            alpha = 0.05, run_regression = TRUE,
 #'            SL.library = learners, cvControl = list(V = 10))
-#'
-#' ## using pre-computed fitted values
-#' full <- SuperLearner(Y = y, X = x,
-#' SL.library = learners, cvControl = list(V = 10))
-#' full.fit <- predict(full)$pred
-#' reduced <- SuperLearner(Y = full.fit, X = x[, -2, drop = FALSE],
-#' SL.library = learners, cvControl = list(V = 10))
-#' red.fit <- predict(reduced)$pred
-#'
-#' est <- vimp_regression(Y = y, f1 = full.fit, f2 = red.fit,
-#'             indx = 2, type = "anova", run_regression = FALSE, alpha = 0.05)
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
