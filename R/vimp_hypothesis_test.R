@@ -50,8 +50,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
             ## (since measures are R^2 [bigger = better], auc [bigger = better], accuracy [bigger = better])
             ## to get a p-value, apply the CIs to a range of levels; p-value is the largest at which we would still reject
             levels <- seq(pval_tol, 1 - pval_tol, pval_tol)
-            predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_full, se = se_full, level = x)))
-            predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_redu, se = se_redu, level = x)))
+            predictiveness_cis_full <- t(apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_full, se = se_full, level = x, one_sided = TRUE)))
+            predictiveness_cis_redu <- t(apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_redu, se = se_redu, level = x, one_sided = TRUE)))
             hyp_tests <- predictiveness_cis_full[, 1] > predictiveness_cis_redu[, 2]
             if (all(hyp_tests, na.rm = na.rm)) {
                 p_value <- pval_tol
@@ -89,10 +89,10 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, weights = rep(1, lengt
                 ## compute a p-value
                 levels <- seq(pval_tol, 1 - pval_tol, pval_tol)
                 ## get the lower limit of the full predictiveness CI; vector of length(levels)
-                predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_full, se = se_full, level = x)[, 1])
+                predictiveness_cis_ll_full <- apply(matrix(1 - levels), 1, function(x) predictiveness_ci(est = predictiveness_full, se = se_full, level = x, one_sided = TRUE)[, 1])
                 ## get the upper limit of the reduced predictiveness CI for each fold; dimension length(levels) by V - 1
                 predictiveness_cis_ul_redu <- t(apply(matrix(1 - levels), 1, function(x) sapply(1:(V - 1), function(v) predictiveness_ci(est = predictiveness_redus[v], se = ses_redu[v],
-                                                                                                                level = x)[, 2])))
+                                                                                                                level = x, one_sided = TRUE)[, 2])))
                 ## compare lower limit of full predictiveness CI to all upper limits of reduced predictiveness cis
                 hyp_tests <- t(apply(matrix(1:dim(predictiveness_cis_ul_redu)[1]), 1, function(x) predictiveness_cis_ll_full[x] > predictiveness_cis_ul_redu[x, ]))
                 ## compute a p-value for each fold
