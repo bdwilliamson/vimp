@@ -16,6 +16,7 @@
 #' @param f2_split the fitted values from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).
 #' @param folds the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.
 #' @param scale scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "logit")
+#' @param pval_tol tolerance level for p-value detection (defaults to 0.001)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and \code{vim_accuracy}. See Details for more information.
@@ -78,8 +79,6 @@
 #' @export
 
 
-vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE,
-                          f1_split = NULL, f2_split = NULL, folds = NULL, scale = "logit", ...) {
-    vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, weights = weights, type = "accuracy", run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm,
-        f1_split = f1_split, f2_split = f2_split, folds = folds, scale = scale,...)
+vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, f1_split = NULL, f2_split = NULL, folds = NULL, scale = "logit", pval_tol = 1e-3, ...) {
+    vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, weights = weights, type = "accuracy", run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm, f1_split = f1_split, f2_split = f2_split, folds = folds, scale = scale, pval_tol = pval_tol, ...)
 }
