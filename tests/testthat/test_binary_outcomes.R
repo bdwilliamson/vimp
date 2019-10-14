@@ -52,17 +52,29 @@ full_fitted <- predict(full_fit)$pred
 reduced_fit <- SuperLearner(Y = y, X = x[, -1, drop = FALSE], SL.library = learners, family = "binomial", cvControl = list(V = 3))
 reduced_fitted <- predict(reduced_fit)$pred
 
+est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2, family = "binomial",
+                     env = environment())
 test_that("Accuracy-based variable importance works", {
-  est <- vimp_accuracy(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
   expect_equal(est$est, t_acc[1], tolerance = 0.02)
+  
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "accuracy")
+  expect_equal(est_noncv$est, t_acc[1], tolerance = 0.02)
 })
 
 test_that("AUC-based variable importance works", {
-  est <- vimp_auc(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
+  est <- vimp_auc(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = 2,
+                  env = environment())
   expect_equal(est$est, t_auc[1], tolerance = 0.02)
+  
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "auc")
+  expect_equal(est_noncv$est, t_auc[1], tolerance = 0.02)
 })
 
 test_that("Deviance-based variable importance works", {
-  est <- vimp_deviance(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1)
+  est <- vimp_deviance(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = 2,
+                       env = environment())
   expect_equal(est$est, t_dev[1], tolerance = 0.02)
+  
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "deviance")
+  expect_equal(est_noncv$est, t_dev[1], tolerance = 0.02)
 })

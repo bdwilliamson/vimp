@@ -26,19 +26,24 @@ full_fitted <- predict(full_fit)$pred
 reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
 reduced_fitted <- predict(reduced_fit)$pred
 
-test_that("ANOVA-based R^2 with pre-computed fitted values and old function name works", {
+test_that("ANOVA-based R^2 with old function name works", {
   ## check deprecated message
-  expect_warning(vimp_regression(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2))
+  expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2))
 })
 
 test_that("ANOVA-based R^2 with pre-computed fitted values works", {
-    est <- vimp_anova(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2)
+    est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2, type = "anova")
     ## check that the estimate is nearly correct
     expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
 })
 
 test_that("R^2-based variable importance works", {
-  est <- vimp_rsquared(Y = y, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2)
+  est <- vimp_rsquared(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 2, V = 2, env = environment())
+  ## check that the estimate is nearly correct
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
+})
+test_that("R^2-based variable importance without cross-validation works", {
+  est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, type = "r_squared", run_regression = FALSE, indx = 2)
   ## check that the estimate is nearly correct
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
 })

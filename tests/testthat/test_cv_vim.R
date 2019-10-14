@@ -20,7 +20,7 @@ learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 
 test_that("Cross-validated variable importance using internally-computed regressions works", {
   est <- cv_vim(Y = y, X = x, indx = 2, V = 3, type = "r_squared", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, cvControl = list(V = 3),
+                SL.library = learners, alpha = 0.05, delta = 1e-3, cvControl = list(V = 3),
                 env = environment(), na.rm = TRUE)
   ## check variable importance estimate
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
@@ -65,7 +65,7 @@ for (v in 1:V) {
                                                       newdata = x[folds == v, -indx, drop = FALSE])$pred
 }
 test_that("Cross-validated variable importance using externally-computed regressions works", {
-  est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
+  est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2, delta = 1e-3,
   V = 3, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
   ## check variable importance estimate
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)

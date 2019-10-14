@@ -37,8 +37,8 @@ reduced_fit_2 <- SuperLearner(Y = full_fitted_2, X = x[-samp, -2, drop = FALSE],
 reduced_fitted_2 <- predict(reduced_fit_2)$pred
 
 test_that("Averaging variable importance estimates works", {
-  est_1 <- vimp_rsquared(Y = y[samp], f1 = full_fitted_1, f2 = reduced_fitted_1, run_regression = FALSE, indx = 2)
-  est_2 <- vimp_rsquared(Y = y[-samp], f1 = full_fitted_2, f2 = reduced_fitted_2, run_regression = FALSE, indx = 2)
+  est_1 <- vim(Y = y[samp], f1 = full_fitted_1, f2 = reduced_fitted_1, run_regression = FALSE, indx = 2, type = "r_squared")
+  est_2 <- vim(Y = y[-samp], f1 = full_fitted_2, f2 = reduced_fitted_2, run_regression = FALSE, indx = 2, type = "r_squared")
 
   est <- average_vim(est_1, est_2)
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.02)
