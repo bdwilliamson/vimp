@@ -14,6 +14,7 @@
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
+#' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param scale scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")
 #' @param pval_tol tolerance level for p-value detection (defaults to 0.001)
 #' @param ... other arguments to the estimation tool, see "See also".
@@ -67,6 +68,6 @@
 #' @export
 
 
-vimp_avg_value <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, na.rm = FALSE, folds = NULL, scale = "identity", pval_tol = 1e-3, ...) {
-  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "avg_value", run_regression = run_regression, SL.library = SL.library, alpha = alpha, na.rm = na.rm, folds = folds, scale = scale, pval_tol = pval_tol, ...)
+vimp_avg_value <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, scale = "identity", pval_tol = 1e-3, ...) {
+  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "avg_value", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, scale = scale, pval_tol = pval_tol, ...)
 }

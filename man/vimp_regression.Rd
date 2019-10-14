@@ -7,7 +7,7 @@
 vimp_regression(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
   weights = rep(1, length(Y)), run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  na.rm = FALSE, pval_tol = 0.001, ...)
+  delta = 0, na.rm = FALSE, pval_tol = 0.001, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -29,6 +29,8 @@ vimp_regression(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 
 \item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
+
+\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 

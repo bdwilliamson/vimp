@@ -4,7 +4,7 @@
 \alias{vimp_hypothesis_test}
 \title{Perform a hypothesis test against the null hypothesis of \eqn{\delta} importance}
 \usage{
-vimp_hypothesis_test(full, reduced, y, folds, delta = 0.001,
+vimp_hypothesis_test(full, reduced, y, folds, delta = 0,
   weights = rep(1, length(y)), type = "r_squared", alpha = 0.05,
   cv = FALSE, scale = "logit", na.rm = FALSE, pval_tol = 0.001)
 }
@@ -17,7 +17,7 @@ vimp_hypothesis_test(full, reduced, y, folds, delta = 0.001,
 
 \item{folds}{the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression (if V = 2).}
 
-\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.001.}
+\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
 
 \item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
