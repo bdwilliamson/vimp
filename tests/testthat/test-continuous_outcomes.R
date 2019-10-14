@@ -28,7 +28,7 @@ reduced_fitted <- predict(reduced_fit)$pred
 
 test_that("ANOVA-based R^2 with old function name works", {
   ## check deprecated message
-  expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2))
+  expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2, env = environment()))
 })
 
 test_that("ANOVA-based R^2 with pre-computed fitted values works", {
