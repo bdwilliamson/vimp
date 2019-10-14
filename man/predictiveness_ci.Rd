@@ -4,7 +4,7 @@
 \alias{predictiveness_ci}
 \title{Confidence intervals for measures of predictiveness}
 \usage{
-predictiveness_ci(est, se, level = 0.95)
+predictiveness_ci(est, se, level = 0.95, one_sided = FALSE)
 }
 \arguments{
 \item{est}{estimate of predictiveness, e.g., from a call to \code{predictiveness_point_est}.}
@@ -12,6 +12,8 @@ predictiveness_ci(est, se, level = 0.95)
 \item{se}{estimate of the standard error of \code{est}, e.g., from a call to \code{vimp_se}.}
 
 \item{level}{confidence interval type (defaults to 0.95).}
+
+\item{one_sided}{should one-sided intervals be returned? (defaults to \code{FALSE})}
 }
 \value{
 The Wald-based confidence interval for the true predictiveness of the given group of covariates.

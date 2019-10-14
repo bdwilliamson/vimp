@@ -52,12 +52,12 @@ y <- smooth + stats::rnorm(n, 0, 1)
 learners <- "SL.gam"
 
 ## using Super Learner
-est_2 <- vimp_regression(Y = y, X = x, indx = 2, 
+est_2 <- vimp_regression(Y = y, X = x, indx = 2,
            run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
-est_1 <- vimp_regression(Y = y, X = x, indx = 1, 
-           run_regression = TRUE, alpha = 0.05, 
+est_1 <- vimp_regression(Y = y, X = x, indx = 1,
+           run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 10))
 
 ests <- merge_vim(est_1, est_2)
