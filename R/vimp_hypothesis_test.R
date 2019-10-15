@@ -78,8 +78,8 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
                 ses_redu <- rep(NA, V)
                 ses_redu[-v] <- sapply(seq_len(V)[-v], function(x) predictiveness_se(predictiveness_redus[x], ics_redu[, x], na.rm = na.rm))
                 ## compute a p-value
-                test_statistics <- sapply(seq_len(V)[-v], function(x) (predictiveness_fulls[v] - predictiveness_redus[x] - delta)/(se_full + ses_redu[x]))
-                p_values[[v]] <- mean(1 - pnorm(test_statistics))
+                test_statistic <- (predictiveness_fulls[v] - mean(predictiveness_redus[-v]) - delta)/(se_full + mean(ses_redu, na.rm = TRUE))
+                p_values[[v]] <- 1 - pnorm(test_statistic)
             }
             ## average the p-values, make a testing decision
             p_value <- mean(unlist(p_values))
