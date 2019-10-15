@@ -17,6 +17,7 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
   SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
 }
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
+vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2, env = environment())
 
 ## fit the data with all covariates
 full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, cvControl = list(V = 3))

@@ -279,19 +279,19 @@ library("vimp")
 library("dplyr")
 
 ## plug these into vim
-lm.vim.crim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.crim, indx = 1, run_regression = FALSE)
-lm.vim.zn <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.zn, indx = 2, run_regression = FALSE)
-lm.vim.indus <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.indus, indx = 3, run_regression = FALSE)
-lm.vim.chas <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.chas, indx = 4, run_regression = FALSE)
-lm.vim.nox <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.nox, indx = 5, run_regression = FALSE)
-lm.vim.rm <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rm, indx = 6, run_regression = FALSE)
-lm.vim.age <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.age, indx = 7, run_regression = FALSE)
-lm.vim.dis <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.dis, indx = 8, run_regression = FALSE)
-lm.vim.rad <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rad, indx = 9, run_regression = FALSE)
-lm.vim.tax <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.tax, indx = 10, run_regression = FALSE)
-lm.vim.ptratio <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.ptratio, indx = 11, run_regression = FALSE)
-lm.vim.black <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.black, indx = 12, run_regression = FALSE)
-lm.vim.lstat <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit.lstat, indx = 13, run_regression = FALSE)
+lm.vim.crim <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.crim, indx = 1, run_regression = FALSE, type = "r_squared")
+lm.vim.zn <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.zn, indx = 2, run_regression = FALSE, type = "r_squared")
+lm.vim.indus <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.indus, indx = 3, run_regression = FALSE, type = "r_squared")
+lm.vim.chas <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.chas, indx = 4, run_regression = FALSE, type = "r_squared")
+lm.vim.nox <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.nox, indx = 5, run_regression = FALSE, type = "r_squared")
+lm.vim.rm <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rm, indx = 6, run_regression = FALSE, type = "r_squared")
+lm.vim.age <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.age, indx = 7, run_regression = FALSE, type = "r_squared")
+lm.vim.dis <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.dis, indx = 8, run_regression = FALSE, type = "r_squared")
+lm.vim.rad <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rad, indx = 9, run_regression = FALSE, type = "r_squared")
+lm.vim.tax <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.tax, indx = 10, run_regression = FALSE, type = "r_squared")
+lm.vim.ptratio <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.ptratio, indx = 11, run_regression = FALSE, type = "r_squared")
+lm.vim.black <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.black, indx = 12, run_regression = FALSE, type = "r_squared")
+lm.vim.lstat <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit.lstat, indx = 13, run_regression = FALSE, type = "r_squared")
 
 ## make a table with the estimates using the merge_vim() function
 lm.mat <- merge_vim(lm.vim.crim, lm.vim.zn, lm.vim.indus, lm.vim.chas,
@@ -360,13 +360,14 @@ The main function for R-squared-based variable importance in the `vimp` package 
 - `f1` and `f2`, the fitted values from a sequential regression procedure; or `X`, the covariates
 - `indx`, which determines the feature I want to estimate variable importance for
 - `run_regression`, which determines whether or not the sequential regression procedure is run on `Y` and `X`
+- `V`, the number of cross-validation folds to use for computing variable importance
 
 There are two ways to compute importance:
 
-1. Supply outcome `Y`, covariates `X`, and a library of learners (e.g., `learners` above) with `run_regression = TRUE`
-2. Supply outcome `Y` and fitted values for estimates of $\mu_{P_0}$ and $\mu_{P_0, s}$ with `run_regression = FALSE`
+1. Supply outcome `Y`, covariates `X`, and a library of learners (e.g., `learners` above) with `run_regression = TRUE` and specified `V`
+2. Supply outcome `Y` and fitted values for cross-fit estimates of $\mu_{P_0}$ and $\mu_{P_0, s}$ with `run_regression = FALSE` and vector of folds `folds`
 
-I will illustrate each of these choices in order below, but in practice I use (3), since it allows the most flexibility, and all time-intensive computation occurs before calling `vimp_rsquared()`; however, this involves more work on your end. 
+I will illustrate each of these choices in order below, but in practice I use (1), because there is less overhead prior to obtaining variable importance estimates. 
 
 Suppose that the first feature that I want to estimate variable importance for is nitrogen oxide, `nox`. Since this is the first feature, say I choose (1) above. Then supplying `vimp_rsquared()` with 
 
@@ -390,7 +391,7 @@ Boston2 <- Boston[, 1:13]
 
 ## now estimate variable importance
 vimp_rsquared(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
-    indx = 5, run_regression = TRUE, SL.library = learners)
+    indx = 5, run_regression = TRUE, SL.library = learners, V = 5)
 ```
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue. 
@@ -408,7 +409,7 @@ learners.2 <- c("SL.glmnet")
 
 ## now estimate variable importance
 nox.vim <- vimp_rsquared(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
-    indx = 5, run_regression = TRUE, SL.library = learners.2)
+    indx = 5, run_regression = TRUE, SL.library = learners.2, V = 5, na.rm = TRUE)
 ```
 
 This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vimp_rsquared()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
@@ -428,19 +429,19 @@ I said earlier that I want to obtain estimates of all individual features in the
 
 ```{r, message = FALSE}
 ## specify that full.fit doesn't change
-full.fit <- nox.vim$full_fit
+full.fit <- do.call(c, nox.vim$full_fit)
 
 ## estimate variable importance for the average number of rooms
 reduced_fit <- SuperLearner::SuperLearner(Y = full.fit, X = Boston2[, -c(1, 6), drop = FALSE], SL.library = learners.2)
 red.fit <- predict(reduced_fit)$pred
-rm.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = red.fit, indx = 6, run_regression = FALSE)
+rm.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = red.fit, indx = 6, run_regression = FALSE, type = "r_squared")
 
 rm.vim
 ```
 
 This takes approximately 5 seconds --- now rather than estimating both conditional means, I am only estimating one.
 
-If I choose (2), then I have to use a single method from the library, or call `SuperLearner()` myself, prior to estimating variable importance. Then `vimp_rsquared()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
+If I choose (2), then I have to use a single method from the library, or call `SuperLearner()` myself, prior to estimating variable importance. Then `vim()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
 
 ```{r}
 ## set up the data
@@ -452,50 +453,50 @@ reduced.fit <- predict(reduced.mod)$pred
 ## this takes 2 seconds
 
 ## estimate variable importance
-dis.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced.fit, indx = 8, run_regression = FALSE)
+dis.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced.fit, indx = 8, run_regression = FALSE, type = "r_squared")
 ```
 
 I can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
 ```{r}
 reduced_crim <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(1, 14)], SL.library = learners.2))$pred
-crim.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_crim,
-                indx = 1, run_regression = FALSE)
+crim.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_crim,
+                indx = 1, run_regression = FALSE, type = "r_squared")
 
 reduced_zn <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(2, 14)], SL.library = learners.2))$pred
-zn.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_zn,
-                indx = 2, run_regression = FALSE)
+zn.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_zn,
+                indx = 2, run_regression = FALSE, type = "r_squared")
 
 reduced_indus <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(3, 14)], SL.library = learners.2))$pred
-indus.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_indus,
-                indx = 3, run_regression = FALSE)
+indus.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_indus,
+                indx = 3, run_regression = FALSE, type = "r_squared")
 
 reduced_chas <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(4, 14)], SL.library = learners.2))$pred
-chas.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_chas,
-                indx = 4, run_regression = FALSE)
+chas.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_chas,
+                indx = 4, run_regression = FALSE, type = "r_squared")
 
 reduced_age <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(7, 14)], SL.library = learners.2))$pred
-age.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_age,
-                indx = 7, run_regression = FALSE)
+age.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_age,
+                indx = 7, run_regression = FALSE, type = "r_squared")
 
 reduced_rad <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(9, 14)], SL.library = learners.2))$pred
-rad.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_rad,
-                indx = 9, run_regression = FALSE)
+rad.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_rad,
+                indx = 9, run_regression = FALSE, type = "r_squared")
 
 reduced_tax <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(10, 14)], SL.library = learners.2))$pred
-tax.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_tax,
-                indx = 10, run_regression = FALSE)
+tax.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_tax,
+                indx = 10, run_regression = FALSE, type = "r_squared")
 
 reduced_ptratio <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(11, 14)], SL.library = learners.2))$pred
-ptratio.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_ptratio,
-                indx = 11, run_regression = FALSE)
+ptratio.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_ptratio,
+                indx = 11, run_regression = FALSE, type = "r_squared")
 
 reduced_black <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(12, 14)], SL.library = learners.2))$pred
-black.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_black,
-                indx = 12, run_regression = FALSE)
+black.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_black,
+                indx = 12, run_regression = FALSE, type = "r_squared")
 
 reduced_lstat <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(13, 14)], SL.library = learners.2))$pred
-lstat.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_lstat,
-                indx = 13, run_regression = FALSE)
+lstat.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_lstat,
+                indx = 13, run_regression = FALSE, type = "r_squared")
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
@@ -532,14 +533,14 @@ The only difference between estimating variable importance for a group of featur
 ```{r, fig.width = 8.5, fig.height = 8}
 ## get the estimates
 reduced_struct <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(6, 7, 14)], SL.library = learners.2))$pred
-structure.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_struct, indx = c(6, 7), run_regression = FALSE)
+structure.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_struct, indx = c(6, 7), run_regression = FALSE, type = "r_squared")
 
 reduced_access <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(8, 9, 14)], SL.library = learners.2))$pred
-access.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_access, indx = c(8, 9), run_regression = FALSE)
+access.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_access, indx = c(8, 9), run_regression = FALSE, type = "r_squared")
 
 reduced_neigh <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(1, 2, 3, 4, 10, 11, 12, 13, 14)], SL.library = learners.2))$pred
-neigh.vim <- vimp_rsquared(Y = Boston$medv, f1 = full.fit, f2 = reduced_access,
-                indx = c(1, 2, 3, 4, 10, 11, 12, 13), run_regression = FALSE)
+neigh.vim <- vim(Y = Boston$medv, f1 = full.fit, f2 = reduced_access,
+                indx = c(1, 2, 3, 4, 10, 11, 12, 13), run_regression = FALSE, type = "r_squared")
 
 ## combine and plot
 groups <- merge_vim(structure.vim, access.vim, neigh.vim, nox.vim) 

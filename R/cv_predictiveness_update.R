@@ -23,12 +23,12 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
     measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA, measure_mse, measure_cross_entropy)
     measure_func <- measure_funcs[pmatch(type, types)]
-
+    
+    V <- length(unique(folds))
+    max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
+    ics <- matrix(NA, nrow = max_nrow, ncol = V)
     ## calculate the necessary pieces for the influence curve
     if (!is.na(measure_func)) {
-        V <- length(unique(folds))
-        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
-        ics <- matrix(NA, nrow = max_nrow, ncol = V)
         ic <- vector("numeric", length(y))
         for (v in 1:V) {
             ics[1:length(y[folds == v]), v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], weights[folds == v], na.rm)$ic
@@ -36,7 +36,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
         }
         # ic <- rowMeans(ics, na.rm = TRUE)
     } else { # if type is anova, no plug-in from predictiveness
-        ic <- NA
+        ic <- rep(NA, length(y))
     }
     ## if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
     if (full_type == "r_squared") {
