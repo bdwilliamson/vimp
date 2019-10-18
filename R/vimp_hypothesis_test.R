@@ -48,7 +48,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
             predictiveness_ci_redu <- predictiveness_ci(est = predictiveness_redu, se = predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm), level = 1 - alpha)
 
             ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
-            test_statistic <- (predictiveness_full - predictiveness_redu - delta)/(se_full + se_redu)
+            test_statistic <- (predictiveness_full - predictiveness_redu - delta)/(sqrt(se_full^2 + se_redu^2))
             p_value <- 1 - pnorm(test_statistic)
             hyp_test <- p_value < alpha
 
@@ -78,7 +78,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
                 ses_redu <- rep(NA, V)
                 ses_redu[-v] <- sapply(seq_len(V)[-v], function(x) predictiveness_se(predictiveness_redus[x], ics_redu[, x], na.rm = na.rm))
                 ## compute a p-value
-                test_statistic <- (predictiveness_fulls[v] - mean(predictiveness_redus[-v]) - delta)/(se_full + mean(ses_redu, na.rm = TRUE))
+                test_statistic <- (predictiveness_fulls[v] - mean(predictiveness_redus[-v]) - delta)/(sqrt(se_full^2 + mean(ses_redu, na.rm = TRUE)^2))
                 p_values[[v]] <- 1 - pnorm(test_statistic)
             }
             ## average the p-values, make a testing decision
