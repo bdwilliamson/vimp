@@ -117,6 +117,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
     if (missing(f2) & missing(X)) stop("You must enter either X or fitted values for the reduced regression.")
+    ## if indx is outside the range of X, stop and throw an error
+    if (!missing(X) & any(indx > dim(X)[2])) stop("One of the feature indices in 'indx' is larger than the total number of features in X. Please specify a new index subgroup in 'indx'.")
 
     ## check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
     if(is.null(dim(Y))) Y <- as.matrix(Y)
