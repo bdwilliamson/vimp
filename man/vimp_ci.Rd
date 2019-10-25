@@ -4,14 +4,14 @@
 \alias{vimp_ci}
 \title{Confidence intervals for variable importance}
 \usage{
-vimp_ci(est, se, scale = "log", level = 0.95)
+vimp_ci(est, se, scale = "identity", level = 0.95)
 }
 \arguments{
 \item{est}{estimate of variable importance, e.g., from a call to \code{vimp_point_est}.}
 
 \item{se}{estimate of the standard error of \code{est}, e.g., from a call to \code{vimp_se}.}
 
-\item{scale}{scale to compute interval estimate on (defaults to "log": compute SE and CI on log scale and back-transform).}
+\item{scale}{scale to compute interval estimate on (defaults to "identity": compute SE and CI on log scale and back-transform).}
 
 \item{level}{confidence interval type (defaults to 0.95).}
 }

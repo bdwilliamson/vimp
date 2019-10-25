@@ -7,8 +7,8 @@
 vim(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
   length(Y)), type = "r_squared", run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, scale = "logit", na.rm = FALSE, f1_split = NULL,
-  f2_split = NULL, folds = NULL, pval_tol = 0.001, ...)
+  delta = 0, scale = "identity", na.rm = FALSE, f1_split = NULL,
+  f2_split = NULL, folds = NULL, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -42,8 +42,6 @@ vim(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
 \item{f2_split}{the fitted values from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).}
 
 \item{folds}{the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.}
-
-\item{pval_tol}{tolerance level for p-value detection (defaults to 0.001)}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

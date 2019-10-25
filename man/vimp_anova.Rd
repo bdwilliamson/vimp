@@ -7,7 +7,7 @@
 vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
   weights = rep(1, length(Y)), run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, na.rm = FALSE, scale = "logit", pval_tol = 0.001, ...)
+  delta = 0, na.rm = FALSE, scale = "identity", ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -34,15 +34,15 @@ vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
-\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "logit")}
-
-\item{pval_tol}{tolerance level for p-value detection (defaults to 0.001)}
+\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
 
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
+
+\item{pval_tol}{tolerance level for p-value detection (defaults to 0.001)}
 }
 \value{
 An object of classes \code{vim} and \code{vim_regression}. See Details for more information.

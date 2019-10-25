@@ -6,7 +6,7 @@
 \usage{
 vimp_hypothesis_test(full, reduced, y, folds, delta = 0,
   weights = rep(1, length(y)), type = "r_squared", alpha = 0.05,
-  cv = FALSE, scale = "logit", na.rm = FALSE, pval_tol = 0.001)
+  cv = FALSE, scale = "identity", na.rm = FALSE)
 }
 \arguments{
 \item{full}{either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
@@ -30,8 +30,6 @@ vimp_hypothesis_test(full, reduced, y, folds, delta = 0,
 \item{scale}{scale to compute CI on ("identity" for identity scale, "logit" for logit scale and back-transform)}
 
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
-
-\item{pval_tol}{tolerance level for p-value detection (defaults to 0.001)}
 }
 \value{
 \code{TRUE} if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, \code{FALSE}.

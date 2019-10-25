@@ -7,8 +7,7 @@
 vimp_accuracy(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
   weights = rep(1, length(Y)), run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, na.rm = FALSE, folds = NULL, scale = "logit",
-  pval_tol = 0.001, ...)
+  delta = 0, na.rm = FALSE, folds = NULL, scale = "identity", ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -37,9 +36,7 @@ vimp_accuracy(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
 
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
 
-\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "logit")}
-
-\item{pval_tol}{tolerance level for p-value detection (defaults to 0.001)}
+\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 

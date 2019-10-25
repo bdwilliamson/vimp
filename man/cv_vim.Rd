@@ -7,8 +7,8 @@
 cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
   folds = NULL, weights = rep(1, length(Y)), type = "r_squared",
   run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, delta = 0, scale = "logit",
-  na.rm = FALSE, pval_tol = 0.001, ...)
+  "SL.mean"), alpha = 0.05, delta = 0, scale = "identity",
+  na.rm = FALSE, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -40,8 +40,6 @@ cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
 \item{scale}{should CIs be computed on original ("identity") or logit ("logit") scale?}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
-
-\item{pval_tol}{tolerance level for p-value detection (defaults to 0.001)}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
