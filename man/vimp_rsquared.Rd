@@ -7,7 +7,7 @@
 vimp_rsquared(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
   weights = rep(1, length(Y)), run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, na.rm = FALSE, folds = NULL, pval_tol = 0.001, ...)
+  delta = 0, na.rm = FALSE, folds = NULL, ...)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -35,8 +35,6 @@ vimp_rsquared(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
-
-\item{pval_tol}{tolerance level for p-value detection (defaults to 0.001)}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 
