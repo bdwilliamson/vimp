@@ -53,25 +53,21 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
             ## all point estimates
             predictiveness_full_lst <- cv_predictiveness_point_est(full, y, folds = folds, type = full_type, na.rm = na.rm)
             predictiveness_redu_lst <- cv_predictiveness_point_est(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
-            # predictiveness_full <- predictiveness_full_lst$point_est
-            # predictiveness_redu <- predictiveness_redu_lst$point_est
             predictiveness_fulls <- predictiveness_full_lst$all_ests
             predictiveness_redus <- predictiveness_redu_lst$all_ests
             ## all ics
             ic_full_lst <- cv_predictiveness_update(full, y, folds = folds, type = full_type, na.rm = na.rm)
             ic_redu_lst <- cv_predictiveness_update(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
-            # ic_full <- ic_full_lst$ic
-            # ic_redu <- ic_redu_lst$ic
             ics_full <- ic_full_lst$all_ics
             ics_redu <- ic_redu_lst$all_ics
             ## compute point estimate, SE based on first group of folds
             predictiveness_full <- mean(predictiveness_fulls[groups == 1])
             ic_full <- rowMeans(ics_full[, groups == 1, drop = FALSE])
-            se_full <- predictiveness(predictiveness_full, ic_full, na.rm = na.rm)
+            se_full <- predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm)
             ## compute point estimate, SE based on second group of folds
             predictiveness_redu <- mean(predictiveness_redus[groups == 2])
             ic_redu <- rowMeans(ics_redu[, groups == 1, drop = FALSE])
-            se_redu <- predictiveness(predictiveness_redu, ic_redu, na.rm = na.rm)
+            se_redu <- predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm)
         }
         ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
         test_statistic <- (predictiveness_full - predictiveness_redu - delta)/(sqrt(se_full^2 + se_redu^2))
