@@ -43,51 +43,43 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
             ic_redu <- predictiveness_update(fitted_values = reduced, y = y[folds == fold_nums[2]], weights = weights[folds == fold_nums[2]], type = type, na.rm = na.rm)
             se_full <- predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm)
             se_redu <- predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm)
-            ## CIs for both predictivenesses
-            predictiveness_ci_full <- predictiveness_ci(est = predictiveness_full, se = predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm), level = 1 - alpha)
-            predictiveness_ci_redu <- predictiveness_ci(est = predictiveness_redu, se = predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm), level = 1 - alpha)
 
-            ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
-            test_statistic <- (predictiveness_full - predictiveness_redu - delta)/(sqrt(se_full^2 + se_redu^2))
-            p_value <- 1 - pnorm(test_statistic)
-            hyp_test <- p_value < alpha
-
-        } else { ## V-fold CV; compute a p-value comparing predictiveness on each fold v = 1,...,V with reduced ones, average
-                 ## testing decision is based on average p-value
+        } else { ## V-fold CV; split total number of folds into two groups, average within groups, compare across
             V <- length(unique(folds))
-            p_values <- vector("list", length = V)
+            groups <- rep(seq_len(2), length = V)
+            groups <- sample(groups)
+            # p_values <- vector("list", length = V)
 
             ## all point estimates
             predictiveness_full_lst <- cv_predictiveness_point_est(full, y, folds = folds, type = full_type, na.rm = na.rm)
             predictiveness_redu_lst <- cv_predictiveness_point_est(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
-            predictiveness_full <- predictiveness_full_lst$point_est
-            predictiveness_redu <- predictiveness_redu_lst$point_est
+            # predictiveness_full <- predictiveness_full_lst$point_est
+            # predictiveness_redu <- predictiveness_redu_lst$point_est
             predictiveness_fulls <- predictiveness_full_lst$all_ests
             predictiveness_redus <- predictiveness_redu_lst$all_ests
             ## all ics
             ic_full_lst <- cv_predictiveness_update(full, y, folds = folds, type = full_type, na.rm = na.rm)
             ic_redu_lst <- cv_predictiveness_update(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
-            ic_full <- ic_full_lst$ic
-            ic_redu <- ic_redu_lst$ic
+            # ic_full <- ic_full_lst$ic
+            # ic_redu <- ic_redu_lst$ic
             ics_full <- ic_full_lst$all_ics
             ics_redu <- ic_redu_lst$all_ics
-            ## compute CI, hypothesis test for each fold
-            for (v in 1:V) {
-                se_full <- predictiveness_se(predictiveness_fulls[v], ics_full[, v], na.rm = na.rm)
-                if (is.na(se_full)) stop("Estimated standard error is NA. Consider re-running with na.rm = TRUE.")
-                ses_redu <- rep(NA, V)
-                ses_redu[-v] <- sapply(seq_len(V)[-v], function(x) predictiveness_se(predictiveness_redus[x], ics_redu[, x], na.rm = na.rm))
-                ## compute a p-value
-                test_statistic <- (predictiveness_fulls[v] - mean(predictiveness_redus[-v]) - delta)/(sqrt(se_full^2 + mean(ses_redu, na.rm = TRUE)^2))
-                p_values[[v]] <- 1 - pnorm(test_statistic)
-            }
-            ## average the p-values, make a testing decision
-            p_value <- mean(unlist(p_values))
-            hyp_test <- p_value < alpha
-            ## compute cis
-            predictiveness_ci_full <- predictiveness_ci(predictiveness_full, predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm), level = 1 - alpha)
-            predictiveness_ci_redu <- predictiveness_ci(predictiveness_redu, predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm), level = 1 - alpha)
+            ## compute point estimate, SE based on first group of folds
+            predictiveness_full <- mean(predictiveness_fulls[groups == 1])
+            ic_full <- rowMeans(ics_full[, groups == 1, drop = FALSE])
+            se_full <- predictiveness(predictiveness_full, ic_full, na.rm = na.rm)
+            ## compute point estimate, SE based on second group of folds
+            predictiveness_redu <- mean(predictiveness_redus[groups == 2])
+            ic_redu <- rowMeans(ics_redu[, groups == 1, drop = FALSE])
+            se_redu <- predictiveness(predictiveness_redu, ic_redu, na.rm = na.rm)
         }
+        ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
+        test_statistic <- (predictiveness_full - predictiveness_redu - delta)/(sqrt(se_full^2 + se_redu^2))
+        p_value <- 1 - pnorm(test_statistic)
+        hyp_test <- p_value < alpha
+        ## CIs for both predictivenesses
+        predictiveness_ci_full <- predictiveness_ci(est = predictiveness_full, se = predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm), level = 1 - alpha)
+        predictiveness_ci_redu <- predictiveness_ci(est = predictiveness_redu, se = predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm), level = 1 - alpha)
     }
     return(list(test = hyp_test, p_value = p_value, predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu,
               predictiveness_ci_full = predictiveness_ci_full, predictiveness_ci_reduced = predictiveness_ci_redu))
