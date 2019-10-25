@@ -15,7 +15,6 @@
 #' @param cv was V-fold cross-validation used to estimate the predictiveness (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.
 #' @param scale scale to compute CI on ("identity" for identity scale, "logit" for logit scale and back-transform)
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
-#' @param pval_tol tolerance level for p-value detection (defaults to 0.001)
 #'
 #' @return \code{TRUE} if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, \code{FALSE}.
 #'
@@ -23,7 +22,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = rep(1, length(y)), type = "r_squared", alpha = 0.05, cv = FALSE, scale = "identity", na.rm = FALSE, pval_tol = 1e-3) {
+vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = rep(1, length(y)), type = "r_squared", alpha = 0.05, cv = FALSE, scale = "identity", na.rm = FALSE) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
