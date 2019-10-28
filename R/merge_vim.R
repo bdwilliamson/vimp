@@ -94,9 +94,11 @@ merge_vim <- function(...) {
   scale <- unique(unlist(lapply(L, function(z) z$scale)))
 
   ## combine into a tibble
-  mat <- tibble::tibble(s = s, est = ests, se = ses, cil = cis[, 1], ciu = cis[, 2],
-                        test = tests, p_value = p_values, print_name = names(L)) %>%
+  mat <- do.call(dplyr::bind_rows, lapply(L, function(z) z$mat)) %>% 
     dplyr::arrange(desc(est))
+  # mat <- tibble::tibble(s = s, est = ests, se = ses, cil = cis[, 1], ciu = cis[, 2],
+  #                       test = tests, p_value = p_values, print_name = names(L)) %>%
+  #   dplyr::arrange(desc(est))
 
   ## create output list
   output <- list(call = call,

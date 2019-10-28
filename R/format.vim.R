@@ -23,11 +23,7 @@ format.vim <- function(x, ...) {
     }
     
     ## tag on row names
-    print_s <- lapply(as.list(x$s), function(x) nice_s(strsplit(x, ",", fixed = TRUE)[[1]]))
-    # print_s <- apply(matrix(x$s), 1, 
-    #                  function(x) ifelse(length(x) <= 10, 
-    #                                     paste(x, collapse = ", "), 
-    #                                     paste(c(x[1:10], "..."), collapse = ", ")))
+    print_s <- lapply(as.list(x$mat$s), function(x) nice_s(strsplit(x, ",", fixed = TRUE)[[1]]))
     rownames(output) <- paste("s = ", print_s, sep = "")
   } else {
     if (!any(grepl("anova", class(x)))) {
