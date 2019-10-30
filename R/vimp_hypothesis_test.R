@@ -47,7 +47,6 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
             V <- length(unique(folds))
             groups <- rep(seq_len(2), length = V)
             groups <- sample(groups)
-            # p_values <- vector("list", length = V)
 
             ## all point estimates
             predictiveness_full_lst <- cv_predictiveness_point_est(full, y, folds = folds, type = full_type, na.rm = na.rm)
@@ -65,7 +64,7 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
             se_full <- predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm)
             ## compute point estimate, SE based on second group of folds
             predictiveness_redu <- mean(predictiveness_redus[groups == 2])
-            ic_redu <- rowMeans(ics_redu[, groups == 1, drop = FALSE])
+            ic_redu <- rowMeans(ics_redu[, groups == 2, drop = FALSE])
             se_redu <- predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm)
         }
         ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)
