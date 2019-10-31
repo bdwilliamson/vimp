@@ -230,7 +230,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     ## compute a hypothesis test against the null of zero importance
     ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks
     if (type == "regression" | type == "anova") {
-        hyp_test <- list(test = NA, p_value = NA, risk_full = NA, risk_reduced = NA)
+        hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA, predictiveness_ci_full = rep(NA, 2), predictiveness_ci_reduced = rep(NA, 2), se_full = NA, se_redu = NA, test_statistic = NA)
     } else {
         ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
         hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, weights = weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm)
@@ -262,6 +262,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  hyp_test_predictiveness_ci_reduced = hyp_test$predictiveness_ci_reduced,
                  hyp_test_se_full = hyp_test$se_full,
                  hyp_test_se_reduced = hyp_test$se_redu,
+                 test_statistic = hyp_test$test_statistic,
                  full_mod = full,
                  red_mod = reduced,
                  alpha = alpha,

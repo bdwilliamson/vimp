@@ -77,5 +77,5 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
     }
     return(list(test = hyp_test, p_value = p_value, predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu,
               predictiveness_ci_full = predictiveness_ci_full, predictiveness_ci_reduced = predictiveness_ci_redu,
-              se_full = se_full, se_redu = se_redu))
+              se_full = se_full, se_redu = se_redu, test_statistic = test_statistic))
 }

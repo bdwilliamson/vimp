@@ -80,6 +80,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	hyp_test_predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
   	hyp_test_ses_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_se_full))
   	hyp_test_ses_redu <- do.call(rbind, lapply(L, function(z) z$hyp_test_se_reduced))
+  	test_statistics <- do.call(rbind, lapply(L, function(z) z$test_statistic))
   	delta <- min(do.call(c, lapply(L, function(z) z$delta)))
   	scale <- unique(unlist(lapply(L, function(z) z$scale)))
 
@@ -105,7 +106,8 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha, scale = scale[1])
 
   	## hypothesis test:
-  	test_statistic <- (hyp_test_predictiveness_full - hyp_test_predictiveness_redu - delta)/sqrt(hyp_test_se_full^2 + hyp_test_se_redu^2)
+  	# test_statistic <- (hyp_test_predictiveness_full - hyp_test_predictiveness_redu - delta)/sqrt(hyp_test_se_full^2 + hyp_test_se_redu^2)
+  	test_statistic <- sum(weights * test_statistics)
   	p_value <- 1 - pnorm(test_statistic)
   	hyp_test <- p_value < alpha
   	

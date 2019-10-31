@@ -208,7 +208,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & full_type != "anova") {
         hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, delta = delta, weights = weights, type = full_type, alpha = alpha, scale = scale, na.rm = na.rm)
     } else {
-        hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA, predictiveness_ci_full = rep(NA, 2), predictiveness_ci_reduced = rep(NA, 2), se_full = NA, se_redu = NA)
+        hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA, predictiveness_ci_full = rep(NA, 2), predictiveness_ci_reduced = rep(NA, 2), se_full = NA, se_redu = NA, test_statistic = NA)
     }
 
     ## get the call
@@ -237,6 +237,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
                  hyp_test_predictiveness_ci_reduced = hyp_test$predictiveness_ci_reduced,
                  hyp_test_se_full = hyp_test$se_full,
                  hyp_test_se_reduced = hyp_test$se_redu,
+                 test_statistic = hyp_test$test_statistic,
                  full_mod = full,
                  red_mod = reduced,
                  alpha = alpha,
