@@ -78,8 +78,11 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	hyp_test_predictivenesses_reduced <- do.call(c, lapply(L, function(z) z$hyp_test_predictiveness_red))
   	hyp_test_predictiveness_cis_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
   	hyp_test_predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
+  	hyp_test_ses_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_se_full))
+  	hyp_test_ses_redu <- do.call(rbind, lapply(L, function(z) z$hyp_test_se_reduced))
+  	delta <- min(do.call(c, lapply(L, function(z) z$delta)))
   	scale <- unique(unlist(lapply(L, function(z) z$scale)))
-  	
+
   	names(ests) <- "est"
   	names(ses) <- "se"
    names(naives) <- "naive"
@@ -88,17 +91,22 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	est_avg <- sum(weights*ests)
   	predictiveness_full <- sum(weights*predictivenesses_full)
   	predictiveness_reduced <- sum(weights*predictivenesses_reduced)
+  	hyp_test_predictiveness_full <- sum(weights*hyp_test_predictivenesses_full)
+  	hyp_test_predictiveness_redu <- sum(weights*hyp_test_predictivenesses_reduced)
 
   	## combine the variances correctly
   	## will need to use the covariance, if not independent
   	se_avg <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(ses^2))
+  	hyp_test_se_full <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(hyp_test_ses_full^2))
+  	hyp_test_se_redu <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(hyp_test_ses_redu^2))
 
   	## create a CI
   	alpha <- min(unlist(lapply(L, function(z) z$alpha)))
   	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha, scale = scale[1])
 
   	## hypothesis test:
-  	p_value <- sum(weights*p_values)
+  	test_statistic <- (hyp_test_predictiveness_full - hyp_test_predictiveness_redu - delta)/sqrt(hyp_test_se_full^2 + hyp_test_se_redu^2)
+  	p_value <- 1 - pnorm(test_statistic)
   	hyp_test <- p_value < alpha
   	
   	## now get lists of the remaining components
@@ -136,14 +144,18 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
               predictiveness_ci_reduced = sum(weights*predictiveness_cis_reduced),
               test = hyp_test,
               p_value = p_value,
-              hyp_test_predictiveness_full = sum(weights*hyp_test_predictivenesses_full),
-              hyp_test_predictiveness_red = sum(weights*hyp_test_predictivenesses_reduced),
+              hyp_test_predictiveness_full = hyp_test_predictiveness_full,
+              hyp_test_predictiveness_reduced = hyp_test_predictiveness_redu,
               hyp_test_predictiveness_ci_full = ret_hyp_test_predictiveness_cis_full,
               hyp_test_predictiveness_ci_reduced = ret_hyp_test_predictiveness_cis_reduced,
+              hyp_test_se_full = hyp_test_se_full,
+              hyp_test_se_reduced = hyp_test_se_redu,
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
               alpha = alpha,
+              delta = delta,
               scale = scale)
+    
     tmp <- class(output)
     classes <- unlist(lapply(L, function(z) class(z)[2]))
     class(output) <- c("vim", classes, tmp)

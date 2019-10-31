@@ -260,6 +260,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  hyp_test_predictiveness_reduced = hyp_test$predictiveness_reduced,
                  hyp_test_predictiveness_ci_full = hyp_test$predictiveness_ci_full,
                  hyp_test_predictiveness_ci_reduced = hyp_test$predictiveness_ci_reduced,
+                 hyp_test_se_full = hyp_test$se_full,
+                 hyp_test_se_reduced = hyp_test$se_redu,
                  full_mod = full,
                  red_mod = reduced,
                  alpha = alpha,
