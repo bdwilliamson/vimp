@@ -75,7 +75,9 @@ merge_vim <- function(...) {
   hyp_test_predictivenesses_reduced <- do.call(c, lapply(L, function(z) z$hyp_test_predictiveness_red))
   hyp_test_predictiveness_cis_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
   hyp_test_predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
-
+  delta <- min(do.call(c, lapply(L, function(z) z$delta)))
+  scale <- unique(unlist(lapply(L, function(z) z$scale)))
+  
   ## put on names
   names(ests) <- "est"
   names(tests) <- "test"
@@ -96,9 +98,6 @@ merge_vim <- function(...) {
   ## combine into a tibble
   mat <- do.call(dplyr::bind_rows, lapply(L, function(z) z$mat)) %>% 
     dplyr::arrange(desc(est))
-  # mat <- tibble::tibble(s = s, est = ests, se = ses, cil = cis[, 1], ciu = cis[, 2],
-  #                       test = tests, p_value = p_values, print_name = names(L)) %>%
-  #   dplyr::arrange(desc(est))
 
   ## create output list
   output <- list(call = call,
@@ -118,6 +117,7 @@ merge_vim <- function(...) {
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
               alpha = alpha,
+              delta = delta,
               scale = scale)
   tmp <- class(output)
   classes <- unlist(lapply(L, function(z) class(z)[2]))
