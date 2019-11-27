@@ -151,7 +151,7 @@ Next, create some data:
 ## problem setup
 ## -------------------------------------------------------------
 ## set up the data
-n <- 100
+n <- 1000
 p <- 2
 s <- 1 # desire importance for X_1
 x <- data.frame(replicate(p, runif(n, -1, 1)))
@@ -175,12 +175,15 @@ library("SuperLearner")
 ## load specific algorithms
 library("gam")
 library("xgboost")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
 ```
 
 The code
 ```{r}
 est_1 <- vimp_rsquared(Y = y, X = x, indx = 1, run_regression = TRUE, 
-SL.library = c("SL.xgboost", "SL.mean"))
+SL.library = c("SL.xgboost1", "SL.mean"), V = 3, env = environment())
 ```
 
 uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:
@@ -189,7 +192,7 @@ est_1
 print(est_1)
 ```
 
-This output shows that we have estimated the importance of $X_2$ to be 0.51, with a 95% confidence interval of [0.37, 0.65].
+This output shows that we have estimated the importance of $X_1$ to be `r round(est_1$est, 3)`, with a 95% confidence interval of `r paste0("[", round(est_1$ci[,1], 3), ", ", round(est_1$ci[, 2], 3), "]")`.
 
 ## Detailed guide
 
@@ -396,7 +399,7 @@ vimp_rsquared(Y = Boston$medv, X = Boston2[, -1, drop = FALSE],
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue. 
 
-However, for the sake of illustration, I can estimate varibable importance for nitrogen oxide only using only two base learners as follows:
+However, for the sake of illustration, I can estimate varibable importance for nitrogen oxide only using only one base learner as follows:
 ```{r, message = FALSE}
 ## load the library
 library("vimp")
@@ -405,14 +408,17 @@ library("vimp")
 Boston2 <- Boston[, 1:13]
 
 ## new learners library, with only one learner for illustration only
-learners.2 <- c("SL.glmnet")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
+learners.2 <- c("SL.xgboost1")
 
 ## now estimate variable importance
-nox.vim <- vimp_rsquared(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
-    indx = 5, run_regression = TRUE, SL.library = learners.2, V = 5, na.rm = TRUE)
+nox.vim <- vim(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
+    indx = 5, run_regression = TRUE, SL.library = learners.2, na.rm = TRUE, env = environment(), type = "r_squared")
 ```
 
-This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vimp_rsquared()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
+This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vim()` with `run_regression = TRUE` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
 
 ```{r}
 nox.vim
@@ -429,7 +435,7 @@ I said earlier that I want to obtain estimates of all individual features in the
 
 ```{r, message = FALSE}
 ## specify that full.fit doesn't change
-full.fit <- do.call(c, nox.vim$full_fit)
+full.fit <- nox.vim$full_fit
 
 ## estimate variable importance for the average number of rooms
 reduced_fit <- SuperLearner::SuperLearner(Y = full.fit, X = Boston2[, -c(1, 6), drop = FALSE], SL.library = learners.2)
@@ -509,13 +515,42 @@ ests <- merge_vim(crim.vim, zn.vim, indus.vim, chas.vim,
                 nox.vim, rm.vim, age.vim, dis.vim, rad.vim,
                 tax.vim, ptratio.vim, black.vim, lstat.vim)
 
-## create a vector of names; must be in the same order as the
-## mat object in ests
-nms <- c("Prop. lower status", "Avg. num. rooms", "Pupil-teacher ratio", "Nitrogen oxide", "Distance", "Crime", "Access to radial hwys", "Property tax rate", "Charles riv.", "Prop. black", "Prop. business", "Prop. large zoned", "Age")
+get_nm <- function(s) {
+  if (s == 1) {
+    return("Crime")
+  } else if (s == 2) {
+    return("Prop. business")
+  } else if (s == 3) {
+    return("Prop. indus")
+  } else if (s == 4) {
+    return("Charles riv.")
+  } else if (s == 5) {
+    return("Nitrogen oxide")
+  } else if (s == 6) {
+    return("Avg. num. rooms")
+  } else if (s == 7) {
+    return("Age")
+  } else if (s == 8) {
+    return("Distance")
+  } else if (s == 9) {
+    return("Access to radial hwys")
+  } else if (s == 10) {
+    return("Property tax rate")
+  } else if (s == 11) {
+    return("Pupil-teacher ratio")
+  } else if (s == 12) {
+    return("Prop. black")
+  } else if (s == 13) {
+    return("Prop. lower status")
+  }
+}
+get_nms <- function(ests) {
+  return(apply(matrix(as.numeric(ests$s)), 1, get_nm))
+}
 
 ## plot
 ests$mat %>% 
-  mutate(plot_labels = nms) %>% 
+  mutate(plot_labels = get_nms(ests$mat)) %>% 
   ggplot(aes(x = est, y = plot_labels)) +
   geom_point() +
   geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
