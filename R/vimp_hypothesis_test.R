@@ -7,7 +7,7 @@
 #' @param full either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).
 #' @param reduced fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates; either (i) a single set of predictions (if \code{cv = FALSE}) fit on an independent split of the data from \code{full} or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).
 #' @param y the outcome.
-#' @param folds the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression (if V = 2).
+#' @param folds the folds used for splitting. If \code{cv = FALSE}, assumed to be a vector with 1 for the full regression and 2 for the reduced regression (if V = 2). If \code{cv = TRUE}, assumed to be a list with first element the outer folds (for hypothesis testing) and second element a list with the inner cross-validation folds.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?
@@ -43,28 +43,24 @@ vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = r
             se_full <- predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm)
             se_redu <- predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm)
 
-        } else { ## V-fold CV; split total number of folds into two groups, average within groups, compare across
-            V <- length(unique(folds))
-            groups <- rep(seq_len(2), length = V)
-            groups <- sample(groups)
-
+        } else {
             ## all point estimates
-            predictiveness_full_lst <- cv_predictiveness_point_est(full, y, folds = folds, type = full_type, na.rm = na.rm)
-            predictiveness_redu_lst <- cv_predictiveness_point_est(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
+            predictiveness_full_lst <- cv_predictiveness_point_est(full, y[folds[[1]] == 1, , drop = FALSE], folds = folds[[2]][[1]], type = full_type, na.rm = na.rm)
+            predictiveness_redu_lst <- cv_predictiveness_point_est(reduced, y[folds[[1]] == 2, , drop = FALSE], folds = folds[[2]][[2]], type = full_type, na.rm = na.rm)
             predictiveness_fulls <- predictiveness_full_lst$all_ests
             predictiveness_redus <- predictiveness_redu_lst$all_ests
             ## all ics
-            ic_full_lst <- cv_predictiveness_update(full, y, folds = folds, type = full_type, na.rm = na.rm)
-            ic_redu_lst <- cv_predictiveness_update(reduced, y, folds = folds, type = full_type, na.rm = na.rm)
+            ic_full_lst <- cv_predictiveness_update(full, y[folds[[1]] == 1, , drop = FALSE], folds = folds[[2]][[1]], type = full_type, na.rm = na.rm)
+            ic_redu_lst <- cv_predictiveness_update(reduced, y[folds[[1]] == 2, , drop = FALSE], folds = folds[[2]][[2]], type = full_type, na.rm = na.rm)
             ics_full <- ic_full_lst$all_ics
             ics_redu <- ic_redu_lst$all_ics
             ## compute point estimate, SE based on first group of folds
-            predictiveness_full <- mean(predictiveness_fulls[groups == 1])
-            ic_full <- rowMeans(ics_full[, groups == 1, drop = FALSE])
+            predictiveness_full <- mean(predictiveness_fulls)
+            ic_full <- rowMeans(ics_full)
             se_full <- predictiveness_se(predictiveness_full, ic_full, na.rm = na.rm)
             ## compute point estimate, SE based on second group of folds
-            predictiveness_redu <- mean(predictiveness_redus[groups == 2])
-            ic_redu <- rowMeans(ics_redu[, groups == 2, drop = FALSE])
+            predictiveness_redu <- mean(predictiveness_redus)
+            ic_redu <- rowMeans(ics_redu)
             se_redu <- predictiveness_se(predictiveness_redu, ic_redu, na.rm = na.rm)
         }
         ## hypothesis test (check that lower bound of full is bigger than upper bound of reduced)

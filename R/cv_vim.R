@@ -10,7 +10,7 @@
 #' @param f2 the predicted values on validation data from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, where each object is a set of predictions on the validation data.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
 #' @param V the number of folds for cross-validation, defaults to 10.
-#' @param folds the folds to use, if f1 and f2 are supplied.
+#' @param folds the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-validation).
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
@@ -43,7 +43,7 @@
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
-#'  \item{folds}{ - the folds used for cross-validation}
+#'  \item{folds}{ - the folds used for hypothesis testing and cross-validation}
 #'  \item{y}{ - the outcome}
 #'  \item{weights}{ - the weights}
 #'  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
@@ -108,10 +108,7 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-
-
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE,
-                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, ...) {
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -133,40 +130,41 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     ## if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
         ## set up the cross-validation
-        folds <- rep_len(seq_len(V), dim(Y)[1])
-        folds <- sample(folds)
+        outer_folds <- rep_len(seq_len(2), dim(Y)[1])
+        outer_folds <- sample(outer_folds)
+        inner_folds_1 <- rep_len(seq_len(V), dim(Y[outer_folds == 1, ])[1])
+        inner_folds_1 <- sample(inner_folds_1)
+        inner_folds_2 <- rep_len(seq_len(V), dim(Y[outer_folds == 2, ])[1])
+        inner_folds_2 <- sample(inner_folds_2)
         ## fit the super learner on each full/reduced pair
         fhat_ful <- list()
         fhat_red <- list()
         for (v in 1:V) {
             ## fit super learner
-            fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE],
-                                        X = X[folds != v, , drop = FALSE], SL.library = SL.library, ...)
+            fit <- SuperLearner::SuperLearner(Y = Y[outer_folds == 1, , drop = FALSE][inner_folds_1 != v, , drop = FALSE], X = X[outer_folds == 1, , drop = FALSE][folds != v, , drop = FALSE], SL.library = SL.library, ...)
             fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
             ## get predictions on the validation fold
-            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
-                                                          newdata = X[folds == v, , drop = FALSE])$pred
+            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE])$pred
             ## fit the super learner on the reduced covariates:
             ## if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
             arg_lst <- list(...)
             if (length(unique(fitted_v)) == 1) {
-                arg_lst$Y <- Y[folds != v, , drop = FALSE]
+                arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
             } else if (type == "r_squared" | type == "anova") {
                 arg_lst$family <- stats::gaussian()
-                arg_lst$Y <- fitted_v
+                fit_2 <- SuperLearner::SuperLearner(Y = Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], X = X[outer_folds == 2, , drop = FALSE][folds != v, , drop = FALSE], SL.library = SL.library, ...)
+                arg_lst$Y <- SuperLearner::predict.SuperLearner(fit_2)$pred
             } else {
-                arg_lst$Y <- Y[folds != v, , drop = FALSE]
+                arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
                 # get the family
                 if (is.character(arg_lst$family))
                     arg_lst$family <- get(arg_lst$family, mode = "function", envir = parent.frame())
             }
-            arg_lst$X <- X[folds != v, -indx, drop = FALSE]
+            arg_lst$X <- X[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, -indx, drop = FALSE]
             arg_lst$SL.library <- SL.library
             red <- do.call(SuperLearner::SuperLearner, arg_lst)
             ## get predictions on the validation fold
-            fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
-                                                          newdata = X[folds == v, -indx, drop = FALSE])$pred
-
+            fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[outer_folds == 2, , drop = FALSE][inner_folds_2 == v, -indx, drop = FALSE])$pred
         }
         full <- reduced <- NA
 
@@ -176,13 +174,17 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         if (is.null(Y)) stop("Y must be entered.")
         if (is.null(f1)) stop("You must specify a list of predicted values from a regression of Y on X.")
         if (is.null(f2)) stop("You must specify a list of predicted values from a regression of the fitted values from the Y on X regression on the reduced set of covariates.")
-        if (is.null(folds)) stop("You must specify a vector of folds.")
+        if (is.null(folds)) stop("You must specify a list of folds.")
         if (length(f1) != V) stop("The number of folds from the full regression must be the same length as the number of folds.")
         if (length(f2) != V) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
         if (full_type == "anova") warning("Hypothesis testing is not available for ANOVA-based variable importance.")
         ## set up the fitted value objects (both are lists!)
         fhat_ful <- f1
         fhat_red <- f2
+        ## set up the folds objects
+        outer_folds <- folds[[1]]
+        inner_folds_1 <- folds[[2]][[1]]
+        inner_folds_2 <- folds[[2]][[2]]
 
         full <- reduced <- NA
 
@@ -201,8 +203,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     } else { # compute all point ests, ics for hypothesis test
         est <- ests[2]
         naive <- NA
-        predictiveness_full <- cv_predictiveness_point_est(fitted_values = fhat_ful, y = Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)$point_est
-        predictiveness_redu <- cv_predictiveness_point_est(fitted_values = fhat_red, y = Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)$point_est
+        predictiveness_full <- cv_predictiveness_point_est(fitted_values = fhat_ful, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, weights = weights[outer_folds == 1], type = full_type, na.rm = na.rm)$point_est
+        predictiveness_redu <- cv_predictiveness_point_est(fitted_values = fhat_red, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est
     }
 
     ## compute the update
@@ -224,8 +226,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     ## calculate the confidence interval
     ci <- vimp_ci(est, se, scale = scale, 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y, folds, weights, type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, cv_predictiveness_update(fhat_red, Y, folds, weights, type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y[outer_folds == 1, , drop = FALSE], inner_folds_1, weights[outer_folds == 1], type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, cv_predictiveness_update(fhat_red, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
 
     ## compute a hypothesis test against the null of zero importance
     ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks

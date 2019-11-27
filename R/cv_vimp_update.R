@@ -5,6 +5,7 @@
 #' @param full fitted values from a regression of the outcome on the full set of covariates; a list of length V, where each object is a set of predictions on the validation data.
 #' @param reduced fitted values from a regression of the fitted values from the full regression on the reduced set of covariates; a list of length V, where each object is a set of predictions on the validation data.
 #' @param y the outcome.
+#' @param folds a list of outer and inner folds (outer for hypothesis testing, inner for cross-validation)
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?
 #' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
@@ -24,8 +25,8 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## get ICs
-    ic_full_lst <- cv_predictiveness_update(fitted_values = full, y = y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
-    ic_redu_lst <- cv_predictiveness_update(fitted_values = reduced, y = y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    ic_full_lst <- cv_predictiveness_update(fitted_values = full, y = y[folds[[1]] == 1, , drop = FALSE], folds = folds[[2]][[1]], weights = weights[folds[[1]] == 1], type = full_type, na.rm = na.rm)
+    ic_redu_lst <- cv_predictiveness_update(fitted_values = reduced, y = y[folds[[1]] == 2, , drop = FALSE], folds = folds[[2]][[2]], weights = weights[folds[[1]] == 2], type = full_type, na.rm = na.rm)
     ic_full <- ic_full_lst$ic
     ic_redu <- ic_redu_lst$ic
     ics_full <- ic_full_lst$all_ics
@@ -36,11 +37,14 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         ic <- ic_full - ic_redu
         ics <- ics_full - ics_redu
     } else {
-        V <- length(unique(folds))
-        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
+        V <- length(unique(folds[[2]][[1]]))
+        all_folds <- vector("numeric", length(y))
+        all_folds[folds[[1]] == 1] <- folds[[2]][[1]]
+        all_folds[folds[[1]] == 2] <- folds[[2]][[2]]
+        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[all_folds == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            ics[1:length(y[folds == v]), v] <- weights[folds == v]*(2*(y[folds == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))
+            ics[1:length(y[all_folds == v]), v] <- weights[all_folds == v]*(2*(y[all_folds == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))
         }
         ic <- rowMeans(ics, na.rm = TRUE)
     }

@@ -41,7 +41,9 @@ cv_predictiveness_point_est <- function(fitted_values, y, weights = rep(1, lengt
         point_est <- mean(point_ests)
     }
     if (full_type == "deviance") {
-        if (is.null(dim(y)) | dim(y)[2] == 1) { # assume that zero is in first column
+        if (is.null(dim(y))) { # assume that zero is in first column
+            y_mult <- cbind(1 - y, y)
+        } else if (dim(y)[2] == 1) {
             y_mult <- cbind(1 - y, y)
         } else {
             y_mult <- y
