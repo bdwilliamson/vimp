@@ -38,15 +38,13 @@ cv_vimp_update <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         ics <- ics_full - ics_redu
     } else {
         V <- length(unique(folds[[2]][[1]]))
-        all_folds <- vector("numeric", length(y))
-        all_folds[folds[[1]] == 1] <- folds[[2]][[1]]
-        all_folds[folds[[1]] == 2] <- folds[[2]][[2]]
-        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[all_folds == x])))
+        max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == x])))
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        ic <- vector("numeric", dim(y[folds[[1]] == 1, , drop = FALSE])[1])
         for (v in 1:V) {
-            ics[1:length(y[all_folds == v]), v] <- weights[all_folds == v]*(2*(y[all_folds == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))
+            ics[1:length(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v]), v] <- weights[folds[[1]] == 1][folds[[2]][[1]] == v]*(2*(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))
+            ic[folds[[2]][[1]] == v] <- ics[1:length(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v]), v]
         }
-        ic <- rowMeans(ics, na.rm = TRUE)
     }
     return(list(ic = ic, all_ics = ics))
 }

@@ -33,10 +33,8 @@ cv_vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y
         point_ests <- point_est_full_lst$all_ests - point_est_redu_lst$all_ests
         corrected_est <- NA
     } else {
-        all_folds <- vector("numeric", length(y))
-        all_folds[folds[[1]] == 1] <- folds[[2]][[1]]
-        all_folds[folds[[1]] == 2] <- folds[[2]][[2]]
-        point_est <- mean(sapply(seq_len(V), function(v) mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm)))
+        var <- mean(mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm))
+        point_est <- mean(sapply(seq_len(V), function(v) mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))) / var
         corrected_est <- point_est + mean(cv_vimp_update(full, reduced, y, folds = folds, weights = weights, type = type, na.rm = na.rm)$ic, na.rm = na.rm)
         point_ests <- NA
     }

@@ -132,16 +132,16 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         ## set up the cross-validation
         outer_folds <- rep_len(seq_len(2), dim(Y)[1])
         outer_folds <- sample(outer_folds)
-        inner_folds_1 <- rep_len(seq_len(V), dim(Y[outer_folds == 1, ])[1])
+        inner_folds_1 <- rep_len(seq_len(V), dim(Y[outer_folds == 1, , drop = FALSE])[1])
         inner_folds_1 <- sample(inner_folds_1)
-        inner_folds_2 <- rep_len(seq_len(V), dim(Y[outer_folds == 2, ])[1])
+        inner_folds_2 <- rep_len(seq_len(V), dim(Y[outer_folds == 2, , drop = FALSE])[1])
         inner_folds_2 <- sample(inner_folds_2)
         ## fit the super learner on each full/reduced pair
         fhat_ful <- list()
         fhat_red <- list()
         for (v in 1:V) {
             ## fit super learner
-            fit <- SuperLearner::SuperLearner(Y = Y[outer_folds == 1, , drop = FALSE][inner_folds_1 != v, , drop = FALSE], X = X[outer_folds == 1, , drop = FALSE][folds != v, , drop = FALSE], SL.library = SL.library, ...)
+            fit <- SuperLearner::SuperLearner(Y = Y[outer_folds == 1, , drop = FALSE][inner_folds_1 != v, , drop = FALSE], X = X[outer_folds == 1, , drop = FALSE][inner_folds_1 != v, , drop = FALSE], SL.library = SL.library, ...)
             fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
             ## get predictions on the validation fold
             fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE])$pred
@@ -152,7 +152,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                 arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
             } else if (type == "r_squared" | type == "anova") {
                 arg_lst$family <- stats::gaussian()
-                fit_2 <- SuperLearner::SuperLearner(Y = Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], X = X[outer_folds == 2, , drop = FALSE][folds != v, , drop = FALSE], SL.library = SL.library, ...)
+                fit_2 <- SuperLearner::SuperLearner(Y = Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], X = X[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], SL.library = SL.library, ...)
                 arg_lst$Y <- SuperLearner::predict.SuperLearner(fit_2)$pred
             } else {
                 arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
@@ -167,6 +167,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
             fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[outer_folds == 2, , drop = FALSE][inner_folds_2 == v, -indx, drop = FALSE])$pred
         }
         full <- reduced <- NA
+        folds <- list(outer_folds = outer_folds, inner_folds = list(inner_folds_1, inner_folds_2))
 
     } else { ## otherwise they are fitted values
 
@@ -191,7 +192,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     }
     ## get point estimate based on cv
     ests_lst <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
-    ests <- ests_lst$point_est
+        ests <- ests_lst$point_est
     all_ests <- ests_lst$all_ests
 
     ## if type = "anova", then use corrected; else use plug-in

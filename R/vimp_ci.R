@@ -51,7 +51,7 @@ vimp_ci <- function(est, se, scale = "identity", level = 0.95) {
         }
     } else {
         ci[] <- est + (se) %o% fac
-        if (any(ci[, 1] < 0)) {
+        if (any(ci[, 1] < 0) & !all(is.na(ci))) {
             ci[ci[, 1] < 0, 1] <- 0
         }
     }
