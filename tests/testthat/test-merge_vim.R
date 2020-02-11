@@ -32,12 +32,12 @@ reduced_fit_2 <- SuperLearner(Y = full_fitted, X = x[folds == 2, -1, drop = FALS
 reduced_fitted_2 <- predict(reduced_fit_2)$pred
 
 test_that("Merging variable importance estimates works", {
-  est_1 <- vim(Y = y, f1 = full_fitted, f2 = reduced_fitted_1, run_regression = FALSE, indx = 2, type = "r_squared")
-  est_2 <- vim(Y = y, f1 = full_fitted, f2 = reduced_fitted_2, run_regression = FALSE, indx = 1, type = "r_squared")
+  est_1 <- vim(Y = y, f1 = full_fitted, f2 = reduced_fitted_1, run_regression = FALSE, indx = 2, type = "r_squared", folds = folds)
+  est_2 <- vim(Y = y, f1 = full_fitted, f2 = reduced_fitted_2, run_regression = FALSE, indx = 1, type = "r_squared", folds = folds)
 
   merged_ests <- merge_vim(est_1, est_2)
-  expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
-  expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.05)
+  expect_equal(merged_ests$est[1], (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2)
+  expect_equal(merged_ests$est[2], (2497/7875)/(1 + 2497/7875 + 500/729), tolerance = 0.4)
   expect_output(print(merged_ests), "Estimate", fixed = TRUE)
 })
 
