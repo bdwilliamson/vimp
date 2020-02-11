@@ -32,19 +32,8 @@ test_that("ANOVA-based R^2 with old function name works", {
   expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2, env = environment()))
 })
 
-test_that("ANOVA-based R^2 with pre-computed fitted values works", {
-    est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2, type = "anova")
-    ## check that the estimate is nearly correct
-    expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
-})
-
 test_that("R^2-based variable importance works", {
   est <- vimp_rsquared(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 2, V = 2, env = environment())
-  ## check that the estimate is nearly correct
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
-})
-test_that("R^2-based variable importance without cross-validation works", {
-  est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, type = "r_squared", run_regression = FALSE, indx = 2)
   ## check that the estimate is nearly correct
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
 })

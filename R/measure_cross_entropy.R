@@ -13,6 +13,8 @@ measure_cross_entropy <- function(fitted_values, y, weights = rep(1, length(y)),
     ## point estimates of all components
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)
+    } else if (dim(y)[2] < 2) {
+        y_mult <- cbind(1 - y, y)
     } else {
         y_mult <- y
     }

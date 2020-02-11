@@ -13,12 +13,14 @@ measure_deviance <- function(fitted_values, y, weights = rep(1, length(y)), na.r
     ## point estimates of all components
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)
+    } else if (dim(y)[2] == 1) {
+        y_mult <- cbind(1 - y, y)
     } else {
         y_mult <- y
     }
     if (is.null(dim(fitted_values))) { # assume predicting y = 1
       fitted_mat <- cbind(1 - fitted_values, fitted_values)
-    } else if(dim(fitted_values)[2] < 2) {
+    } else if (dim(fitted_values)[2] < 2) {
         fitted_mat <- cbind(1 - fitted_values, fitted_values)
     } else {
         fitted_mat <- fitted_values

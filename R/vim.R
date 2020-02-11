@@ -15,9 +15,7 @@
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
-#' @param f1_split the fitted values from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing).
-#' @param f2_split the fitted values from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).
-#' @param folds the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.
+#' @param folds the folds used for \code{f1} and \code{f2}; assumed to be 1 for the observations used in \code{f1} and 2 for the observations used in \code{f2}. If there is only a single fold passed in, then hypothesis testing is not done.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and the type of risk-based measure. See Details for more information.
@@ -41,6 +39,7 @@
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
 #'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
 #'  \item{alpha}{ - the level, for confidence interval calculation}
+#'  \item{folds}{ - the folds used for hypothesis testing}
 #'  \item{y}{ - the outcome}
 #'  \item{weights}{ - the weights}
 #'  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
@@ -66,26 +65,28 @@
 #' learners <- "SL.gam"
 #'
 #' ## using Y and X
+#' folds <- sample(rep(seq_len(2), length = length(y)))
 #' est <- vim(y, x, indx = 2, type = "r_squared",
 #'            alpha = 0.05, run_regression = TRUE,
-#'            SL.library = learners, cvControl = list(V = 10))
+#'            SL.library = learners, cvControl = list(V = 10),
+#'            folds = folds)
 #'
 #' ## using pre-computed fitted values
-#' full <- SuperLearner(Y = y, X = x,
+#' full <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ],
 #' SL.library = learners, cvControl = list(V = 10))
 #' full.fit <- predict(full)$pred
-#' reduced <- SuperLearner(Y = y, X = x[, -2, drop = FALSE],
+#' reduced <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -2, drop = FALSE],
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
 #' est <- vimp_accuracy(Y = y, f1 = full.fit, f2 = red.fit,
-#'             indx = 2, run_regression = FALSE, alpha = 0.05)
+#'             indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds)
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
 
 
-vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, f1_split = NULL, f2_split = NULL, folds = NULL, ...) {
+vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -94,6 +95,9 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     if (!missing(X)) {
         if (any(indx > dim(X)[2])) stop("One of the feature indices in 'indx' is larger than the total number of features in X. Please specify a new index subgroup in 'indx'.")
     }
+    
+    ## check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
+    if(is.null(dim(Y))) Y <- as.matrix(Y)
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
@@ -110,7 +114,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         X_minus_s <- X[, -indx, drop = FALSE]
 
         ## fit the Super Learner given the specified library
-        full <- SuperLearner::SuperLearner(Y = Y, X = X, SL.library = SL.library, ...)
+        full <- SuperLearner::SuperLearner(Y = Y[folds == 1, , drop = FALSE], X = X[folds == 1, ], SL.library = SL.library, ...)
 
         ## get the fitted values
         fhat_ful <- SuperLearner::predict.SuperLearner(full)$pred
@@ -120,60 +124,36 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         arg_lst <- list(...)
         if (full_type == "r_squared" | full_type == "anova") {
             if (length(unique(fhat_ful)) == 1) {
-                arg_lst$Y <- Y
+                arg_lst$Y <- Y[folds == 2, , drop = FALSE]
             } else {
                 arg_lst$family <- stats::gaussian()
                 arg_lst$Y <- fhat_ful
             }
-            arg_lst$X <- X_minus_s
+            arg_lst$X <- X_minus_s[folds == 2, , drop = FALSE]
             arg_lst$SL.library <- SL.library
         }
         reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
 
         ## get the fitted values
         fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
-
-        ## get the fitted values on splits for hypothesis testing; not if full_type == "anova"
-        if (full_type != "anova") {
-            folds <- rep(seq_len(2), length = dim(Y)[1])
-            folds <- sample(folds)
-            fold_nums <- seq_len(2)
-            split_full <- SuperLearner::SuperLearner(Y = Y[folds == fold_nums[1]], X = X[folds == fold_nums[1], , drop = FALSE], SL.library = SL.library, ...)
-            split_reduced <- SuperLearner::SuperLearner(Y = Y[folds == fold_nums[2]], X = X_minus_s[folds == fold_nums[2], , drop = FALSE], SL.library = SL.library, ...)
-
-            fhat_split_ful <- SuperLearner::predict.SuperLearner(split_full)$pred
-            fhat_split_red <- SuperLearner::predict.SuperLearner(split_reduced)$pred
-        } else {
-            folds <- NA
-            split_full <- NA
-            split_reduced <- NA
-
-            fhat_split_ful <- NA
-            fhat_split_red <- NA
-        }
     } else { ## otherwise they are fitted values
 
         ## check to make sure they are the same length as y
         if (is.null(Y)) stop("Y must be entered.")
-        if (length(f1) != length(Y)) stop("Fitted values from the full regression must be the same length as Y.")
-        if (length(f2) != length(Y)) stop("Fitted values from the reduced regression must be the same length as Y.")
-        ## if f1_split or f2_split are not entered, don't do a hypothesis test; print a warning
-        if (full_type != "anova" & (is.null(f1_split) | is.null(f2_split))) warning("Fitted values from independent data splits must be entered to perform a hypothesis test; hypothesis testing not done.")
+        if (length(f1) != length(Y[folds == 1])) stop("Fitted values from the full regression must be the same length as the number of observations in the first fold.")
+        if (length(f2) != length(Y[folds == 2])) stop("Fitted values from the reduced regression must be the same length as the number of observations in the second fold.")
+        ## if full_type is "anova", don't do a hypothesis test
+        if (full_type == "anova" ) warning("Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.")
 
         ## set up the fitted value objects
         fhat_ful <- f1
         fhat_red <- f2
 
         full <- reduced <- NA
-
-        ## get the hypothesis testing objects
-        split_full <- split_reduced <- NA
-        fhat_split_ful <- f1_split
-        fhat_split_red <- f2_split
     }
 
     ## calculate the estimators
-    ests <- vimp_point_est(fhat_ful, fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm)
+    ests <- vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
 
     ## if type = "anova", then use corrected; else use plug-in
     if (full_type == "anova" | full_type == "regression") {
@@ -184,11 +164,11 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     } else {
         est <- ests[2]
         naive <- NA
-        predictiveness_full <- predictiveness_point_est(fitted_values = fhat_ful, y = Y, weights = weights, type = full_type, na.rm = na.rm)
-        predictiveness_redu <- predictiveness_point_est(fitted_values = fhat_red, y = Y, weights = weights, type = full_type, na.rm = na.rm)
+        predictiveness_full <- predictiveness_point_est(fitted_values = fhat_ful, y = Y[folds == 1, , drop = FALSE], weights = weights[folds == 1], type = full_type, na.rm = na.rm)
+        predictiveness_redu <- predictiveness_point_est(fitted_values = fhat_red, y = Y[folds == 2, , drop = FALSE], weights = weights[folds == 2], type = full_type, na.rm = na.rm)
     }
     ## compute the update
-    update <- vimp_update(fhat_ful, fhat_red, Y, weights = weights, type = full_type, na.rm = na.rm)
+    update <- vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
 
     ## compute the standard error
     se <- vimp_se(est, update, scale = scale, na.rm = na.rm)
@@ -201,12 +181,12 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
     ## compute the confidence interval
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, predictiveness_update(fhat_ful, Y, type = full_type, na.rm = na.rm), scale = scale), scale = scale, level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, predictiveness_update(fhat_red, Y, type = full_type, na.rm = na.rm), scale = scale), scale = scale, level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, predictiveness_update(fhat_ful, Y[folds == 1, , drop = FALSE], type = full_type, na.rm = na.rm), scale = scale), scale = scale, level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, predictiveness_update(fhat_red, Y[folds == 2, , drop = FALSE], type = full_type, na.rm = na.rm), scale = scale), scale = scale, level = 1 - alpha)
 
     ## perform a hypothesis test against the null of zero importance
-    if (!is.null(fhat_split_ful) & !is.null(fhat_split_red) & full_type != "anova") {
-        hyp_test <- vimp_hypothesis_test(fhat_split_ful, fhat_split_red, Y, folds, delta = delta, weights = weights, type = full_type, alpha = alpha, scale = scale, na.rm = na.rm)
+    if (full_type != "anova") {
+        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, weights = weights, type = full_type, alpha = alpha, scale = scale, na.rm = na.rm)
     } else {
         hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA, predictiveness_ci_full = rep(NA, 2), predictiveness_ci_reduced = rep(NA, 2), se_full = NA, se_redu = NA, test_statistic = NA)
     }
@@ -243,6 +223,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
                  alpha = alpha,
                  delta = delta,
                  y = Y,
+                 folds = folds,
                  weights = weights,
                  scale = scale,
                  mat = mat)
