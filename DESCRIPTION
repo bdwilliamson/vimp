@@ -1,7 +1,7 @@
 Package: vimp
 Type: Package
 Title: Nonparametric Variable Importance
-Version: 2.0.0
+Version: 2.0.1
 Authors@R: c(person("Brian D.", "Williamson", email = "brianw26@uw.edu", role = c("aut", "cre")),
             person("Noah", "Simon", role = c("aut")), person("Marco", "Carone", role = c("aut")))
 Author: Brian D. Williamson [aut, cre], Noah Simon [aut], Marco Carone [aut]
@@ -17,20 +17,17 @@ Imports:
     SuperLearner,
     stats,
     graphics,
-    ROCR,
-    tibble,
-    dplyr,
-    magrittr
+    dplyr
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Suggests:
     knitr,
     rmarkdown,
     MASS,
     gam,
-    glmnet,
     xgboost,
+    glmnet,
+    quadprog,
     covr,
-    testthat,
-    cowplot
+    testthat
 VignetteBuilder: knitr
