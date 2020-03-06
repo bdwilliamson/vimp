@@ -4,10 +4,22 @@
 \alias{vimp_rsquared}
 \title{Nonparametric Variable Importance Estimates: $R^2$}
 \usage{
-vimp_rsquared(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
-  weights = rep(1, length(Y)), run_regression = TRUE,
-  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, na.rm = FALSE, folds = NULL, ...)
+vimp_rsquared(
+  Y,
+  X,
+  f1 = NULL,
+  f2 = NULL,
+  indx = 1,
+  V = 10,
+  weights = rep(1, length(Y)),
+  run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  alpha = 0.05,
+  delta = 0,
+  na.rm = FALSE,
+  folds = NULL,
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome.}

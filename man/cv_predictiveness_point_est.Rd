@@ -4,8 +4,14 @@
 \alias{cv_predictiveness_point_est}
 \title{Estimate a nonparametric predictiveness functional using cross-validation}
 \usage{
-cv_predictiveness_point_est(fitted_values, y, weights = rep(1,
-  length(y)), folds, type = "r_squared", na.rm = FALSE)
+cv_predictiveness_point_est(
+  fitted_values,
+  y,
+  weights = rep(1, length(y)),
+  folds,
+  type = "r_squared",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function; a list of length V, where each object is a set of predictions on the validation data.}

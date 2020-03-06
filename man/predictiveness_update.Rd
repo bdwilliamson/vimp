@@ -4,8 +4,13 @@
 \alias{predictiveness_update}
 \title{Estimate the influence function for an estimator of predictiveness}
 \usage{
-predictiveness_update(fitted_values, y, weights = rep(1, length(y)),
-  type = "r_squared", na.rm = FALSE)
+predictiveness_update(
+  fitted_values,
+  y,
+  weights = rep(1, length(y)),
+  type = "r_squared",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}

@@ -4,8 +4,15 @@
 \alias{cv_vimp_point_est}
 \title{Estimate variable importance using cross-validation}
 \usage{
-cv_vimp_point_est(full, reduced, y, folds, weights = rep(1, length(y)),
-  type = "r_squared", na.rm = FALSE)
+cv_vimp_point_est(
+  full,
+  reduced,
+  y,
+  folds,
+  weights = rep(1, length(y)),
+  type = "r_squared",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates; a list of length V, where each object is a set of predictions on the validation data.}
@@ -14,7 +21,7 @@ cv_vimp_point_est(full, reduced, y, folds, weights = rep(1, length(y)),
 
 \item{y}{the outcome.}
 
-\item{folds}{the cross-validation folds}
+\item{folds}{a list of outer and inner folds (outer for hypothesis testing, inner for cross-validation)}
 
 \item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 

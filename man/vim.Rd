@@ -4,11 +4,23 @@
 \alias{vim}
 \title{Nonparametric Variable Importance Estimates}
 \usage{
-vim(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
-  length(Y)), type = "r_squared", run_regression = TRUE,
-  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, scale = "identity", na.rm = FALSE, f1_split = NULL,
-  f2_split = NULL, folds = NULL, ...)
+vim(
+  Y,
+  X,
+  f1 = NULL,
+  f2 = NULL,
+  indx = 1,
+  weights = rep(1, length(Y)),
+  type = "r_squared",
+  run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  alpha = 0.05,
+  delta = 0,
+  scale = "identity",
+  na.rm = FALSE,
+  folds = NULL,
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -37,11 +49,7 @@ vim(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1,
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
-\item{f1_split}{the fitted values from a flexible estimation technique regressing Y on X in one independent split of the data (for hypothesis testing).}
-
-\item{f2_split}{the fitted values from a flexible estimation technique regressing Y on X witholding the columns in \code{indx}, in a separate independent split from \code{f1_split} (for hypothesis testing).}
-
-\item{folds}{the folds used for \code{f1_split} and \code{f2_split}; assumed to be 1 for the observations used in \code{f1_split} and 2 for the observations used in \code{f2_split}.}
+\item{folds}{the folds used for \code{f1} and \code{f2}; assumed to be 1 for the observations used in \code{f1} and 2 for the observations used in \code{f2}. If there is only a single fold passed in, then hypothesis testing is not done.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -71,6 +79,7 @@ within the \code{vim} object. This results in a list containing:
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
+ \item{folds}{ - the folds used for hypothesis testing}
  \item{y}{ - the outcome}
  \item{weights}{ - the weights}
  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
@@ -96,20 +105,22 @@ y <- matrix(rbinom(n, size = 1, prob = smooth))
 learners <- "SL.gam"
 
 ## using Y and X
+folds <- sample(rep(seq_len(2), length = length(y)))
 est <- vim(y, x, indx = 2, type = "r_squared",
            alpha = 0.05, run_regression = TRUE,
-           SL.library = learners, cvControl = list(V = 10))
+           SL.library = learners, cvControl = list(V = 10),
+           folds = folds)
 
 ## using pre-computed fitted values
-full <- SuperLearner(Y = y, X = x,
+full <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ],
 SL.library = learners, cvControl = list(V = 10))
 full.fit <- predict(full)$pred
-reduced <- SuperLearner(Y = y, X = x[, -2, drop = FALSE],
+reduced <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -2, drop = FALSE],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
 est <- vimp_accuracy(Y = y, f1 = full.fit, f2 = red.fit,
-            indx = 2, run_regression = FALSE, alpha = 0.05)
+            indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds)
 
 }
 \seealso{

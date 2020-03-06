@@ -3,7 +3,6 @@
 \docType{package}
 \name{vimp}
 \alias{vimp}
-\alias{vimp-package}
 \title{vimp: Nonparametric variable importance assessment}
 \description{
 The vimp package provides one major function: vim.

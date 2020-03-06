@@ -4,8 +4,7 @@
 \alias{measure_auc}
 \title{Estimate area under the receiver operating characteristic curve (AUC)}
 \usage{
-measure_auc(fitted_values, y, weights = rep(1, length(y)),
-  na.rm = FALSE)
+measure_auc(fitted_values, y, weights = rep(1, length(y)), na.rm = FALSE)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}

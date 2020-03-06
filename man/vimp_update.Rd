@@ -4,8 +4,15 @@
 \alias{vimp_update}
 \title{Estimate the influence function for variable importance parameters}
 \usage{
-vimp_update(full, reduced, y, weights = rep(1, length(y)),
-  type = "r_squared", na.rm = FALSE)
+vimp_update(
+  full,
+  reduced,
+  y,
+  folds = folds,
+  weights = rep(1, length(y)),
+  type = "r_squared",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates.}
@@ -13,6 +20,8 @@ vimp_update(full, reduced, y, weights = rep(1, length(y)),
 \item{reduced}{fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the fitted values from the full regression on the reduced set of covariates.}
 
 \item{y}{the outcome.}
+
+\item{folds}{the folds for hypothesis testing.}
 
 \item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 

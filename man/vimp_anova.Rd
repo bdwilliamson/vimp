@@ -4,10 +4,23 @@
 \alias{vimp_anova}
 \title{Nonparametric Variable Importance Estimates: ANOVA}
 \usage{
-vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
-  weights = rep(1, length(Y)), run_regression = TRUE,
-  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, na.rm = FALSE, scale = "identity", ...)
+vimp_anova(
+  Y,
+  X,
+  f1 = NULL,
+  f2 = NULL,
+  indx = 1,
+  V = 10,
+  weights = rep(1, length(Y)),
+  run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  alpha = 0.05,
+  delta = 0,
+  na.rm = FALSE,
+  scale = "identity",
+  folds,
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -36,9 +49,9 @@ vimp_anova(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
 
 \item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")}
 
-\item{...}{other arguments to the estimation tool, see "See also".}
-
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
+
+\item{...}{other arguments to the estimation tool, see "See also".}
 
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
 

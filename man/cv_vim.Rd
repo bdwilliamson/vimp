@@ -4,11 +4,24 @@
 \alias{cv_vim}
 \title{Nonparametric Variable Importance Estimates using Cross-validation}
 \usage{
-cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
-  folds = NULL, weights = rep(1, length(Y)), type = "r_squared",
-  run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost",
-  "SL.mean"), alpha = 0.05, delta = 0, scale = "identity",
-  na.rm = FALSE, ...)
+cv_vim(
+  Y,
+  X,
+  f1,
+  f2,
+  indx = 1,
+  V = length(unique(folds)),
+  folds = NULL,
+  weights = rep(1, length(Y)),
+  type = "r_squared",
+  run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  alpha = 0.05,
+  delta = 0,
+  scale = "identity",
+  na.rm = FALSE,
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -23,7 +36,7 @@ cv_vim(Y, X, f1, f2, indx = 1, V = length(unique(folds)),
 
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
-\item{folds}{the folds to use, if f1 and f2 are supplied.}
+\item{folds}{the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-validation).}
 
 \item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
@@ -72,7 +85,7 @@ within the \code{vim} object. This results in a list containing:
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
- \item{folds}{ - the folds used for cross-validation}
+ \item{folds}{ - the folds used for hypothesis testing and cross-validation}
  \item{y}{ - the outcome}
  \item{weights}{ - the weights}
  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}

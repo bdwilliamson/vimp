@@ -5,8 +5,7 @@
 \title{Estimate R-squared
 Compute nonparametric estimate of R-squared.}
 \usage{
-measure_r_squared(fitted_values, y, weights = rep(1, length(y)),
-  na.rm = FALSE)
+measure_r_squared(fitted_values, y, weights = rep(1, length(y)), na.rm = FALSE)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}

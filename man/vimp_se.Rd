@@ -4,8 +4,14 @@
 \alias{vimp_se}
 \title{Estimate standard errors}
 \usage{
-vimp_se(est, update, denom = NULL, n = length(update), scale = "log",
-  na.rm = FALSE)
+vimp_se(
+  est,
+  update,
+  denom = NULL,
+  n = length(update),
+  scale = "log",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{est}{the estimate of variable importance.}

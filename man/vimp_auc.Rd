@@ -4,10 +4,23 @@
 \alias{vimp_auc}
 \title{Nonparametric Variable Importance Estimates: AUC}
 \usage{
-vimp_auc(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
-  weights = rep(1, length(Y)), run_regression = TRUE,
-  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, na.rm = FALSE, folds = NULL, scale = "identity", ...)
+vimp_auc(
+  Y,
+  X,
+  f1 = NULL,
+  f2 = NULL,
+  indx = 1,
+  V = 10,
+  weights = rep(1, length(Y)),
+  run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  alpha = 0.05,
+  delta = 0,
+  na.rm = FALSE,
+  folds = NULL,
+  scale = "identity",
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome.}

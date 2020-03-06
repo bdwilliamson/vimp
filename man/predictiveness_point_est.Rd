@@ -4,8 +4,13 @@
 \alias{predictiveness_point_est}
 \title{Estimate a nonparametric predictiveness functional}
 \usage{
-predictiveness_point_est(fitted_values, y, weights = rep(1, length(y)),
-  type = "r_squared", na.rm = FALSE)
+predictiveness_point_est(
+  fitted_values,
+  y,
+  weights = rep(1, length(y)),
+  type = "r_squared",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}

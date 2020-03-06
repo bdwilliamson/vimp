@@ -4,9 +4,19 @@
 \alias{vimp_hypothesis_test}
 \title{Perform a hypothesis test against the null hypothesis of \eqn{\delta} importance}
 \usage{
-vimp_hypothesis_test(full, reduced, y, folds, delta = 0,
-  weights = rep(1, length(y)), type = "r_squared", alpha = 0.05,
-  cv = FALSE, scale = "identity", na.rm = FALSE)
+vimp_hypothesis_test(
+  full,
+  reduced,
+  y,
+  folds,
+  delta = 0,
+  weights = rep(1, length(y)),
+  type = "r_squared",
+  alpha = 0.05,
+  cv = FALSE,
+  scale = "identity",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{full}{either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
@@ -15,7 +25,7 @@ vimp_hypothesis_test(full, reduced, y, folds, delta = 0,
 
 \item{y}{the outcome.}
 
-\item{folds}{the folds used for splitting; assumed to be 1 for the full regression and 2 for the reduced regression (if V = 2).}
+\item{folds}{the folds used for splitting. If \code{cv = FALSE}, assumed to be a vector with 1 for the full regression and 2 for the reduced regression (if V = 2). If \code{cv = TRUE}, assumed to be a list with first element the outer folds (for hypothesis testing) and second element a list with the inner cross-validation folds.}
 
 \item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
 

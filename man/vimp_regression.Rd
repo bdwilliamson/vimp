@@ -4,10 +4,21 @@
 \alias{vimp_regression}
 \title{Nonparametric Variable Importance Estimates}
 \usage{
-vimp_regression(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10,
-  weights = rep(1, length(Y)), run_regression = TRUE,
-  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  delta = 0, na.rm = FALSE, ...)
+vimp_regression(
+  Y,
+  X,
+  f1 = NULL,
+  f2 = NULL,
+  indx = 1,
+  V = 10,
+  weights = rep(1, length(Y)),
+  run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  alpha = 0.05,
+  delta = 0,
+  na.rm = FALSE,
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome.}

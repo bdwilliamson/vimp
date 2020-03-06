@@ -4,8 +4,12 @@
 \alias{measure_cross_entropy}
 \title{Estimate the cross-entropy}
 \usage{
-measure_cross_entropy(fitted_values, y, weights = rep(1, length(y)),
-  na.rm = FALSE)
+measure_cross_entropy(
+  fitted_values,
+  y,
+  weights = rep(1, length(y)),
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{fitted_values}{fitted values from a regression function.}

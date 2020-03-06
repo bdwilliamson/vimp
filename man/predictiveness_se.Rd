@@ -4,8 +4,7 @@
 \alias{predictiveness_se}
 \title{Estimate standard errors for measures of predictiveness}
 \usage{
-predictiveness_se(est, update, denom = NULL, n = length(update),
-  na.rm = FALSE)
+predictiveness_se(est, update, denom = NULL, n = length(update), na.rm = FALSE)
 }
 \arguments{
 \item{est}{the estimate of variable importance.}
