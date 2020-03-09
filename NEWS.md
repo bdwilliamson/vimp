@@ -1,3 +1,14 @@
+# vimp 2.0.1
+
+## Major changes
+
+* Added new function `sp_vim` and helper functions `run_sl`, `sample_subsets`, `spvim_ics`, `spvim_se`; these functions allow computation of the Shapley Population Variable Importance Measure (SPVIM)
+* Both `cv_vim` and `vim` now use an outer layer of sample splitting for hypothesis testing
+
+## Minor changes
+
+None
+
 # vimp 2.0.0
 
 ## Major changes

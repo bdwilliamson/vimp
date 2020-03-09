@@ -183,6 +183,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
                  delta = delta,
                  y = Y,
                  weights = weights,
+                 scale = "identity",
                  mat = mat)
 
     ## make it also an vim object

@@ -36,6 +36,7 @@
 #' est <- sp_vim(Y = y, X = x, V = 5,
 #' type = "r_squared",
 #' SL.library = learners, alpha = 0.05)
+#' }
 #' 
 #' @seealso \code{\link[vimp]{spvim_ics}} for how the influence functions are estimated.
 #' @export 

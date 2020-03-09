@@ -35,7 +35,7 @@ test_that("Estimating SPVIMs works", {
   expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
   ## check that the SE, CI work
   expect_length(est$ci, 4)
-  expect_length(est$se, 2)
+  expect_length(est$se, 3)
   ## check that the p-value worked
   expect_length(est$p_value, 2)
   expect_true(est$test[1])

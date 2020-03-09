@@ -25,6 +25,4 @@ gamma <- 1
 n <- 100
 set.seed(100)
 subset_lst <- sample_subsets(p, gamma, n)
-
- @export
 }

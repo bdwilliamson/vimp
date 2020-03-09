@@ -14,8 +14,7 @@
 #' n <- 100
 #' set.seed(100)
 #' subset_lst <- sample_subsets(p, gamma, n)
-#'
-#'  @export
+#' @export
 sample_subsets <- function(p, gamma, n) {
     max_subset <- 1:p
     sampling_weights <- c(1, apply(matrix(1:(p-1)), 1, function(s) choose(p - 2, s - 1) ^ (-1)), 1)

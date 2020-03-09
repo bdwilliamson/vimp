@@ -36,7 +36,7 @@ test_that("Cross-validated variable importance using internally-computed regress
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   ## check that influence curve worked
-  expect_length(est$update, length(y))
+  expect_length(est$update, sum(est$folds[[1]] == 1))
 })
 
 ## set up the folds
@@ -83,7 +83,7 @@ test_that("Cross-validated variable importance using externally-computed regress
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   ## check that influence curve worked
-  expect_length(est$update, length(y) / 2)
+  expect_length(est$update, sum(outer_folds == 1))
 })
 
 test_that("Measures of predictiveness work", {
@@ -91,7 +91,7 @@ test_that("Measures of predictiveness work", {
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
   expect_length(full_rsquared$all_ests, V)
   full_update <- cv_predictiveness_update(fhat_red, y[outer_folds == 1], folds = inner_folds_1, type = "r_squared", na.rm = TRUE)
-  expect_length(full_update$ic, length(y) / 2)
+  expect_length(full_update$ic, sum(outer_folds == 1))
   expect_equal(dim(full_update$all_ics)[2], V)
 })
 
