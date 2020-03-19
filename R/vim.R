@@ -120,22 +120,28 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         fhat_ful <- SuperLearner::predict.SuperLearner(full)$pred
 
         ## fit the super learner on the reduced covariates:
-        ## always use gaussian; if first regression was mean, use Y instead
-        arg_lst <- list(...)
-        if (full_type == "r_squared" | full_type == "anova") {
-            if (length(unique(fhat_ful)) == 1) {
-                arg_lst$Y <- Y[folds == 2, , drop = FALSE]
-            } else {
-                arg_lst$family <- stats::gaussian()
-                arg_lst$Y <- fhat_ful
+        ## if the reduced set of covariates is empty, return the mean
+        ## otherwise, if "r_squared" or "anova", regress the fitted values on the remaining covariates
+        if (ncol(X_minus_s) == 0) {
+            reduced <- NA
+            fhat_red <- mean(Y[folds == 2, , drop = FALSE])
+        } else {
+            arg_lst <- list(...)
+            if (full_type == "r_squared" | full_type == "anova") {
+                if (length(unique(fhat_ful)) == 1) {
+                    arg_lst$Y <- Y[folds == 2, , drop = FALSE]
+                } else {
+                    arg_lst$family <- stats::gaussian()
+                    arg_lst$Y <- fhat_ful
+                }
+                arg_lst$X <- X_minus_s[folds == 2, , drop = FALSE]
+                arg_lst$SL.library <- SL.library
             }
-            arg_lst$X <- X_minus_s[folds == 2, , drop = FALSE]
-            arg_lst$SL.library <- SL.library
+            reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
+            
+            ## get the fitted values
+            fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
         }
-        reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
-
-        ## get the fitted values
-        fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
     } else { ## otherwise they are fitted values
 
         ## check to make sure they are the same length as y

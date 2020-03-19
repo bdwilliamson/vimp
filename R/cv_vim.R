@@ -146,25 +146,30 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
             ## get predictions on the validation fold
             fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE])$pred
             ## fit the super learner on the reduced covariates:
-            ## if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
-            arg_lst <- list(...)
-            if (length(unique(fitted_v)) == 1) {
-                arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
-            } else if (type == "r_squared" | type == "anova") {
-                arg_lst$family <- stats::gaussian()
-                fit_2 <- SuperLearner::SuperLearner(Y = Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], X = X[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], SL.library = SL.library, ...)
-                arg_lst$Y <- SuperLearner::predict.SuperLearner(fit_2)$pred
+            ## if the reduced set of covariates is empty, return the mean
+            ## otherwise, if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
+            if (ncol(X[outer_folds == 2, , drop = FALSE][, -indx, drop = FALSE]) == 0) {
+                fhat_red[[v]] <- mean(Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE])
             } else {
-                arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
-                # get the family
-                if (is.character(arg_lst$family))
-                    arg_lst$family <- get(arg_lst$family, mode = "function", envir = parent.frame())
+                arg_lst <- list(...)
+                if (length(unique(fitted_v)) == 1) {
+                    arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
+                } else if (type == "r_squared" | type == "anova") {
+                    arg_lst$family <- stats::gaussian()
+                    fit_2 <- SuperLearner::SuperLearner(Y = Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], X = X[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], SL.library = SL.library, ...)
+                    arg_lst$Y <- SuperLearner::predict.SuperLearner(fit_2)$pred
+                } else {
+                    arg_lst$Y <- Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
+                    # get the family
+                    if (is.character(arg_lst$family))
+                        arg_lst$family <- get(arg_lst$family, mode = "function", envir = parent.frame())
+                }
+                arg_lst$X <- X[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, -indx, drop = FALSE]
+                arg_lst$SL.library <- SL.library
+                red <- do.call(SuperLearner::SuperLearner, arg_lst)
+                ## get predictions on the validation fold
+                fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[outer_folds == 2, , drop = FALSE][inner_folds_2 == v, -indx, drop = FALSE])$pred
             }
-            arg_lst$X <- X[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, -indx, drop = FALSE]
-            arg_lst$SL.library <- SL.library
-            red <- do.call(SuperLearner::SuperLearner, arg_lst)
-            ## get predictions on the validation fold
-            fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[outer_folds == 2, , drop = FALSE][inner_folds_2 == v, -indx, drop = FALSE])$pred
         }
         full <- reduced <- NA
         folds <- list(outer_folds = outer_folds, inner_folds = list(inner_folds_1, inner_folds_2))
