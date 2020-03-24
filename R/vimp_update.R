@@ -30,6 +30,17 @@ vimp_update <- function(full, reduced, y, folds = folds, weights = rep(1, length
 
     ## if type isn't anova, return
     if (full_type != "anova") {
+        ## make sure that they have the same length
+        len_full <- length(ic_full)
+        len_redu <- length(ic_redu)
+        if (len_full != len_redu) {
+            max_length <- max(len_full, len_redu)
+            ic_full <- c(ic_full, rep(0, max_length - len_full))
+            ic_redu <- c(ic_redu, rep(0, max_length - len_redu))
+            dim_full <- dim(ics_full)
+            dim_redu <- dim(ics_redu)
+            max_dim <- max(dim_full[1], dim_redu[1])
+        }
         ic <- ic_full - ic_redu
     } else {
         if (length(full) < length(reduced)) {
