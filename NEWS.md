@@ -1,3 +1,21 @@
+# vimp 2.0.1
+
+## Major changes
+
+* Added new function `sp_vim` and helper functions `run_sl`, `sample_subsets`, `spvim_ics`, `spvim_se`; these functions allow computation of the Shapley Population Variable Importance Measure (SPVIM)
+* Both `cv_vim` and `vim` now use an outer layer of sample splitting for hypothesis testing
+* Added new functions `vimp_auc`, `vimp_accuracy`, `vimp_deviance`, `vimp_rsquared`
+* `vimp_regression` is now deprecated; use `vimp_anova` instead
+* added new function `vim`; each variable importance function is now a wrapper function around `vim` with the `type` argument filled in
+* `cv_vim_nodonsker` is now deprecated; use `cv_vim` instead
+* each variable importance function now returns a p-value based on the (possibly conservative) hypothesis test against the null of zero importance (with the exception of `vimp_anova`)
+* each variable importance function now returns the estimates of the individual risks (with the exception of `vimp_anova`)
+* added new functions to compute measures of predictiveness (and cross-validated measures of predictiveness), along with their influence functions
+
+## Minor changes
+
+* Return tibbles in cv_vim, vim, merge_vim, and average_vim
+
 # vimp 1.1.6
 
 ## Major changes
@@ -27,7 +45,7 @@ None
 
 ## Minor changes
 
-* `cv_vim` and`cv_vim_nodonsker` now return the cross-validation folds used within the function 
+* `cv_vim` and`cv_vim_nodonsker` now return the cross-validation folds used within the function
 
 # vimp 1.1.3
 
@@ -76,7 +94,7 @@ None
 
 ## Major changes
 
-* removed function `vim`, replaced with individual-parameter functions 
+* removed function `vim`, replaced with individual-parameter functions
 * added function `vimp_regression` to match Python package
 * `cv_vim` now can compute regression estimators
 * renamed all internal functions; these are now `vimp_ci`, `vimp_se`, `vimp_update`, `onestep_based_estimator`

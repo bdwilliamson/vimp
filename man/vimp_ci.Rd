@@ -4,12 +4,14 @@
 \alias{vimp_ci}
 \title{Confidence intervals for variable importance}
 \usage{
-vimp_ci(est, se, level = 0.95)
+vimp_ci(est, se, scale = "identity", level = 0.95)
 }
 \arguments{
-\item{est}{estimate of variable importance from a call to \code{variableImportance}.}
+\item{est}{estimate of variable importance, e.g., from a call to \code{vimp_point_est}.}
 
-\item{se}{estimate of the standard error of \code{est}, from a call to \code{variableImportanceSE}}
+\item{se}{estimate of the standard error of \code{est}, e.g., from a call to \code{vimp_se}.}
+
+\item{scale}{scale to compute interval estimate on (defaults to "identity": compute SE and CI on log scale and back-transform).}
 
 \item{level}{confidence interval type (defaults to 0.95).}
 }
@@ -17,7 +19,7 @@ vimp_ci(est, se, level = 0.95)
 The Wald-based confidence interval for the true importance of the given group of left-out covariates.
 }
 \description{
-Compute confidence intervals for the true variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
+Compute confidence intervals for the true variable importance parameter.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more

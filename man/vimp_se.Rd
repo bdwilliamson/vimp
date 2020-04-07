@@ -4,20 +4,33 @@
 \alias{vimp_se}
 \title{Estimate standard errors}
 \usage{
-vimp_se(update, n = length(update), na.rm = FALSE)
+vimp_se(
+  est,
+  update,
+  denom = NULL,
+  n = length(update),
+  scale = "log",
+  na.rm = FALSE
+)
 }
 \arguments{
-\item{update}{the influence curve-based update}
+\item{est}{the estimate of variable importance.}
 
-\item{n}{the sample size}
+\item{update}{the influence curve-based update.}
 
-\item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE})}
+\item{denom}{a list of point estimate and influence curve for the denominator (if any) to make the measure of predictiveness interpretable.}
+
+\item{n}{the sample size.}
+
+\item{scale}{the scale to compute SEs on (either "log", for log-scale, or "identity", for same scale as point estimate).}
+
+\item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE}).}
 }
 \value{
 The standard error for the estimated variable importance for the given group of left-out covariates.
 }
 \description{
-Compute standard error estimates for estimates of the variable importance parameter interpreted as the proportion of variability explained by including a group of covariates in the estimation technique.
+Compute standard error estimates for estimates of variable importance.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more

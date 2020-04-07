@@ -2,9 +2,17 @@
 % Please edit documentation in R/vimp_update.R
 \name{vimp_update}
 \alias{vimp_update}
-\title{Estimate the influence function}
+\title{Estimate the influence function for variable importance parameters}
 \usage{
-vimp_update(full, reduced, y, type = "regression", na.rm = FALSE)
+vimp_update(
+  full,
+  reduced,
+  y,
+  folds = folds,
+  weights = rep(1, length(y)),
+  type = "r_squared",
+  na.rm = FALSE
+)
 }
 \arguments{
 \item{full}{fitted values from a regression of the outcome on the full set of covariates.}
@@ -13,7 +21,11 @@ vimp_update(full, reduced, y, type = "regression", na.rm = FALSE)
 
 \item{y}{the outcome.}
 
-\item{type}{which parameter are you estimating (defaults to \code{regression}, for ANOVA-based variable importance)?}
+\item{folds}{the folds for hypothesis testing.}
+
+\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
+
+\item{type}{which parameter are you estimating (defaults to \code{anova}, for ANOVA-based variable importance)?}
 
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
 }

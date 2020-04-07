@@ -1,4 +1,4 @@
-## vimp: nonparametric variable importance assessment
+# vimp: nonparametric variable importance assessment
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/vimp)](https://cran.r-project.org/package=vimp)
 [![Travis-CI Build Status](https://travis-ci.org/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.org/bdwilliamson/vimp)
@@ -6,7 +6,9 @@
 [![Coverage status](https://codecov.io/gh/bdwilliamson/vimp/branch/master/graph/badge.svg)](https://codecov.io/github/bdwilliamson/vimp?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Author:** Brian Williamson
+**Software author:** [Brian Williamson](https://bdwilliamson.github.io/)
+
+**Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Peter Gilbert](https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html), [Noah Simon](http://faculty.washington.edu/nrsimon/), [Marco Carone](http://faculty.washington.edu/mcarone/about.html)
 
 ## Introduction
 
@@ -14,7 +16,7 @@ In predictive modeling applications, it is often of interest to determine the re
 
 More detail may be found in our [tech report](http://biostats.bepress.com/uwbiostat/paper422/).
 
-This method works on low-dimensional and high-dimensional data. 
+This method works on low-dimensional and high-dimensional data.
 
 ## Issues
 
@@ -55,7 +57,7 @@ n <- 100
 p <- 2
 s <- 1 # desire importance for X_1
 x <- as.data.frame(replicate(p, runif(n, -1, 1)))
-y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1) 
+y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1)
 
 ## -------------------------------------------------------------
 ## preliminary step: estimate the conditional means
@@ -76,5 +78,5 @@ reduced_fit <- reduced_regression$SL.predict
 ## get variable importance!
 ## -------------------------------------------------------------
 ## get the variable importance estimate, SE, and CI
-vimp <- vimp_regression(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
+vimp <- vimp_anova(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
 ```

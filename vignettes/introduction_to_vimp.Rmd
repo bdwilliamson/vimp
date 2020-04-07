@@ -2,7 +2,7 @@
 title: "Introduction to vimp"
 author: "Brian D. Williamson"
 date: "`r Sys.Date()`"
-output: 
+output:
   rmarkdown::html_vignette:
     keep_md: true
 vignette: >
@@ -45,7 +45,7 @@ references:
     #month: 3
 - id: vanderlaan2007
   title: Super learner
-  author: 
+  author:
   - family: van der Laan
     given: MJ
   - family: Polley
@@ -59,7 +59,7 @@ references:
    year: 2007
 - id: harrison1978
   title: Hedonic housing prices and the demand for clean air
-  author: 
+  author:
   - family: Harrison
     given: D
   - family: Rubinfeld
@@ -67,7 +67,7 @@ references:
   volume: 5
   publisher: Journal of Environmental Economics and Management
   type: article-journal
-  issued: 
+  issued:
    year: 1978
 - id: breiman2001
   title: Random forests
@@ -81,7 +81,7 @@ references:
    year: 2001
 - id: friedman2001
   title: "Greedy function approximation: a gradient boosting machine"
-  author: 
+  author:
   - family: Friedman
     given: JH
   publisher: The Annals of Applied Statistics
@@ -112,17 +112,22 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 ## Introduction
 
-`vimp` is a package that computes nonparametric estimates of variable importance. Currently, the package supports flexible estimation of an ANOVA-derived measure of variable importance, interpreted as the additional proportion of variability in the outcome explained by including a group of covariates in estimation of the conditional mean. This quantity is a nonparametric generalization of the usual $R^2$ measure.
+`vimp` is a package that computes nonparametric estimates of variable importance. Currently, the package supports flexible estimation of a nonparametric $R^2$-based measure of variable importance, interpreted as the additional proportion of variability in the outcome explained by including a group of covariates in estimation of the conditional mean. This quantity is a nonparametric generalization of the usual $R^2$ measure.
 
 Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means --- if these techniques are slow, then the variable importance procedure will be slow. However, you may save computation time by estimating the conditional means separately, and plugging these estimates into the variable importance procedure.
 
 The code can handle arbitrary dimensions of features, and may be used to estimate the importance of any single feature or group of features for predicting the outcome. The package also includes functions for cross-validated importance and plotting.
 
-The author of the `vimp` package is Brian Williamson.
+The author and maintainer of the `vimp` package is [Brian Williamson](https://bdwilliamson.github.io/).
 
 ## Installation
 
-Currently, the package may only be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console:
+A stable version of the package may be downloaded and installed from CRAN. Type the following command in your R console to install the stable version of `vimp`:
+```{r, eval = FALSE}
+install.packages("vimp")
+```
+
+A development version of the package may be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console to install the development version of `vimp`:
 
 ```{r, eval = FALSE}
 # only run if you don't have devtools
@@ -146,164 +151,149 @@ Next, create some data:
 ## problem setup
 ## -------------------------------------------------------------
 ## set up the data
-n <- 100
+n <- 1000
 p <- 2
 s <- 1 # desire importance for X_1
 x <- data.frame(replicate(p, runif(n, -1, 1)))
-y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1) 
+y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1)
+## set up folds for hypothesis testing
+folds <- sample(rep(seq_len(2), length = length(y)))
 ```
 
-This creates a matrix of covariates `x` with two columns, and a vector `y` of normally-distributed outcome values, for a sample of `n = 100` study participants.
+This creates a matrix of covariates `x` with two columns, a vector `y` of normally-distributed outcome values, and a set of folds for a sample of `n = 100` study participants.
 
-The workhorse function of `vimp`, for ANOVA-based variable importance, is `vimp_regression`. The basic arguments are
+The workhorse function of `vimp`, for $R^2$-based variable importance, is `vimp_rsquared`. The basic arguments are
 
 * Y: the outcome (in this example, `y`)
 * X: the covariates (in this example, `x`)
 * indx: the covariate(s) of interest for evaluating importance (here, either 1 or 2)
-* run_regression: a logical value telling `vimp_regression` whether or not to run a regression of Y on X
+* run_regression: a logical value telling `vimp_rsquared` whether or not to run a regression of Y on X
 * SL.library: a "library" of learners to pass to the function `SuperLearner`, if `run_regression = TRUE`
+* folds: a set of folds for hypothesis testing
 
-This final argument, `SL.library`, determines the estimators you want to use for the conditional mean of Y given X. Estimates of variable importance rely on good estimators of the conditional mean, so we suggest using flexible estimators and model stacking to do so. One option for this is the `SuperLearner` package; load that package using
+This second-to-last argument, `SL.library`, determines the estimators you want to use for the conditional mean of Y given X. Estimates of variable importance rely on good estimators of the conditional mean, so we suggest using flexible estimators and model stacking to do so. One option for this is the `SuperLearner` package; load that package using
 
 ```{r}
 library("SuperLearner")
 ## load specific algorithms
 library("gam")
 library("xgboost")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
 ```
 
 The code
 ```{r}
-est_1 <- vimp_regression(Y = y, X = x, indx = 1, run_regression = TRUE, 
-SL.library = c("SL.gam", "SL.xgboost", "SL.mean"))
+est_1 <- vimp_rsquared(Y = y, X = x, indx = 1, run_regression = TRUE,
+SL.library = c("SL.xgboost1", "SL.mean"), V = 3, env = environment(), folds = folds)
 ```
 
-uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:
+uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance for the importance of $X_1$. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:
 ```{r}
 est_1
 print(est_1)
 ```
 
-This output shows that we have estimated the importance of $X_2$ to be 0.51, with a 95% confidence interval of [0.37, 0.65].
+This output shows that we have estimated the importance of $X_1$ to be `r round(est_1$est, 3)`, with a 95% confidence interval of `r paste0("[", round(est_1$ci[,1], 3), ", ", round(est_1$ci[, 2], 3), "]")`.
 
 ## Detailed guide
 
-Often when working with data we attempt to estimate the conditional mean of the outcome $Y$ given features $X$, defined as $\mu_P(x) = E_P(Y \mid X = x)$. 
+Often when working with data we attempt to estimate the conditional mean of the outcome $Y$ given features $X$, defined as $\mu_P(x) = E_P(Y \mid X = x)$.
 
-There are many tools for estimating this conditional mean. We might choose a classical parametric tool such as linear regression. We might also want to be model-agnostic and use a more nonparametric approach to estimate the conditional mean. However, 
+There are many tools for estimating this conditional mean. We might choose a classical parametric tool such as linear regression. We might also want to be model-agnostic and use a more nonparametric approach to estimate the conditional mean. However,
 
 - This involves using some nonparametric smoothing technique, which requires: (1) choosing a technique, and (2) selecting tuning parameters
 - Naive optimal tuning balances out the bias and variance of the smoothing estimator. Is this the correct trade-off for estimating the conditional mean?
 
 Once we have a good estimate of the conditional mean, it is often of scientific interest to understand which features contribute the most to the variation in $\mu_P$. Specifically, we might consider \[\mu_{P, s}(x) = E_P(Y \mid X_{(-s)} = x_{(-s)}),\] where for a vector $v$ and a set of indices $s$, $v_{-(s)}$ denotes the elements of $v$ with index not in $s$. By comparing $\mu_{P, s}$ to $\mu_P$ we can evaluate the importance of the $s$th element (or group of elements).
 
-Assume that our data are generated according to the mechanism $P_0$. We can then define a nonparametric measure of variable importance, \[\psi_{0, s} = \frac{\int [\mu_{P_0}(x) - \mu_{P_0, s}(x)]^2dP_0(x)}{\text{Var}_{P_0}(Y)},\] which is the proportion of the variability in the outcome explained by including $X_j$ in our chosen estimation technique. 
+Assume that our data are generated according to the mechanism $P_0$. We define the population $R^2$ value of a given regression function $\mu$ as $R^2(\mu, P_0) = 1 - \frac{E_{P_0}\{Y - \mu(X)\}^2}{var_{P_0}(Y)}$, where the numerator of this expression is the population mean squared error and the denominator is the population variance. We can then define a nonparametric measure of variable importance, \[\psi_{0, s} = R^2(\mu_{P_0}, P_0) - R^2(\mu_{P_0,s}, P_0),\] which is the proportion of the variability in the outcome explained by including $X_j$ in our chosen estimation technique.
 
-This document introduces you to the basic tools in vimp and how to apply them to a dataset. I will explore the two different ways of obtaining variable estimates using vimp:
+This document introduces you to the basic tools in `vimp` and how to apply them to a dataset. I will explore the two different ways of obtaining variable estimates using `vimp`:
 
-1. You only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, s}$; you allow vimp to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates
-2. You have a favorite estimator for the conditional means; you simply want vimp to obtain variable importance estimates using this estimator
+1. You only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, s}$; you allow `vimp` to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates
+2. You have a favorite estimator for the conditional means; you simply want `vimp` to obtain variable importance estimates using this estimator
 
-### A look at the Boston housing study data
+### A look at the South African heart disease study data
 
-Throughout this document I will use the Boston housing study data [@harrison1978], freely available from the `MASS` package. Use `?Boston` to see documentation for these data.
+Throughout this document I will use the South African heart disease study data [@hastie2011], freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data). Information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt).
 
 ```{r}
-## load the library, view the data
-library("MASS")
-data(Boston)
-head(Boston)
+## read in the data from the Elements website
+library("RCurl")
+heart_data <- read.csv(text = getURL("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
+## minor data cleaning
+heart <- heart_data[, 2:dim(heart_data)[2]]
+heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
+## folds
+heart_folds <- sample(rep(seq_len(2), length = dim(heart)[1]))
 ```
 
-In addition to the median house value `medv`, the outcome of interest, there are measurements on four groups of variables. First are accessibility features: the weighted distances to five employment centers in the Boston region `dis`, where housing prices are expected to increase with decreased distance to employment centers; and an index of accessibility to radial highways `rad`, where housing prices are expected to increase with increased access to highways. Second are neighborhood features: the proportion of black residents in the population `black`; the proportion of population that is lower status `lstat`, which denotes adults without some high school education and male workers classified as laborers; the crime rate `crim`; the proportion of a town's residential land zoned for lots greater than 25,000 square feet `zn`; the proportion of nonretail business acres per town `indus`; the full value property tax rate `tax`; the pupil-teacher ratio  by school district `ptratio`; and an indicator of whether the tract of land borders the Charles River `chas`. The third group are structural features: the average number of rooms in owner units `rm`; and the proportion of owner units built prior to 1940 `age`. The final group is the nitrogen oxide concentration `nox`. 
+In addition to the indicator of myocardial infarction `chd`, the outcome of interest, there are measurements on two groups of variables. First are behavioral features: cumulative tobacco consumption, current alcohol consumption, and type A behavior (a behavioral pattern linked to stress). Second are biological features: systolic blood pressure, low-density lipoprotein (LDL) cholesterol, adiposity (similar to body mass index), family history of heart disease, obesity, and age.
 
-Since there are 13 features and four groups, it is of interest to determine variable importance both for the 13 features separately and for the four groups of features.
+Since there are nine features and two groups, it is of interest to determine variable importance both for the nine individual features separately and for the two groups of features.
 
 ### A first approach: linear regression
-Suppose that I believe that a linear model truly holds in the Boston housing data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. This is achieved by the following:
+Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. This is achieved by the following:
 
 ```{r}
 ## estimate the full conditional mean using linear regression
-full.mod <- lm(medv ~ ., data = Boston)
-full.fit <- predict(full.mod)
+full_mod <- lm(chd ~ ., data = subset(heart, heart_folds == 1))
+full_fit <- predict(full_mod)
 
 ## estimate the reduced conditional means for each of the individual variables
-X <- as.matrix(Boston[, -14]) # remove the outcome for the predictor matrix
-
-red.mod.crim <- lm(full.fit ~ X[,-1])
-red.fit.crim <- predict(red.mod.crim)
-
-red.mod.zn <- lm(full.fit ~ X[,-2])
-red.fit.zn <- predict(red.mod.zn)
-
-red.mod.indus <- lm(full.fit ~ X[,-3])
-red.fit.indus <- predict(red.mod.indus)
-
-red.mod.chas <- lm(full.fit ~ X[,-4])
-red.fit.chas <- predict(red.mod.chas)
-
-red.mod.nox <- lm(full.fit ~ X[,-5])
-red.fit.nox <- predict(red.mod.nox)
-
-red.mod.rm <- lm(full.fit ~ X[, -6])
-red.fit.rm <- predict(red.mod.rm)
-
-red.mod.age <- lm(full.fit ~ X[,-7])
-red.fit.age <- predict(red.mod.age)
-
-red.mod.dis <- lm(full.fit ~ X[, -8])
-red.fit.dis <- predict(red.mod.dis)
-
-red.mod.rad <- lm(full.fit ~ X[,-9])
-red.fit.rad <- predict(red.mod.rad)
-
-red.mod.tax <- lm(full.fit ~ X[,-10])
-red.fit.tax <- predict(red.mod.tax)
-
-red.mod.ptratio <- lm(full.fit ~ X[,-11])
-red.fit.ptratio <- predict(red.mod.ptratio)
-
-red.mod.black <- lm(full.fit ~ X[,-12])
-red.fit.black <- predict(red.mod.black)
-
-red.mod.lstat <- lm(full.fit ~ X[,-13])
-red.fit.lstat <- predict(red.mod.lstat)
+X <- as.matrix(heart[, -dim(heart)[2]])[heart_folds == 2, ] # remove the outcome for the predictor matrix
+red_mod_sbp <- lm(full_fit ~ X[,-1])
+red_fit_sbp <- predict(red_mod_sbp)
+red_mod_tob <- lm(full_fit ~ X[,-2])
+red_fit_tob <- predict(red_mod_tob)
+red_mod_ldl <- lm(full_fit ~ X[,-3])
+red_fit_ldl <- predict(red_mod_ldl)
+red_mod_adi <- lm(full_fit ~ X[,-4])
+red_fit_adi <- predict(red_mod_adi)
+red_mod_fam <- lm(full_fit ~ X[,-5])
+red_fit_fam <- predict(red_mod_fam)
+red_mod_tpa <- lm(full_fit ~ X[, -6])
+red_fit_tpa <- predict(red_mod_tpa)
+red_mod_obe <- lm(full_fit ~ X[,-7])
+red_fit_obe <- predict(red_mod_obe)
+red_mod_alc <- lm(full_fit ~ X[, -8])
+red_fit_alc <- predict(red_mod_alc)
+red_mod_age <- lm(full_fit ~ X[,-9])
+red_fit_age <- predict(red_mod_age)
 
 ## load the library
 library("vimp")
+library("dplyr")
 
 ## plug these into vim
-lm.vim.crim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.crim, indx = 1, run_regression = FALSE)
-lm.vim.zn <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.zn, indx = 2, run_regression = FALSE)
-lm.vim.indus <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.indus, indx = 3, run_regression = FALSE)
-lm.vim.chas <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.chas, indx = 4, run_regression = FALSE)
-lm.vim.nox <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.nox, indx = 5, run_regression = FALSE)
-lm.vim.rm <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rm, indx = 6, run_regression = FALSE)
-lm.vim.age <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.age, indx = 7, run_regression = FALSE)
-lm.vim.dis <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.dis, indx = 8, run_regression = FALSE)
-lm.vim.rad <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.rad, indx = 9, run_regression = FALSE)
-lm.vim.tax <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.tax, indx = 10, run_regression = FALSE)
-lm.vim.ptratio <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.ptratio, indx = 11, run_regression = FALSE)
-lm.vim.black <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.black, indx = 12, run_regression = FALSE)
-lm.vim.lstat <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit.lstat, indx = 13, run_regression = FALSE)
+lm_vim_sbp <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_sbp, indx = 1, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_tob <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_tob, indx = 2, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_ldl <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_ldl, indx = 3, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_adi <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_adi, indx = 4, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_fam <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_fam, indx = 5, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_tpa <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_tpa, indx = 6, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_obe <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_obe, indx = 7, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_alc <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_alc, indx = 8, run_regression = FALSE, type = "r_squared", folds = heart_folds)
+lm_vim_age <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_age, indx = 9, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
 ## make a table with the estimates using the merge_vim() function
-lm.mat <- merge_vim(lm.vim.crim, lm.vim.zn, lm.vim.indus, lm.vim.chas,
-                lm.vim.nox, lm.vim.rm, lm.vim.age, lm.vim.dis, lm.vim.rad,
-                lm.vim.tax, lm.vim.ptratio, lm.vim.black, lm.vim.lstat)
+lm_mat <- merge_vim(lm_vim_sbp, lm_vim_tob, lm_vim_ldl, lm_vim_adi,
+                lm_vim_fam, lm_vim_tpa, lm_vim_obe, lm_vim_alc, lm_vim_age)
 ## print out the matrix
-lm.mat$mat
+lm_mat
 ```
 
 ### Building a library of learners
 
-In general, we don't believe that a linear model truly holds. Thinking about potential model misspecification leads us to consider other algorithms. Suppose that I prefer to use generalized additive models [@hastie1990] to estimate $\mu_{P_0}$ and $\mu_{P_0, s}$, so I am planning on using the `gam` package. Suppose that you prefer to use the elastic net [@zou2005], and are planning to use the `glmnet` package. 
+In general, we don't believe that a linear model truly holds. Thinking about potential model misspecification leads us to consider other algorithms. Suppose that I prefer to use generalized additive models [@hastie1990] to estimate $\mu_{P_0}$ and $\mu_{P_0, s}$, so I am planning on using the `gam` package. Suppose that you prefer to use the elastic net [@zou2005], and are planning to use the `glmnet` package.
 
-The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means! 
+The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means!
 
-This motivates using `SuperLearner` to allow the data to determine the optimal combination of *base learners* from a *library* that I define. These base learners are a combination of different methods (e.g., generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g., additive models with 3 and 4 degrees of freedom). The Super Learner is an example of model stacking, or model aggregation --- these approaches use a data-adaptive combination of base learners to make predictions. 
+This motivates using `SuperLearner` to allow the data to determine the optimal combination of *base learners* from a *library* that I define. These base learners are a combination of different methods (e.g., generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g., additive models with 3 and 4 degrees of freedom). The Super Learner is an example of model stacking, or model aggregation --- these approaches use a data-adaptive combination of base learners to make predictions.
 
-For instance, my library could include additive models, elastic net , random forests [@breiman2001], and gradient boosted trees [@friedman2001] as follows:
+For instance, my library could include the elastic net, random forests [@breiman2001], and gradient boosted trees [@friedman2001] as follows:
 
 ```{r}
 ## load the library
@@ -337,8 +327,7 @@ create.SL.randomForest <- function(tune = list(mtry = c(1, 5, 7), nodesize = c(1
 create.SL.randomForest()
 
 ## create the library
-learners <- c("SL.gam", "SL.gam.3", "SL.gam.4", "SL.gam.5",
-              "SL.glmnet", "SL.glmnet.0.25", "SL.glmnet.0.5", "SL.glmnet.0.75",
+learners <- c("SL.glmnet", "SL.glmnet.0.25", "SL.glmnet.0.5", "SL.glmnet.0.75",
               "SL.randomForest", "SL.randomForest.1", "SL.randomForest.2", "SL.randomForest.3",
               "SL.randomForest.4", "SL.randomForest.5", "SL.randomForest.6", "SL.randomForest.7",
               "SL.randomForest.8", "SL.randomForest.9",
@@ -349,187 +338,216 @@ Now that I have created the library of learners, I can move on to estimating var
 
 ### Estimating variable importance for a single variable
 
-The main function for ANOVA-derived variable importance in the `vimp` package is the `vimp_regression()` function. There are five main arguments to `vimp_regression()`:
+The main function for R-squared-based variable importance in the `vimp` package is the `vimp_rsquared()` function. There are five main arguments to `vimp_rsquared()`:
 
 - `Y`, the outcome
 - `f1` and `f2`, the fitted values from a sequential regression procedure; or `X`, the covariates
 - `indx`, which determines the feature I want to estimate variable importance for
 - `run_regression`, which determines whether or not the sequential regression procedure is run on `Y` and `X`
+- `V`, the number of cross-validation folds to use for computing variable importance
 
 There are two ways to compute importance:
 
-1. Supply outcome `Y`, covariates `X`, and a library of learners (e.g., `learners` above) with `run_regression = TRUE`
-2. Supply outcome `Y` and fitted values for estimates of $\mu_{P_0}$ and $\mu_{P_0, s}$ with `run_regression = FALSE`
+1. Supply outcome `Y`, covariates `X`, and a library of learners (e.g., `learners` above) with `run_regression = TRUE` and specified `V`
+2. Supply outcome `Y` and fitted values for cross-fit estimates of $\mu_{P_0}$ and $\mu_{P_0, s}$ with `run_regression = FALSE` and list of folds `folds`
 
-I will illustrate each of these choices in order below, but in practice I use (3), since it allows the most flexibility, and all time-intensive computation occurs before calling `vimp_regression()`; however, this involves more work on your end. 
+I will illustrate each of these choices in order below, but in practice I use (1), because there is less overhead prior to obtaining variable importance estimates.
 
-Suppose that the first feature that I want to estimate variable importance for is nitrogen oxide, `nox`. Since this is the first feature, say I choose (1) above. Then supplying `vimp_regression()` with 
+Suppose that the first feature that I want to estimate variable importance for is family history of heart disease, `fam`. Since this is the first feature, say I choose (1) above. Then supplying `vimp_rsquared()` with
 
-- `Y = Boston$medv`
+- `Y = heart$chd`
 - `X = X`
 - `indx = 5`
-- `run_regression = TRUE` 
+- `run_regression = TRUE`
+- `V = 5`
 
-means that: 
+means that:
 
 - I want to use `SuperLearner()` to estimate the conditional means $\mu_{P_0}$ and $\mu_{P_0,s}$
-- I want to estimate variable importance for the fifth column of the `Boston` covariates, which is `nox`
+- I want to estimate variable importance for the fifth column of the South African heart disease study covariates, which is `fam`
+- I want to use five-fold cross-validation to estimate importance
 
-The call to `vimp_regression()` looks like this:
+The call to `vimp_rsquared()` looks like this:
 ```{r, eval = FALSE}
 ## load the library
 library("vimp")
 
-## first re-order the data so that the outcome is in the first column
-Boston2 <- Boston[, 1:13]
-
 ## now estimate variable importance
-vimp_regression(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
-    indx = 5, run_regression = TRUE, SL.library = learners)
+vimp_rsquared(Y = heart$chd, X = X,
+    indx = 5, run_regression = TRUE, SL.library = learners, V = 5)
 ```
 
-While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue. 
+While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.
 
-However, for the sake of illustration, I can estimate varibable importance for nitrogen oxide only using only two base learners as follows:
+However, for the sake of illustration, I can estimate varibable importance for nitrogen oxide only using only one base learner as follows:
 ```{r, message = FALSE}
 ## load the library
 library("vimp")
 
-## first re-order the data so that the outcome is in the first column
-Boston2 <- Boston[, 1:13]
-
 ## new learners library, with only one learner for illustration only
-learners.2 <- c("SL.xgboost", "SL.glmnet")
+SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
+  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+}
+learners.2 <- c("SL.xgboost1")
 
 ## now estimate variable importance
-nox.vim <- vimp_regression(Y = Boston$medv, X = Boston2[, -1, drop = FALSE], 
-    indx = 5, run_regression = TRUE, SL.library = learners.2)
+fam_vim <- vim(Y = heart$chd, X = heart[, -dim(heart)[2]], indx = 5, run_regression = TRUE, SL.library = learners.2, na.rm = TRUE, env = environment(), type = "r_squared", folds = heart_folds)
 ```
 
-This code takes approximately 11 seconds to run on a (not very fast) PC. Under the hood, `vimp_regression()` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
+This code takes approximately 5 seconds to run on a (not very fast) PC. Under the hood, `vim()` with `run_regression = TRUE` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
 
 ```{r}
-nox.vim
+fam_vim
 ```
 
-The object returned by `vimp_regression()` also contains fitted values from using `SuperLearner()`; I access these using `$full_fit` and `$red_fit`. For example,
+The object returned by `vimp_rsquared()` also contains fitted values from using `SuperLearner()`; I access these using `$full_fit` and `$red_fit`. For example,
 
 ```{r}
-head(nox.vim$full_fit)
-head(nox.vim$red_fit)
+head(fam_vim$full_fit)
+head(fam_vim$red_fit)
 ```
 
-I said earlier that I want to obtain estimates of all individual features in these data, so let's choose average number of rooms (`rm`) next. Now that I have estimated variable importance for nitrogen oxide, the `full.fit` object contains our estimate of $\mu_{P_0}$. Since I have spent the time to estimate this using `SuperLearner()`, there is no reason to estimate this function again. This leads me to choose (2) above, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields
+I said earlier that I want to obtain estimates of all individual features in these data, so let's choose type A behavior (`tpa`) next. Now that I have estimated variable importance for family history, the `full_fit` object contains our estimate of $\mu_{P_0}$. Since I have spent the time to estimate this using `SuperLearner()`, there is no reason to estimate this function again. This leads me to choose (2) above for estimating the importance of type A behavior, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields
 
 ```{r, message = FALSE}
-## specify that full.fit doesn't change
-full.fit <- nox.vim$full_fit
+## specify that full_fit doesn't change
+full_fit <- fam_vim$full_fit
 
 ## estimate variable importance for the average number of rooms
-reduced_fit <- SuperLearner::SuperLearner(Y = full.fit, X = Boston2[, -c(1, 6), drop = FALSE], SL.library = learners.2)
-red.fit <- predict(reduced_fit)$pred
-rm.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = red.fit, indx = 6, run_regression = FALSE)
+reduced_fit <- SuperLearner::SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(6, dim(heart)[2]), drop = FALSE], SL.library = learners.2)
+red_fit <- predict(reduced_fit)$pred
+tpa_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit, indx = 6, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
-rm.vim
+tpa_vim
 ```
 
 This takes approximately 5 seconds --- now rather than estimating both conditional means, I am only estimating one.
 
-If I choose (2), then I have to use a single method from the library, or call `SuperLearner()` myself, prior to estimating variable importance. Then `vimp_regression()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for the distance to radial highways using this approach.
+If I choose (2), then I have to use a single method from the library, or call `SuperLearner()` myself, prior to estimating variable importance. Then `vim()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for current alcohol consumption using this approach.
 
 ```{r}
-## set up the data
-x <- Boston[, -c(8, 14)] # this removes dis and medv
+## set up the data, removing the columns for alcohol use and chd
+x <- heart[, -c(8, dim(heart)[2])]
 
-## fit a GAM and glmnet using SuperLearner
-reduced.mod <- SuperLearner(Y = full.fit, X = x, SL.library = learners.2)
-reduced.fit <- predict(reduced.mod)$pred
+## fit an xgboost model using SuperLearner
+reduced_mod <- SuperLearner(Y = full_fit, X = x[heart_folds == 2, ], SL.library = learners.2)
+reduced_fit <- predict(reduced_mod)$pred
 ## this takes 2 seconds
 
 ## estimate variable importance
-dis.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced.fit, indx = 8, run_regression = FALSE)
+alc_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_fit, indx = 8, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 ```
 
 I can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
 ```{r}
-reduced_crim <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(1, 14)], SL.library = learners.2))$pred
-crim.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_crim,
-                indx = 1, run_regression = FALSE)
+reduced_sbp <- predict(SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(1, dim(heart)[2])], SL.library = learners.2))$pred
+sbp_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_sbp,
+                indx = 1, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
-reduced_zn <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(2, 14)], SL.library = learners.2))$pred
-zn.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_zn,
-                indx = 2, run_regression = FALSE)
+reduced_tob <- predict(SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(2, dim(heart)[2])], SL.library = learners.2))$pred
+tob_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_tob,
+                indx = 2, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
-reduced_indus <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(3, 14)], SL.library = learners.2))$pred
-indus.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_indus,
-                indx = 3, run_regression = FALSE)
+reduced_ldl <- predict(SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(3, dim(heart)[2])], SL.library = learners.2))$pred
+ldl_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_ldl,
+                indx = 3, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
-reduced_chas <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(4, 14)], SL.library = learners.2))$pred
-chas.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_chas,
-                indx = 4, run_regression = FALSE)
+reduced_adi <- predict(SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(4, dim(heart)[2])], SL.library = learners.2))$pred
+adi_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_adi,
+                indx = 4, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
-reduced_age <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(7, 14)], SL.library = learners.2))$pred
-age.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_age,
-                indx = 7, run_regression = FALSE)
+reduced_obe <- predict(SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(7, dim(heart)[2])], SL.library = learners.2))$pred
+obe_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_obe,
+                indx = 7, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
-reduced_rad <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(9, 14)], SL.library = learners.2))$pred
-rad.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_rad,
-                indx = 9, run_regression = FALSE)
-
-reduced_tax <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(10, 14)], SL.library = learners.2))$pred
-tax.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_tax,
-                indx = 10, run_regression = FALSE)
-
-reduced_ptratio <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(11, 14)], SL.library = learners.2))$pred
-ptratio.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_ptratio,
-                indx = 11, run_regression = FALSE)
-
-reduced_black <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(12, 14)], SL.library = learners.2))$pred
-black.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_black,
-                indx = 12, run_regression = FALSE)
-
-reduced_lstat <- predict(SuperLearner(Y = full.fit, X = Boston[, -c(13, 14)], SL.library = learners.2))$pred
-lstat.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_lstat,
-                indx = 13, run_regression = FALSE)
+reduced_age <- predict(SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(9, dim(heart)[2])], SL.library = learners.2))$pred
+age_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_age,
+                indx = 9, run_regression = FALSE, type = "r_squared", folds = heart_folds)
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
 ```{r, fig.width = 8.5, fig.height = 8}
+library("dplyr")
+library("tibble")
+library("cowplot")
+library("forcats")
 ## combine the objects together
-ests <- merge_vim(crim.vim, zn.vim, indus.vim, chas.vim,
-                nox.vim, rm.vim, age.vim, dis.vim, rad.vim,
-                tax.vim, ptratio.vim, black.vim, lstat.vim)
+ests <- merge_vim(sbp_vim, tob_vim, ldl_vim, adi_vim,
+                fam_vim, tpa_vim, obe_vim, alc_vim, age_vim)
 
-## create a vector of names; must be in the same order as the
-## mat object in ests
-nms <- c("Prop. lower status", "Avg. num. rooms", "Pupil-teacher ratio", "Nitrogen oxide", "Distance", "Crime", "Access to radial hwys", "Property tax rate", "Charles riv.", "Prop. black", "Prop. business", "Prop. large zoned", "Age")
+get_nm <- function(s) {
+  if (s == 1) {
+    return("Sys. blood press.")
+  } else if (s == 2) {
+    return("Tobacco consump.")
+  } else if (s == 3) {
+    return("LDL cholesterol")
+  } else if (s == 4) {
+    return("Adiposity")
+  } else if (s == 5) {
+    return("Family history")
+  } else if (s == 6) {
+    return("Type A behavior")
+  } else if (s == 7) {
+    return("Obesity")
+  } else if (s == 8) {
+    return("Alcohol consump.")
+  } else if (s == 9) {
+    return("Age")
+  }
+}
+get_nms <- function(ests) {
+  return(apply(matrix(as.numeric(ests$s)), 1, get_nm))
+}
 
 ## plot
-plot(ests, nms, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for individual features", xlim = c(0, 0.2))
+ests$mat %>%
+  arrange(desc(est)) %>%
+  mutate(ord_group = forcats::fct_reorder(get_nms(ests$mat), est)) %>%
+  ggplot(aes(x = est, y = ord_group)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
+  xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
+  ylab("") +
+  ggtitle("Variable importance estimates for individual features in the South African heart disease study data")
 ```
 
 ## Estimating variable importance for a group of variables
 
-Now that I have estimated variable importance for each of the individual features, I can estimate variable importance for each of the groups that I mentioned above: accessibility features, structural features, nitrogen oxide, and neighborhood features.
+Now that I have estimated variable importance for each of the individual features, I can estimate variable importance for each of the groups that I mentioned above: biological and behavioral features.
 
 The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for `s`; I can use any of the options listed in the previous section to compute these estimates.
 
 ```{r, fig.width = 8.5, fig.height = 8}
 ## get the estimates
-reduced_struct <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(6, 7, 14)], SL.library = learners.2))$pred
-structure.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_struct, indx = c(6, 7), run_regression = FALSE)
+reduced_behav <- predict(SuperLearner(Y = heart$chd[heart_folds == 2], X = heart[heart_folds == 2, -c(2, 6, 8, dim(heart)[2])], SL.library = learners.2))$pred
+behav_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_behav, indx = c(2, 6, 8), run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
-reduced_access <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(8, 9, 14)], SL.library = learners.2))$pred
-access.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_access, indx = c(8, 9), run_regression = FALSE)
-
-reduced_neigh <- predict(SuperLearner(Y = Boston$medv, X = Boston[, -c(1, 2, 3, 4, 10, 11, 12, 13, 14)], SL.library = learners.2))$pred
-neigh.vim <- vimp_regression(Y = Boston$medv, f1 = full.fit, f2 = reduced_access,
-                indx = c(1, 2, 3, 4, 10, 11, 12, 13), run_regression = FALSE)
+reduced_bios <- predict(SuperLearner(Y = heart$chd[heart_folds == 2], X = heart[heart_folds == 2, -c(1, 3, 4, 5, 7, 9, dim(heart)[2])], SL.library = learners.2))$pred
+bios_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_bios, indx = c(1, 3, 4, 5, 7, 9), run_regression = FALSE, type = "r_squared", folds = heart_folds)
 
 ## combine and plot
-groups <- merge_vim(structure.vim, access.vim, neigh.vim, nox.vim)
-nms.2 <- c("Neighborhood", "Structure", "Accessibility", "Nitrogen oxide")
-plot(groups, nms.2, pch = 16, ylab = "", xlab = "Estimate", main = "Estimated variable importance for groups", xlim = c(0, 0.5))
+groups <- merge_vim(behav_vim, bios_vim)
+nms.2 <- c("Behavioral features", "Biological features")
+nms_grp <- function(s) {
+  if (s == "1,3,4,5,7,9") {
+    return("Biological features")
+  } else {
+    return("Behavioral features")
+  }
+}
+get_nms_grp <- function(ests) {
+  return(unlist(lapply(as.list(ests$s), function(x) nms_grp(x))))
+}
+groups$mat %>%
+  arrange(desc(est)) %>%
+  mutate(ord_group = forcats::fct_reorder(get_nms_grp(groups$mat), est)) %>%
+  ggplot(aes(x = est, y = ord_group)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
+  xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
+  ylab("") +
+  ggtitle("Variable importance estimates for groups of features in the South African heart disease study data")
 ```
 
 ## References

@@ -4,10 +4,21 @@
 \alias{cv_vim_nodonsker}
 \title{Nonparametric Variable Importance Estimates using Cross-validation, without Donsker class relaxation}
 \usage{
-cv_vim_nodonsker(Y, X, f1, f2, indx = 1, V = 10, folds = NULL,
-  type = "regression", run_regression = TRUE,
-  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05,
-  na.rm = FALSE, ...)
+cv_vim_nodonsker(
+  Y,
+  X,
+  f1,
+  f2,
+  indx = 1,
+  V = 10,
+  folds = NULL,
+  type = "r_squared",
+  run_regression = TRUE,
+  SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  alpha = 0.05,
+  na.rm = FALSE,
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome.}
