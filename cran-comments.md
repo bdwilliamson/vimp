@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Added new functions vimp_accuracy, vimp_auc, and vimp_rsquared
+* Added new functions vimp_accuracy, vimp_auc, vimp_rsquared, sp_vim, spvim_ics, spvim_se
 * Added new function vimp_anova to take the place of vimp_regression (now deprecated)
 * Added new function vim; all vimp_ functions call vim under the hood
 * Reorganized internals of vim and cv_vim

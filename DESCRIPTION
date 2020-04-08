@@ -9,7 +9,7 @@ Maintainer: Brian D. Williamson <brianw26@uw.edu>
 Description: Calculate point estimates of and valid confidence intervals for
     nonparametric variable importance measures in high and low dimensions,
     using flexible estimators of the underlying regression functions. For more information
-    about the methods, please see Williamson et al. (2020) <link to biometrics article> and Williamson et al. (2020+) <link to arxiv article>.
+    about the methods, please see Williamson et al. (Biometrics, 2020) <link to biometrics article> and Williamson et al. (arXiv, 2020+) <link to arxiv article>.
 License: MIT + file LICENSE
 Depends:
     R (>= 3.1.0)

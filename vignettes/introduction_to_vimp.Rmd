@@ -10,7 +10,24 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 references:
-- id: williamson2017
+- id: williamson2020a
+  title: Nonparametric variable importance assessment using machine learning techniques
+  author:
+  - family: Williamson
+    given: Brian D
+  - family: Gilbert
+    given: Peter B
+  - family: Carone
+    given: Marco
+  - family: Simon
+    given: Noah
+  publisher: Biometrics
+  type: article-journal
+  issued:
+   year: 2020
+  URL: ''
+- id: williamson2020b
+  title: A unified approach for inference on algorithm-agnostic variable importance
   author:
   - family: Williamson
     given: Brian D
@@ -20,11 +37,23 @@ references:
     given: Noah
   - family: Carone
     given: Marco
-  publisher: University of Washington Department of Biostatistics Working Paper Series
+  publisher: arXiv
   type: article-journal
   issued:
-   year: 2017
-  URL: 'http://biostats.bepress.com/uwbiostat/paper422/'
+   year: 2020
+  URL: ''
+- id: williamson2020c
+  title: A unified approach for assessing population feature importance using Shapley values
+  author:
+  - family: Williamson
+    given: Brian D
+  - family: Feng
+    given: Jean
+  publisher: arXiv
+  type: article-journal
+  issued:
+   year: 2020
+  URL: ''
 - id: hastie1990
   title: Generalized Additive Models
   author:
@@ -112,11 +141,11 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 ## Introduction
 
-`vimp` is a package that computes nonparametric estimates of variable importance. Currently, the package supports flexible estimation of a nonparametric $R^2$-based measure of variable importance, interpreted as the additional proportion of variability in the outcome explained by including a group of covariates in estimation of the conditional mean. This quantity is a nonparametric generalization of the usual $R^2$ measure.
+`vimp` is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts [@williamson2020a] and [@williamson2020b]. The package also supports estimation of variable importance based on the population Shapley values for an arbitrary predictiveness measure (e.g., $R^2$, accuracy, AUC); for more details, see [@williamson2020c].
 
-Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means --- if these techniques are slow, then the variable importance procedure will be slow. However, you may save computation time by estimating the conditional means separately, and plugging these estimates into the variable importance procedure.
+Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means --- if these techniques are slow, then the variable importance procedure will be slow.
 
-The code can handle arbitrary dimensions of features, and may be used to estimate the importance of any single feature or group of features for predicting the outcome. The package also includes functions for cross-validated importance and plotting.
+The code can handle arbitrary dimensions of features, and may be used to estimate the importance of any single feature or group of features for predicting the outcome. The package also includes functions for cross-validated importance.
 
 The author and maintainer of the `vimp` package is [Brian Williamson](https://bdwilliamson.github.io/).
 
@@ -138,7 +167,7 @@ devtools::install_github("bdwilliamson/vimp")
 
 ## Quick Start
 
-This section should serve as a quick guide to using the `vimp` package --- we will cover the main functions using a simulated data example. More details are given in the next section.
+This section should serve as a quick guide to using the `vimp` package --- we will cover the main functions for estimating $R^2$-based variable importance using a simulated data example. More details are given in the next section.
 
 First, load the `vimp` package:
 ```{r}
@@ -198,6 +227,8 @@ print(est_1)
 This output shows that we have estimated the importance of $X_1$ to be `r round(est_1$est, 3)`, with a 95% confidence interval of `r paste0("[", round(est_1$ci[,1], 3), ", ", round(est_1$ci[, 2], 3), "]")`.
 
 ## Detailed guide
+
+In this section, we provide a fuller example of estimating $R^2$-based variable importance in the context of the South African heart disease study data [@hastie2011]. 
 
 Often when working with data we attempt to estimate the conditional mean of the outcome $Y$ given features $X$, defined as $\mu_P(x) = E_P(Y \mid X = x)$.
 
