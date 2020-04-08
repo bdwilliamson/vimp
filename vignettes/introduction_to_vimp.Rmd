@@ -25,7 +25,6 @@ references:
   type: article-journal
   issued:
    year: 2020
-  URL: ''
 - id: williamson2020b
   title: A unified approach for inference on algorithm-agnostic variable importance
   author:
@@ -41,7 +40,6 @@ references:
   type: article-journal
   issued:
    year: 2020
-  URL: ''
 - id: williamson2020c
   title: A unified approach for assessing population feature importance using Shapley values
   author:
@@ -53,7 +51,6 @@ references:
   type: article-journal
   issued:
    year: 2020
-  URL: ''
 - id: hastie1990
   title: Generalized Additive Models
   author:
@@ -228,7 +225,7 @@ This output shows that we have estimated the importance of $X_1$ to be `r round(
 
 ## Detailed guide
 
-In this section, we provide a fuller example of estimating $R^2$-based variable importance in the context of the South African heart disease study data [@hastie2011]. 
+In this section, we provide a fuller example of estimating $R^2$-based variable importance in the context of the South African heart disease study data [@hastie2011].
 
 Often when working with data we attempt to estimate the conditional mean of the outcome $Y$ given features $X$, defined as $\mu_P(x) = E_P(Y \mid X = x)$.
 
