@@ -14,7 +14,7 @@
 
 In predictive modeling applications, it is often of interest to determine the relative contribution of subsets of features in explaining an outcome; this is often called variable importance. It is useful to consider variable importance as a function of the unknown, underlying data-generating mechanism rather than the specific predictive algorithm used to fit the data. This package provides functions that, given fitted values from predictive algorithms, compute nonparametric estimates of and variance-based variable importance, along with asymptotically valid confidence intervals for the true importance.
 
-More detail may be found in our [tech report](http://biostats.bepress.com/uwbiostat/paper422/).
+More detail may be found in our [tech report](https://arxiv.org/abs/2004.03683).
 
 This method works on low-dimensional and high-dimensional data.
 
