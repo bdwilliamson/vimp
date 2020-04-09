@@ -17,7 +17,8 @@ Imports:
     SuperLearner,
     stats,
     graphics,
-    dplyr
+    dplyr,
+    magrittr
 LazyData: TRUE
 RoxygenNote: 7.0.2
 Suggests:
@@ -29,5 +30,7 @@ Suggests:
     glmnet,
     quadprog,
     covr,
-    testthat
+    testthat,
+    ggplot2,
+    cowplot
 VignetteBuilder: knitr
