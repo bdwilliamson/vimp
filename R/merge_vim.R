@@ -42,14 +42,14 @@
 #' ## set up a library for SuperLearner
 #' learners <- "SL.ranger"
 #'
-#' ## using Super Learner
-#' est_2 <- vimp_regression(Y = y, X = x, indx = 2,
+#' ## using Super Learner (with a small number of folds, for illustration only)
+#' est_2 <- vimp_regression(Y = y, X = x, indx = 2, V = 2,
 #'            run_regression = TRUE, alpha = 0.05,
-#'            SL.library = learners, cvControl = list(V = 10))
+#'            SL.library = learners, cvControl = list(V = 5))
 #'
-#' est_1 <- vimp_regression(Y = y, X = x, indx = 1,
+#' est_1 <- vimp_regression(Y = y, X = x, indx = 1, V = 2,
 #'            run_regression = TRUE, alpha = 0.05,
-#'            SL.library = learners, cvControl = list(V = 10))
+#'            SL.library = learners, cvControl = list(V = 5))
 #'
 #' ests <- merge_vim(est_1, est_2)
 #' @importFrom magrittr "%>%"

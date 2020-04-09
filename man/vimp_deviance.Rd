@@ -101,10 +101,10 @@ y <- matrix(stats::rbinom(n, size = 1, prob = smooth))
 ## set up a library for SuperLearner
 learners <- "SL.ranger"
 
-## estimate
+## estimate (with a small number of folds, for illustration only)
 est <- vimp_deviance(y, x, indx = 2,
            alpha = 0.05, run_regression = TRUE,
-           SL.library = learners, cvControl = list(V = 10))
+           SL.library = learners, V = 2, cvControl = list(V = 5))
 
 }
 \seealso{

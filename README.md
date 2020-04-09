@@ -12,7 +12,9 @@
 
 ## Introduction
 
-In predictive modeling applications, it is often of interest to determine the relative contribution of subsets of features in explaining an outcome; this is often called variable importance. It is useful to consider variable importance as a function of the unknown, underlying data-generating mechanism rather than the specific predictive algorithm used to fit the data. This package provides functions that, given fitted values from predictive algorithms, compute nonparametric estimates of and variance-based variable importance, along with asymptotically valid confidence intervals for the true importance.
+In predictive modeling applications, it is often of interest to determine the relative contribution of subsets of features in explaining an outcome; this is often called variable importance. It is useful to consider variable importance as a function of the unknown, underlying data-generating mechanism rather than the specific predictive algorithm used to fit the data. This package provides functions that, given fitted values from predictive algorithms, compute algorithm-agnostic estimates of population variable importance, along with asymptotically valid confidence intervals for the true importance and hypothesis tests of the null hypothesis of zero importance.
+
+Specifically, the types of variable importance supported by `vimp` include: difference in population classification accuracy, difference in population area under the receiver operating characteristic curve, difference in population deviance, difference in population R-squared.
 
 More detail may be found in our [tech report](https://arxiv.org/abs/2004.03683).
 
@@ -40,7 +42,7 @@ devtools::install_github(repo = "bdwilliamson/vimp")
 
 ## Example
 
-This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions. For more examples and detailed explanation, please see the [vignette](vignettes/introduction_to_vimp.Rmd).
+This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the [vignette](vignettes/introduction_to_vimp.Rmd).
 
 ```r
 ## load required functions and libraries
@@ -78,5 +80,5 @@ reduced_fit <- reduced_regression$SL.predict
 ## get variable importance!
 ## -------------------------------------------------------------
 ## get the variable importance estimate, SE, and CI
-vimp <- vimp_anova(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
+vimp <- vimp_rsquared(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
 ```

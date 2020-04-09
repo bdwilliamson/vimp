@@ -43,14 +43,14 @@
 #' ## get estimates on independent splits of the data
 #' samp <- sample(1:n, n/2, replace = FALSE)
 #'
-#' ## using Super Learner
-#' est_2 <- vimp_regression(Y = y[samp], X = x[samp, ], indx = 2,
+#' ## using Super Learner (with a small number of folds, for illustration only)
+#' est_2 <- vimp_regression(Y = y[samp], X = x[samp, ], indx = 2, V = 2,
 #'            run_regression = TRUE, alpha = 0.05,
-#'            SL.library = learners, cvControl = list(V = 10))
+#'            SL.library = learners, cvControl = list(V = 5))
 #'
-#' est_1 <- vimp_regression(Y = y[-samp], X = x[-samp, ], indx = 2,
+#' est_1 <- vimp_regression(Y = y[-samp], X = x[-samp, ], indx = 2, V = 2,
 #'            run_regression = TRUE, alpha = 0.05,
-#'            SL.library = learners, cvControl = list(V = 10))
+#'            SL.library = learners, cvControl = list(V = 5))
 #'
 #' ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
 #' 

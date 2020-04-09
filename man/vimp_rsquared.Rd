@@ -100,10 +100,10 @@ y <- smooth + stats::rnorm(n, 0, 1)
 ## set up a library for SuperLearner
 learners <- "SL.ranger"
 
-## estimate
+## estimate (with a small number of folds, for illustration only)
 est <- vimp_rsquared(y, x, indx = 2,
            alpha = 0.05, run_regression = TRUE,
-           SL.library = learners, cvControl = list(V = 10))
+           SL.library = learners, V = 2, cvControl = list(V = 5))
 
 }
 \seealso{

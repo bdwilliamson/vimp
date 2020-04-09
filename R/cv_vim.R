@@ -70,19 +70,19 @@
 #' learners <- c("SL.mean", "SL.ranger")
 #'
 #' ## -----------------------------------------
-#' ## using Super Learner
+#' ## using Super Learner (with a small number of folds, for illustration only)
 #' ## -----------------------------------------
 #' set.seed(4747)
-#' est <- cv_vim(Y = y, X = x, indx = 2, V = 5,
+#' est <- cv_vim(Y = y, X = x, indx = 2, V = 2,
 #' type = "r_squared", run_regression = TRUE,
-#' SL.library = learners, alpha = 0.05)
+#' SL.library = learners, cvControl = list(V = 5), alpha = 0.05)
 #'
 #' ## ------------------------------------------
-#' ## doing things by hand, and plugging them in
+#' ## doing things by hand, and plugging them in (with a small number of folds, for illustration only)
 #' ## ------------------------------------------
 #' ## set up the folds
 #' indx <- 2
-#' V <- 5
+#' V <- 2
 #' set.seed(4747)
 #' folds <- rep(seq_len(V), length = n)
 #' folds <- sample(folds)
@@ -105,7 +105,7 @@
 #'      newdata = x[folds == v, -indx, drop = FALSE])$pred
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-#' V = 5, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05)
+#' V = V, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05)
 #' }
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.

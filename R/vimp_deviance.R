@@ -59,15 +59,15 @@
 #' ## set up a library for SuperLearner
 #' learners <- "SL.ranger"
 #'
-#' ## estimate
+#' ## estimate (with a small number of folds, for illustration only)
 #' est <- vimp_deviance(y, x, indx = 2,
 #'            alpha = 0.05, run_regression = TRUE,
-#'            SL.library = learners, cvControl = list(V = 10))
+#'            SL.library = learners, V = 2, cvControl = list(V = 5))
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
 
 
 vimp_deviance <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = TRUE, scale = "identity", ...) {
-  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "deviance", run_regression = run_regression, SL.libary = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, ...)
+  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "deviance", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, ...)
 }
