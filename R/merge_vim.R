@@ -26,7 +26,7 @@
 #'
 #' @examples
 #' library(SuperLearner)
-#' library(gam)
+#' library(ranger)
 #' ## generate the data
 #' ## generate X
 #' p <- 2
@@ -40,7 +40,7 @@
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
 #' ## set up a library for SuperLearner
-#' learners <- "SL.gam"
+#' learners <- "SL.ranger"
 #'
 #' ## using Super Learner
 #' est_2 <- vimp_regression(Y = y, X = x, indx = 2,
@@ -53,6 +53,7 @@
 #'
 #' ests <- merge_vim(est_1, est_2)
 #' @importFrom magrittr "%>%"
+#' @importFrom rlang "!!" sym
 #' @export
 merge_vim <- function(...) {
   ## capture the arguments
@@ -97,7 +98,7 @@ merge_vim <- function(...) {
 
   ## combine into a tibble
   mat <- do.call(dplyr::bind_rows, lapply(L, function(z) z$mat)) %>% 
-    dplyr::arrange(desc(est))
+    dplyr::arrange(dplyr::desc(!! rlang::sym("est")))
 
   ## create output list
   output <- list(call = call,

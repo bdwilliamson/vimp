@@ -44,6 +44,7 @@
 #'
 #' @examples
 #' \donttest{
+#' ## don't test because this can take some time to run
 #' library(SuperLearner)
 #' library(gam)
 #' n <- 100
@@ -64,11 +65,10 @@
 #' ## using Super Learner
 #' ## -----------------------------------------
 #' set.seed(4747)
-#' est <- sp_vim(Y = y, X = x, V = 5,
-#' type = "r_squared",
-#' SL.library = learners, alpha = 0.05)
+#' est <- sp_vim(Y = y, X = x, V = 5, type = "r_squared", SL.library = learners, alpha = 0.05)
 #' }
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+#' @importFrom stats pnorm
 #' @export
 sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared", SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE, ...) {
     ## check to see if f1 and f2 are missing

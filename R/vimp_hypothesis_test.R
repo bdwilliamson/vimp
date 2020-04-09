@@ -20,6 +20,8 @@
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
+#' 
+#' @importFrom stats pnorm
 #'
 #' @export
 vimp_hypothesis_test <- function(full, reduced, y, folds, delta = 0, weights = rep(1, length(y)), type = "r_squared", alpha = 0.05, cv = FALSE, scale = "identity", na.rm = FALSE) {

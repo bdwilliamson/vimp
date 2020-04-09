@@ -11,6 +11,7 @@
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
 #' @param V the number of folds for cross-validation, defaults to 10.
 #' @param folds the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-validation).
+#' @param stratified if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
@@ -51,8 +52,9 @@
 #'
 #' @examples
 #' \donttest{
+#' ## don't test because this can take a long time to run
 #' library(SuperLearner)
-#' library(gam)
+#' library(ranger)
 #' n <- 100
 #' p <- 2
 #' ## generate the data
@@ -65,7 +67,7 @@
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #'
 #' ## set up a library for SuperLearner
-#' learners <- c("SL.mean", "SL.gam")
+#' learners <- c("SL.mean", "SL.ranger")
 #'
 #' ## -----------------------------------------
 #' ## using Super Learner
@@ -108,7 +110,7 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, ...) {
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, stratified = FALSE, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -129,13 +131,26 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     ## if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
+        ## create folds for cross-fitting
+        .make_folds <- function(y, V, stratified = FALSE) {
+            folds <- vector("numeric", length(y))
+            if (stratified) {
+                folds_1 <- rep(seq_len(V), length = sum(y == 1))
+                folds_0 <- rep(seq_len(V), length = sum(y == 0))
+                folds_1 <- sample(folds_1)
+                folds_0 <- sample(folds_0)
+                folds[y == 1] <- folds_1
+                folds[y == 0] <- folds_0
+            } else {
+                folds <- rep(seq_len(V), length = length(y))
+                folds <- sample(folds)
+            }
+            return(folds)
+        }
         ## set up the cross-validation
-        outer_folds <- rep_len(seq_len(2), dim(Y)[1])
-        outer_folds <- sample(outer_folds)
-        inner_folds_1 <- rep_len(seq_len(V), dim(Y[outer_folds == 1, , drop = FALSE])[1])
-        inner_folds_1 <- sample(inner_folds_1)
-        inner_folds_2 <- rep_len(seq_len(V), dim(Y[outer_folds == 2, , drop = FALSE])[1])
-        inner_folds_2 <- sample(inner_folds_2)
+        outer_folds <- .make_folds(Y, V = 2, stratified = stratified)
+        inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
+        inner_folds_2 <- .make_folds(Y[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified)
         ## fit the super learner on each full/reduced pair
         fhat_ful <- list()
         fhat_red <- list()

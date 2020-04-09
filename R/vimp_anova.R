@@ -9,15 +9,14 @@
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
 #' @param V the number of folds for cross-validation, defaults to 10.
 #' @param folds the folds to use, if f1 and f2 are supplied.
+#' @param stratified if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
-#' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param scale scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")
-#' @param pval_tol tolerance level for p-value detection (defaults to 0.001)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and \code{vim_regression}. See Details for more information.
@@ -46,7 +45,7 @@
 #'
 #' @examples
 #' library(SuperLearner)
-#' library(gam)
+#' library(ranger)
 #' ## generate the data
 #' ## generate X
 #' p <- 2
@@ -60,7 +59,7 @@
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
 #' ## set up a library for SuperLearner
-#' learners <- "SL.gam"
+#' learners <- "SL.ranger"
 #'
 #' ## estimate
 #' est <- vimp_anova(y, x, indx = 2,
@@ -71,6 +70,6 @@
 #' @export
 
 
-vimp_anova <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, scale = "identity", folds, ...) {
-    cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "anova", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, scale = scale, ...)
+vimp_anova <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, scale = "identity", folds, stratified = FALSE, ...) {
+    cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "anova", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, ...)
 }

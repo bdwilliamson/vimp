@@ -25,7 +25,8 @@ Compute standard error estimates based on the estimated influence function for a
 Since the processes for sampling observations and subsets are independent, the variance for a given SPVIM estimator is simply the sum of the vairances based on sampling observations and on sampling subsets.
 }
 \examples{
-#' \donttest{
+\donttest{
+## don't test because this can take some time to run
 library(SuperLearner)
 library(gam)
 n <- 100

@@ -12,6 +12,7 @@ cv_vim(
   indx = 1,
   V = length(unique(folds)),
   folds = NULL,
+  stratified = FALSE,
   weights = rep(1, length(Y)),
   type = "r_squared",
   run_regression = TRUE,
@@ -37,6 +38,8 @@ cv_vim(
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
 \item{folds}{the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-validation).}
+
+\item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
 \item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
 
@@ -93,8 +96,9 @@ within the \code{vim} object. This results in a list containing:
 }
 \examples{
 \donttest{
+## don't test because this can take a long time to run
 library(SuperLearner)
-library(gam)
+library(ranger)
 n <- 100
 p <- 2
 ## generate the data
@@ -107,7 +111,7 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
 ## set up a library for SuperLearner
-learners <- c("SL.mean", "SL.gam")
+learners <- c("SL.mean", "SL.ranger")
 
 ## -----------------------------------------
 ## using Super Learner

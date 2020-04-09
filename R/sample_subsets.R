@@ -14,6 +14,9 @@
 #' n <- 100
 #' set.seed(100)
 #' subset_lst <- sample_subsets(p, gamma, n)
+#' @importFrom rlang `!!`
+#' @importFrom rlang sym
+#' @importFrom rlang .data
 #' @export
 sample_subsets <- function(p, gamma, n) {
     max_subset <- 1:p
@@ -28,12 +31,12 @@ sample_subsets <- function(p, gamma, n) {
     Z_with_counts <- data.frame(Z_all) %>%
         dplyr::group_by_all() %>%
         dplyr::count() %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(size = rowSums(.) - n) %>%
-        dplyr::arrange(size) %>%
-        dplyr::select(-size)
+        dplyr::ungroup() 
+    Z_with_counts$size <- rowSums(Z_with_counts[, -ncol(Z_with_counts)])
     Z <- Z_with_counts %>%
-        dplyr::select(-n) %>%
+        dplyr::arrange(!! rlang::sym("size")) %>%
+        dplyr::select(-!! rlang::sym("size")) %>%
+        dplyr::select(-!! rlang::sym("n")) %>%
         as.matrix()
     z_counts <- Z_with_counts$n
     Z_aug <- cbind(1, Z)

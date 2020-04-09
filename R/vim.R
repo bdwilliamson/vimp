@@ -16,6 +16,7 @@
 #' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param folds the folds used for \code{f1} and \code{f2}; assumed to be 1 for the observations used in \code{f1} and 2 for the observations used in \code{f2}. If there is only a single fold passed in, then hypothesis testing is not done.
+#' @param stratified if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and the type of risk-based measure. See Details for more information.
@@ -47,7 +48,7 @@
 #'
 #' @examples
 #' library(SuperLearner)
-#' library(gam)
+#' library(ranger)
 #' ## generate the data
 #' ## generate X
 #' p <- 2
@@ -62,10 +63,14 @@
 #' y <- matrix(rbinom(n, size = 1, prob = smooth))
 #'
 #' ## set up a library for SuperLearner
-#' learners <- "SL.gam"
+#' learners <- "SL.ranger"
 #'
-#' ## using Y and X
-#' folds <- sample(rep(seq_len(2), length = length(y)))
+#' ## using Y and X; use class-balanced folds
+#' folds_1 <- sample(rep(seq_len(2), length = sum(y == 1)))
+#' folds_0 <- sample(rep(seq_len(2), length = sum(y == 0)))
+#' folds <- vector("numeric", length(y))
+#' folds[y == 1] <- folds_1
+#' folds[y == 0] <- folds_0
 #' est <- vim(y, x, indx = 2, type = "r_squared",
 #'            alpha = 0.05, run_regression = TRUE,
 #'            SL.library = learners, cvControl = list(V = 10),
@@ -79,14 +84,15 @@
 #' SL.library = learners, cvControl = list(V = 10))
 #' red.fit <- predict(reduced)$pred
 #'
-#' est <- vimp_accuracy(Y = y, f1 = full.fit, f2 = red.fit,
-#'             indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds)
+#' est <- vim(Y = y, f1 = full.fit, f2 = red.fit,
+#'             indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds,
+#'             type = "accuracy")
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
 
 
-vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, ...) {
+vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, stratified = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -106,7 +112,25 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
     ## if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
-
+        ## create folds for cross-fitting
+        .make_folds <- function(y, V, stratified = FALSE) {
+            folds <- vector("numeric", length(y))
+            if (stratified) {
+                folds_1 <- rep(seq_len(V), length = sum(y == 1))
+                folds_0 <- rep(seq_len(V), length = sum(y == 0))
+                folds_1 <- sample(folds_1)
+                folds_0 <- sample(folds_0)
+                folds[y == 1] <- folds_1
+                folds[y == 0] <- folds_0
+            } else {
+                folds <- rep(seq_len(V), length = length(y))
+                folds <- sample(folds)
+            }
+            return(folds)
+        }
+        if (is.null(folds)) {
+            folds <- .make_folds(Y, V = 2, stratified = stratified)
+        }
         ## if formula is entered, need a library for Super Learner
         if (is.null(SL.library)) stop("You must enter a library of learners for the Super Learner.")
 

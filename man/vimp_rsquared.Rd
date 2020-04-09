@@ -18,6 +18,7 @@ vimp_rsquared(
   delta = 0,
   na.rm = FALSE,
   folds = NULL,
+  stratified = FALSE,
   ...
 )
 }
@@ -48,9 +49,9 @@ vimp_rsquared(
 
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
 
-\item{...}{other arguments to the estimation tool, see "See also".}
+\item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
-\item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
+\item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
 An object of classes \code{vim} and \code{vim_rsquared}. See Details for more information.
@@ -83,7 +84,7 @@ within the \code{vim} object. This results in a list containing:
 }
 \examples{
 library(SuperLearner)
-library(gam)
+library(ranger)
 ## generate the data
 ## generate X
 p <- 2
@@ -97,7 +98,7 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 y <- smooth + stats::rnorm(n, 0, 1)
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- "SL.ranger"
 
 ## estimate
 est <- vimp_rsquared(y, x, indx = 2,

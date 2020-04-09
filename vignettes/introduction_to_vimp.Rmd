@@ -128,18 +128,18 @@ references:
    year: 2005
 ---
 
-```{r, echo = FALSE, include = FALSE}
+```{r setup, echo = FALSE, include = FALSE}
 library(knitr)
 opts_knit$set(cache = FALSE, verbose = TRUE, global.par = TRUE)
 ```
 
-```{r echo = FALSE}
+```{r more-setup, echo = FALSE}
 par(mar = c(5, 12, 4, 2) + 0.1)
 ```
 
 ## Introduction
 
-`vimp` is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts [@williamson2020a] and [@williamson2020b]. The package also supports estimation of variable importance based on the population Shapley values for an arbitrary predictiveness measure (e.g., $R^2$, accuracy, AUC); for more details, see [@williamson2020c].
+`vimp` is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts [@williamson2020a] and [@williamson2020b]. 
 
 Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means --- if these techniques are slow, then the variable importance procedure will be slow.
 
@@ -150,13 +150,13 @@ The author and maintainer of the `vimp` package is [Brian Williamson](https://bd
 ## Installation
 
 A stable version of the package may be downloaded and installed from CRAN. Type the following command in your R console to install the stable version of `vimp`:
-```{r, eval = FALSE}
+```{r install-vimp, eval = FALSE}
 install.packages("vimp")
 ```
 
 A development version of the package may be downloaded and installed from GitHub using the `devtools` package. Type the following command in your R console to install the development version of `vimp`:
 
-```{r, eval = FALSE}
+```{r devtools-install-vimp, eval = FALSE}
 # only run if you don't have devtools
 # previously installed
 # install.packages("devtools")
@@ -168,12 +168,12 @@ devtools::install_github("bdwilliamson/vimp")
 This section should serve as a quick guide to using the `vimp` package --- we will cover the main functions for estimating $R^2$-based variable importance using a simulated data example. More details are given in the next section.
 
 First, load the `vimp` package:
-```{r}
+```{r load-vimp}
 library("vimp")
 ```
 
 Next, create some data:
-```{r}
+```{r gen-data}
 ## -------------------------------------------------------------
 ## problem setup
 ## -------------------------------------------------------------
@@ -200,7 +200,7 @@ The workhorse function of `vimp`, for $R^2$-based variable importance, is `vimp_
 
 This second-to-last argument, `SL.library`, determines the estimators you want to use for the conditional mean of Y given X. Estimates of variable importance rely on good estimators of the conditional mean, so we suggest using flexible estimators and model stacking to do so. One option for this is the `SuperLearner` package; load that package using
 
-```{r}
+```{r learner-lib-small}
 library("SuperLearner")
 ## load specific algorithms
 library("gam")
@@ -211,13 +211,13 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
 ```
 
 The code
-```{r}
+```{r est-1}
 est_1 <- vimp_rsquared(Y = y, X = x, indx = 1, run_regression = TRUE,
 SL.library = c("SL.xgboost1", "SL.mean"), V = 3, env = environment(), folds = folds)
 ```
 
 uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance for the importance of $X_1$. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:
-```{r}
+```{r print-est-1}
 est_1
 print(est_1)
 ```
@@ -248,7 +248,7 @@ This document introduces you to the basic tools in `vimp` and how to apply them 
 
 Throughout this document I will use the South African heart disease study data [@hastie2011], freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data). Information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt).
 
-```{r}
+```{r load-heart-data}
 ## read in the data from the Elements website
 library("RCurl")
 heart_data <- read.csv(text = getURL("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
@@ -266,7 +266,7 @@ Since there are nine features and two groups, it is of interest to determine var
 ### A first approach: linear regression
 Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. This is achieved by the following:
 
-```{r}
+```{r est-heart-regressions-lm}
 ## estimate the full conditional mean using linear regression
 full_mod <- lm(chd ~ ., data = subset(heart, heart_folds == 1))
 full_fit <- predict(full_mod)
@@ -324,7 +324,7 @@ This motivates using `SuperLearner` to allow the data to determine the optimal c
 
 For instance, my library could include the elastic net, random forests [@breiman2001], and gradient boosted trees [@friedman2001] as follows:
 
-```{r}
+```{r full-learner-lib}
 ## load the library
 library(SuperLearner)
 
@@ -397,7 +397,7 @@ means that:
 - I want to use five-fold cross-validation to estimate importance
 
 The call to `vimp_rsquared()` looks like this:
-```{r, eval = FALSE}
+```{r vimp-with-sl-1, eval = FALSE}
 ## load the library
 library("vimp")
 
@@ -408,8 +408,8 @@ vimp_rsquared(Y = heart$chd, X = X,
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.
 
-However, for the sake of illustration, I can estimate varibable importance for nitrogen oxide only using only one base learner as follows:
-```{r, message = FALSE}
+However, for the sake of illustration, I can estimate varibable importance for family history only using only one base learner as follows:
+```{r vimp-with-sl-fam, message = FALSE}
 ## load the library
 library("vimp")
 
@@ -425,20 +425,20 @@ fam_vim <- vim(Y = heart$chd, X = heart[, -dim(heart)[2]], indx = 5, run_regress
 
 This code takes approximately 5 seconds to run on a (not very fast) PC. Under the hood, `vim()` with `run_regression = TRUE` fits the `SuperLearner()` function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:
 
-```{r}
+```{r print-fam-vim}
 fam_vim
 ```
 
 The object returned by `vimp_rsquared()` also contains fitted values from using `SuperLearner()`; I access these using `$full_fit` and `$red_fit`. For example,
 
-```{r}
+```{r look-at-fam-ests}
 head(fam_vim$full_fit)
 head(fam_vim$red_fit)
 ```
 
 I said earlier that I want to obtain estimates of all individual features in these data, so let's choose type A behavior (`tpa`) next. Now that I have estimated variable importance for family history, the `full_fit` object contains our estimate of $\mu_{P_0}$. Since I have spent the time to estimate this using `SuperLearner()`, there is no reason to estimate this function again. This leads me to choose (2) above for estimating the importance of type A behavior, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields
 
-```{r, message = FALSE}
+```{r typea-vim, message = FALSE}
 ## specify that full_fit doesn't change
 full_fit <- fam_vim$full_fit
 
@@ -454,7 +454,7 @@ This takes approximately 5 seconds --- now rather than estimating both condition
 
 If I choose (2), then I have to use a single method from the library, or call `SuperLearner()` myself, prior to estimating variable importance. Then `vim()` returns variable importance estimates based on these fitted values. For example, let's estimate variable importance for current alcohol consumption using this approach.
 
-```{r}
+```{r alc-vim}
 ## set up the data, removing the columns for alcohol use and chd
 x <- heart[, -c(8, dim(heart)[2])]
 
@@ -468,7 +468,7 @@ alc_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_fit, indx = 8, run_reg
 ```
 
 I can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):
-```{r}
+```{r heart-sl}
 reduced_sbp <- predict(SuperLearner(Y = full_fit, X = heart[heart_folds == 2, -c(1, dim(heart)[2])], SL.library = learners.2))$pred
 sbp_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_sbp,
                 indx = 1, run_regression = FALSE, type = "r_squared", folds = heart_folds)
@@ -495,7 +495,7 @@ age_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_age,
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
-```{r, fig.width = 8.5, fig.height = 8}
+```{r heart-vim, fig.width = 8.5, fig.height = 8}
 library("dplyr")
 library("tibble")
 library("cowplot")
@@ -547,7 +547,7 @@ Now that I have estimated variable importance for each of the individual feature
 
 The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for `s`; I can use any of the options listed in the previous section to compute these estimates.
 
-```{r, fig.width = 8.5, fig.height = 8}
+```{r heart-group-vim, fig.width = 8.5, fig.height = 8}
 ## get the estimates
 reduced_behav <- predict(SuperLearner(Y = heart$chd[heart_folds == 2], X = heart[heart_folds == 2, -c(2, 6, 8, dim(heart)[2])], SL.library = learners.2))$pred
 behav_vim <- vim(Y = heart$chd, f1 = full_fit, f2 = reduced_behav, indx = c(2, 6, 8), run_regression = FALSE, type = "r_squared", folds = heart_folds)

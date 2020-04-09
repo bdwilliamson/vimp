@@ -18,7 +18,10 @@ Imports:
     stats,
     graphics,
     dplyr,
-    magrittr
+    magrittr,
+    ROCR,
+    tibble,
+    rlang
 LazyData: TRUE
 RoxygenNote: 7.0.2
 Suggests:
@@ -28,9 +31,12 @@ Suggests:
     gam,
     xgboost,
     glmnet,
+    ranger,
     quadprog,
     covr,
     testthat,
     ggplot2,
-    cowplot
+    cowplot,
+    RCurl,
+    forcats
 VignetteBuilder: knitr

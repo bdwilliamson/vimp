@@ -19,6 +19,7 @@ vim(
   scale = "identity",
   na.rm = FALSE,
   folds = NULL,
+  stratified = FALSE,
   ...
 )
 }
@@ -50,6 +51,8 @@ vim(
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
 \item{folds}{the folds used for \code{f1} and \code{f2}; assumed to be 1 for the observations used in \code{f1} and 2 for the observations used in \code{f2}. If there is only a single fold passed in, then hypothesis testing is not done.}
+
+\item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -87,7 +90,7 @@ within the \code{vim} object. This results in a list containing:
 }
 \examples{
 library(SuperLearner)
-library(gam)
+library(ranger)
 ## generate the data
 ## generate X
 p <- 2
@@ -102,10 +105,14 @@ smooth <- apply(x, 1, function(z) f(z))
 y <- matrix(rbinom(n, size = 1, prob = smooth))
 
 ## set up a library for SuperLearner
-learners <- "SL.gam"
+learners <- "SL.ranger"
 
-## using Y and X
-folds <- sample(rep(seq_len(2), length = length(y)))
+## using Y and X; use class-balanced folds
+folds_1 <- sample(rep(seq_len(2), length = sum(y == 1)))
+folds_0 <- sample(rep(seq_len(2), length = sum(y == 0)))
+folds <- vector("numeric", length(y))
+folds[y == 1] <- folds_1
+folds[y == 0] <- folds_0
 est <- vim(y, x, indx = 2, type = "r_squared",
            alpha = 0.05, run_regression = TRUE,
            SL.library = learners, cvControl = list(V = 10),
@@ -119,8 +126,9 @@ reduced <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -2, drop = FALSE],
 SL.library = learners, cvControl = list(V = 10))
 red.fit <- predict(reduced)$pred
 
-est <- vimp_accuracy(Y = y, f1 = full.fit, f2 = red.fit,
-            indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds)
+est <- vim(Y = y, f1 = full.fit, f2 = red.fit,
+            indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds,
+            type = "accuracy")
 
 }
 \seealso{

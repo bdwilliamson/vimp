@@ -76,6 +76,7 @@ within the \code{vim} object. This results in a list containing:
 }
 \examples{
 \donttest{
+## don't test because this can take some time to run
 library(SuperLearner)
 library(gam)
 n <- 100
@@ -96,9 +97,7 @@ learners <- c("SL.mean", "SL.gam")
 ## using Super Learner
 ## -----------------------------------------
 set.seed(4747)
-est <- sp_vim(Y = y, X = x, V = 5,
-type = "r_squared",
-SL.library = learners, alpha = 0.05)
+est <- sp_vim(Y = y, X = x, V = 5, type = "r_squared", SL.library = learners, alpha = 0.05)
 }
 }
 \seealso{

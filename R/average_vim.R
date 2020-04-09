@@ -25,7 +25,7 @@
 
 #' @examples
 #' library(SuperLearner)
-#' library(gam)
+#' library(ranger)
 #' ## generate the data
 #' p <- 2
 #' n <- 100
@@ -38,7 +38,7 @@
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
 #' ## set up a library for SuperLearner
-#' learners <- "SL.gam"
+#' learners <- "SL.ranger"
 #'
 #' ## get estimates on independent splits of the data
 #' samp <- sample(1:n, n/2, replace = FALSE)
@@ -53,6 +53,8 @@
 #'            SL.library = learners, cvControl = list(V = 10))
 #'
 #' ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
+#' 
+#' @importFrom rlang "!!" sym
 #' @export
 average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)))) {
 	## capture the arguments
@@ -125,7 +127,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	## combine into a tibble
   	mat <- tibble::tibble(s = s, est = est_avg, se = se_avg, cil = ci_avg[, 1], ciu = ci_avg[, 2],
   	                      test = hyp_test, p_value = p_value) %>% 
-  	   dplyr::arrange(desc(est))
+  	   dplyr::arrange(dplyr::desc(!! rlang::sym("est")))
   	
   	## create some of the necessary output
   	if (is.null(hyp_test_predictiveness_cis_full)) {
