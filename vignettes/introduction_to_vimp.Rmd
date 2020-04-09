@@ -251,7 +251,7 @@ Throughout this document I will use the South African heart disease study data [
 ```{r load-heart-data}
 ## read in the data from the Elements website
 library("RCurl")
-heart_data <- read.csv(text = getURL("https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
+heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
 ## minor data cleaning
 heart <- heart_data[, 2:dim(heart_data)[2]]
 heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
