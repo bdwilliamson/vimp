@@ -139,7 +139,7 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 ## Introduction
 
-`vimp` is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts [@williamson2020a] and [@williamson2020b]. 
+`vimp` is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts [@williamson2020a] and [@williamson2020b].
 
 Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means --- if these techniques are slow, then the variable importance procedure will be slow.
 
@@ -498,7 +498,9 @@ Now that I have estimates of each of individual feature's variable importance, I
 ```{r heart-vim, fig.width = 8.5, fig.height = 8}
 library("dplyr")
 library("tibble")
+library("ggplot2")
 library("cowplot")
+theme_set(theme_cowplot())
 library("forcats")
 ## combine the objects together
 ests <- merge_vim(sbp_vim, tob_vim, ldl_vim, adi_vim,
