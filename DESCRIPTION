@@ -16,8 +16,6 @@ Authors@R:
              family = "Carone",
              role = "aut",
              comment = c(ORCID = "0000-0003-2106-0953")))
-Author: Brian D. Williamson [aut, cre], Noah Simon [aut], Marco Carone [aut]
-Maintainer: Brian D. Williamson <brianw26@uw.edu>
 Description: Calculate point estimates of and valid confidence intervals for
     nonparametric variable importance measures in high and low dimensions,
     using flexible estimators of the underlying regression functions. For more information
