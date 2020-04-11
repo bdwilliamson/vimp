@@ -1,6 +1,6 @@
 Package: vimp
 Type: Package
-Title: Nonparametric Variable Importance
+Title: Perform Inference on Algorithm-agnostic Variable Importance
 Version: 2.0.1
 Authors@R: 
     c(person(given = "Brian D.",
@@ -17,7 +17,7 @@ Authors@R:
              role = "aut",
              comment = c(ORCID = "0000-0003-2106-0953")))
 Description: Calculate point estimates of and valid confidence intervals for
-    nonparametric variable importance measures in high and low dimensions,
+    nonparametric, algorithm-agnostic variable importance measures in high and low dimensions,
     using flexible estimators of the underlying regression functions. For more information
     about the methods, please see Williamson et al. (Biometrics, 2020) and Williamson et al. (arXiv, 2020+) <arXiv:2004.03683>.
 License: MIT + file LICENSE
