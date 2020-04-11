@@ -12,3 +12,4 @@ NEWS.md
 ^docs$
 ^pkgdown$
 docs/*
+^\.github$
