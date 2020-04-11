@@ -17,23 +17,15 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
   SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
 }
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
-vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2, env = environment())
-
-## fit the data with all covariates
-full_fit <- SuperLearner(Y = y, X = x, SL.library = learners, cvControl = list(V = 3))
-full_fitted <- predict(full_fit)$pred
-
-## fit the data with only X1
-reduced_fit <- SuperLearner(Y = full_fitted, X = x[, -2, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
-reduced_fitted <- predict(reduced_fit)$pred
+V <- 2
 
 test_that("ANOVA-based R^2 with old function name works", {
   ## check deprecated message
-  expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2, env = environment()))
+  expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, cvControl = list(V = V), indx = 1, V = V, env = environment()))
 })
 
 test_that("R^2-based variable importance works", {
-  est <- vimp_rsquared(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 2, V = 2, env = environment())
+  est <- vimp_rsquared(Y = y, X = x, run_regression = TRUE, SL.library = learners, cvControl = list(V = V), indx = 2, V = V, env = environment())
   ## check that the estimate is nearly correct
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1)
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.1, scale = 1)
 })

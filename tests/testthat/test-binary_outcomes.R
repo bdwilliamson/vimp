@@ -44,38 +44,39 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
   SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
 }
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
+V <- 2
 
 ## fit the data with all covariates
-full_fit <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], SL.library = learners, family = "binomial", cvControl = list(V = 3))
+full_fit <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], SL.library = learners, family = "binomial", cvControl = list(V = V))
 full_fitted <- predict(full_fit)$pred
 
 ## fit the data with only X1
-reduced_fit <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -1, drop = FALSE], SL.library = learners, family = "binomial", cvControl = list(V = 3))
+reduced_fit <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -1, drop = FALSE], SL.library = learners, family = "binomial", cvControl = list(V = V))
 reduced_fitted <- predict(reduced_fit)$pred
 
-est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = 2, family = "binomial",
+est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = V, family = "binomial",
                      env = environment(), folds = folds)
 test_that("Accuracy-based variable importance works", {
-  expect_equal(est$est, t_acc[1], tolerance = 0.02)
+  expect_equal(est$est, t_acc[1], tolerance = 0.1, scale = 1)
   
   est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "accuracy", folds = folds)
-  expect_equal(est_noncv$est, t_acc[1], tolerance = 0.02)
+  expect_equal(est_noncv$est, t_acc[1], tolerance = 0.1, scale = 1)
 })
 
 test_that("AUC-based variable importance works", {
-  est <- vimp_auc(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = 2,
+  est <- vimp_auc(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = V,
                   env = environment())
-  expect_equal(est$est, t_auc[1], tolerance = 0.02)
+  expect_equal(est$est, t_auc[1], tolerance = 0.1, scale = 1)
   
   est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "auc", folds = folds)
-  expect_equal(est_noncv$est, t_auc[1], tolerance = 0.02)
+  expect_equal(est_noncv$est, t_auc[1], tolerance = 0.1, scale = 1)
 })
 
 test_that("Deviance-based variable importance works", {
-  est <- vimp_deviance(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = 2,
+  est <- vimp_deviance(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = V,
                        env = environment())
-  expect_equal(est$est, t_dev[1], tolerance = 0.02)
+  expect_equal(est$est, t_dev[1], tolerance = 0.1, scale = 1)
   
   est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "deviance", folds = folds)
-  expect_equal(est_noncv$est, t_dev[1], tolerance = 0.02)
+  expect_equal(est_noncv$est, t_dev[1], tolerance = 0.1, scale = 1)
 })

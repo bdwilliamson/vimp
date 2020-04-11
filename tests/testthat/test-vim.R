@@ -24,7 +24,7 @@ test_that("General variable importance estimates using internally-computed fitte
                 SL.library = learners, alpha = 0.05, cvControl = list(V = 3),
              env = environment(), folds = folds)
   ## check that the estimate is approximately correct
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2)
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2, scale = 1)
   ## check that the SE, CI work
   expect_length(est$ci, 2)
   expect_length(est$se, 1)
@@ -51,7 +51,7 @@ test_that("General variable importance estimates using externally-computed fitte
                f1 = full_fitted, f2 = reduced_fitted,
              folds = folds)
     ## check that estimate worked
-    expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2)
+    expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2, scale = 1)
     ## check that p-value exists
     expect_length(est$p_value, 1)
 })
@@ -75,5 +75,5 @@ test_that("Error messages work", {
 test_that("ANOVA-based R^2 with pre-computed fitted values works", {
   expect_warning(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2, type = "anova", folds = folds))
   ## check that the estimate is nearly correct
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2)
+  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2, scale = 1)
 })
