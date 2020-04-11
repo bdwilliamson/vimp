@@ -128,8 +128,8 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-estimate-specific-variable-importance-parameters" class="hasAnchor"><a href="#section-estimate-specific-variable-importance-parameters" class="anchor"></a>Estimate specific variable importance parameters</h2>
+          <p class="section-desc"><p>Functions that set default values to measure variable importance via specific parameters.</p></p>
         </th>
       </tr>
       
@@ -140,34 +140,47 @@
       <tr>
         
         <td>
-          <p><code><a href="average_vim.html">average_vim()</a></code> </p>
+          <p><code><a href="vimp_accuracy.html">vimp_accuracy()</a></code> </p>
         </td>
-        <td><p>Average multiple independent importance estimates</p></td>
+        <td><p>Nonparametric Variable Importance Estimates: Classification accuracy</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="cv_predictiveness_point_est.html">cv_predictiveness_point_est()</a></code> </p>
+          <p><code><a href="vimp_anova.html">vimp_anova()</a></code> </p>
         </td>
-        <td><p>Estimate a nonparametric predictiveness functional using cross-validation</p></td>
+        <td><p>Nonparametric Variable Importance Estimates: ANOVA</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="cv_predictiveness_update.html">cv_predictiveness_update()</a></code> </p>
+          <p><code><a href="vimp_auc.html">vimp_auc()</a></code> </p>
         </td>
-        <td><p>Estimate the influence function for an estimator of predictiveness</p></td>
+        <td><p>Nonparametric Variable Importance Estimates: AUC</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="cv_vim.html">cv_vim()</a></code> </p>
+          <p><code><a href="vimp_deviance.html">vimp_deviance()</a></code> </p>
         </td>
-        <td><p>Nonparametric Variable Importance Estimates using Cross-validation</p></td>
+        <td><p>Nonparametric Variable Importance Estimates: Deviance</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="cv_vim_nodonsker.html">cv_vim_nodonsker()</a></code> </p>
+          <p><code><a href="vimp_rsquared.html">vimp_rsquared()</a></code> </p>
         </td>
-        <td><p>Nonparametric Variable Importance Estimates using Cross-validation, without Donsker class relaxation</p></td>
-      </tr><tr>
+        <td><p>Nonparametric Variable Importance Estimates: $R^2$</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-estimate-variable-importance" class="hasAnchor"><a href="#section-estimate-variable-importance" class="anchor"></a>Estimate variable importance</h2>
+          <p class="section-desc"><p>General functions to measure population variable importance and compute point estimates and confidence intervals.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="cv_vimp_point_est.html">cv_vimp_point_est()</a></code> </p>
@@ -182,10 +195,71 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="format.vim.html">format(<i>&lt;vim&gt;</i>)</a></code> </p>
+          <p><code><a href="vimp_point_est.html">vimp_point_est()</a></code> </p>
         </td>
-        <td><p>Format a <code>vim</code> object</p></td>
+        <td><p>Estimate variable importance</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="vimp_update.html">vimp_update()</a></code> </p>
+        </td>
+        <td><p>Estimate the influence function for variable importance parameters</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vim.html">vim()</a></code> </p>
+        </td>
+        <td><p>Nonparametric Variable Importance Estimates</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cv_vim.html">cv_vim()</a></code> </p>
+        </td>
+        <td><p>Nonparametric Variable Importance Estimates using Cross-validation</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vimp_se.html">vimp_se()</a></code> </p>
+        </td>
+        <td><p>Estimate standard errors</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vimp_ci.html">vimp_ci()</a></code> </p>
+        </td>
+        <td><p>Confidence intervals for variable importance</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vimp_hypothesis_test.html">vimp_hypothesis_test()</a></code> </p>
+        </td>
+        <td><p>Perform a hypothesis test against the null hypothesis of \(\delta\) importance</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="spvim_ics.html">spvim_ics()</a></code> </p>
+        </td>
+        <td><p>Influence function estimates for SPVIMs</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="spvim_se.html">spvim_se()</a></code> </p>
+        </td>
+        <td><p>Standard error estimate for SPVIM values</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-predictiveness-measures" class="hasAnchor"><a href="#section-predictiveness-measures" class="anchor"></a>Predictiveness measures</h2>
+          <p class="section-desc"><p>Functions to measure population predictiveness (e.g., R-squared or AUC) and compute point estimates and confidence intervals for predictiveness.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="measure_accuracy.html">measure_accuracy()</a></code> </p>
@@ -225,15 +299,15 @@ Compute nonparametric estimate of R-squared.</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="merge_vim.html">merge_vim()</a></code> </p>
+          <p><code><a href="cv_predictiveness_point_est.html">cv_predictiveness_point_est()</a></code> </p>
         </td>
-        <td><p>Merge multiple <code>vim</code> objects into one</p></td>
+        <td><p>Estimate a nonparametric predictiveness functional using cross-validation</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="predictiveness_ci.html">predictiveness_ci()</a></code> </p>
+          <p><code><a href="cv_predictiveness_update.html">cv_predictiveness_update()</a></code> </p>
         </td>
-        <td><p>Confidence intervals for measures of predictiveness</p></td>
+        <td><p>Estimate the influence function for an estimator of predictiveness</p></td>
       </tr><tr>
         
         <td>
@@ -243,15 +317,65 @@ Compute nonparametric estimate of R-squared.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="predictiveness_update.html">predictiveness_update()</a></code> </p>
+        </td>
+        <td><p>Estimate the influence function for an estimator of predictiveness</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="predictiveness_se.html">predictiveness_se()</a></code> </p>
         </td>
         <td><p>Estimate standard errors for measures of predictiveness</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="predictiveness_update.html">predictiveness_update()</a></code> </p>
+          <p><code><a href="predictiveness_ci.html">predictiveness_ci()</a></code> </p>
         </td>
-        <td><p>Estimate the influence function for an estimator of predictiveness</p></td>
+        <td><p>Confidence intervals for measures of predictiveness</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-aggregate-variable-importance-estimates" class="hasAnchor"><a href="#section-aggregate-variable-importance-estimates" class="anchor"></a>Aggregate variable importance estimates</h2>
+          <p class="section-desc"><p>Functions to aggregate individual variable importance objects (created with calls to <code>vim</code> or <code>cv_vim</code>) by averaging or merging into larger objects.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="average_vim.html">average_vim()</a></code> </p>
+        </td>
+        <td><p>Average multiple independent importance estimates</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="merge_vim.html">merge_vim()</a></code> </p>
+        </td>
+        <td><p>Merge multiple <code>vim</code> objects into one</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-internal-package-utility-functions" class="hasAnchor"><a href="#section-internal-package-utility-functions" class="anchor"></a>Internal package utility functions</h2>
+          <p class="section-desc"><p>Functions for internal convenience, used by other core functions.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="sample_subsets.html">sample_subsets()</a></code> </p>
+        </td>
+        <td><p>Create necessary objects for SPVIMs</p></td>
       </tr><tr>
         
         <td>
@@ -261,111 +385,40 @@ Compute nonparametric estimate of R-squared.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="format.vim.html">format(<i>&lt;vim&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Format a <code>vim</code> object</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="run_sl.html">run_sl()</a></code> </p>
         </td>
         <td><p>Run a Super Learner for the provided subset of features</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-deprecated-functions" class="hasAnchor"><a href="#section-deprecated-functions" class="anchor"></a>Deprecated functions</h2>
+          <p class="section-desc"><p>Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead.</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
-          <p><code><a href="sample_subsets.html">sample_subsets()</a></code> </p>
+          <p><code><a href="cv_vim_nodonsker.html">cv_vim_nodonsker()</a></code> </p>
         </td>
-        <td><p>Create necessary objects for SPVIMs</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sp_vim.html">sp_vim()</a></code> </p>
-        </td>
-        <td><p>Shapley Population Variable Importance Measure (SPVIM) estimates</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="spvim_ics.html">spvim_ics()</a></code> </p>
-        </td>
-        <td><p>Influence function estimates for SPVIMs</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="spvim_se.html">spvim_se()</a></code> </p>
-        </td>
-        <td><p>Standard error estimate for SPVIM values</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vim.html">vim()</a></code> </p>
-        </td>
-        <td><p>Nonparametric Variable Importance Estimates</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp.html">vimp</a></code> </p>
-        </td>
-        <td><p>vimp: Nonparametric variable importance assessment</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_accuracy.html">vimp_accuracy()</a></code> </p>
-        </td>
-        <td><p>Nonparametric Variable Importance Estimates: Classification accuracy</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_anova.html">vimp_anova()</a></code> </p>
-        </td>
-        <td><p>Nonparametric Variable Importance Estimates: ANOVA</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_auc.html">vimp_auc()</a></code> </p>
-        </td>
-        <td><p>Nonparametric Variable Importance Estimates: AUC</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_ci.html">vimp_ci()</a></code> </p>
-        </td>
-        <td><p>Confidence intervals for variable importance</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_deviance.html">vimp_deviance()</a></code> </p>
-        </td>
-        <td><p>Nonparametric Variable Importance Estimates: Deviance</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_hypothesis_test.html">vimp_hypothesis_test()</a></code> </p>
-        </td>
-        <td><p>Perform a hypothesis test against the null hypothesis of \(\delta\) importance</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_point_est.html">vimp_point_est()</a></code> </p>
-        </td>
-        <td><p>Estimate variable importance</p></td>
+        <td><p>Nonparametric Variable Importance Estimates using Cross-validation, without Donsker class relaxation</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="vimp_regression.html">vimp_regression()</a></code> </p>
         </td>
         <td><p>Nonparametric Variable Importance Estimates</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_rsquared.html">vimp_rsquared()</a></code> </p>
-        </td>
-        <td><p>Nonparametric Variable Importance Estimates: $R^2$</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_se.html">vimp_se()</a></code> </p>
-        </td>
-        <td><p>Estimate standard errors</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vimp_update.html">vimp_update()</a></code> </p>
-        </td>
-        <td><p>Estimate the influence function for variable importance parameters</p></td>
       </tr>
     </tbody>
     </table>

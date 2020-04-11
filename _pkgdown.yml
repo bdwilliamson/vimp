@@ -1,1 +1,58 @@
 destination: docs
+
+reference:
+    - title: "Estimate specific variable importance parameters"
+      desc: "Functions that set default values to measure variable importance via specific parameters."
+      contents:
+      - vimp_accuracy
+      - vimp_anova
+      - vimp_auc
+      - vimp_deviance
+      - vimp_rsquared
+    - title: "Estimate variable importance"
+      desc: "General functions to measure population variable importance and compute point estimates and confidence intervals."
+      contents:
+      - cv_vimp_point_est
+      - cv_vimp_update
+      - vimp_point_est
+      - vimp_update
+      - vim
+      - cv_vim
+      - vimp_se
+      - vimp_ci
+      - vimp_hypothesis_test
+      - spvim_ics
+      - spvim_se
+      - sp_vim
+    - title: "Predictiveness measures"
+      desc: "Functions to measure population predictiveness (e.g., R-squared or AUC) and compute point estimates and confidence intervals for predictiveness."
+      contents:
+      - measure_accuracy
+      - measure_auc
+      - measure_cross_entropy
+      - measure_deviance
+      - measure_mse
+      - measure_r_squared
+      - cv_predictiveness_point_est
+      - cv_predictiveness_update
+      - predictiveness_point_est
+      - predictiveness_update
+      - predictiveness_se
+      - predictiveness_ci
+    - title: "Aggregate variable importance estimates"
+      desc: "Functions to aggregate individual variable importance objects (created with calls to `vim` or `cv_vim`) by averaging or merging into larger objects."
+      contents:
+      - average_vim
+      - merge_vim
+    - title: "Internal package utility functions"
+      desc: "Functions for internal convenience, used by other core functions."
+      contents:
+      - sample_subsets
+      - print.vim
+      - format.vim
+      - run_sl
+    - title: "Deprecated functions"
+      desc: "Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead."
+      contents:
+      - cv_vim_nodonsker
+      - vimp_regression
