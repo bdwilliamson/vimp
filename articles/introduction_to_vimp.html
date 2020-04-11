@@ -169,8 +169,8 @@
 ##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
 ## 
 ## Variable importance estimates:
-##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value
-## s = 1 0.1021547 0.04421819 [0.01548863, 0.1888207] NA       NA</code></pre>
+##       Estimate   SE        95% CI         VIMP &gt; 0 p-value
+## s = 1 0.07481467 0.0473697 [0, 0.1676576] NA       NA</code></pre>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">est_1</span>)</pre></body></html></div>
 <pre><code>## Call:
 ## cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, folds = folds, 
@@ -179,9 +179,9 @@
 ##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
 ## 
 ## Variable importance estimates:
-##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value
-## s = 1 0.1021547 0.04421819 [0.01548863, 0.1888207] NA       NA</code></pre>
-<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.102, with a 95% confidence interval of [0.015, 0.189].</p>
+##       Estimate   SE        95% CI         VIMP &gt; 0 p-value
+## s = 1 0.07481467 0.0473697 [0, 0.1676576] NA       NA</code></pre>
+<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.075, with a 95% confidence interval of [0, 0.168].</p>
 </div>
 <div id="detailed-guide" class="section level2">
 <h2 class="hasAnchor">
@@ -280,15 +280,15 @@
 ## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     
-## s = 5 0.2164306 0.04653863 [0.1252166, 0.3076447] TRUE     1.384343e-06
-## s = 6 0.2152644 0.04558395 [0.1259215, 0.3046073] TRUE     1.243058e-06
-## s = 9 0.2125764 0.04665696 [0.1211304, 0.3040223] TRUE     2.082117e-06
-## s = 3 0.2088830 0.04630752 [0.1181219, 0.2996441] TRUE     3.113840e-06
-## s = 7 0.2082137 0.04653870 [0.1169996, 0.2994279] TRUE     3.307587e-06
-## s = 2 0.2064363 0.04634361 [0.1156045, 0.2972681] TRUE     4.128700e-06
-## s = 4 0.2040386 0.04648185 [0.1129359, 0.2951414] TRUE     5.177672e-06
-## s = 1 0.1975052 0.04626481 [0.1068279, 0.2881826] TRUE     8.895813e-06
-## s = 8 0.1969613 0.04637183 [0.1060742, 0.2878484] TRUE     9.688207e-06</code></pre>
+## s = 5 0.2549152 0.05247029 [0.1520754, 0.3577551] TRUE     4.076173e-07
+## s = 3 0.2515622 0.05269242 [0.1482870, 0.3548375] TRUE     5.540804e-07
+## s = 2 0.2478583 0.05275460 [0.1444612, 0.3512554] TRUE     9.017346e-07
+## s = 7 0.2442281 0.05273628 [0.1408669, 0.3475893] TRUE     1.256250e-06
+## s = 6 0.2433093 0.05287028 [0.1396854, 0.3469331] TRUE     1.356326e-06
+## s = 4 0.2413840 0.05246017 [0.1385640, 0.3442041] TRUE     1.557520e-06
+## s = 1 0.2376879 0.05118374 [0.1373696, 0.3380062] TRUE     1.798889e-06
+## s = 8 0.2320187 0.05218472 [0.1297386, 0.3342989] TRUE     2.792706e-06
+## s = 9 0.2316110 0.05247832 [0.1287554, 0.3344666] TRUE     3.612677e-06</code></pre>
 </div>
 <div id="building-a-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -405,24 +405,24 @@
 ## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 5 0.5760633 0.04849073 [0.4810232, 0.6711033] TRUE     0</code></pre>
+## s = 5 0.5505397 0.05229473 [0.4480439, 0.6530354] TRUE     0</code></pre>
 <p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
 <div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">full_fit</span>)</pre></body></html></div>
-<pre><code>##           [,1]
-## [1,] 0.3517241
-## [2,] 0.7430760
-## [3,] 0.4227778
-## [4,] 0.5694354
-## [5,] 0.6792501
-## [6,] 0.7223281</code></pre>
+<pre><code>##              [,1]
+## [1,]  0.762593746
+## [2,]  0.785878241
+## [3,]  0.143822700
+## [4,]  0.706990957
+## [5,]  0.003004104
+## [6,] -0.158140898</code></pre>
 <div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">red_fit</span>)</pre></body></html></div>
 <pre><code>##           [,1]
-## [1,] 0.3957498
-## [2,] 0.3771735
-## [3,] 0.4704211
-## [4,] 0.5266304
-## [5,] 0.3360682
-## [6,] 0.4159873</code></pre>
+## [1,] 0.4173273
+## [2,] 0.3762044
+## [3,] 0.3527748
+## [4,] 0.4732416
+## [5,] 0.1615727
+## [6,] 0.2076500</code></pre>
 <p>I said earlier that I want to obtain estimates of all individual features in these data, so let’s choose type A behavior (<code>tpa</code>) next. Now that I have estimated variable importance for family history, the <code>full_fit</code> object contains our estimate of <span class="math inline">\(\mu_{P_0}\)</span>. Since I have spent the time to estimate this using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>, there is no reason to estimate this function again. This leads me to choose (2) above for estimating the importance of type A behavior, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields</p>
 <div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="co">## specify that full_fit doesn't change</span>
 <span class="no">full_fit</span> <span class="kw">&lt;-</span> <span class="no">fam_vim</span>$<span class="no">full_fit</span>
@@ -438,8 +438,8 @@
 ##     run_regression = FALSE, folds = heart_folds)
 ## 
 ## Variable importance estimates:
-##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 6 0.5708243 0.04565667 [0.4813389, 0.6603097] TRUE     0</code></pre>
+##       Estimate  SE         95% CI               VIMP &gt; 0 p-value
+## s = 6 0.5400176 0.05259913 [0.4369251, 0.64311] TRUE     0</code></pre>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>If I choose (2), then I have to use a single method from the library, or call <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code> myself, prior to estimating variable importance. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on these fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="co">## set up the data, removing the columns for alcohol use and chd</span>
