@@ -110,7 +110,9 @@
 #'      newdata = x_2[inner_folds_2 == v, -indx, drop = FALSE])$pred
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-#' V = V, folds = list(outer_folds = outer_folds, inner_folds = list(inner_folds_1, inner_folds_2)), type = "r_squared", run_regression = FALSE, alpha = 0.05)
+#' V = V, folds = list(outer_folds = outer_folds, 
+#' inner_folds = list(inner_folds_1, inner_folds_2)), 
+#' type = "r_squared", run_regression = FALSE, alpha = 0.05)
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export

@@ -1,3 +1,14 @@
+# vimp 2.0.2
+
+## Major changes
+
+* Removed functions `sp_vim` and helper functions `run_sl`, `sample_subsets`, `spvim_ics`, `spvim_se`; these will be added in a future release
+* Removed function `cv_vim_nodonsker`, since `cv_vim` supersedes this function
+
+## Minor changes
+
+* Modify examples to pass all CRAN checks
+
 # vimp 2.0.1
 
 ## Major changes

@@ -1,13 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Added new functions vimp_accuracy, vimp_auc, vimp_rsquared, sp_vim, spvim_ics, spvim_se
-* Added new function vimp_anova to take the place of vimp_regression (now deprecated)
-* Added new function vim; all vimp_ functions call vim under the hood
-* Reorganized internals of vim and cv_vim
-* cv_vim_nodonsker is now deprecated
-* Added new functions to measure predictiveness (prefixed with measure)
-* Added new functions to compute predictiveness point estimates and influence curve estimates, for cv and non-cv
+* Removed functions sp_vim, spvim_ics, spvim_se, cv_vim_nodonsker
+* Modified examples sections to remove \donttest and pass all checks
 
 ## Test environments
 * local ubuntu 18.04, R 3.6.3

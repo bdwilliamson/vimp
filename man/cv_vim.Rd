@@ -139,20 +139,24 @@ fhat_red <- list()
 for (v in 1:V) {
     ## fit super learner
     fit <- SuperLearner::SuperLearner(Y = y_1[inner_folds_1 != v, , drop = FALSE],
-     X = x_1[inner_folds_1 != v, , drop = FALSE], SL.library = learners, cvControl = list(V = V))
+     X = x_1[inner_folds_1 != v, , drop = FALSE], 
+     SL.library = learners, cvControl = list(V = V))
     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
     ## get predictions on the validation fold
     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
      newdata = x_1[inner_folds_1 == v, , drop = FALSE])$pred
     ## fit the super learner on the reduced covariates
     red <- SuperLearner::SuperLearner(Y = y_2[inner_folds_2 != v, , drop = FALSE],
-     X = x_2[inner_folds_2 != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = V))
+     X = x_2[inner_folds_2 != v, -indx, drop = FALSE], 
+     SL.library = learners, cvControl = list(V = V))
     ## get predictions on the validation fold
     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
      newdata = x_2[inner_folds_2 == v, -indx, drop = FALSE])$pred
 }
 est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-V = V, folds = list(outer_folds = outer_folds, inner_folds = list(inner_folds_1, inner_folds_2)), type = "r_squared", run_regression = FALSE, alpha = 0.05)
+V = V, folds = list(outer_folds = outer_folds, 
+inner_folds = list(inner_folds_1, inner_folds_2)), 
+type = "r_squared", run_regression = FALSE, alpha = 0.05)
 
 }
 \seealso{

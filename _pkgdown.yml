@@ -21,9 +21,6 @@ reference:
       - vimp_se
       - vimp_ci
       - vimp_hypothesis_test
-      - spvim_ics
-      - spvim_se
-      - sp_vim
     - title: "Predictiveness measures"
       desc: "Functions to measure population predictiveness (e.g., R-squared or AUC) and compute point estimates and confidence intervals for predictiveness."
       contents:
@@ -47,12 +44,9 @@ reference:
     - title: "Internal package utility functions"
       desc: "Functions for internal convenience, used by other core functions."
       contents:
-      - sample_subsets
       - print.vim
       - format.vim
-      - run_sl
     - title: "Deprecated functions"
       desc: "Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead."
       contents:
-      - cv_vim_nodonsker
       - vimp_regression
