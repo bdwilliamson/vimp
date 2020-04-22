@@ -1,7 +1,7 @@
 pandoc: 2.7.3
 pkgdown: 1.5.1.9000
-pkgdown_sha: cb74ce08c4b25adda98256ea46196b1182f4e0ea
+pkgdown_sha: aea6864792d681f64a9e1b8c52fe24668b2e4f55
 articles:
   introduction_to_vimp: introduction_to_vimp.html
-last_built: 2020-04-11T20:23Z
+last_built: 2020-04-22T17:44Z
 

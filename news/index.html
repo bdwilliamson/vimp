@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.2</span>
       </span>
     </div>
 
@@ -126,13 +126,33 @@
       <small>Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="vimp-201" class="section level1">
-<h1 class="page-header" data-toc-text="2.0.1">
-<a href="#vimp-201" class="anchor"></a>vimp 2.0.1<small> Unreleased </small>
+    <div id="vimp-202" class="section level1">
+<h1 class="page-header" data-toc-text="2.0.2">
+<a href="#vimp-202" class="anchor"></a>vimp 2.0.2<small> Unreleased </small>
 </h1>
 <div id="major-changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes" class="anchor"></a>Major changes</h2>
+<ul>
+<li>Removed functions <code>sp_vim</code> and helper functions <code>run_sl</code>, <code>sample_subsets</code>, <code>spvim_ics</code>, <code>spvim_se</code>; these will be added in a future release</li>
+<li>Removed function <code>cv_vim_nodonsker</code>, since <code>cv_vim</code> supersedes this function</li>
+</ul>
+</div>
+<div id="minor-changes" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes" class="anchor"></a>Minor changes</h2>
+<ul>
+<li>Modify examples to pass all CRAN checks</li>
+</ul>
+</div>
+</div>
+    <div id="vimp-201" class="section level1">
+<h1 class="page-header" data-toc-text="2.0.1">
+<a href="#vimp-201" class="anchor"></a>vimp 2.0.1<small> 2020-04-11 </small>
+</h1>
+<div id="major-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Added new function <code>sp_vim</code> and helper functions <code>run_sl</code>, <code>sample_subsets</code>, <code>spvim_ics</code>, <code>spvim_se</code>; these functions allow computation of the Shapley Population Variable Importance Measure (SPVIM)</li>
 <li>Both <code>cv_vim</code> and <code>vim</code> now use an outer layer of sample splitting for hypothesis testing</li>
@@ -148,9 +168,9 @@
 <li>added new functions to compute measures of predictiveness (and cross-validated measures of predictiveness), along with their influence functions</li>
 </ul>
 </div>
-<div id="minor-changes" class="section level2">
+<div id="minor-changes-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Return tibbles in cv_vim, vim, merge_vim, and average_vim</li>
 </ul>
@@ -160,14 +180,14 @@
 <h1 class="page-header" data-toc-text="1.1.6">
 <a href="#vimp-116" class="anchor"></a>vimp 1.1.6<small> 2019-08-26 </small>
 </h1>
-<div id="major-changes-1" class="section level2">
+<div id="major-changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-2" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-1" class="section level2">
+<div id="minor-changes-2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-2" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Changed tests to handle <code>gam</code> package update by switching library to <code>SL.xgboost</code>, <code>SL.step</code>, and <code>SL.mean</code>
 </li>
@@ -179,23 +199,6 @@
 <h1 class="page-header" data-toc-text="1.1.5">
 <a href="#vimp-115" class="anchor"></a>vimp 1.1.5<small> 2019-08-09 </small>
 </h1>
-<div id="major-changes-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#major-changes-2" class="anchor"></a>Major changes</h2>
-<p>None</p>
-</div>
-<div id="minor-changes-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#minor-changes-2" class="anchor"></a>Minor changes</h2>
-<ul>
-<li>Attempt to handle <code>gam</code> package update in unit tests</li>
-</ul>
-</div>
-</div>
-    <div id="vimp-114" class="section level1">
-<h1 class="page-header" data-toc-text="1.1.4">
-<a href="#vimp-114" class="anchor"></a>vimp 1.1.4<small> 2018-10-14 </small>
-</h1>
 <div id="major-changes-3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes-3" class="anchor"></a>Major changes</h2>
@@ -205,14 +208,13 @@
 <h2 class="hasAnchor">
 <a href="#minor-changes-3" class="anchor"></a>Minor changes</h2>
 <ul>
-<li>
-<code>cv_vim</code> and<code>cv_vim_nodonsker</code> now return the cross-validation folds used within the function</li>
+<li>Attempt to handle <code>gam</code> package update in unit tests</li>
 </ul>
 </div>
 </div>
-    <div id="vimp-113" class="section level1">
-<h1 class="page-header" data-toc-text="1.1.3">
-<a href="#vimp-113" class="anchor"></a>vimp 1.1.3<small> 2018-10-02 </small>
+    <div id="vimp-114" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.4">
+<a href="#vimp-114" class="anchor"></a>vimp 1.1.4<small> 2018-10-14 </small>
 </h1>
 <div id="major-changes-4" class="section level2">
 <h2 class="hasAnchor">
@@ -223,6 +225,24 @@
 <h2 class="hasAnchor">
 <a href="#minor-changes-4" class="anchor"></a>Minor changes</h2>
 <ul>
+<li>
+<code>cv_vim</code> and<code>cv_vim_nodonsker</code> now return the cross-validation folds used within the function</li>
+</ul>
+</div>
+</div>
+    <div id="vimp-113" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.3">
+<a href="#vimp-113" class="anchor"></a>vimp 1.1.3<small> 2018-10-02 </small>
+</h1>
+<div id="major-changes-5" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-5" class="anchor"></a>Major changes</h2>
+<p>None</p>
+</div>
+<div id="minor-changes-5" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-5" class="anchor"></a>Minor changes</h2>
+<ul>
 <li>users may now only specify a <code>family</code> for the top-level SuperLearner if <code>run_regression = TRUE</code>; in call cases, the second-stage SuperLearner uses a <code>gaussian</code> family</li>
 <li>if the SuperLearner chooses <code>SL.mean</code> as the best-fitting algorithm, the second-stage regression is now run using the original outcome, rather than the first-stage fitted values</li>
 </ul>
@@ -232,29 +252,11 @@
 <h1 class="page-header" data-toc-text="1.1.2">
 <a href="#vimp-112" class="anchor"></a>vimp 1.1.2<small> 2018-09-20 </small>
 </h1>
-<div id="major-changes-5" class="section level2">
-<h2 class="hasAnchor">
-<a href="#major-changes-5" class="anchor"></a>Major changes</h2>
-<ul>
-<li>added function <code>cv_vim_nodonsker</code>, which computes the cross-validated naive estimator and the update on the same, single, validation fold. This does not allow for relaxation of the Donsker class conditions.</li>
-</ul>
-</div>
-<div id="minor-changes-5" class="section level2">
-<h2 class="hasAnchor">
-<a href="#minor-changes-5" class="anchor"></a>Minor changes</h2>
-<p>None</p>
-</div>
-</div>
-    <div id="vimp-111" class="section level1">
-<h1 class="page-header" data-toc-text="1.1.1">
-<a href="#vimp-111" class="anchor"></a>vimp 1.1.1<small> Unreleased </small>
-</h1>
 <div id="major-changes-6" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes-6" class="anchor"></a>Major changes</h2>
 <ul>
-<li>added function <code>two_validation_set_cv</code>, which sets up folds for V-fold cross-validation with two validation sets per fold</li>
-<li>changed the functionality of <code>cv_vim</code>: now, the cross-validated naive estimator is computed on a first validation set, while the update for the corrected estimator is computed using the second validation set (both created from <code>two_validation_set_cv</code>); this allows for relaxation of the Donsker class conditions necessary for asymptotic convergence of the corrected estimator, while making sure that the initial CV naive estimator is not biased high (due to a higher R^2 on the training data)</li>
+<li>added function <code>cv_vim_nodonsker</code>, which computes the cross-validated naive estimator and the update on the same, single, validation fold. This does not allow for relaxation of the Donsker class conditions.</li>
 </ul>
 </div>
 <div id="minor-changes-6" class="section level2">
@@ -263,18 +265,36 @@
 <p>None</p>
 </div>
 </div>
-    <div id="vimp-110" class="section level1">
-<h1 class="page-header" data-toc-text="1.1.0">
-<a href="#vimp-110" class="anchor"></a>vimp 1.1.0<small> 2018-08-09 </small>
+    <div id="vimp-111" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.1">
+<a href="#vimp-111" class="anchor"></a>vimp 1.1.1<small> Unreleased </small>
 </h1>
 <div id="major-changes-7" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes-7" class="anchor"></a>Major changes</h2>
-<p>None</p>
+<ul>
+<li>added function <code>two_validation_set_cv</code>, which sets up folds for V-fold cross-validation with two validation sets per fold</li>
+<li>changed the functionality of <code>cv_vim</code>: now, the cross-validated naive estimator is computed on a first validation set, while the update for the corrected estimator is computed using the second validation set (both created from <code>two_validation_set_cv</code>); this allows for relaxation of the Donsker class conditions necessary for asymptotic convergence of the corrected estimator, while making sure that the initial CV naive estimator is not biased high (due to a higher R^2 on the training data)</li>
+</ul>
 </div>
 <div id="minor-changes-7" class="section level2">
 <h2 class="hasAnchor">
 <a href="#minor-changes-7" class="anchor"></a>Minor changes</h2>
+<p>None</p>
+</div>
+</div>
+    <div id="vimp-110" class="section level1">
+<h1 class="page-header" data-toc-text="1.1.0">
+<a href="#vimp-110" class="anchor"></a>vimp 1.1.0<small> 2018-08-09 </small>
+</h1>
+<div id="major-changes-8" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-8" class="anchor"></a>Major changes</h2>
+<p>None</p>
+</div>
+<div id="minor-changes-8" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-8" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>changed the functionality of <code>cv_vim</code>: now, the cross-validated naive estimator is computed on the training data for each fold, while the update for the corrected cross-validated estimator is computed using the test data; this allows for relaxation of the Donsker class conditions necessary for asymptotic convergence of the corrected estimator</li>
 </ul>
@@ -284,9 +304,9 @@
 <h1 class="page-header" data-toc-text="1.0.0">
 <a href="#vimp-100" class="anchor"></a>vimp 1.0.0<small> 2018-06-24 </small>
 </h1>
-<div id="major-changes-8" class="section level2">
+<div id="major-changes-9" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-8" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-9" class="anchor"></a>Major changes</h2>
 <ul>
 <li>removed function <code>vim</code>, replaced with individual-parameter functions</li>
 <li>added function <code>vimp_regression</code> to match Python package</li>
@@ -303,14 +323,14 @@
 <h1 class="page-header" data-toc-text="0.0.3">
 <a href="#vimp-003" class="anchor"></a>vimp 0.0.3<small> Unreleased </small>
 </h1>
-<div id="major-changes-9" class="section level2">
+<div id="major-changes-10" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-9" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-10" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-8" class="section level2">
+<div id="minor-changes-9" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-8" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-9" class="anchor"></a>Minor changes</h2>
 <p>Bugfixes etc.</p>
 </div>
 </div>
