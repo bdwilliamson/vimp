@@ -51,8 +51,6 @@
 #' }
 #'
 #' @examples
-#' \donttest{
-#' ## don't test because this can take a long time to run
 #' library(SuperLearner)
 #' library(ranger)
 #' n <- 100
@@ -75,7 +73,7 @@
 #' set.seed(4747)
 #' est <- cv_vim(Y = y, X = x, indx = 2, V = 2,
 #' type = "r_squared", run_regression = TRUE,
-#' SL.library = learners, cvControl = list(V = 5), alpha = 0.05)
+#' SL.library = learners, cvControl = list(V = 2), alpha = 0.05)
 #'
 #' ## ------------------------------------------
 #' ## doing things by hand, and plugging them in (with a small number of folds, for illustration only)
@@ -84,29 +82,35 @@
 #' indx <- 2
 #' V <- 2
 #' set.seed(4747)
-#' folds <- rep(seq_len(V), length = n)
-#' folds <- sample(folds)
+#' outer_folds <- sample(rep(seq_len(2), length = n))
+#' inner_folds_1 <- sample(rep(seq_len(V), length = sum(outer_folds == 1)))
+#' inner_folds_2 <- sample(rep(seq_len(V), length = sum(outer_folds == 2)))
+#' y_1 <- y[outer_folds == 1, , drop = FALSE]
+#' x_1 <- x[outer_folds == 1, , drop = FALSE]
+#' y_2 <- y[outer_folds == 2, , drop = FALSE]
+#' x_2 <- x[outer_folds == 2, , drop = FALSE]
 #' ## get the fitted values by fitting the super learner on each pair
 #' fhat_ful <- list()
 #' fhat_red <- list()
 #' for (v in 1:V) {
 #'     ## fit super learner
-#'     fit <- SuperLearner::SuperLearner(Y = y[folds != v, , drop = FALSE],
-#'      X = x[folds != v, , drop = FALSE], SL.library = learners, cvControl = list(V = 5))
+#'     fit <- SuperLearner::SuperLearner(Y = y_1[inner_folds_1 != v, , drop = FALSE],
+#'      X = x_1[inner_folds_1 != v, , drop = FALSE], 
+#'      SL.library = learners, cvControl = list(V = V))
 #'     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
 #'     ## get predictions on the validation fold
 #'     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
-#'      newdata = x[folds == v, , drop = FALSE])$pred
+#'      newdata = x_1[inner_folds_1 == v, , drop = FALSE])$pred
 #'     ## fit the super learner on the reduced covariates
-#'     red <- SuperLearner::SuperLearner(Y = fitted_v,
-#'      X = x[folds != v, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 5))
+#'     red <- SuperLearner::SuperLearner(Y = y_2[inner_folds_2 != v, , drop = FALSE],
+#'      X = x_2[inner_folds_2 != v, -indx, drop = FALSE], 
+#'      SL.library = learners, cvControl = list(V = V))
 #'     ## get predictions on the validation fold
 #'     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
-#'      newdata = x[folds == v, -indx, drop = FALSE])$pred
+#'      newdata = x_2[inner_folds_2 == v, -indx, drop = FALSE])$pred
 #' }
 #' est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-#' V = V, folds = folds, type = "r_squared", run_regression = FALSE, alpha = 0.05)
-#' }
+#' V = V, folds = list(outer_folds = outer_folds, inner_folds = list(inner_folds_1, inner_folds_2)), type = "r_squared", run_regression = FALSE, alpha = 0.05)
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export

@@ -46,11 +46,11 @@
 #' ## using Super Learner (with a small number of folds, for illustration only)
 #' est_2 <- vimp_regression(Y = y[samp], X = x[samp, ], indx = 2, V = 2,
 #'            run_regression = TRUE, alpha = 0.05,
-#'            SL.library = learners, cvControl = list(V = 5))
+#'            SL.library = learners, cvControl = list(V = 2))
 #'
 #' est_1 <- vimp_regression(Y = y[-samp], X = x[-samp, ], indx = 2, V = 2,
 #'            run_regression = TRUE, alpha = 0.05,
-#'            SL.library = learners, cvControl = list(V = 5))
+#'            SL.library = learners, cvControl = list(V = 2))
 #'
 #' ests <- average_vim(est_1, est_2, weights = c(1/2, 1/2))
 #' 

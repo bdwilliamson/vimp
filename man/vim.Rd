@@ -115,15 +115,15 @@ folds[y == 1] <- folds_1
 folds[y == 0] <- folds_0
 est <- vim(y, x, indx = 2, type = "r_squared",
            alpha = 0.05, run_regression = TRUE,
-           SL.library = learners, cvControl = list(V = 5),
+           SL.library = learners, cvControl = list(V = 2),
            folds = folds)
 
 ## using pre-computed fitted values
 full <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ],
-SL.library = learners, cvControl = list(V = 5))
+SL.library = learners, cvControl = list(V = 2))
 full.fit <- predict(full)$pred
 reduced <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -2, drop = FALSE],
-SL.library = learners, cvControl = list(V = 5))
+SL.library = learners, cvControl = list(V = 2))
 red.fit <- predict(reduced)$pred
 
 est <- vim(Y = y, f1 = full.fit, f2 = red.fit,

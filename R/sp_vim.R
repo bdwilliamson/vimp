@@ -46,7 +46,7 @@
 #' \donttest{
 #' ## don't test because this can take some time to run
 #' library(SuperLearner)
-#' library(gam)
+#' library(ranger)
 #' n <- 100
 #' p <- 2
 #' ## generate the data
@@ -59,13 +59,13 @@
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #'
 #' ## set up a library for SuperLearner
-#' learners <- c("SL.mean", "SL.gam")
+#' learners <- c("SL.mean", "SL.ranger")
 #'
 #' ## -----------------------------------------
 #' ## using Super Learner
 #' ## -----------------------------------------
 #' set.seed(4747)
-#' est <- sp_vim(Y = y, X = x, V = 5, type = "r_squared", SL.library = learners, alpha = 0.05)
+#' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared", SL.library = learners, alpha = 0.05)
 #' }
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @importFrom stats pnorm

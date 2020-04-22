@@ -28,9 +28,9 @@ a list of length V, with the results of predicting on the hold-out data for each
 Run a Super Learner for the provided subset of features.
 }
 \examples{
-\donttest{
+## run with a small number of folds (for illustration only)
 library("SuperLearner")
-library("gam")
+library("ranger")
 n <- 100
 p <- 2
 ## generate the data
@@ -43,10 +43,10 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
 ## set up a library for SuperLearner
-learners <- c("SL.mean", "SL.gam")
+learners <- c("SL.mean", "SL.ranger")
 ## run the Super Learner
 set.seed(4747)
-fitted_lst <- run_sl(y, x, V = 5, SL.library = learners, s = )
-}
+fitted_lst <- run_sl(y, x, V = 2, SL.library = learners, s = 1, 
+cvControl = list(V = 2))
 
 }

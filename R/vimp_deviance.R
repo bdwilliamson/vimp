@@ -62,7 +62,7 @@
 #' ## estimate (with a small number of folds, for illustration only)
 #' est <- vimp_deviance(y, x, indx = 2,
 #'            alpha = 0.05, run_regression = TRUE,
-#'            SL.library = learners, V = 2, cvControl = list(V = 5))
+#'            SL.library = learners, V = 2, cvControl = list(V = 2))
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
