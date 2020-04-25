@@ -5,3 +5,5 @@
 inst/doc
 *.Rproj
 CRAN-RELEASE
+doc
+Meta

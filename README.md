@@ -1,4 +1,4 @@
-# R/`vimp`: inference on algorithm-agnostic variable importance
+# R/`vimp`: inference on algorithm-agnostic variable importance <img src="man/figures/vimp_logo.png" align="right" width="120px"/>
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/vimp)](https://cran.r-project.org/package=vimp)
 [![Travis-CI Build Status](https://travis-ci.org/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.org/bdwilliamson/vimp)

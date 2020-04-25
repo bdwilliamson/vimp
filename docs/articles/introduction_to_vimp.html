@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Introduction to vimp</h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2020-04-22</h4>
+            <h4 class="date">2020-04-25</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/introduction_to_vimp.Rmd"><code>vignettes/introduction_to_vimp.Rmd</code></a></small>
       <div class="hidden name"><code>introduction_to_vimp.Rmd</code></div>
@@ -169,8 +169,8 @@
 ##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
 ## 
 ## Variable importance estimates:
-##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 1 0.2676804 0.04922337 [0.1712044, 0.3641564] NA       NA</code></pre>
+##       Estimate   SE         95% CI         VIMP &gt; 0 p-value
+## s = 1 0.07479049 0.04529627 [0, 0.1635696] NA       NA</code></pre>
 <div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">est_1</span>)</pre></body></html></div>
 <pre><code>## Call:
 ## cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, folds = folds, 
@@ -179,14 +179,14 @@
 ##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
 ## 
 ## Variable importance estimates:
-##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 1 0.2676804 0.04922337 [0.1712044, 0.3641564] NA       NA</code></pre>
-<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.268, with a 95% confidence interval of [0.171, 0.364].</p>
+##       Estimate   SE         95% CI         VIMP &gt; 0 p-value
+## s = 1 0.07479049 0.04529627 [0, 0.1635696] NA       NA</code></pre>
+<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.075, with a 95% confidence interval of [0, 0.164].</p>
 </div>
 <div id="detailed-guide" class="section level2">
 <h2 class="hasAnchor">
 <a href="#detailed-guide" class="anchor"></a>Detailed guide</h2>
-<p>In this section, we provide a fuller example of estimating <span class="math inline">\(R^2\)</span>-based variable importance in the context of the South African heart disease study data <span class="citation">(<span class="citeproc-not-found" data-reference-id="hastie2011"><strong>???</strong></span>)</span>.</p>
+<p>In this section, we provide a fuller example of estimating <span class="math inline">\(R^2\)</span>-based variable importance in the context of the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span>.</p>
 <p>Often when working with data we attempt to estimate the conditional mean of the outcome <span class="math inline">\(Y\)</span> given features <span class="math inline">\(X\)</span>, defined as <span class="math inline">\(\mu_P(x) = E_P(Y \mid X = x)\)</span>.</p>
 <p>There are many tools for estimating this conditional mean. We might choose a classical parametric tool such as linear regression. We might also want to be model-agnostic and use a more nonparametric approach to estimate the conditional mean. However,</p>
 <ul>
@@ -203,7 +203,7 @@
 <div id="a-look-at-the-south-african-heart-disease-study-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-look-at-the-south-african-heart-disease-study-data" class="anchor"></a>A look at the South African heart disease study data</h3>
-<p>Throughout this document I will use the South African heart disease study data <span class="citation">(<span class="citeproc-not-found" data-reference-id="hastie2011"><strong>???</strong></span>)</span>, freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>. Information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>.</p>
+<p>Throughout this document I will use the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span>, freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>. Information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>.</p>
 <div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="co">## read in the data from the Elements website</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"RCurl"</span>)</pre></body></html></div>
 <pre><code>## Loading required package: bitops</code></pre>
@@ -280,16 +280,16 @@
 ##     lm_vim_tpa, lm_vim_obe, lm_vim_alc, lm_vim_age)
 ## 
 ## Variable importance estimates:
-##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value    
-## s = 6 0.1347266 0.04410214 [0.04828802, 0.2211652] TRUE     0.001102967
-## s = 2 0.1259150 0.04468944 [0.03832532, 0.2135047] TRUE     0.002262049
-## s = 4 0.1226529 0.04430103 [0.03582451, 0.2094813] TRUE     0.002813721
-## s = 9 0.1210671 0.04484590 [0.03317075, 0.2089634] TRUE     0.003249311
-## s = 8 0.1181837 0.04468772 [0.03059740, 0.2057701] TRUE     0.003942015
-## s = 1 0.1175374 0.04463203 [0.03006021, 0.2050146] TRUE     0.004075260
-## s = 7 0.1169267 0.04462293 [0.02946733, 0.2043860] TRUE     0.004210540
-## s = 5 0.1157297 0.04472464 [0.02807104, 0.2033884] TRUE     0.004589471
-## s = 3 0.1051926 0.04453483 [0.01790596, 0.1924793] TRUE     0.008580233</code></pre>
+##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
+## s = 3 0.2202208 0.05058631 [0.12107347, 0.3193682] TRUE     9.199457e-06
+## s = 9 0.2185528 0.05057943 [0.11941898, 0.3176867] TRUE     1.095566e-05
+## s = 6 0.2160216 0.05085535 [0.11634695, 0.3156963] TRUE     1.305851e-05
+## s = 4 0.2143255 0.05070476 [0.11494598, 0.3137050] TRUE     1.542360e-05
+## s = 7 0.2123425 0.05073642 [0.11290090, 0.3117840] TRUE     1.865198e-05
+## s = 8 0.2122642 0.05071984 [0.11285511, 0.3116732] TRUE     1.776635e-05
+## s = 5 0.2050824 0.05071957 [0.10567388, 0.3044909] TRUE     3.301832e-05
+## s = 1 0.2042907 0.05007973 [0.10613628, 0.3024452] TRUE     2.940338e-05
+## s = 2 0.1894363 0.04942040 [0.09257406, 0.2862985] TRUE     9.707124e-05</code></pre>
 </div>
 <div id="building-a-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -406,24 +406,24 @@
 ## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 5 0.4434262 0.04354215 [0.3580851, 0.5287672] TRUE     0</code></pre>
+## s = 5 0.4672719 0.04674128 [0.3756607, 0.5588832] TRUE     0</code></pre>
 <p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
 <div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">full_fit</span>)</pre></body></html></div>
 <pre><code>##           [,1]
-## [1,] 0.4969961
-## [2,] 0.7059636
-## [3,] 0.6707681
-## [4,] 0.1484962
-## [5,] 0.3814948
-## [6,] 0.6220613</code></pre>
+## [1,] 0.8105285
+## [2,] 0.2076490
+## [3,] 0.5492849
+## [4,] 0.2092758
+## [5,] 0.3897494
+## [6,] 0.5184214</code></pre>
 <div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">red_fit</span>)</pre></body></html></div>
 <pre><code>##           [,1]
-## [1,] 0.4506001
-## [2,] 0.4518301
-## [3,] 0.4180818
-## [4,] 0.3034609
-## [5,] 0.4086605
-## [6,] 0.3423050</code></pre>
+## [1,] 0.4742328
+## [2,] 0.1464581
+## [3,] 0.4762070
+## [4,] 0.2843564
+## [5,] 0.3879216
+## [6,] 0.2757311</code></pre>
 <p>I said earlier that I want to obtain estimates of all individual features in these data, so let’s choose type A behavior (<code>tpa</code>) next. Now that I have estimated variable importance for family history, the <code>full_fit</code> object contains our estimate of <span class="math inline">\(\mu_{P_0}\)</span>. Since I have spent the time to estimate this using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>, there is no reason to estimate this function again. This leads me to choose (2) above for estimating the importance of type A behavior, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields</p>
 <div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="co">## specify that full_fit doesn't change</span>
 <span class="no">full_fit</span> <span class="kw">&lt;-</span> <span class="no">fam_vim</span>$<span class="no">full_fit</span>
@@ -440,7 +440,7 @@
 ## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 6 0.4428006 0.04314404 [0.3582398, 0.5273614] TRUE     0</code></pre>
+## s = 6 0.4807425 0.04681816 [0.3889806, 0.5725044] TRUE     0</code></pre>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>If I choose (2), then I have to use a single method from the library, or call <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code> myself, prior to estimating variable importance. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on these fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="co">## set up the data, removing the columns for alcohol use and chd</span>
@@ -543,10 +543,9 @@
 <p>The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for <code>s</code>; I can use any of the options listed in the previous section to compute these estimates.</p>
 <div class="sourceCode" id="cb50"><html><body><pre class="r"><span class="co">## get the estimates</span>
 <span class="no">reduced_behav</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>], <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">behav_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_behav</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>), <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)</pre></body></html></div>
-<pre><code>## Warning in vim(Y = heart$chd, f1 = full_fit, f2 = reduced_behav, indx = c(2, :
-## Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb52"><html><body><pre class="r"><span class="no">reduced_bios</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>], <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
+<span class="no">behav_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_behav</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>), <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
+
+<span class="no">reduced_bios</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>], <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
 <span class="no">bios_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_bios</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
 <span class="co">## combine and plot</span>
@@ -585,6 +584,9 @@
 </div>
 <div id="ref-hastie1990">
 <p>Hastie, TJ, and RJ Tibshirani. 1990. <em>Generalized Additive Models</em>. Vol. 43. CRC Press.</p>
+</div>
+<div id="ref-hastie2009">
+<p>Hastie, T, R Tibshirani, and J Friedman. 2009. <em>The Elements of Statistical Learning</em>.</p>
 </div>
 <div id="ref-vanderlaan2007">
 <p>van der Laan, MJ, EC Polley, and AE Hubbard. 2007. “Super Learner” 6. Statistical Applications in Genetics and Molecular Biology.</p>
