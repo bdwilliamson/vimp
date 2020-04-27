@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>vimp: Nonparametric variable importance assessment — vimp • vimp</title>
+<title>vimp: Perform Inference on Algorithm-Agnostic Variable Importance — vimp • vimp</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,12 @@
 
 
 
-<meta property="og:title" content="vimp: Nonparametric variable importance assessment — vimp" />
-<meta property="og:description" content="The vimp package provides one major function: vim.
-This function calculates an estimate of the variable importance
-parameter of interest developed by Williamson, Gilbert, Simon, and Carone. The parameter is defined as the additional variability in the outcome explained by including the covariates of interest in the estimating procedure." />
+<meta property="og:title" content="vimp: Perform Inference on Algorithm-Agnostic Variable Importance — vimp" />
+<meta property="og:description" content="A unified framework for valid statistical inference on algorithm-agnostic
+measures of variable importance. You provide the data, a method for 
+estimating the conditional mean of the outcome given the covariates,
+choose a variable importance measure, and specify variable(s) of interest;
+'vimp' takes care of the rest." />
 
 
 
@@ -125,28 +127,60 @@ parameter of interest developed by Williamson, Gilbert, Simon, and Carone. The p
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>vimp: Nonparametric variable importance assessment</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/vimp.R'><code>R/vimp.R</code></a></small>
+    <h1>vimp: Perform Inference on Algorithm-Agnostic Variable Importance</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/vimp-package.R'><code>R/vimp-package.R</code></a></small>
     <div class="hidden name"><code>vimp.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>The vimp package provides one major function: vim.
-This function calculates an estimate of the variable importance
-parameter of interest developed by Williamson, Gilbert, Simon, and Carone. The parameter is defined as the additional variability in the outcome explained by including the covariates of interest in the estimating procedure.</p>
+    <p>A unified framework for valid statistical inference on algorithm-agnostic
+measures of variable importance. You provide the data, a method for 
+estimating the conditional mean of the outcome given the covariates,
+choose a variable importance measure, and specify variable(s) of interest;
+'vimp' takes care of the rest.</p>
     </div>
 
 
 
-    <h2 class="hasAnchor" id="vimp-functions"><a class="anchor" href="#vimp-functions"></a>vimp Functions</h2>
+    <h2 class="hasAnchor" id="author-s-"><a class="anchor" href="#author-s-"></a>Author(s)</h2>
 
     
 
-<p>The function vimp_regression() computes the estimates, standard error estimates,
-and confidence intervals for the ANOVA-based variable importance measure. It is an object of class "vim",
-and has its own print method.</p>
-<p>The function merge_vim() takes the output of multiple calls to vimp_regression(), and combines the results into a single vim object.</p>
-<p>The function format() formats a vim object for printing; print() prints the results; and plot() plots the estimates and standard errors.</p>
+<p><b>Maintainer</b>: Brian Williamson <a href='http://bdwilliamson.github.io'>http://bdwilliamson.github.io</a></p>
+<p>Methodology authors:</p><ul>
+<li><p>Brian D. Williamson</p></li>
+<li><p>Peter B. Gilbert</p></li>
+<li><p>Noah R. Simon</p></li>
+<li><p>Marco Carone</p></li>
+</ul>
+
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See Also</h2>
+
+    
+
+<p>Preprints:</p><ul>
+<li><p><a href='http://biostats.bepress.com/uwbiostat/paper422/'>http://biostats.bepress.com/uwbiostat/paper422/</a> (R-squared-based variable importance)</p></li>
+<li><p><a href='http://arxiv.org/abs/2004.03683'>http://arxiv.org/abs/2004.03683</a> (general variable importance)</p></li>
+</ul>
+
+<p>Other useful links:</p><ul>
+<li><p><a href='http://bdwilliamson.github.io/vimp'>http://bdwilliamson.github.io/vimp</a></p></li>
+<li><p><a href='http://github.com/bdwilliamson/vimp'>http://github.com/bdwilliamson/vimp</a></p></li>
+<li><p>Report bugs at <a href='http://github.com/bdwilliamson/vimp/issues'>http://github.com/bdwilliamson/vimp/issues</a></p></li>
+</ul>
+
+    <h2 class="hasAnchor" id="imports"><a class="anchor" href="#imports"></a>Imports</h2>
+
+    
+
+<p>The packages that we import either make the internal code nice (dplyr, magrittr, tibble, rlang), 
+are directly relevant to estimating the conditional mean (SuperLearner) or predictiveness measures (ROCR), 
+or are necessary for hypothesis testing (stats).</p>
+<p>We suggest several other packages: xgboost, ranger, gam, glmnet, and quadprog allow 
+a flexible library of candidate learners in the Super Learner; ggplot2, cowplot, 
+and forcats help with plotting variable importance estimates; testthat and covr 
+help with unit tests; and knitr, rmarkdown,
+RCurl, and MASS help with the vignettes and examples.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
