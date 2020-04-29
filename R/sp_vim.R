@@ -14,6 +14,7 @@
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
+#' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -43,8 +44,6 @@
 #' }
 #'
 #' @examples
-#' \donttest{
-#' ## don't test because this can take some time to run
 #' library(SuperLearner)
 #' library(ranger)
 #' n <- 100
@@ -62,15 +61,20 @@
 #' learners <- c("SL.mean", "SL.ranger")
 #'
 #' ## -----------------------------------------
-#' ## using Super Learner
+#' ## using Super Learner (with a small number of CV folds,
+#' ## for illustration only)
 #' ## -----------------------------------------
 #' set.seed(4747)
-#' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared", SL.library = learners, alpha = 0.05)
+#' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared", 
+#' SL.library = learners, alpha = 0.05)
 #' }
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @importFrom stats pnorm
 #' @export
-sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared", SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE, ...) {
+sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared", 
+                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
+                   gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
+                   stratified = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(Y)) stop("You must enter an outcome, Y.")
@@ -85,11 +89,9 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## set up the cross-validation
-    outer_folds <- sample(1:2, dim(Y)[1], replace = TRUE, prob = c(0.25, 0.75))
-    inner_folds_1 <- rep_len(seq_len(V), dim(Y[outer_folds == 1, , drop = FALSE])[1])
-    inner_folds_1 <- sample(inner_folds_1)
-    inner_folds_2 <- rep_len(seq_len(V), dim(Y[outer_folds == 2, , drop = FALSE])[1])
-    inner_folds_2 <- sample(inner_folds_2)
+    outer_folds <- .make_folds(Y, V = 2, stratified = stratified, probs = c(0.75, 0.25))
+    inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
+    inner_folds_2 <- .make_folds(Y[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified)
 
     ## sample subsets, set up Z
     z_w_lst <- sample_subsets(p = dim(X)[2], n = dim(X)[1], gamma = gamma)

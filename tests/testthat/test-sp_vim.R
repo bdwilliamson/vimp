@@ -31,7 +31,9 @@ learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 V <- 2
 
 test_that("Estimating SPVIMs works", {
-  est <- sp_vim(Y = y, X = x, V = V, type = "r_squared", SL.library = learners, gamma = 1, alpha = 0.05, delta = 0, cvControl = list(V = V), env = environment())
+  est <- sp_vim(Y = y, X = x, V = V, type = "r_squared", SL.library = learners, 
+                gamma = .1, alpha = 0.05, delta = 0, 
+                cvControl = list(V = V), env = environment())
   ## check that the estimate is approximately correct
   expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
   ## check that the SE, CI work
