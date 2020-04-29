@@ -112,22 +112,6 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
     ## if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
-        ## create folds for cross-fitting
-        .make_folds <- function(y, V, stratified = FALSE) {
-            folds <- vector("numeric", length(y))
-            if (stratified) {
-                folds_1 <- rep(seq_len(V), length = sum(y == 1))
-                folds_0 <- rep(seq_len(V), length = sum(y == 0))
-                folds_1 <- sample(folds_1)
-                folds_0 <- sample(folds_0)
-                folds[y == 1] <- folds_1
-                folds[y == 0] <- folds_0
-            } else {
-                folds <- rep(seq_len(V), length = length(y))
-                folds <- sample(folds)
-            }
-            return(folds)
-        }
         if (is.null(folds)) {
             folds <- .make_folds(Y, V = 2, stratified = stratified)
         }

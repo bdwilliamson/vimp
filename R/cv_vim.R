@@ -137,22 +137,6 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     ## if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
-        ## create folds for cross-fitting
-        .make_folds <- function(y, V, stratified = FALSE) {
-            folds <- vector("numeric", length(y))
-            if (stratified) {
-                folds_1 <- rep(seq_len(V), length = sum(y == 1))
-                folds_0 <- rep(seq_len(V), length = sum(y == 0))
-                folds_1 <- sample(folds_1)
-                folds_0 <- sample(folds_0)
-                folds[y == 1] <- folds_1
-                folds[y == 0] <- folds_0
-            } else {
-                folds <- rep(seq_len(V), length = length(y))
-                folds <- sample(folds)
-            }
-            return(folds)
-        }
         ## set up the cross-validation
         outer_folds <- .make_folds(Y, V = 2, stratified = stratified)
         inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
