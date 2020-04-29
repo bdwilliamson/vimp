@@ -1,3 +1,13 @@
+# vimp 2.0.3
+
+## Major changes
+
+Added functions `sp_vim`, `sample_subsets`, `spvim_ics`, `spvim_se`; these allow computation of Shapely Population Variable Importance (SPVIM)
+
+## Minor changes
+
+None
+
 # vimp 2.0.2
 
 ## Major changes
