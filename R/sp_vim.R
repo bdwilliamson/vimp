@@ -67,7 +67,7 @@
 #' set.seed(4747)
 #' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared", 
 #' SL.library = learners, alpha = 0.05)
-#' }
+#' 
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @importFrom stats pnorm
 #' @export

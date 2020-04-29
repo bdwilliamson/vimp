@@ -1,12 +1,10 @@
-#' Utility Functions
+#' Create Folds for Cross-Fitting
 #' 
-#' Various utility functions used in the vimp package.
-
-#' create folds for cross-fitting
 #' @param y the outcome
 #' @param V the number of folds
 #' @param stratified should the folds be stratified based on the outcome?
 #' @return a vector of folds
+#' @keywords internal
 .make_folds <- function(y, V = 2, stratified = FALSE, probs = rep(1/V, V)) {
   folds <- vector("numeric", length(y))
   if (stratified) {
@@ -25,7 +23,6 @@
 
 #' Run a Super Learner for the provided subset of features
 #'
-#' Run a Super Learner for the provided subset of features.
 #' @param Y the outcome
 #' @param X the covariates
 #' @param V the number of folds
@@ -35,7 +32,7 @@
 #' @param ... other arguments to Super Learner
 #'
 #' @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
-#'
+#' @keywords internal
 run_sl <- function(Y, X, V, SL.library, s, folds, ...) {
   ## fit the super learner on each full/reduced pair
   if (missing(folds)) {
