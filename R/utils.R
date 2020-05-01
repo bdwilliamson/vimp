@@ -54,8 +54,8 @@ run_sl <- function(Y, X, V, SL.library, s, folds, ...) {
     folds <- .make_folds(Y, V = V, stratified = (length(unique(Y)) == 2))
   }
   # if glmnet is in the library and dim(X) is 1, need to fool it
-  if (grepl("glmnet", SL.library) & ncol(X) == 1) {
-    red_X <- cbind(0, X[, s, drop = FALSE])
+  if (any(grepl("glmnet", SL.library)) & (length(s) == 1)) {
+    red_X <- cbind.data.frame(V0 = 0, X[, s, drop = FALSE])
   } else {
     red_X <- X[, s, drop = FALSE]
   }
