@@ -14,9 +14,7 @@
 #' n <- 100
 #' set.seed(100)
 #' subset_lst <- sample_subsets(p, gamma, n)
-#' @importFrom rlang `!!`
-#' @importFrom rlang sym
-#' @importFrom rlang .data
+#' @importFrom rlang "!!" sym .data
 #' @export
 sample_subsets <- function(p, gamma, n) {
   max_subset <- 1:p

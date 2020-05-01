@@ -2,7 +2,7 @@
 % Please edit documentation in R/sp_vim.R
 \name{sp_vim}
 \alias{sp_vim}
-\title{Shapley Population Variable Importance Measure (SPVIM) estimates}
+\title{Shapley Population Variable Importance Measure (SPVIM) Estimates and Inference}
 \usage{
 sp_vim(
   Y,
@@ -48,11 +48,19 @@ sp_vim(
 An object of class \code{vim}. See Details for more information.
 }
 \description{
-Compute estimates and confidence intervals for the
-SPVIMs, using cross-validation.
+Compute estimates and confidence intervals for the SPVIMs, using cross-fitting.
 This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 }
 \details{
+We define the SPVIM as the weighted average of the population difference in 
+predictiveness over all subsets of features not containing feature \eqn{j}.
+
+This is equivalent to finding the solution to a population weighted least squares problem. This 
+key fact allows us to estimate the SPVIM using weighted least squares, where we first 
+sample subsets from the power set of all possible features using the Shapley sampling distribution; then
+use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the 
+least squares problem given in Williamson and Feng (2020).
+
 See the paper by Williamson and Feng (2020) for more
 details on the mathematics behind this function, and the validity
 of the confidence intervals.

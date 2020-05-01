@@ -55,7 +55,7 @@ reduced_fit <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -1, drop = FALS
 reduced_fitted <- predict(reduced_fit)$pred
 
 est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = V, family = "binomial",
-                     env = environment(), folds = folds)
+                     env = environment())
 test_that("Accuracy-based variable importance works", {
   expect_equal(est$est, t_acc[1], tolerance = 0.1, scale = 1)
   
@@ -80,3 +80,16 @@ test_that("Deviance-based variable importance works", {
   est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "deviance", folds = folds)
   expect_equal(est_noncv$est, t_dev[1], tolerance = 0.1, scale = 1)
 })
+
+test_that("Measures of predictiveness work", {
+ full_auc <- predictiveness_point_est(full_fitted, y[folds == 1], type = "auc")
+ expect_equal(full_auc, 0.96, tolerance = 0.1, scale = 1)
+ weighted_auc <- predictiveness_point_est(full_fitted, y[folds == 1], weights = 0.5 * y[folds == 1] + (1 - y[folds == 1]), type = "auc")
+ expect_equal(weighted_auc, 0.96, tolerance = 0.1, scale = 1)
+ full_acc <- predictiveness_point_est(full_fitted, y[folds == 1], type = "accuracy")
+ expect_equal(full_acc, 0.9, tolerance = 0.1, scale = 1)
+ full_dev <- predictiveness_point_est(full_fitted, y[folds == 1], type = "deviance")
+ expect_equal(full_dev, -0.34, tolerance = 0.1, scale = 1)
+ full_ce <- predictiveness_point_est(full_fitted, y[folds == 1], type = "cross_entropy")
+ expect_equal(full_ce, -0.5, tolerance = 0.1, scale = 1)
+}) 

@@ -18,13 +18,14 @@ SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
   SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
 }
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
+true_vim <- (500/729)/(1 + 2497/7875 + 500/729)
 
 test_that("General variable importance estimates using internally-computed fitted values work", {
   est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
                 SL.library = learners, alpha = 0.05, cvControl = list(V = 3),
              env = environment(), folds = folds)
   ## check that the estimate is approximately correct
-  expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2, scale = 1)
+  expect_equal(est$est, true_vim, tolerance = 0.2, scale = 1)
   ## check that the SE, CI work
   expect_length(est$ci, 2)
   expect_length(est$se, 1)
@@ -44,6 +45,7 @@ full_fitted <- predict(full_fit)$pred
 ## fit the data with only X1
 reduced_fit <- SuperLearner(Y = full_fitted, X = x[folds == 2, -2, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
 reduced_fitted <- predict(reduced_fit)$pred
+
 test_that("General variable importance estimates using externally-computed fitted values work", {
     ## expect a message with no folds
     expect_error(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE))
@@ -51,9 +53,16 @@ test_that("General variable importance estimates using externally-computed fitte
                f1 = full_fitted, f2 = reduced_fitted,
              folds = folds)
     ## check that estimate worked
-    expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.2, scale = 1)
+    expect_equal(est$est, true_vim, tolerance = 0.2, scale = 1)
     ## check that p-value exists
     expect_length(est$p_value, 1)
+    ## check that CIs with other transformations work
+    se_log <- vimp_se(est$est, est$update, scale = "log")
+    se_logit <- vimp_se(est$est, est$update, scale = "logit")
+    ci_log <- vimp_ci(est$est, se_log, scale = "log", level = 0.95)
+    ci_logit <- vimp_ci(est$est, se_logit, scale = "logit", level = 0.95)
+    expect_length(ci_log, 2)
+    expect_length(ci_logit, 2)
 })
 
 
@@ -71,6 +80,8 @@ test_that("Error messages work", {
     expect_error(vim(Y = y, X = x, run_regression = FALSE))
     expect_error(vim(Y = y, f1 = mean(y)))
     expect_error(vim(Y = y, f1 = rep(mean(y), length(y)), f2 = mean(y)))
+    expect_error(vim(Y = y, X = x, SL.library = learners, type = "nonsense_type"))
+    expect_error(vim(Y = y, X = X, SL.library = learners, indx = ncol(X) + 1))
 })
 test_that("ANOVA-based R^2 with pre-computed fitted values works", {
   expect_warning(est <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 2, type = "anova", folds = folds))

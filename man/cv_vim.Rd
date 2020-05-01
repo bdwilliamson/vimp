@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv_vim.R
 \name{cv_vim}
 \alias{cv_vim}
-\title{Nonparametric Variable Importance Estimates using Cross-validation}
+\title{Nonparametric Variable Importance Estimates and Inference using Cross-fitting}
 \usage{
 cv_vim(
   Y,
@@ -64,13 +64,24 @@ An object of class \code{vim}. See Details for more information.
 }
 \description{
 Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-validation.
+nonparametric variable importance parameter of interest, using cross-fitting.
 This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 }
 \details{
+We define the population variable importance measure (VIM) for the group 
+of features (or single feature) \eqn{s} with respect to the predictiveness measure
+\eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is 
+the population predictiveness maximizing function, \eqn{f_{0,s}} is the population
+predictiveness maximizing function that is only allowed to access the features with
+index not in \eqn{s}, and \eqn{P_0} is the true data-generating distribution. Cross-fitted
+VIM estimates are obtained by first splitting the data into \eqn{K} folds; then using each
+fold in turn as a hold-out set, constructing estimators \eqn{f_{n,k}} and \eqn{f_{n,k,s}} of 
+\eqn{f_0} and \eqn{f_{0,s}}, respectively on the training data and estimator \eqn{P_{n,k}} of 
+\eqn{P_0} using the test data; and finally, computing \deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}} 
 See the paper by Williamson, Gilbert, Simon, and Carone for more
-details on the mathematics behind this function, and the validity
+details on the mathematics behind the \code{cv_vim} function, and the validity
 of the confidence intervals.
+
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
