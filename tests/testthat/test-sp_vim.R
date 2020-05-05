@@ -27,7 +27,7 @@ shapley_val_2 <- (1/2) * (r2_two - 0) + (1/2) * (r2_full - r2_one)
 SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
   SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
 }
-learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.glmnet","SL.mean")
+learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.glmnet", "SL.mean")
 V <- 2
 
 test_that("Estimating SPVIMs works", {

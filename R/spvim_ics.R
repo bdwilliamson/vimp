@@ -29,11 +29,11 @@ spvim_ics <- function(Z, z_counts, W, v, psi, G, c_n, ics, measure) {
   U_2 <- qr.Q(qr_decomp, complete = TRUE)[, 3:ncol(Z), drop = FALSE]
   V <- t(U_2) %*% (t(Z) %*% W %*% Z) %*% U_2
   phi_02_shared_mat <- (-1) * U_2 %*% solve(V)
-  phi_02_uniq_vectors <- vector("numeric", nrow(Z))
-  for (z in nrow(Z)) {
-    phi_02_uniq_vectors[z] <- (Z[z, ] %*% psi - v[z]) * (t(U_2) %*% Z[z, ])
+  phi_02_uniq_vectors <- matrix(NA, nrow = nrow(Z), ncol = ncol(U_2))
+  for (z in 1:nrow(Z)) {
+    phi_02_uniq_vectors[z, ] <- as.vector(Z[z, , drop = FALSE] %*% psi - v[z]) * as.vector(t(U_2) %*% Z[z, , drop = FALSE])
   }
-  phi_02_uniq <- phi_02_shared_mat %*% t(matrix(phi_02_uniq_vectors))
+  phi_02_uniq <- phi_02_shared_mat %*% t(phi_02_uniq_vectors)
   phi_02_uniq_lst <- split(phi_02_uniq, rep(1:ncol(phi_02_uniq), each = nrow(phi_02_uniq)))
   phi_02_rep_lst <- sapply(1:length(phi_02_uniq_lst), function(s) replicate(z_counts[s], phi_02_uniq_lst[[s]]))
   phi_02 <- do.call(cbind, phi_02_rep_lst)
