@@ -58,7 +58,7 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds, ...) {
   # if univariate regression (i.e., length(s) == 1) then check univariate_SL.library
   # if it exists, use it; otherwise, use the normal library
   if (length(s) == 1) {
-    if (!missing(univariate_SL.library)) {
+    if (!is.null(univariate_SL.library)) {
       this_sl_lib <- univariate_SL.library
     } 
     requires_2d <- c("glmnet", "polymars")

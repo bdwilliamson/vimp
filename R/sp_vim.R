@@ -82,7 +82,7 @@
 #' @export
 sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared", 
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
-                   univariate_SL.library = "SL.polymars",
+                   univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
                    stratified = FALSE, ...) {
     ## check to see if f1 and f2 are missing
