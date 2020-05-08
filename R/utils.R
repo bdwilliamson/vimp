@@ -48,22 +48,31 @@
 #
 # @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
 # @keywords internal
-run_sl <- function(Y, X, V, SL.library, s, folds, ...) {
+run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds, ...) {
   # fit the super learner on each full/reduced pair
   if (missing(folds)) {
     folds <- .make_folds(Y, V = V, stratified = (length(unique(Y)) == 2))
   }
-  # if glmnet is in the library and dim(X) is 1, need to fool it
-  if (any(grepl("glmnet", SL.library)) & (length(s) == 1)) {
-    red_X <- cbind.data.frame(V0 = 0, X[, s, drop = FALSE])
-  } else {
-    red_X <- X[, s, drop = FALSE]
+  red_X <- as.data.frame(X[, s, drop = FALSE])
+  this_sl_lib <- SL.library
+  # if univariate regression (i.e., length(s) == 1) then check univariate_SL.library
+  # if it exists, use it; otherwise, use the normal library
+  if (length(s) == 1) {
+    if (!missing(univariate_SL.library)) {
+      this_sl_lib <- univariate_SL.library
+    } 
+    requires_2d <- c("glmnet", "polymars")
+    for (i in 1:length(requires_2d)) {
+      if (any(grepl(requires_2d[i], this_sl_lib)) & (ncol(red_X) == 1)) {
+        red_X <- cbind.data.frame(V0 = 0, red_X)  
+      }
+    }
   }
   fhat_ful <- list()
   fhat_red <- list()
   for (v in 1:V) {
     ## fit super learner
-    fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, ], SL.library = SL.library, ...)
+    fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, ], SL.library = this_sl_lib, ...)
     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
     ## get predictions on the validation fold
     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, ])$pred
