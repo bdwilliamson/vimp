@@ -21,14 +21,14 @@ spvim_ics <- function(Z, z_counts, W, v, psi, G, c_n, ics, measure) {
   # compute contribution from estimating V
   Z_W <- t(Z) %*% W
   A_m <- Z_W %*% Z
-  A_m_inv <- solve(A_m)
+  A_m_inv <- MASS::ginv(A_m)
   phi_01 <- A_m_inv %*% Z_W %*% ics
   
   # compute contribution from sampling S
   qr_decomp <- qr(t(G))
   U_2 <- qr.Q(qr_decomp, complete = TRUE)[, 3:ncol(Z), drop = FALSE]
   V <- t(U_2) %*% (t(Z) %*% W %*% Z) %*% U_2
-  phi_02_shared_mat <- (-1) * U_2 %*% solve(V)
+  phi_02_shared_mat <- (-1) * U_2 %*% MASS::ginv(V)
   phi_02_uniq_vectors <- matrix(NA, nrow = nrow(Z), ncol = ncol(U_2))
   for (z in 1:nrow(Z)) {
     phi_02_uniq_vectors[z, ] <- as.vector(Z[z, , drop = FALSE] %*% psi - v[z]) * as.vector(t(U_2) %*% t(Z[z, , drop = FALSE]))

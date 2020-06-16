@@ -134,7 +134,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     kkt_matrix_22 <- matrix(0, nrow = dim(kkt_matrix_21)[1],  ncol = dim(kkt_matrix_12)[2])
     kkt_matrix <- rbind(cbind(kkt_matrix_11, kkt_matrix_12), cbind(kkt_matrix_21, kkt_matrix_22))
     ls_matrix <- rbind(2 * t(A_W) %*% v_W, c_n)
-    ls_solution <- solve(kkt_matrix) %*% ls_matrix
+    ls_solution <- MASS::ginv(kkt_matrix) %*% ls_matrix
     est <- ls_solution[1:(ncol(X) + 1), , drop = FALSE]
     lambdas <- ls_solution[(ncol(X) + 2):dim(ls_solution)[1], , drop = FALSE]
 
