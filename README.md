@@ -30,11 +30,11 @@ If you encounter any bugs or have any specific feature requests, please [file an
 
 ## R installation
 
-You may install a stable release of `vimp` from [CRAN](https://cran.r-project.org/web/packages/vimp/index.html) via `install.packages("vimp")`. You may also install a stable release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code (replace `v2.1` with the tag for the specific release you wish to install):
+You may install a stable release of `vimp` from [CRAN](https://cran.r-project.org/web/packages/vimp/index.html) via `install.packages("vimp")`. You may also install a stable release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code (replace `v2.1.0` with the tag for the specific release you wish to install):
 
 ```r
 ## install.packages("devtools") # only run this line if necessary
-devtools::install_github(repo = "bdwilliamson/vimp@v2.1")
+devtools::install_github(repo = "bdwilliamson/vimp@v2.1.0")
 ```
 
 You may install a development release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code:
@@ -89,7 +89,7 @@ vimp <- vimp_rsquared(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regr
 
 ## Citation
 
-After using the `vimp` package, please cite the following:
+After using the `vimp` package, please cite the following (for general variable importance parameters):
 
 ```
   @article{williamson2020,
@@ -99,6 +99,18 @@ After using the `vimp` package, please cite the following:
     year={2020},
     note={URL: https://arxiv.org/abs/2004.03683}
   }
+```
+
+or the following (for Shapley-based variable importance):
+
+```
+  @article{williamson2020,
+      author={Williamson, BD and Feng, J},
+      title={Efficient nonparametric statistical inference on population feature importance using Shapley values},
+      journal={arXiv:2006.09481},
+      year={2020},
+      note={URL: https://arxiv.org/abs/2006.09481}
+    }
 ```
 
 ## License

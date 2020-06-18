@@ -23,6 +23,10 @@ reference:
       - vimp_se
       - vimp_ci
       - vimp_hypothesis_test
+      - sp_vim
+      - spvim_ics
+      - spvim_se
+      - sample_subsets
     - title: "Predictiveness measures"
       desc: "Functions to measure population predictiveness (e.g., R-squared or AUC) and compute point estimates and confidence intervals for predictiveness."
       contents:
@@ -52,3 +56,7 @@ reference:
       desc: "Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead."
       contents:
       - vimp_regression
+    - title: "Package documentation homepage"
+      desc: "Landing page for R help"
+      contents:
+      - vimp

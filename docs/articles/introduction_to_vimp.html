@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Introduction to vimp</h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2020-04-25</h4>
+            <h4 class="date">2020-06-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/introduction_to_vimp.Rmd"><code>vignettes/introduction_to_vimp.Rmd</code></a></small>
       <div class="hidden name"><code>introduction_to_vimp.Rmd</code></div>
@@ -97,10 +97,10 @@
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
-<p><code>vimp</code> is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric <span class="math inline">\(R^2\)</span>, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts <span class="citation">(Williamson, Gilbert, Carone, et al. 2020)</span> and <span class="citation">(Williamson, Gilbert, Simon, et al. 2020)</span>.</p>
+<p><code>vimp</code> is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric <span class="math inline">\(R^2\)</span>, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts <span class="citation">Williamson, Gilbert, Carone, et al. (2020)</span>, <span class="citation">Williamson, Gilbert, Simon, et al. (2020)</span>, and <span class="citation">Williamson and Feng (2020)</span>.</p>
 <p>Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means — if these techniques are slow, then the variable importance procedure will be slow.</p>
 <p>The code can handle arbitrary dimensions of features, and may be used to estimate the importance of any single feature or group of features for predicting the outcome. The package also includes functions for cross-validated importance.</p>
-<p>The author and maintainer of the <code>vimp</code> package is <a href="https://bdwilliamson.github.io/">Brian Williamson</a>.</p>
+<p>The author and maintainer of the <code>vimp</code> package is <a href="https://bdwilliamson.github.io/">Brian Williamson</a>. The methods implemented here have also been implemented in Python under the package <a href="https://github.com/bdwilliamson/vimpy"><code>vimpy</code></a>.</p>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
@@ -155,13 +155,112 @@
 <pre><code>## Loaded gam 1.16</code></pre>
 <div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"xgboost"</span>)
 <span class="no">SL.xgboost1</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">...</span>, <span class="no">max_depth</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="no">ntree</span> <span class="kw">=</span> <span class="fl">500</span>, <span class="no">shrinkage</span> <span class="kw">=</span> <span class="fl">0.1</span>){
-  <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SL.xgboost.html">SL.xgboost</a></span>(<span class="no">...</span>, <span class="kw">max_depth</span> <span class="kw">=</span> <span class="no">max_depth</span>, <span class="kw">ntree</span> <span class="kw">=</span> <span class="no">ntree</span>, <span class="kw">shrinkage</span> <span class="kw">=</span> <span class="no">shrinkage</span>)
+  <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SL.xgboost.html">SL.xgboost</a></span>(<span class="no">...</span>, <span class="kw">objective</span> <span class="kw">=</span> <span class="st">'reg:squarederror'</span>, <span class="kw">max_depth</span> <span class="kw">=</span> <span class="no">max_depth</span>, <span class="kw">ntree</span> <span class="kw">=</span> <span class="no">ntree</span>, <span class="kw">shrinkage</span> <span class="kw">=</span> <span class="no">shrinkage</span>)
 }</pre></body></html></div>
 <p>The code</p>
 <div class="sourceCode" id="cb15"><html><body><pre class="r"><span class="no">est_1</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">y</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>,
 <span class="kw">SL.library</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SL.xgboost1"</span>, <span class="st">"SL.mean"</span>), <span class="kw">V</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">folds</span> <span class="kw">=</span> <span class="no">folds</span>)</pre></body></html></div>
+<pre><code>## [10:31:27] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:28] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:29] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:30] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:31] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:32] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:32] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:32] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:32] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:32] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:32] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:33] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:34] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:35] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:36] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:37] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:38] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:38] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:38] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:38] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:38] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:38] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
 <p>uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance for the importance of <span class="math inline">\(X_1\)</span>. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:</p>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">est_1</span></pre></body></html></div>
+<div class="sourceCode" id="cb17"><html><body><pre class="r"><span class="no">est_1</span></pre></body></html></div>
 <pre><code>## Call:
 ## cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, folds = folds, 
 ##     stratified = stratified, weights = weights, type = "r_squared", 
@@ -169,9 +268,9 @@
 ##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
 ## 
 ## Variable importance estimates:
-##       Estimate   SE         95% CI         VIMP &gt; 0 p-value
-## s = 1 0.07479049 0.04529627 [0, 0.1635696] NA       NA</code></pre>
-<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">est_1</span>)</pre></body></html></div>
+##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value
+## s = 1 0.1231298 0.04873088 [0.02761902, 0.2186405] NA       NA</code></pre>
+<div class="sourceCode" id="cb19"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">est_1</span>)</pre></body></html></div>
 <pre><code>## Call:
 ## cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, folds = folds, 
 ##     stratified = stratified, weights = weights, type = "r_squared", 
@@ -179,9 +278,9 @@
 ##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
 ## 
 ## Variable importance estimates:
-##       Estimate   SE         95% CI         VIMP &gt; 0 p-value
-## s = 1 0.07479049 0.04529627 [0, 0.1635696] NA       NA</code></pre>
-<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.075, with a 95% confidence interval of [0, 0.164].</p>
+##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value
+## s = 1 0.1231298 0.04873088 [0.02761902, 0.2186405] NA       NA</code></pre>
+<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.123, with a 95% confidence interval of [0.028, 0.219].</p>
 </div>
 <div id="detailed-guide" class="section level2">
 <h2 class="hasAnchor">
@@ -204,10 +303,10 @@
 <h3 class="hasAnchor">
 <a href="#a-look-at-the-south-african-heart-disease-study-data" class="anchor"></a>A look at the South African heart disease study data</h3>
 <p>Throughout this document I will use the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span>, freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>. Information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>.</p>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="co">## read in the data from the Elements website</span>
+<div class="sourceCode" id="cb21"><html><body><pre class="r"><span class="co">## read in the data from the Elements website</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"RCurl"</span>)</pre></body></html></div>
 <pre><code>## Loading required package: bitops</code></pre>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">heart_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="kw">text</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html">getURL</a></span>(<span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span>), <span class="kw">header</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
+<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="no">heart_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="kw">text</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html">getURL</a></span>(<span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span>), <span class="kw">header</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
 <span class="co">## minor data cleaning</span>
 <span class="no">heart</span> <span class="kw">&lt;-</span> <span class="no">heart_data</span>[, <span class="fl">2</span>:<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart_data</span>)[<span class="fl">2</span>]]
 <span class="no">heart</span>$<span class="no">famhist</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="no">heart</span>$<span class="no">famhist</span> <span class="kw">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span>)
@@ -220,7 +319,7 @@
 <h3 class="hasAnchor">
 <a href="#a-first-approach-linear-regression" class="anchor"></a>A first approach: linear regression</h3>
 <p>Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. This is achieved by the following:</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="co">## estimate the full conditional mean using linear regression</span>
+<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co">## estimate the full conditional mean using linear regression</span>
 <span class="no">full_mod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="no">chd</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">heart</span>, <span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">1</span>))
 <span class="no">full_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">full_mod</span>)
 
@@ -259,7 +358,7 @@
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="co">## plug these into vim</span>
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="co">## plug these into vim</span>
 <span class="no">lm_vim_sbp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_sbp</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 <span class="no">lm_vim_tob</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_tob</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 <span class="no">lm_vim_ldl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_ldl</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
@@ -281,15 +380,15 @@
 ## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
-## s = 3 0.2202208 0.05058631 [0.12107347, 0.3193682] TRUE     9.199457e-06
-## s = 9 0.2185528 0.05057943 [0.11941898, 0.3176867] TRUE     1.095566e-05
-## s = 6 0.2160216 0.05085535 [0.11634695, 0.3156963] TRUE     1.305851e-05
-## s = 4 0.2143255 0.05070476 [0.11494598, 0.3137050] TRUE     1.542360e-05
-## s = 7 0.2123425 0.05073642 [0.11290090, 0.3117840] TRUE     1.865198e-05
-## s = 8 0.2122642 0.05071984 [0.11285511, 0.3116732] TRUE     1.776635e-05
-## s = 5 0.2050824 0.05071957 [0.10567388, 0.3044909] TRUE     3.301832e-05
-## s = 1 0.2042907 0.05007973 [0.10613628, 0.3024452] TRUE     2.940338e-05
-## s = 2 0.1894363 0.04942040 [0.09257406, 0.2862985] TRUE     9.707124e-05</code></pre>
+## s = 9 0.2224826 0.05079429 [0.12292766, 0.3220376] TRUE     3.985813e-06
+## s = 6 0.2176888 0.05069832 [0.11832193, 0.3170557] TRUE     6.217740e-06
+## s = 7 0.2171253 0.05069177 [0.11777122, 0.3164793] TRUE     6.251743e-06
+## s = 5 0.2167378 0.05080798 [0.11715596, 0.3163196] TRUE     6.814768e-06
+## s = 8 0.2134688 0.05041263 [0.11466188, 0.3122758] TRUE     8.575822e-06
+## s = 1 0.2099113 0.05092453 [0.11010109, 0.3097216] TRUE     1.263408e-05
+## s = 4 0.2089305 0.05060435 [0.10974776, 0.3081132] TRUE     1.229029e-05
+## s = 2 0.2028569 0.05069410 [0.10349825, 0.3022155] TRUE     2.277822e-05
+## s = 3 0.1898671 0.04873531 [0.09434763, 0.2853865] TRUE     4.901677e-05</code></pre>
 </div>
 <div id="building-a-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -298,7 +397,7 @@
 <p>The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means!</p>
 <p>This motivates using <code>SuperLearner</code> to allow the data to determine the optimal combination of <em>base learners</em> from a <em>library</em> that I define. These base learners are a combination of different methods (e.g., generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g., additive models with 3 and 4 degrees of freedom). The Super Learner is an example of model stacking, or model aggregation — these approaches use a data-adaptive combination of base learners to make predictions.</p>
 <p>For instance, my library could include the elastic net, random forests <span class="citation">(Breiman 2001)</span>, and gradient boosted trees <span class="citation">(Friedman 2001)</span> as follows:</p>
-<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="co">## load the library</span>
+<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="co">## load the library</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">SuperLearner</span>)
 
 <span class="co">## create a function for boosted stumps</span>
@@ -378,7 +477,7 @@
 <li>I want to use five-fold cross-validation to estimate importance</li>
 </ul>
 <p>The call to <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> looks like this:</p>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="co">## load the library</span>
+<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="co">## load the library</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"vimp"</span>)
 
 <span class="co">## now estimate variable importance</span>
@@ -386,7 +485,7 @@
     <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="fl">5</span>)</pre></body></html></div>
 <p>While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay — in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.</p>
 <p>However, for the sake of illustration, I can estimate varibable importance for family history only using only one base learner as follows:</p>
-<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="co">## load the library</span>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="co">## load the library</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"vimp"</span>)
 
 <span class="co">## new learners library, with only one learner for illustration only</span>
@@ -397,40 +496,73 @@
 
 <span class="co">## now estimate variable importance</span>
 <span class="no">fam_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>]], <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)</pre></body></html></div>
+<pre><code>## [10:31:39] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:39] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:39] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:39] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:39] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:39] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:40] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
 <p>This code takes approximately 5 seconds to run on a (not very fast) PC. Under the hood, <code><a href="../reference/vim.html">vim()</a></code> with <code>run_regression = TRUE</code> fits the <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code> function with the specified library, and then returns fitted values and variable importance estimates. This is most suitable for estimating variable importance for the first feature on a given dataset. I can display these estimates:</p>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">fam_vim</span></pre></body></html></div>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">fam_vim</span></pre></body></html></div>
 <pre><code>## Call:
 ## vim(Y = heart$chd, X = heart[, -dim(heart)[2]], indx = 5, type = "r_squared", 
 ##     run_regression = TRUE, SL.library = learners.2, na.rm = TRUE, 
 ##     folds = heart_folds, env = environment())
 ## 
 ## Variable importance estimates:
-##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 5 0.4672719 0.04674128 [0.3756607, 0.5588832] TRUE     0</code></pre>
+##       Estimate  SE         95% CI                VIMP &gt; 0 p-value
+## s = 5 0.5403281 0.04906013 [0.444172, 0.6364842] TRUE     0</code></pre>
 <p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">full_fit</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">full_fit</span>)</pre></body></html></div>
+<pre><code>##            [,1]
+## [1,] 0.43631816
+## [2,] 0.16220996
+## [3,] 0.06261808
+## [4,] 0.38759562
+## [5,] 0.67360467
+## [6,] 0.48626825</code></pre>
+<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">red_fit</span>)</pre></body></html></div>
 <pre><code>##           [,1]
-## [1,] 0.8105285
-## [2,] 0.2076490
-## [3,] 0.5492849
-## [4,] 0.2092758
-## [5,] 0.3897494
-## [6,] 0.5184214</code></pre>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">red_fit</span>)</pre></body></html></div>
-<pre><code>##           [,1]
-## [1,] 0.4742328
-## [2,] 0.1464581
-## [3,] 0.4762070
-## [4,] 0.2843564
-## [5,] 0.3879216
-## [6,] 0.2757311</code></pre>
+## [1,] 0.4639383
+## [2,] 0.4291761
+## [3,] 0.2848933
+## [4,] 0.2961805
+## [5,] 0.3026110
+## [6,] 0.3469769</code></pre>
 <p>I said earlier that I want to obtain estimates of all individual features in these data, so let’s choose type A behavior (<code>tpa</code>) next. Now that I have estimated variable importance for family history, the <code>full_fit</code> object contains our estimate of <span class="math inline">\(\mu_{P_0}\)</span>. Since I have spent the time to estimate this using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>, there is no reason to estimate this function again. This leads me to choose (2) above for estimating the importance of type A behavior, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields</p>
-<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="co">## specify that full_fit doesn't change</span>
+<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="co">## specify that full_fit doesn't change</span>
 <span class="no">full_fit</span> <span class="kw">&lt;-</span> <span class="no">fam_vim</span>$<span class="no">full_fit</span>
 
 <span class="co">## estimate variable importance for the average number of rooms</span>
-<span class="no">reduced_fit</span> <span class="kw">&lt;-</span> <span class="kw pkg">SuperLearner</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">6</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>]), <span class="kw">drop</span> <span class="kw">=</span> <span class="fl">FALSE</span>], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>)
-<span class="no">red_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">reduced_fit</span>)$<span class="no">pred</span>
+<span class="no">reduced_fit</span> <span class="kw">&lt;-</span> <span class="kw pkg">SuperLearner</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">6</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>]), <span class="kw">drop</span> <span class="kw">=</span> <span class="fl">FALSE</span>], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>)</pre></body></html></div>
+<pre><code>## [10:31:41] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:42] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:42] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:42] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:42] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:42] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:42] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:42] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="no">red_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">reduced_fit</span>)$<span class="no">pred</span>
 <span class="no">tpa_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">6</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
 <span class="no">tpa_vim</span></pre></body></html></div>
@@ -440,59 +572,131 @@
 ## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                 VIMP &gt; 0 p-value
-## s = 6 0.4807425 0.04681816 [0.3889806, 0.5725044] TRUE     0</code></pre>
+## s = 6 0.5375392 0.04910725 [0.4412907, 0.6337876] TRUE     0</code></pre>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>If I choose (2), then I have to use a single method from the library, or call <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code> myself, prior to estimating variable importance. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on these fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="co">## set up the data, removing the columns for alcohol use and chd</span>
+<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="co">## set up the data, removing the columns for alcohol use and chd</span>
 <span class="no">x</span> <span class="kw">&lt;-</span> <span class="no">heart</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">8</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])]
 
 <span class="co">## fit an xgboost model using SuperLearner</span>
-<span class="no">reduced_mod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, ], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>)
-<span class="no">reduced_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">reduced_mod</span>)$<span class="no">pred</span>
+<span class="no">reduced_mod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, ], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>)</pre></body></html></div>
+<pre><code>## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:43] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="no">reduced_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">reduced_mod</span>)$<span class="no">pred</span>
 <span class="co">## this takes 2 seconds</span>
 
 <span class="co">## estimate variable importance</span>
 <span class="no">alc_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_fit</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)</pre></body></html></div>
 <p>I can obtain estimates for the remaining individual features in the same way (again using only two base learners for illustration):</p>
-<div class="sourceCode" id="cb42"><html><body><pre class="r"><span class="no">reduced_sbp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">sbp_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_sbp</span>,
+<div class="sourceCode" id="cb48"><html><body><pre class="r"><span class="no">reduced_sbp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:44] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb50"><html><body><pre class="r"><span class="no">sbp_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_sbp</span>,
                 <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
-<span class="no">reduced_tob</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">tob_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_tob</span>,
+<span class="no">reduced_tob</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:45] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:46] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb52"><html><body><pre class="r"><span class="no">tob_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_tob</span>,
                 <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
-<span class="no">reduced_ldl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">ldl_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_ldl</span>,
+<span class="no">reduced_ldl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:47] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb54"><html><body><pre class="r"><span class="no">ldl_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_ldl</span>,
                 <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
-<span class="no">reduced_adi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">adi_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_adi</span>,
+<span class="no">reduced_adi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">4</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:48] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb56"><html><body><pre class="r"><span class="no">adi_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_adi</span>,
                 <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
-<span class="no">reduced_obe</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">7</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">obe_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_obe</span>,
+<span class="no">reduced_obe</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">7</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:49] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb58"><html><body><pre class="r"><span class="no">obe_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_obe</span>,
                 <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
-<span class="no">reduced_age</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">9</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">age_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_age</span>,
+<span class="no">reduced_age</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">9</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:50] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:51] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb60"><html><body><pre class="r"><span class="no">age_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_age</span>,
                 <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">9</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)</pre></body></html></div>
 <p>Now that I have estimates of each of individual feature’s variable importance, I can view them all simultaneously by plotting:</p>
-<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"dplyr"</span>)
+<div class="sourceCode" id="cb61"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"dplyr"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"tibble"</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)</pre></body></html></div>
-<pre><code>## 
-## Attaching package: 'ggplot2'</code></pre>
-<pre><code>## The following object is masked from 'package:dplyr':
-## 
-##     vars</code></pre>
-<div class="sourceCode" id="cb46"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"cowplot"</span>)</pre></body></html></div>
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"cowplot"</span>)</pre></body></html></div>
 <pre><code>## 
 ## Attaching package: 'cowplot'</code></pre>
 <pre><code>## The following object is masked from 'package:ggplot2':
 ## 
 ##     ggsave</code></pre>
-<div class="sourceCode" id="cb49"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/cowplot/man/theme_cowplot.html">theme_cowplot</a></span>())
+<div class="sourceCode" id="cb64"><html><body><pre class="r"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/cowplot/man/theme_cowplot.html">theme_cowplot</a></span>())
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"forcats"</span>)
 <span class="co">## combine the objects together</span>
 <span class="no">ests</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="no">sbp_vim</span>, <span class="no">tob_vim</span>, <span class="no">ldl_vim</span>, <span class="no">adi_vim</span>,
@@ -541,12 +745,34 @@
 <a href="#estimating-variable-importance-for-a-group-of-variables" class="anchor"></a>Estimating variable importance for a group of variables</h2>
 <p>Now that I have estimated variable importance for each of the individual features, I can estimate variable importance for each of the groups that I mentioned above: biological and behavioral features.</p>
 <p>The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for <code>s</code>; I can use any of the options listed in the previous section to compute these estimates.</p>
-<div class="sourceCode" id="cb50"><html><body><pre class="r"><span class="co">## get the estimates</span>
-<span class="no">reduced_behav</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>], <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">behav_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_behav</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>), <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
+<div class="sourceCode" id="cb65"><html><body><pre class="r"><span class="co">## get the estimates</span>
+<span class="no">reduced_behav</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>], <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:52] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:52] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:52] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:52] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:52] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb67"><html><body><pre class="r"><span class="no">behav_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_behav</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>), <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
-<span class="no">reduced_bios</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>], <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span>
-<span class="no">bios_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_bios</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
+<span class="no">reduced_bios</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>], <span class="kw">X</span> <span class="kw">=</span> <span class="no">heart</span>[<span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">2</span>, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])], <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>))$<span class="no">pred</span></pre></body></html></div>
+<pre><code>## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:53] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.
+## [10:31:54] WARNING: amalgamation/../src/objective/regression_obj.cu:170: reg:linear is now deprecated in favor of reg:squarederror.</code></pre>
+<div class="sourceCode" id="cb69"><html><body><pre class="r"><span class="no">bios_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">reduced_bios</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
 
 <span class="co">## combine and plot</span>
 <span class="no">groups</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="no">behav_vim</span>, <span class="no">bios_vim</span>)
@@ -575,12 +801,12 @@
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references">
+<div id="refs" class="references hanging-indent">
 <div id="ref-breiman2001">
-<p>Breiman, L. 2001. “Random Forests” 45. Machine Learning.</p>
+<p>Breiman, L. 2001. “Random Forests” 45.</p>
 </div>
 <div id="ref-friedman2001">
-<p>Friedman, JH. 2001. “Greedy Function Approximation: A Gradient Boosting Machine.” The Annals of Applied Statistics.</p>
+<p>Friedman, JH. 2001. “Greedy Function Approximation: A Gradient Boosting Machine.”</p>
 </div>
 <div id="ref-hastie1990">
 <p>Hastie, TJ, and RJ Tibshirani. 1990. <em>Generalized Additive Models</em>. Vol. 43. CRC Press.</p>
@@ -589,16 +815,19 @@
 <p>Hastie, T, R Tibshirani, and J Friedman. 2009. <em>The Elements of Statistical Learning</em>.</p>
 </div>
 <div id="ref-vanderlaan2007">
-<p>van der Laan, MJ, EC Polley, and AE Hubbard. 2007. “Super Learner” 6. Statistical Applications in Genetics and Molecular Biology.</p>
+<p>van der Laan, MJ, EC Polley, and AE Hubbard. 2007. “Super Learner” 6.</p>
+</div>
+<div id="ref-williamson2020c">
+<p>Williamson, Brian D, and Jean Feng. 2020. “Efficient Nonparametric Statistical Inference on Population Feature Importance Using Shapley Values.” <a href="https://arxiv.org/abs/2006.09481">https://arxiv.org/abs/2006.09481</a>.</p>
 </div>
 <div id="ref-williamson2020a">
-<p>Williamson, Brian D, Peter B Gilbert, Marco Carone, and Noah Simon. 2020. “Nonparametric Variable Importance Assessment Using Machine Learning Techniques.” Biometrics.</p>
+<p>Williamson, Brian D, Peter B Gilbert, Marco Carone, and Noah Simon. 2020. “Nonparametric Variable Importance Assessment Using Machine Learning Techniques.”</p>
 </div>
 <div id="ref-williamson2020b">
-<p>Williamson, Brian D, Peter B Gilbert, Noah Simon, and Marco Carone. 2020. “A Unified Approach for Inference on Algorithm-Agnostic Variable Importance.” arXiv. <a href="https://arxiv.org/abs/2004.03683">https://arxiv.org/abs/2004.03683</a>.</p>
+<p>Williamson, Brian D, Peter B Gilbert, Noah Simon, and Marco Carone. 2020. “A Unified Approach for Inference on Algorithm-Agnostic Variable Importance.” <a href="https://arxiv.org/abs/2004.03683">https://arxiv.org/abs/2004.03683</a>.</p>
 </div>
 <div id="ref-zou2005">
-<p>Zou, H, and TJ Hastie. 2005. “Regularization and Variable Selection via the Elastic Net.” Journal of the Royal Statistical Society: Series B (Statistical Methodology).</p>
+<p>Zou, H, and TJ Hastie. 2005. “Regularization and Variable Selection via the Elastic Net.”</p>
 </div>
 </div>
 </div>

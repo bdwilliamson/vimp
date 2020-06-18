@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nonparametric Variable Importance Estimates using Cross-validation — cv_vim • vimp</title>
+<title>Nonparametric Variable Importance Estimates and Inference using Cross-fitting — cv_vim • vimp</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -36,10 +36,10 @@
 
 
 
-<meta property="og:title" content="Nonparametric Variable Importance Estimates using Cross-validation — cv_vim" />
+<meta property="og:title" content="Nonparametric Variable Importance Estimates and Inference using Cross-fitting — cv_vim" />
 
 <meta property="og:description" content="Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-validation.
+nonparametric variable importance parameter of interest, using cross-fitting.
 This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits." />
 
 
@@ -73,7 +73,7 @@ This essentially involves splitting the data into V train/test splits; train the
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -125,7 +125,7 @@ This essentially involves splitting the data into V train/test splits; train the
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Nonparametric Variable Importance Estimates using Cross-validation</h1>
+    <h1>Nonparametric Variable Importance Estimates and Inference using Cross-fitting</h1>
     <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/cv_vim.R'><code>R/cv_vim.R</code></a></small>
     <div class="hidden name"><code>cv_vim.Rd</code></div>
     </div>
@@ -133,7 +133,7 @@ This essentially involves splitting the data into V train/test splits; train the
     <div class="ref-description">
     
     <p>Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-validation.
+nonparametric variable importance parameter of interest, using cross-fitting.
 This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.</p>
     
     </div>
@@ -237,10 +237,20 @@ This essentially involves splitting the data into V train/test splits; train the
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
-details on the mathematics behind this function, and the validity
-of the confidence intervals.
-In the interest of transparency, we return most of the calculations
+    <p>We define the population variable importance measure (VIM) for the group 
+of features (or single feature) \(s\) with respect to the predictiveness measure
+\(V\) by $$\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),$$ where \(f_0\) is 
+the population predictiveness maximizing function, \(f_{0,s}\) is the population
+predictiveness maximizing function that is only allowed to access the features with
+index not in \(s\), and \(P_0\) is the true data-generating distribution. Cross-fitted
+VIM estimates are obtained by first splitting the data into \(K\) folds; then using each
+fold in turn as a hold-out set, constructing estimators \(f_{n,k}\) and \(f_{n,k,s}\) of 
+\(f_0\) and \(f_{0,s}\), respectively on the training data and estimator \(P_{n,k}\) of 
+\(P_0\) using the test data; and finally, computing $$\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}$$ 
+See the paper by Williamson, Gilbert, Simon, and Carone for more
+details on the mathematics behind the <code>cv_vim</code> function, and the validity
+of the confidence intervals.</p>
+<p>In the interest of transparency, we return most of the calculations
 within the <code>vim</code> object. This results in a list containing:</p><ul>
 <li><p>call - the call to <code>cv_vim</code></p></li>
 <li><p>s - the column(s) to calculate variable importance for</p></li>

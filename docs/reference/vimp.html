@@ -75,7 +75,7 @@ choose a variable importance measure, and specify variable(s) of interest;
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
       </span>
     </div>
 
@@ -163,6 +163,7 @@ choose a variable importance measure, and specify variable(s) of interest;
 <p>Preprints:</p><ul>
 <li><p><a href='http://biostats.bepress.com/uwbiostat/paper422/'>http://biostats.bepress.com/uwbiostat/paper422/</a> (R-squared-based variable importance)</p></li>
 <li><p><a href='http://arxiv.org/abs/2004.03683'>http://arxiv.org/abs/2004.03683</a> (general variable importance)</p></li>
+<li><p><a href='https://arxiv.org/abs/2006.09481'>https://arxiv.org/abs/2006.09481</a> (general Shapley-based variable importance)</p></li>
 </ul>
 
 <p>Other useful links:</p><ul>
@@ -176,14 +177,14 @@ choose a variable importance measure, and specify variable(s) of interest;
 
     
 
-<p>The packages that we import either make the internal code nice (dplyr, magrittr, tibble, rlang), 
+<p>The packages that we import either make the internal code nice (dplyr, magrittr, tibble, rlang, MASS), 
 are directly relevant to estimating the conditional mean (SuperLearner) or predictiveness measures (ROCR), 
 or are necessary for hypothesis testing (stats).</p>
 <p>We suggest several other packages: xgboost, ranger, gam, glmnet, and quadprog allow 
 a flexible library of candidate learners in the Super Learner; ggplot2, cowplot, 
 and forcats help with plotting variable importance estimates; testthat and covr 
 help with unit tests; and knitr, rmarkdown,
-RCurl, and MASS help with the vignettes and examples.</p>
+and RCurl help with the vignettes and examples.</p>
     
 
   </div>
