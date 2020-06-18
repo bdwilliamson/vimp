@@ -6,7 +6,6 @@
 cran-comments.md
 LICENSE.md
 README.md
-NEWS.md
 ^CRAN-RELEASE$
 ^_pkgdown\.yml$
 ^docs$

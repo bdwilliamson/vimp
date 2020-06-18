@@ -1,4 +1,4 @@
-# vimp 2.1
+# vimp 2.1.0
 
 ## Major changes
 
