@@ -38,6 +38,7 @@ Suggests:
     xgboost,
     glmnet,
     ranger,
+    polspline,
     quadprog,
     covr,
     testthat,
