@@ -30,6 +30,7 @@ Preprints:
 \itemize{
   \item{\url{http://biostats.bepress.com/uwbiostat/paper422/} (R-squared-based variable importance)}
   \item{\url{http://arxiv.org/abs/2004.03683} (general variable importance)}
+  \item{\url{https://arxiv.org/abs/2006.09481} (general Shapley-based variable importance)}
 }
 
 Other useful links:
@@ -42,7 +43,7 @@ Other useful links:
 
 \section{Imports}{
 
-The packages that we import either make the internal code nice (dplyr, magrittr, tibble, rlang), 
+The packages that we import either make the internal code nice (dplyr, magrittr, tibble, rlang, MASS), 
 are directly relevant to estimating the conditional mean (SuperLearner) or predictiveness measures (ROCR), 
 or are necessary for hypothesis testing (stats).
 
@@ -50,6 +51,6 @@ We suggest several other packages: xgboost, ranger, gam, glmnet, and quadprog al
 a flexible library of candidate learners in the Super Learner; ggplot2, cowplot, 
 and forcats help with plotting variable importance estimates; testthat and covr 
 help with unit tests; and knitr, rmarkdown,
-RCurl, and MASS help with the vignettes and examples.
+and RCurl help with the vignettes and examples.
 }
 

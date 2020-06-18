@@ -72,10 +72,10 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds, ...) {
   fhat_red <- list()
   for (v in 1:V) {
     ## fit super learner
-    fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, ], SL.library = this_sl_lib, ...)
+    fit <- SuperLearner::SuperLearner(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], SL.library = this_sl_lib, ...)
     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
     ## get predictions on the validation fold
-    fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, ])$pred
+    fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, , drop = FALSE])$pred
   }
   return(list(preds = fhat_ful, folds = folds))
 }

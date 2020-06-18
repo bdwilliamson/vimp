@@ -42,7 +42,7 @@ references:
    year: 2020
   URL: https://arxiv.org/abs/2004.03683
 - id: williamson2020c
-  title: A unified approach for assessing population feature importance using Shapley values
+  title: Efficient nonparametric statistical inference on population feature importance using Shapley values
   author:
   - family: Williamson
     given: Brian D
@@ -52,6 +52,7 @@ references:
   type: article-journal
   issued:
    year: 2020
+  URL: https://arxiv.org/abs/2006.09481
 - id: hastie1990
   title: Generalized Additive Models
   author:
@@ -139,13 +140,13 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 ## Introduction
 
-`vimp` is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts [@williamson2020a] and [@williamson2020b].
+`vimp` is a package that computes nonparametric estimates of variable importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts @williamson2020a, @williamson2020b, and @williamson2020c.
 
 Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means --- if these techniques are slow, then the variable importance procedure will be slow.
 
 The code can handle arbitrary dimensions of features, and may be used to estimate the importance of any single feature or group of features for predicting the outcome. The package also includes functions for cross-validated importance.
 
-The author and maintainer of the `vimp` package is [Brian Williamson](https://bdwilliamson.github.io/).
+The author and maintainer of the `vimp` package is [Brian Williamson](https://bdwilliamson.github.io/). The methods implemented here have also been implemented in Python under the package [`vimpy`](https://github.com/bdwilliamson/vimpy).
 
 ## Installation
 

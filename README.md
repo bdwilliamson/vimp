@@ -12,13 +12,15 @@
 
 **Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Peter Gilbert](https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html), [Noah Simon](http://faculty.washington.edu/nrsimon/), [Marco Carone](http://faculty.washington.edu/mcarone/about.html)
 
+**Python package:** https://github.com/bdwilliamson/vimpy
+
 ## Introduction
 
 In predictive modeling applications, it is often of interest to determine the relative contribution of subsets of features in explaining an outcome; this is often called variable importance. It is useful to consider variable importance as a function of the unknown, underlying data-generating mechanism rather than the specific predictive algorithm used to fit the data. This package provides functions that, given fitted values from predictive algorithms, compute algorithm-agnostic estimates of population variable importance, along with asymptotically valid confidence intervals for the true importance and hypothesis tests of the null hypothesis of zero importance.
 
 Specifically, the types of variable importance supported by `vimp` include: difference in population classification accuracy, difference in population area under the receiver operating characteristic curve, difference in population deviance, difference in population R-squared.
 
-More detail may be found in our [tech report](https://arxiv.org/abs/2004.03683).
+More detail may be found in our tech reports on [general variable importance](https://arxiv.org/abs/2004.03683) and [general Shapley-based variable importance](https://arxiv.org/abs/2006.09481).
 
 This method works on low-dimensional and high-dimensional data.
 
@@ -28,11 +30,11 @@ If you encounter any bugs or have any specific feature requests, please [file an
 
 ## R installation
 
-You may install a stable release of `vimp` from [CRAN](https://cran.r-project.org/web/packages/vimp/index.html) via `install.packages("vimp")`. You may also install a stable release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code (replace `v2.0.1` with the tag for the specific release you wish to install):
+You may install a stable release of `vimp` from [CRAN](https://cran.r-project.org/web/packages/vimp/index.html) via `install.packages("vimp")`. You may also install a stable release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code (replace `v2.1` with the tag for the specific release you wish to install):
 
 ```r
 ## install.packages("devtools") # only run this line if necessary
-devtools::install_github(repo = "bdwilliamson/vimp@v2.0.1")
+devtools::install_github(repo = "bdwilliamson/vimp@v2.1")
 ```
 
 You may install a development release of `vimp` from GitHub via [`devtools`](https://www.rstudio.com/products/rpackages/devtools/) by running the following code:
@@ -126,3 +128,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## Logo
+
+The logo was created using [hexSticker](https://github.com/GuangchuangYu/hexSticker) and [lisa](https://github.com/tyluRp/lisa). Many thanks to the maintainers of these packages and the [Color Lisa](https://lisa-pkg.netlify.app/) team.

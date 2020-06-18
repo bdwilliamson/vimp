@@ -11,6 +11,7 @@ sp_vim(
   weights = rep(1, length(Y)),
   type = "r_squared",
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+  univariate_SL.library = NULL,
   gamma = 1,
   alpha = 0.05,
   delta = 0,
@@ -31,6 +32,8 @@ sp_vim(
 \item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}).}
 
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
+
+\item{univariate_SL.library}{(optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}}
 
 \item{gamma}{the fraction of the sample size to use when sampling subsets (e.g., \code{gamma = 1} samples the same number of subsets as the sample size)}
 

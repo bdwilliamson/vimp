@@ -1,8 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Removed functions sp_vim, spvim_ics, spvim_se, cv_vim_nodonsker
-* Modified examples sections to remove \donttest and pass all checks
+* Added functions sp_vim, spvim_ics, spvim_se
 
 ## Test environments
 * local ubuntu 18.04, R 3.6.3
