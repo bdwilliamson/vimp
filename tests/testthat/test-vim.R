@@ -15,7 +15,7 @@ folds <- sample(rep(seq_len(2), length = length(y)))
 
 ## set up a library for SuperLearner
 SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
-  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+  SL.xgboost(..., objective = 'reg:squarederror', max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
 }
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
 true_vim <- (500/729)/(1 + 2497/7875 + 500/729)

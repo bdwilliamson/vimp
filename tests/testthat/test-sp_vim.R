@@ -7,7 +7,7 @@ library("xgboost")
 ## generate the data
 set.seed(4747)
 p <- 2
-n <- 10000
+n <- 5000
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 ## apply the function to the x's
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
@@ -25,7 +25,7 @@ shapley_val_2 <- (1/2) * (r2_two - 0) + (1/2) * (r2_full - r2_one)
 
 ## set up a library for SuperLearner
 SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
-  SL.xgboost(..., max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
+  SL.xgboost(..., objective = 'reg:squarederror', max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
 }
 learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.glmnet", "SL.mean")
 univariate_learners <- "SL.polymars"
