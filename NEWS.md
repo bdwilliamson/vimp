@@ -1,3 +1,14 @@
+# vimp 2.1.1
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Created new vignettes "Types of VIMs" and "Using precomputed regression function estimates in `vimp`"
+* Updated main vignette to only use `run_regression = TRUE` for simplicity
+
 # vimp 2.1.0
 
 ## Major changes

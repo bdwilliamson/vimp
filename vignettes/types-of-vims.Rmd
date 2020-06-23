@@ -1,0 +1,91 @@
+---
+title: "Types of VIMs"
+author: "Brian D. Williamson"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Types of VIMs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library("vimp")
+library("SuperLearner")
+```
+
+## Introduction
+
+In the main vignette (["Introduction to `vimp`"](introduction_to_vimp.html)), I discussed variable importance defined using R-squared. I also mentioned that all of the analyses were carried out using a *condititonal* variable importance measure. In this document, I will discuss all three types of variable importance that may be computed using `vimp`.
+
+In general, I define variable importance as a function of the true population distribution (denoted by $P_0$) and a predictiveness measure $V$ -- large values of $V$ are assumed to be better. Currently, the measures $V$ implemented in `vimp` are $R^2$, classification accuracy, area under the receiver operating characteristic curve (AUC), and deviance. For a fixed function $f$, the predictiveness is given by $V(f, P)$, where large values imply that $f$ is a good predictor of the outcome. The best possible prediction function $f_0$, is the *oracle* model -- i.e., the prediction function that I would use if I had access to the distribution $P_0$. Often, $f_0$ is the true conditional mean (e.g., for $R^2$). Then the *total oracle predictiveness* can be defined as $V(f_0, P_0)$. This is the best possible value of predictiveness.
+
+I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have $p$ variables, and an index set $s$ of interest (containing some subset of the $p$ variables). Throughout this document, I will use the South African heart disease study data [@hastie2009] to illustrate how each VIM may be estimated (freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data); more information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt)). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the [main vignette](introduction_to_vimp.html)).
+
+```{r load-heart-data}
+## read in the data from the Elements website
+library("RCurl")
+heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
+## minor data cleaning
+heart <- heart_data[, 2:dim(heart_data)[2]]
+heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
+learners.2 <- c("SL.ranger")
+set.seed(12345)
+```
+
+## Conditional VIMs
+
+The *reduced oracle predictiveness* is defined as $V(f_{0,-s}, P_0)$, where $f_{0,-s}$ is the best possible prediction function that *does not use the covariates with index in $s$*. Then the conditional VIM is defined as $$V(f_0, P_0) - V(f_{0,-s}, P_0).$$ This is the measure of importance that I estimated in the [main vignette](introduction_to_vimp.html). To estimate the conditional VIM for family history of heart disease, I can use the following code:
+
+```{r est-famhist-cond}
+# note the use of a small V and a small number of SL folds, for illustration only
+V <- 2
+sl_cvcontrol <- list(V = 2)
+fam_vim_cond <- vimp_rsquared(Y = heart$chd, X = heart[, -ncol(heart)], indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+```
+
+## Marginal VIMs
+
+The *marginal oracle predictiveness* is defined as $V(f_{0,s}, P_0)$, where $f_{0,s}$ is the best possible prediction function that *only uses the covariates with index in $s$*. The *null oracle predictiveness* is defined as $V(f_{0, \emptyset}, P_0)$, where $f_{0,\emptyset}$ is the best possible prediction function that *uses no covariates* (i.e., is fitting the mean). Then the marginal VIM is defined as $$V(f_{0,s}, P_0) - V(f_{0,\emptyset}, P_0).$$ To estimate the marginal VIM for family history of heart disease, I can use the following code:
+
+```{r est-famhist-marg}
+# note the use of a small V and a small number of SL folds, for illustration only
+fam_vim_marg <- vimp_rsquared(Y = heart$chd, X = heart[, 5, drop = FALSE], indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+```
+
+## Shapley VIMs
+
+The Shapley population VIM (SPVIM) generalizes the marginal and conditional VIMs by averaging over all possible subsets. More specifically, the SPVIM for feature $j$ is given by $$\sum_{s \subseteq \{1,\ldots,p\} \setminus \{j\}} \binom{p-1}{\lvert s \rvert}^{-1}\{V(f_{0, s \cup \{j\}}, P_0)) - V(f_{0,s}, P_0)\};$$ this is the average gain in predictiveness from adding feature $j$ to each possible grouping of the other features. To estimate the SPVIM for family history of heart disease, I can use the following code (note that `sp_vim` returns VIM estimates for all features):
+
+```{r est-famhist-spvim}
+all_vim_spvim <- sp_vim(Y = heart$chd, X = heart[, -ncol(heart)], SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+```
+
+## Adjusting for confounders
+
+In some cases, there may be confounding factors that you want to adjust for in all cases. For example, in HIV vaccine studies, we often adjust for baseline demographic variables, including age and behavioral factors. If this is the case, then the null predictiveness above can be modified to be $V(f_{0,c}, P_0)$, where $c$ is the index set of all confounders.
+
+## Conclusion
+
+The three VIMs defined here may be different for a given feature of interest. Indeed, we can see this for family history of heart disease in the South African heart disease study data:
+```{r show-ests}
+fam_vim_cond
+fam_vim_marg
+# note: need to look at row for s = 5
+all_vim_spvim
+```
+
+This is simply a function of the fact that the VIMs are different population parameters. All three likely provide useful information in practice:
+
+* the marginal VIM provides information about the predictiveness of the covariate in isolation;
+* the conditional VIM provides information about the predictiveness of the covariate adjusting for all other covariates; and
+* the SPVIM provides information about the predictiveness of the covariate averaged over all sets of adjustment variables.
+
+To choose a VIM, identify which of these three (there may be more than one) that best addresses your scientific question.

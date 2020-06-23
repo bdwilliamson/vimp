@@ -1,7 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Added functions sp_vim, spvim_ics, spvim_se, sample_subsets
+* Added two vignettes, "Types of VIMs" and "Using precomputed regression function
+* Updated the main vignette to only use `run_regression = TRUE` for simplicity
 
 ## Test environments
 * local ubuntu 18.04, R 3.6.3
