@@ -47,7 +47,7 @@ The packages that we import either make the internal code nice (dplyr, magrittr,
 are directly relevant to estimating the conditional mean (SuperLearner) or predictiveness measures (ROCR), 
 or are necessary for hypothesis testing (stats).
 
-We suggest several other packages: xgboost, ranger, gam, glmnet, and quadprog allow 
+We suggest several other packages: xgboost, ranger, gam, glmnet, polspline, and quadprog allow 
 a flexible library of candidate learners in the Super Learner; ggplot2, cowplot, 
 and forcats help with plotting variable importance estimates; testthat and covr 
 help with unit tests; and knitr, rmarkdown,
