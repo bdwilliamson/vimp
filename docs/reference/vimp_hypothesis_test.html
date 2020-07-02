@@ -8,11 +8,13 @@
 
 <title>Perform a hypothesis test against the null hypothesis of \(\delta\) importance — vimp_hypothesis_test • vimp</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,12 +38,11 @@
 
 
 
-<meta property="og:title" content="Perform a hypothesis test against the null hypothesis of \(\delta\) importance — vimp_hypothesis_test" />
 
+<meta property="og:title" content="Perform a hypothesis test against the null hypothesis of \(\delta\) importance — vimp_hypothesis_test" />
 <meta property="og:description" content="Perform a hypothesis test against the null hypothesis of zero importance by:
 (i) for a user-specified level \(\alpha\), compute a \((1 - \alpha)\times 100\)% confidence interval around the predictiveness for both the full and reduced regression functions (these must be estimated on independent splits of the data);
 (ii) if the intervals do not overlap, reject the null hypothesis." />
-
 
 
 
@@ -73,7 +74,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -96,7 +97,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -104,7 +111,6 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/bdwilliamson/vimp/">
@@ -131,11 +137,9 @@
     </div>
 
     <div class="ref-description">
-    
     <p>Perform a hypothesis test against the null hypothesis of zero importance by:
 (i) for a user-specified level \(\alpha\), compute a \((1 - \alpha)\times 100\)% confidence interval around the predictiveness for both the full and reduced regression functions (these must be estimated on independent splits of the data);
 (ii) if the intervals do not overlap, reject the null hypothesis.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>vimp_hypothesis_test</span>(
@@ -151,7 +155,7 @@
   <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
 )</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -200,16 +204,14 @@
       <td><p>logical; should NAs be removed in computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p><code>TRUE</code> if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, <code>FALSE</code>.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind this function and the definition of the parameter of interest.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

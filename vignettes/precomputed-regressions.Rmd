@@ -4,7 +4,7 @@ author: "Brian D. Williamson"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using precomputed regression function estimates in vimp}
+  %\VignetteIndexEntry{Using precomputed regression function estimates in `vimp`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

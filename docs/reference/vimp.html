@@ -8,11 +8,13 @@
 
 <title>vimp: Perform Inference on Algorithm-Agnostic Variable Importance — vimp • vimp</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,14 +38,13 @@
 
 
 
-<meta property="og:title" content="vimp: Perform Inference on Algorithm-Agnostic Variable Importance — vimp" />
 
+<meta property="og:title" content="vimp: Perform Inference on Algorithm-Agnostic Variable Importance — vimp" />
 <meta property="og:description" content="A unified framework for valid statistical inference on algorithm-agnostic
 measures of variable importance. You provide the data, a method for 
 estimating the conditional mean of the outcome given the covariates,
 choose a variable importance measure, and specify variable(s) of interest;
 'vimp' takes care of the rest." />
-
 
 
 
@@ -75,7 +76,7 @@ choose a variable importance measure, and specify variable(s) of interest;
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -98,7 +99,13 @@ choose a variable importance measure, and specify variable(s) of interest;
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -106,7 +113,6 @@ choose a variable importance measure, and specify variable(s) of interest;
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/bdwilliamson/vimp/">
@@ -133,16 +139,15 @@ choose a variable importance measure, and specify variable(s) of interest;
     </div>
 
     <div class="ref-description">
-    
     <p>A unified framework for valid statistical inference on algorithm-agnostic
 measures of variable importance. You provide the data, a method for 
 estimating the conditional mean of the outcome given the covariates,
 choose a variable importance measure, and specify variable(s) of interest;
 'vimp' takes care of the rest.</p>
-    
     </div>
 
-        
+
+
     <h2 class="hasAnchor" id="author-s-"><a class="anchor" href="#author-s-"></a>Author(s)</h2>
 
     
@@ -155,7 +160,6 @@ choose a variable importance measure, and specify variable(s) of interest;
 <li><p>Marco Carone</p></li>
 </ul>
 
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See Also</h2>
 
     
@@ -172,7 +176,6 @@ choose a variable importance measure, and specify variable(s) of interest;
 <li><p>Report bugs at <a href='http://github.com/bdwilliamson/vimp/issues'>http://github.com/bdwilliamson/vimp/issues</a></p></li>
 </ul>
 
-    
     <h2 class="hasAnchor" id="imports"><a class="anchor" href="#imports"></a>Imports</h2>
 
     
@@ -180,12 +183,11 @@ choose a variable importance measure, and specify variable(s) of interest;
 <p>The packages that we import either make the internal code nice (dplyr, magrittr, tibble, rlang, MASS), 
 are directly relevant to estimating the conditional mean (SuperLearner) or predictiveness measures (ROCR), 
 or are necessary for hypothesis testing (stats).</p>
-<p>We suggest several other packages: xgboost, ranger, gam, glmnet, and quadprog allow 
+<p>We suggest several other packages: xgboost, ranger, gam, glmnet, polspline, and quadprog allow 
 a flexible library of candidate learners in the Super Learner; ggplot2, cowplot, 
 and forcats help with plotting variable importance estimates; testthat and covr 
 help with unit tests; and knitr, rmarkdown,
 and RCurl help with the vignettes and examples.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
