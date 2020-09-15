@@ -17,6 +17,7 @@ sp_vim(
   delta = 0,
   na.rm = FALSE,
   stratified = FALSE,
+  verbose = FALSE,
   ...
 )
 }
@@ -45,6 +46,8 @@ sp_vim(
 
 \item{stratified}{should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?}
 
+\item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})}
+
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
@@ -55,13 +58,13 @@ Compute estimates and confidence intervals for the SPVIMs, using cross-fitting.
 This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 }
 \details{
-We define the SPVIM as the weighted average of the population difference in 
+We define the SPVIM as the weighted average of the population difference in
 predictiveness over all subsets of features not containing feature \eqn{j}.
 
-This is equivalent to finding the solution to a population weighted least squares problem. This 
-key fact allows us to estimate the SPVIM using weighted least squares, where we first 
+This is equivalent to finding the solution to a population weighted least squares problem. This
+key fact allows us to estimate the SPVIM using weighted least squares, where we first
 sample subsets from the power set of all possible features using the Shapley sampling distribution; then
-use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the 
+use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the
 least squares problem given in Williamson and Feng (2020).
 
 See the paper by Williamson and Feng (2020) for more
@@ -110,7 +113,7 @@ learners <- c("SL.mean", "SL.ranger")
 ## for illustration only)
 ## -----------------------------------------
 set.seed(4747)
-est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared", 
+est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared",
 SL.library = learners, alpha = 0.05)
 
 }

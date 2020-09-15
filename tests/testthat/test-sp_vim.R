@@ -56,6 +56,24 @@ test_that("Estimating SPVIMs with special univariate library works", {
   ## check that the estimate is approximately correct
   expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
 })
+test_that("Estimating SPVIMs with a single library function works", {
+  est <- sp_vim(Y = y, X = x, V = V, type = "r_squared", 
+                SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
+                gamma = .1, alpha = 0.05, delta = 0, 
+                cvControl = list(V = V), env = environment())
+  ## check that the estimate is approximately correct
+  expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
+})
+test_that("Estimating SPVIMs with verbose = TRUE works", {
+  expect_message(est <- sp_vim(Y = y, X = x, V = V, type = "r_squared", 
+                              SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
+                              gamma = .1, alpha = 0.05, delta = 0, 
+                              cvControl = list(V = V), env = environment(), verbose = TRUE),
+                 "Fitting regression",
+                 all = FALSE)
+  ## check that the estimate is approximately correct
+  expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
+})
 
 
 test_that("Error messages work", {

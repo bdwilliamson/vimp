@@ -15,19 +15,20 @@
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?
+#' @param verbose should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
 #'
-#' @details We define the SPVIM as the weighted average of the population difference in 
+#' @details We define the SPVIM as the weighted average of the population difference in
 #' predictiveness over all subsets of features not containing feature \eqn{j}.
-#' 
-#' This is equivalent to finding the solution to a population weighted least squares problem. This 
-#' key fact allows us to estimate the SPVIM using weighted least squares, where we first 
+#'
+#' This is equivalent to finding the solution to a population weighted least squares problem. This
+#' key fact allows us to estimate the SPVIM using weighted least squares, where we first
 #' sample subsets from the power set of all possible features using the Shapley sampling distribution; then
-#' use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the 
+#' use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the
 #' least squares problem given in Williamson and Feng (2020).
-#' 
+#'
 #' See the paper by Williamson and Feng (2020) for more
 #' details on the mathematics behind this function, and the validity
 #' of the confidence intervals.
@@ -74,17 +75,18 @@
 #' ## for illustration only)
 #' ## -----------------------------------------
 #' set.seed(4747)
-#' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared", 
+#' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared",
 #' SL.library = learners, alpha = 0.05)
-#' 
+#'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
-#' @importFrom stats pnorm
+#' @importFrom stats pnorm gaussian
+#' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
-sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared", 
-                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
+sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
+                   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
-                   stratified = FALSE, ...) {
+                   stratified = FALSE, verbose = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(Y)) stop("You must enter an outcome, Y.")
@@ -119,11 +121,24 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     ic_none <- cv_predictiveness_update(preds_none, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic
 
     ## get v, preds, ic for remaining non-null groups in S
-    preds_lst <- lapply(S[-1], function(s) run_sl(Y[outer_folds == 2, , drop = FALSE], X[outer_folds == 2, ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = s, folds = inner_folds_2, ...))
+    if (verbose) {
+        message("Fitting learners. Progress:")
+        progress_bar <- txtProgressBar(min = 0, max = length(S[-1]), style = 3)
+    } else {
+        progress_bar <- NULL
+    }
+    preds_lst <- sapply(1:length(S[-1]), function(i) run_sl(Y[outer_folds == 2, , drop = FALSE], X[outer_folds == 2, ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = S[-1][[i]], folds = inner_folds_2, verbose = verbose, progress_bar = progress_bar, indx = i, ...),
+                        simplify = FALSE)
+    if (verbose) {
+        close(progress_bar)
+    }
     v_lst <- lapply(preds_lst, function(x) cv_predictiveness_point_est(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est)
     ic_lst <- lapply(preds_lst, function(x) cv_predictiveness_update(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic)
     v <- matrix(c(v_none, unlist(v_lst)))
     ## do constrained wls
+    if (verbose) {
+        message("Fitting weighted least squares to estimate the SPVIM values.")
+    }
     A_W <- sqrt(W) %*% Z
     v_W <- sqrt(W) %*% v
     G <- rbind(c(1, rep(0, dim(X)[2])), rep(1, dim(X)[2] + 1) - c(1, rep(0, dim(X)[2])))
