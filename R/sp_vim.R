@@ -159,8 +159,13 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
 
     ## calculate the standard error
     ses <- vector("numeric", ncol(X) + 1)
+    var_v_contribs <- vector("numeric", ncol(X) + 1)
+    var_s_contribs <- vector("numeric", ncol(X) + 1)
     for (j in 1:(ncol(X) + 1)) {
-        ses[j] <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
+        ses_res <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
+        ses[j] <- ses_res$se
+        var_v_contribs[j] <- ses_res$var_v_contrib
+        var_s_contribs[j] <- ses_res$var_s_contrib
     }
     ## if est < 0, set to zero and print warning
     if (any(est < 0)) {
@@ -201,7 +206,10 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
                  est = est,
                  ic_lst = c(list(ic_none), ic_lst),
                  ic = ics,
-                 se = ses, ci = cis,
+                 se = ses,
+                 var_v_contribs = var_v_contribs,
+                 var_s_contribs = var_s_contribs,
+                 ci = cis,
                  test = hyp_tests,
                  p_value = p_values,
                  test_statistic = test_statistics,
