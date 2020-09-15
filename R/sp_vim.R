@@ -198,7 +198,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     ## create the output and return it
     ## create output tibble
     mat <- tibble::tibble(s = as.character(1:ncol(X)), est = est[-1], se = ses[-1], cil = cis[, 1],
-                          ciu = cis[, 2], test = hyp_tests, p_value = p_values)
+                          ciu = cis[, 2], test = hyp_tests, p_value = p_values, var_v_contribs=var_v_contribs[-1], var_s_contribs=var_s_contribs[-1])
     output <- list(call = cl, s = as.character(1:ncol(X)),
                  SL.library = SL.library,
                  v = v,
