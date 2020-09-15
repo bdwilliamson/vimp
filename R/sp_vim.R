@@ -122,7 +122,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
 
     ## get v, preds, ic for remaining non-null groups in S
     if (verbose) {
-        message("Fitting learners. Progress:")
+        message(paste("Fitting", length(S[-1]), "learners. Progress:"))
         progress_bar <- txtProgressBar(min = 0, max = length(S[-1]), style = 3)
     } else {
         progress_bar <- NULL
