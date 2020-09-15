@@ -41,7 +41,7 @@
 # @param Y the outcome
 # @param X the covariates
 # @param V the number of folds
-# @param SL.library the library of candidate learners
+# @param SL.library the library of candidate learners (a character vector), or a single function
 # @param s the subset of interest
 # @param folds the CV folds
 # @param verbose should we print progress? defaults to FALSE
@@ -95,10 +95,8 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
     this_L <- L
     this_L$obsWeights <- L$obsWeights[folds != v]
     new_arg_list <- c(list(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], SL.library = this_sl_lib), this_L)
-    if (length(this_sl_lib) == 1) { # no need to do SL CV
-      fit_library <- SuperLearner:::.createLibrary(this_sl_lib)
-      fitter <- get(fit_library$library$predAlgorithm[1], envir = new_arg_list$env)
-      fit <- fitter(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], newX = red_X[folds == v, , drop = FALSE],
+    if (!is.character(this_sl_lib)) { # only a single learner, so don't do CV
+      fit <- this_sl_lib(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], newX = red_X[folds == v, , drop = FALSE],
                     family = new_arg_list$family, obsWeights = new_arg_list$obsWeights)
       fitted_v <- fit$fit
       fhat_ful[[v]] <- fit$pred

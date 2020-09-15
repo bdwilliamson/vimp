@@ -8,7 +8,7 @@
 #' @param V the number of folds for cross-validation, defaults to 10.
 #' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of parameter (e.g., R-squared-based is \code{"r_squared"}).
-#' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
+#' @param SL.library either (1) a character vector of learners to pass to \code{SuperLearner} (defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}), or (2) a single algorithm (e.g., \code{SL.xgboost})
 #' @param univariate_SL.library (optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}
 #' @param gamma the fraction of the sample size to use when sampling subsets (e.g., \code{gamma = 1} samples the same number of subsets as the sample size)
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
@@ -78,7 +78,7 @@
 #' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared",
 #' SL.library = learners, alpha = 0.05)
 #'
-#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package. If a single learner is passed in to \code{SL.library}, it must take the same arguments as a SuperLearner wrapper.
 #' @importFrom stats pnorm gaussian
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export

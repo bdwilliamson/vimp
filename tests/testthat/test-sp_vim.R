@@ -3,6 +3,7 @@ library("testthat")
 library("SuperLearner")
 library("vimp")
 library("xgboost")
+library("ranger")
 
 ## generate the data
 set.seed(4747)
@@ -58,7 +59,7 @@ test_that("Estimating SPVIMs with special univariate library works", {
 })
 test_that("Estimating SPVIMs with a single library function works", {
   est <- sp_vim(Y = y, X = x, V = V, type = "r_squared", 
-                SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
+                SL.library = SuperLearner::SL.ranger, univariate_SL.library = univariate_learners,
                 gamma = .1, alpha = 0.05, delta = 0, 
                 cvControl = list(V = V), env = environment())
   ## check that the estimate is approximately correct
@@ -66,7 +67,7 @@ test_that("Estimating SPVIMs with a single library function works", {
 })
 test_that("Estimating SPVIMs with verbose = TRUE works", {
   expect_message(est <- sp_vim(Y = y, X = x, V = V, type = "r_squared", 
-                              SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
+                              SL.library = SuperLearner::SL.ranger, univariate_SL.library = univariate_learners,
                               gamma = .1, alpha = 0.05, delta = 0, 
                               cvControl = list(V = V), env = environment(), verbose = TRUE),
                  "Fitting weighted least squares to estimate the SPVIM values.",

@@ -32,7 +32,7 @@ sp_vim(
 
 \item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}).}
 
-\item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
+\item{SL.library}{either (1) a character vector of learners to pass to \code{SuperLearner} (defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}), or (2) a single algorithm (e.g., \code{SL.xgboost})}
 
 \item{univariate_SL.library}{(optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}}
 
@@ -118,5 +118,5 @@ SL.library = learners, alpha = 0.05)
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package. If a single learner is passed in to \code{SL.library}, it must take the same arguments as a SuperLearner wrapper.
 }
