@@ -46,7 +46,7 @@ devtools::install_github(repo = "bdwilliamson/vimp")
 
 ## Example
 
-This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the [vignette](vignettes/introduction_to_vimp.Rmd).
+This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the [vignette](https://bdwilliamson.github.io/vimp/introduction_to_vimp.html).
 
 ```r
 ## load required functions and libraries
