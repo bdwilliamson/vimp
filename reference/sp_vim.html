@@ -182,7 +182,7 @@ This essentially involves splitting the data into V train/test splits; train the
     </tr>
     <tr>
       <th>SL.library</th>
-      <td><p>a character vector of learners to pass to <code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X, respectively. Defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>, and <code>SL.mean</code>.</p></td>
+      <td><p>either (1) a character vector of learners to pass to <code>SuperLearner</code> (defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>, and <code>SL.mean</code>), or (2) a single algorithm (e.g., <code>SL.xgboost</code>)</p></td>
     </tr>
     <tr>
       <th>univariate_SL.library</th>
@@ -255,7 +255,7 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the <code>SuperLearner</code> function and package.</p></div>
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the <code>SuperLearner</code> function and package. If a single learner is passed in to <code>SL.library</code>, it must take the same arguments as a SuperLearner wrapper.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'><a href='https://github.com/ecpolley/SuperLearner'>SuperLearner</a></span>)
@@ -294,7 +294,7 @@ SL.library = <span class='kw'>learners</span>, alpha = <span class='fl'>0.05</sp
 
       <footer>
       <div class="copyright">
-  <p>Developed by Brian D. Williamson, Noah Simon, Marco Carone.</p>
+  <p>Developed by Brian D. Williamson.</p>
 </div>
 
 <div class="pkgdown">

@@ -191,16 +191,16 @@
 <span class="co">#&gt;     lm_vim_tpa, lm_vim_obe, lm_vim_alc, lm_vim_age)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 5 0.2439545 0.05239428 [0.1412635, 0.3466454] TRUE     1.676408e-06</span>
-<span class="co">#&gt; s = 9 0.2384768 0.05261941 [0.1353447, 0.3416090] TRUE     3.038587e-06</span>
-<span class="co">#&gt; s = 8 0.2364582 0.05265871 [0.1332490, 0.3396674] TRUE     3.548631e-06</span>
-<span class="co">#&gt; s = 3 0.2360498 0.05253167 [0.1330897, 0.3390100] TRUE     3.696141e-06</span>
-<span class="co">#&gt; s = 2 0.2358290 0.05255461 [0.1328238, 0.3388341] TRUE     3.783946e-06</span>
-<span class="co">#&gt; s = 7 0.2352233 0.05255742 [0.1322127, 0.3382340] TRUE     3.989718e-06</span>
-<span class="co">#&gt; s = 4 0.2351317 0.05249325 [0.1322468, 0.3380165] TRUE     4.018978e-06</span>
-<span class="co">#&gt; s = 1 0.2340883 0.05203763 [0.1320965, 0.3360802] TRUE     4.018061e-06</span>
-<span class="co">#&gt; s = 6 0.2169088 0.05156420 [0.1158448, 0.3179728] TRUE     1.399435e-05</span>
+<span class="co">#&gt;       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     </span>
+<span class="co">#&gt; s = 6 0.2049392 0.04946482 [0.10798997, 0.3018885] TRUE     1.546254e-05</span>
+<span class="co">#&gt; s = 2 0.2019901 0.04987843 [0.10423015, 0.2997500] TRUE     1.981859e-05</span>
+<span class="co">#&gt; s = 5 0.1934733 0.04982239 [0.09582326, 0.2911234] TRUE     4.467231e-05</span>
+<span class="co">#&gt; s = 9 0.1911383 0.04988796 [0.09335972, 0.2889169] TRUE     5.483579e-05</span>
+<span class="co">#&gt; s = 7 0.1882966 0.04973937 [0.09080922, 0.2857840] TRUE     6.764552e-05</span>
+<span class="co">#&gt; s = 4 0.1880076 0.04949769 [0.09099387, 0.2850212] TRUE     6.724345e-05</span>
+<span class="co">#&gt; s = 1 0.1864401 0.04964261 [0.08914235, 0.2837378] TRUE     7.837432e-05</span>
+<span class="co">#&gt; s = 8 0.1858494 0.04948876 [0.08885323, 0.2828456] TRUE     8.123308e-05</span>
+<span class="co">#&gt; s = 3 0.1828533 0.04987807 [0.08509408, 0.2806125] TRUE     1.025866e-04</span>
 </pre></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
@@ -251,7 +251,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1102299 [0, 0.2160467] FALSE    0.9855558</span>
+<span class="co">#&gt; s = 6 0        0.1123234 [0, 0.2201498] FALSE    0.9990419</span>
 </pre></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
@@ -449,14 +449,32 @@
 <div class="sourceCode" id="cb13"><pre class="downlit">
 <span class="co"># note that folds is a list! also, V must equal the length of folds</span>
 <span class="kw">cf_sbp_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_sbp</span>, indx = <span class="fl">1</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_tob_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_tob</span>, indx = <span class="fl">2</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_ldl_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_ldl</span>, indx = <span class="fl">3</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_adi_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_adi</span>, indx = <span class="fl">4</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_fam_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_fam</span>, indx = <span class="fl">5</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_tpa_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_tpa</span>, indx = <span class="fl">6</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_obe_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_obe</span>, indx = <span class="fl">7</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_alc_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_alc</span>, indx = <span class="fl">8</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_age_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_age</span>, indx = <span class="fl">9</span>, run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 
 <span class="kw">cf_ests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="kw">cf_sbp_vim</span>, <span class="kw">cf_tob_vim</span>, <span class="kw">cf_ldl_vim</span>, <span class="kw">cf_adi_vim</span>, <span class="kw">cf_fam_vim</span>, <span class="kw">cf_tpa_vim</span>, <span class="kw">cf_obe_vim</span>, <span class="kw">cf_alc_vim</span>, <span class="kw">cf_age_vim</span>)
 </pre></div>
@@ -486,6 +504,8 @@
     <span class="kw">fhat_red_bios</span>[[<span class="kw">v</span>]] <span class="op">&lt;-</span> <span class="kw">SuperLearner</span>::<span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html">predict.SuperLearner</a></span>(<span class="kw">fit_bios</span>, newdata = <span class="kw">x_2</span>[<span class="kw">inner_folds_2</span> <span class="op">==</span> <span class="kw">v</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), drop = <span class="fl">FALSE</span>])<span class="op">$</span><span class="kw">pred</span>
 }
 <span class="kw">cf_behav_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_behav</span>, indx = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>), run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =</span>
+<span class="co">#&gt; weights, : Original estimate &lt; 0; returning zero.</span>
 <span class="kw">cf_bios_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, f1 = <span class="kw">fhat_ful</span>, f2 = <span class="kw">fhat_red_bios</span>, indx = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), run_regression = <span class="fl">FALSE</span>, V = <span class="kw">V</span>, folds = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">inner_folds_1</span>, <span class="kw">inner_folds_2</span>)))
 <span class="kw">cf_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="kw">cf_behav_vim</span>, <span class="kw">cf_bios_vim</span>)
 <span class="kw">cf_groups</span><span class="op">$</span><span class="kw">mat</span> <span class="op">%&gt;%</span>
@@ -518,7 +538,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Brian D. Williamson, Noah Simon, Marco Carone.</p>
+  <p>Developed by Brian D. Williamson.</p>
 </div>
 
 <div class="pkgdown">
