@@ -19,5 +19,5 @@ spvim_se <- function(ics, idx = 1, gamma = 1, na_rm = FALSE) {
   var_s <- var(ics$contrib_s[idx, ], na.rm = na_rm)
 
   se <- sqrt(var_v / ncol(ics$contrib_v) + var_s / ncol(ics$contrib_s) * (1 / gamma))
-  return(se)
+  return(list(se=se, var_v_contrib=var_v / ncol(ics$contrib_v), var_s_contrib=var_s / ncol(ics$contrib_s) * (1 / gamma)))
 }

@@ -122,7 +122,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
 
     ## get v, preds, ic for remaining non-null groups in S
     if (verbose) {
-        message("Fitting learners. Progress:")
+        message(paste("Fitting", length(S[-1]), "learners. Progress:"))
         progress_bar <- txtProgressBar(min = 0, max = length(S[-1]), style = 3)
     } else {
         progress_bar <- NULL
@@ -159,8 +159,13 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
 
     ## calculate the standard error
     ses <- vector("numeric", ncol(X) + 1)
+    var_v_contribs <- vector("numeric", ncol(X) + 1)
+    var_s_contribs <- vector("numeric", ncol(X) + 1)
     for (j in 1:(ncol(X) + 1)) {
-        ses[j] <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
+        ses_res <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
+        ses[j] <- ses_res$se
+        var_v_contribs[j] <- ses_res$var_v_contrib
+        var_s_contribs[j] <- ses_res$var_s_contrib
     }
     ## if est < 0, set to zero and print warning
     if (any(est < 0)) {
@@ -193,7 +198,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     ## create the output and return it
     ## create output tibble
     mat <- tibble::tibble(s = as.character(1:ncol(X)), est = est[-1], se = ses[-1], cil = cis[, 1],
-                          ciu = cis[, 2], test = hyp_tests, p_value = p_values)
+                          ciu = cis[, 2], test = hyp_tests, p_value = p_values, var_v_contribs=var_v_contribs[-1], var_s_contribs=var_s_contribs[-1])
     output <- list(call = cl, s = as.character(1:ncol(X)),
                  SL.library = SL.library,
                  v = v,
@@ -201,7 +206,10 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
                  est = est,
                  ic_lst = c(list(ic_none), ic_lst),
                  ic = ics,
-                 se = ses, ci = cis,
+                 se = ses,
+                 var_v_contribs = var_v_contribs,
+                 var_s_contribs = var_s_contribs,
+                 ci = cis,
                  test = hyp_tests,
                  p_value = p_values,
                  test_statistic = test_statistics,
