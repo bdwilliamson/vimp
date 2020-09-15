@@ -69,7 +69,7 @@ test_that("Estimating SPVIMs with verbose = TRUE works", {
                               SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
                               gamma = .1, alpha = 0.05, delta = 0, 
                               cvControl = list(V = V), env = environment(), verbose = TRUE),
-                 "Fitting regression",
+                 "Fitting weighted least squares to estimate the SPVIM values.",
                  all = FALSE)
   ## check that the estimate is approximately correct
   expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
