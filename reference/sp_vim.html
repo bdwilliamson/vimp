@@ -73,7 +73,7 @@ This essentially involves splitting the data into V train/test splits; train the
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -96,7 +96,13 @@ This essentially involves splitting the data into V train/test splits; train the
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -134,7 +140,7 @@ This essentially involves splitting the data into V train/test splits; train the
 This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/vimp/man/sp_vim.html'>sp_vim</a></span>(
+    <pre class="usage"><span class='fu'>sp_vim</span>(
   <span class='kw'>Y</span>,
   <span class='kw'>X</span>,
   V = <span class='fl'>5</span>,
@@ -147,6 +153,7 @@ This essentially involves splitting the data into V train/test splits; train the
   delta = <span class='fl'>0</span>,
   na.rm = <span class='fl'>FALSE</span>,
   stratified = <span class='fl'>FALSE</span>,
+  verbose = <span class='fl'>FALSE</span>,
   <span class='kw'>...</span>
 )</pre>
 
@@ -202,6 +209,10 @@ This essentially involves splitting the data into V train/test splits; train the
       <td><p>should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?</p></td>
     </tr>
     <tr>
+      <th>verbose</th>
+      <td><p>should <code>sp_vim</code> and <code>SuperLearner</code> print out progress? (defaults to <code>FALSE</code>)</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>other arguments to the estimation tool, see "See also".</p></td>
     </tr>
@@ -212,12 +223,12 @@ This essentially involves splitting the data into V train/test splits; train the
     <p>An object of class <code>vim</code>. See Details for more information.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>We define the SPVIM as the weighted average of the population difference in 
+    <p>We define the SPVIM as the weighted average of the population difference in
 predictiveness over all subsets of features not containing feature \(j\).</p>
-<p>This is equivalent to finding the solution to a population weighted least squares problem. This 
-key fact allows us to estimate the SPVIM using weighted least squares, where we first 
+<p>This is equivalent to finding the solution to a population weighted least squares problem. This
+key fact allows us to estimate the SPVIM using weighted least squares, where we first
 sample subsets from the power set of all possible features using the Shapley sampling distribution; then
-use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the 
+use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the
 least squares problem given in Williamson and Feng (2020).</p>
 <p>See the paper by Williamson and Feng (2020) for more
 details on the mathematics behind this function, and the validity
@@ -268,8 +279,10 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 <span class='co'>## for illustration only)</span>
 <span class='co'>## -----------------------------------------</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>4747</span>)
-<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/sp_vim.html'>sp_vim</a></span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, V = <span class='fl'>2</span>, type = <span class='st'>"r_squared"</span>, 
-SL.library = <span class='kw'>learners</span>, alpha = <span class='fl'>0.05</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: One or more original estimates &lt; 0; returning zero for these indices.</span></div><div class='input'></div></pre>
+<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'>sp_vim</span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, V = <span class='fl'>2</span>, type = <span class='st'>"r_squared"</span>,
+SL.library = <span class='kw'>learners</span>, alpha = <span class='fl'>0.05</span>)
+</div><div class='output co'>#&gt; <span class='warning'>Warning: One or more original estimates &lt; 0; returning zero for these indices.</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -285,7 +298,7 @@ SL.library = <span class='kw'>learners</span>, alpha = <span class='fl'>0.05</sp
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

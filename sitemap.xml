@@ -112,6 +112,12 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/vimp_update.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/vimp/articles/introduction_to_vimp.html</loc>
+    <loc>https://bdwilliamson.github.io/vimp/articles/introduction-to-vimp.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/articles/precomputed-regressions.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/articles/types-of-vims.html</loc>
   </url>
 </urlset>

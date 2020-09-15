@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -95,7 +95,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -132,7 +138,7 @@
     <p>Compute estimates of and confidence intervals for nonparametric risk-based variable importance.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/vimp/man/vim.html'>vim</a></span>(
+    <pre class="usage"><span class='fu'>vim</span>(
   <span class='kw'>Y</span>,
   <span class='kw'>X</span>,
   f1 = <span class='kw'>NULL</span>,
@@ -286,10 +292,11 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 <span class='kw'>folds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span>(<span class='st'>"numeric"</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='kw'>y</span>))
 <span class='kw'>folds</span>[<span class='kw'>y</span> <span class='op'>==</span> <span class='fl'>1</span>] <span class='op'>&lt;-</span> <span class='kw'>folds_1</span>
 <span class='kw'>folds</span>[<span class='kw'>y</span> <span class='op'>==</span> <span class='fl'>0</span>] <span class='op'>&lt;-</span> <span class='kw'>folds_0</span>
-<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/vim.html'>vim</a></span>(<span class='kw'>y</span>, <span class='kw'>x</span>, indx = <span class='fl'>2</span>, type = <span class='st'>"r_squared"</span>,
+<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'>vim</span>(<span class='kw'>y</span>, <span class='kw'>x</span>, indx = <span class='fl'>2</span>, type = <span class='st'>"r_squared"</span>,
            alpha = <span class='fl'>0.05</span>, run_regression = <span class='fl'>TRUE</span>,
            SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>),
-           folds = <span class='kw'>folds</span>)</div><div class='output co'>#&gt; Error in data.frame(..., check.names = FALSE) : 
+           folds = <span class='kw'>folds</span>)
+</div><div class='output co'>#&gt; Error in data.frame(..., check.names = FALSE) : 
 #&gt;   arguments imply differing number of rows: 26, 24</div><div class='output co'>#&gt; <span class='warning'>Warning: Error in algorithm SL.ranger </span>
 #&gt; <span class='warning'>  The Algorithm will be removed from the Super Learner (i.e. given weight 0) </span></div><div class='output co'>#&gt; Error in data.frame(..., check.names = FALSE) : 
 #&gt;   arguments imply differing number of rows: 27, 25</div><div class='output co'>#&gt; <span class='warning'>Warning: Error in algorithm SL.ranger </span>
@@ -302,9 +309,10 @@ SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a h
 SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>))
 <span class='kw'>red.fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='kw'>reduced</span>)<span class='op'>$</span><span class='kw'>pred</span>
 
-<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/vim.html'>vim</a></span>(Y = <span class='kw'>y</span>, f1 = <span class='kw'>full.fit</span>, f2 = <span class='kw'>red.fit</span>,
+<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'>vim</span>(Y = <span class='kw'>y</span>, f1 = <span class='kw'>full.fit</span>, f2 = <span class='kw'>red.fit</span>,
             indx = <span class='fl'>2</span>, run_regression = <span class='fl'>FALSE</span>, alpha = <span class='fl'>0.05</span>, folds = <span class='kw'>folds</span>,
             type = <span class='st'>"accuracy"</span>)
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -321,7 +329,7 @@ SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a h
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

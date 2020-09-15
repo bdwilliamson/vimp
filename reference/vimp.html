@@ -76,7 +76,7 @@ choose a variable importance measure, and specify variable(s) of interest;
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -99,7 +99,13 @@ choose a variable importance measure, and specify variable(s) of interest;
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -177,7 +183,7 @@ choose a variable importance measure, and specify variable(s) of interest;
 <p>The packages that we import either make the internal code nice (dplyr, magrittr, tibble, rlang, MASS), 
 are directly relevant to estimating the conditional mean (SuperLearner) or predictiveness measures (ROCR), 
 or are necessary for hypothesis testing (stats).</p>
-<p>We suggest several other packages: xgboost, ranger, gam, glmnet, and quadprog allow 
+<p>We suggest several other packages: xgboost, ranger, gam, glmnet, polspline, and quadprog allow 
 a flexible library of candidate learners in the Super Learner; ggplot2, cowplot, 
 and forcats help with plotting variable importance estimates; testthat and covr 
 help with unit tests; and knitr, rmarkdown,
@@ -198,7 +204,7 @@ and RCurl help with the vignettes and examples.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

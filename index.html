@@ -15,7 +15,7 @@
 <meta property="og:description" content="Calculate point estimates of and valid confidence intervals for
     nonparametric, algorithm-agnostic variable importance measures in high and low dimensions,
     using flexible estimators of the underlying regression functions. For more information
-    about the methods, please see Williamson et al. (Biometrics, 2020),  Williamson et al. (arXiv, 2020+) &lt;arXiv:2004.03683&gt;, and Williamson and Feng (ICML, 2020) &lt;arXiv:&gt;.">
+    about the methods, please see Williamson et al. (Biometrics, 2020),  Williamson et al. (arXiv, 2020+) &lt;arXiv:2004.03683&gt;, and Williamson and Feng (ICML, 2020) &lt;arXiv:2006.09481&gt;.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -57,7 +57,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -122,11 +128,11 @@
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
-<p>This example shows how to use <code>vimp</code> in a simple setting with simulated data, using <code>SuperLearner</code> to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the <a href="vignettes/introduction_to_vimp.Rmd">vignette</a>.</p>
+<p>This example shows how to use <code>vimp</code> in a simple setting with simulated data, using <code>SuperLearner</code> to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the <a href="https://bdwilliamson.github.io/vimp/introduction_to_vimp.html">vignette</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="co">## load required functions and libraries</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/bdwilliamson/vimp">"vimp"</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/dmlc/xgboost">"xgboost"</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://glmnet.stanford.edu">"glmnet"</a></span>)
 
@@ -265,7 +271,7 @@ SOFTWARE.</code></pre>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

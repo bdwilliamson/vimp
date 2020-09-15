@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Merge multiple <code>vim</code> objects into one — merge_vim • vimp</title>
+<title>Merge multiple vim objects into one — merge_vim • vimp</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Merge multiple <code>vim</code> objects into one — merge_vim" />
+<meta property="og:title" content="Merge multiple vim objects into one — merge_vim" />
 <meta property="og:description" content="Take the output from multiple different calls to vimp_regression and
 merge into a single vim object; mostly used for plotting results." />
 
@@ -73,7 +73,7 @@ merge into a single vim object; mostly used for plotting results." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -96,7 +96,13 @@ merge into a single vim object; mostly used for plotting results." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -134,7 +140,7 @@ merge into a single vim object; mostly used for plotting results." />
 merge into a single <code>vim</code> object; mostly used for plotting results.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/vimp/man/merge_vim.html'>merge_vim</a></span>(<span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>merge_vim</span>(<span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,7 +155,7 @@ merge into a single <code>vim</code> object; mostly used for plotting results.</
 
     <p>an object of class <code>vim</code> containing all of the output
 from the individual <code>vim</code> objects. This results in a list containing:</p><ul>
-<li><p>call - the call to <code><a href='https://rdrr.io/pkg/vimp/man/merge_vim.html'>merge_vim()</a></code></p></li>
+<li><p>call - the call to <code>merge_vim()</code></p></li>
 <li><p>s - a list of the column(s) to calculate variable importance for</p></li>
 <li><p>SL.library - a list of the libraries of learners passed to <code>SuperLearner</code></p></li>
 <li><p>full_fit - a list of the fitted values of the chosen method fit to the full data</p></li>
@@ -185,13 +191,16 @@ from the individual <code>vim</code> objects. This results in a list containing:
 <span class='kw'>learners</span> <span class='op'>&lt;-</span> <span class='st'>"SL.ranger"</span>
 
 <span class='co'>## using Super Learner (with a small number of folds, for illustration only)</span>
-<span class='kw'>est_2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/vimp_regression.html'>vimp_regression</a></span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, indx = <span class='fl'>2</span>, V = <span class='fl'>2</span>,
+<span class='kw'>est_2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='vimp_regression.html'>vimp_regression</a></span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, indx = <span class='fl'>2</span>, V = <span class='fl'>2</span>,
            run_regression = <span class='fl'>TRUE</span>, alpha = <span class='fl'>0.05</span>,
-           SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span></div><div class='input'>
-<span class='kw'>est_1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/vimp_regression.html'>vimp_regression</a></span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, indx = <span class='fl'>1</span>, V = <span class='fl'>2</span>,
+           SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>))
+</div><div class='output co'>#&gt; <span class='warning'>Warning: vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span></div><div class='input'>
+<span class='kw'>est_1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='vimp_regression.html'>vimp_regression</a></span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, indx = <span class='fl'>1</span>, V = <span class='fl'>2</span>,
            run_regression = <span class='fl'>TRUE</span>, alpha = <span class='fl'>0.05</span>,
-           SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span></div><div class='input'>
-<span class='kw'>ests</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/merge_vim.html'>merge_vim</a></span>(<span class='kw'>est_1</span>, <span class='kw'>est_2</span>)</div></pre>
+           SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>))
+</div><div class='output co'>#&gt; <span class='warning'>Warning: vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span></div><div class='input'>
+<span class='kw'>ests</span> <span class='op'>&lt;-</span> <span class='fu'>merge_vim</span>(<span class='kw'>est_1</span>, <span class='kw'>est_2</span>)
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -207,7 +216,7 @@ from the individual <code>vim</code> objects. This results in a list containing:
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

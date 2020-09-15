@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -95,7 +95,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -132,7 +138,7 @@
     <p>Compute estimates of and confidence intervals for nonparametric $R^2$-based variable importance. This is a wrapper function for <code>cv_vim</code>, with <code>type = "r_squared"</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/vimp/man/vimp_rsquared.html'>vimp_rsquared</a></span>(
+    <pre class="usage"><span class='fu'>vimp_rsquared</span>(
   <span class='kw'>Y</span>,
   <span class='kw'>X</span>,
   f1 = <span class='kw'>NULL</span>,
@@ -264,9 +270,11 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 <span class='kw'>learners</span> <span class='op'>&lt;-</span> <span class='st'>"SL.ranger"</span>
 
 <span class='co'>## estimate (with a small number of folds, for illustration only)</span>
-<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/vimp_rsquared.html'>vimp_rsquared</a></span>(<span class='kw'>y</span>, <span class='kw'>x</span>, indx = <span class='fl'>2</span>,
+<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'>vimp_rsquared</span>(<span class='kw'>y</span>, <span class='kw'>x</span>, indx = <span class='fl'>2</span>,
            alpha = <span class='fl'>0.05</span>, run_regression = <span class='fl'>TRUE</span>,
-           SL.library = <span class='kw'>learners</span>, V = <span class='fl'>2</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: Original estimate &lt; 0; returning zero.</span></div><div class='input'></div></pre>
+           SL.library = <span class='kw'>learners</span>, V = <span class='fl'>2</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>))
+</div><div class='output co'>#&gt; <span class='warning'>Warning: Original estimate &lt; 0; returning zero.</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -282,7 +290,7 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>

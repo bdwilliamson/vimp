@@ -74,7 +74,7 @@ This essentially involves splitting the data into V train/test splits; train the
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
       </span>
     </div>
 
@@ -97,7 +97,13 @@ This essentially involves splitting the data into V train/test splits; train the
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -136,7 +142,7 @@ nonparametric variable importance parameter of interest, using cross-fitting.
 This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.</p>
     </div>
 
-    <pre class="usage"><span class='fu'><a href='https://rdrr.io/pkg/vimp/man/cv_vim.html'>cv_vim</a></span>(
+    <pre class="usage"><span class='fu'>cv_vim</span>(
   <span class='kw'>Y</span>,
   <span class='kw'>X</span>,
   <span class='kw'>f1</span>,
@@ -294,7 +300,7 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 <span class='co'>## using Super Learner (with a small number of folds, for illustration only)</span>
 <span class='co'>## -----------------------------------------</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>4747</span>)
-<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/cv_vim.html'>cv_vim</a></span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, indx = <span class='fl'>2</span>, V = <span class='fl'>2</span>,
+<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'>cv_vim</span>(Y = <span class='kw'>y</span>, X = <span class='kw'>x</span>, indx = <span class='fl'>2</span>, V = <span class='fl'>2</span>,
 type = <span class='st'>"r_squared"</span>, run_regression = <span class='fl'>TRUE</span>,
 SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(V = <span class='fl'>2</span>), alpha = <span class='fl'>0.05</span>)
 
@@ -332,10 +338,11 @@ SL.library = <span class='kw'>learners</span>, cvControl = <span class='fu'><a h
     <span class='kw'>fhat_red</span>[[<span class='kw'>v</span>]] <span class='op'>&lt;-</span> <span class='kw'>SuperLearner</span>::<span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='kw'>red</span>,
      newdata = <span class='kw'>x_2</span>[<span class='kw'>inner_folds_2</span> <span class='op'>==</span> <span class='kw'>v</span>, <span class='op'>-</span><span class='kw'>indx</span>, drop = <span class='fl'>FALSE</span>])<span class='op'>$</span><span class='kw'>pred</span>
 }
-<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/vimp/man/cv_vim.html'>cv_vim</a></span>(Y = <span class='kw'>y</span>, f1 = <span class='kw'>fhat_ful</span>, f2 = <span class='kw'>fhat_red</span>, indx = <span class='fl'>2</span>,
+<span class='kw'>est</span> <span class='op'>&lt;-</span> <span class='fu'>cv_vim</span>(Y = <span class='kw'>y</span>, f1 = <span class='kw'>fhat_ful</span>, f2 = <span class='kw'>fhat_red</span>, indx = <span class='fl'>2</span>,
 V = <span class='kw'>V</span>, folds = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(outer_folds = <span class='kw'>outer_folds</span>, 
 inner_folds = <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>inner_folds_1</span>, <span class='kw'>inner_folds_2</span>)), 
 type = <span class='st'>"r_squared"</span>, run_regression = <span class='fl'>FALSE</span>, alpha = <span class='fl'>0.05</span>)
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -352,7 +359,7 @@ type = <span class='st'>"r_squared"</span>, run_regression = <span class='fl'>FA
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
