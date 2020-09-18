@@ -85,23 +85,23 @@ of the confidence intervals.
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{s}{ - the column(s) to calculate variable importance for}
- \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
- \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
- \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
- \item{est}{ - the estimated variable importance}
- \item{naive}{ - the naive estimator of variable importance}
- \item{naives}{ - the naive estimator on each fold}
- \item{updates}{ - the influence curve-based update for each fold}
- \item{se}{ - the standard error for the estimated variable importance}
- \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
- \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
- \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
- \item{alpha}{ - the level, for confidence interval calculation}
- \item{folds}{ - the folds used for hypothesis testing and cross-validation}
- \item{y}{ - the outcome}
- \item{weights}{ - the weights}
- \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
+ \item{s}{: the column(s) to calculate variable importance for}
+ \item{SL.library}{: the library of learners passed to \code{SuperLearner}}
+ \item{full_fit}{: the fitted values of the chosen method fit to the full data (a list, for train and test data)}
+ \item{red_fit}{: the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
+ \item{est}{: the estimated variable importance}
+ \item{naive}{: the naive estimator of variable importance}
+ \item{naives}{: the naive estimator on each fold}
+ \item{updates}{: the influence curve-based update for each fold}
+ \item{se}{: the standard error for the estimated variable importance}
+ \item{ci}{: the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
+ \item{full_mod}{: the object returned by the estimation procedure for the full data regression (if applicable)}
+ \item{red_mod}{: the object returned by the estimation procedure for the reduced data regression (if applicable)}
+ \item{alpha}{: the level, for confidence interval calculation}
+ \item{folds}{: the folds used for hypothesis testing and cross-validation}
+ \item{y}{: the outcome}
+ \item{weights}{: the weights}
+ \item{mat}{: a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }
 \examples{

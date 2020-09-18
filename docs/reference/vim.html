@@ -241,26 +241,25 @@ obtained by obtaining estimators \(f_n\) and \(f_{n,s}\) of \(f_0\) and \(f_{0,s
 respectively; obtaining an estimator \(P_n\) of \(P_0\); and finally, setting \(\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)\).</p>
 <p>In the interest of transparency, we return most of the calculations
 within the <code>vim</code> object. This results in a list containing:</p><ul>
-<li><p>call - the call to <code>vim</code></p></li>
-<li><p>s - the column(s) to calculate variable importance for</p></li>
-<li><p>SL.library - the library of learners passed to <code>SuperLearner</code></p></li>
-<li><p>type - the type of risk-based variable importance measured</p></li>
-<li><p>full_fit - the fitted values of the chosen method fit to the full data</p></li>
-<li><p>red_fit - the fitted values of the chosen method fit to the reduced data</p></li>
-<li><p>est - the estimated variable importance</p></li>
-<li><p>naive - the naive estimator of variable importance</p></li>
-<li><p>update - the influence curve-based update</p></li>
-<li><p>se - the standard error for the estimated variable importance</p></li>
-<li><p>ci - the \((1-\alpha) \times 100\)% confidence interval for the variable importance estimate</p></li>
-<li><p>test - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test</p></li>
-<li><p>pval - a conservative p-value based on the same conservative test as <code>test</code></p></li>
-<li><p>full_mod - the object returned by the estimation procedure for the full data regression (if applicable)</p></li>
-<li><p>red_mod - the object returned by the estimation procedure for the reduced data regression (if applicable)</p></li>
-<li><p>alpha - the level, for confidence interval calculation</p></li>
-<li><p>folds - the folds used for hypothesis testing</p></li>
-<li><p>y - the outcome</p></li>
-<li><p>weights - the weights</p></li>
-<li><p>mat- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value</p></li>
+<li><p>s: the column(s) to calculate variable importance for</p></li>
+<li><p>SL.library: the library of learners passed to <code>SuperLearner</code></p></li>
+<li><p>type: the type of risk-based variable importance measured</p></li>
+<li><p>full_fit: the fitted values of the chosen method fit to the full data</p></li>
+<li><p>red_fit: the fitted values of the chosen method fit to the reduced data</p></li>
+<li><p>est: the estimated variable importance</p></li>
+<li><p>naive: the naive estimator of variable importance</p></li>
+<li><p>update: the influence curve-based update</p></li>
+<li><p>se: the standard error for the estimated variable importance</p></li>
+<li><p>ci: the \((1-\alpha) \times 100\)% confidence interval for the variable importance estimate</p></li>
+<li><p>test: a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test</p></li>
+<li><p>pval: a conservative p-value based on the same conservative test as <code>test</code></p></li>
+<li><p>full_mod: the object returned by the estimation procedure for the full data regression (if applicable)</p></li>
+<li><p>red_mod: the object returned by the estimation procedure for the reduced data regression (if applicable)</p></li>
+<li><p>alpha: the level, for confidence interval calculation</p></li>
+<li><p>folds: the folds used for hypothesis testing</p></li>
+<li><p>y: the outcome</p></li>
+<li><p>weights: the weights</p></li>
+<li><p>mat: a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value</p></li>
 </ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>

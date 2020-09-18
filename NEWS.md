@@ -10,6 +10,7 @@ None
 * Updated main vignette to only use `run_regression = TRUE` for simplicity
 * Added argument `verbose` to `sp_vim`; if `TRUE`, messages are printed throughout fitting that display progress and `verbose` is passed to `SuperLearner`
 * `spvim_se` now returns the individual variance components from sampling observations and subsets; these are subsequently returned by `sp_vim`
+* No longer print the call along with the output
 
 # vimp 2.1.0
 

@@ -132,7 +132,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="co">## load required functions and libraries</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span>)
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/bdwilliamson/vimp">"vimp"</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/dmlc/xgboost">"xgboost"</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://glmnet.stanford.edu">"glmnet"</a></span>)
 
@@ -171,7 +171,14 @@
 <div id="citation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h2>
-<p>After using the <code>vimp</code> package, please cite the following (for general variable importance parameters):</p>
+<p>After using the <code>vimp</code> package, please cite the following (for R-squared-based variable importance):</p>
+<pre><code>  @article{williamson2020,
+    author={Williamson, BD and Gilbert, PB and Carone, M and Simon, N},
+    title={Nonparametric variable importance assessment using machine learning techniques},
+    journal={Biometrics (to appear)},
+    year={2020}
+  }</code></pre>
+<p>or the following (for general variable importance parameters):</p>
 <pre><code>  @article{williamson2020,
     author={Williamson, BD and Gilbert, PB and Simon, NR and Carone, M},
     title={A unified approach for inference on algorithm-agnostic variable importance},
