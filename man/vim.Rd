@@ -75,7 +75,6 @@ respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally, settin
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{call}{ - the call to \code{vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
  \item{type}{ - the type of risk-based variable importance measured}

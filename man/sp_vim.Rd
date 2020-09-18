@@ -74,7 +74,6 @@ The function works by estimating
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{call}{ - the call to \code{cv_vim}}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 \item{v}{- the estimated predictiveness measure for each sampled subset}
  \item{preds_lst}{ - the predicted values from the chosen method for each sampled subset}

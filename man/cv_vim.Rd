@@ -85,7 +85,6 @@ of the confidence intervals.
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{call}{ - the call to \code{cv_vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
  \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}

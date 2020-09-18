@@ -33,7 +33,6 @@
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{vim}}
 #'  \item{s}{ - the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 #'  \item{type}{ - the type of risk-based variable importance measured}
@@ -214,14 +213,11 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
         hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA, predictiveness_ci_full = rep(NA, 2), predictiveness_ci_reduced = rep(NA, 2), se_full = NA, se_redu = NA, test_statistic = NA)
     }
 
-    ## get the call
-    cl <- match.call()
-
     ## create the output and return it
     ## create output tibble
     chr_indx <- paste(as.character(indx), collapse = ",")
     mat <- tibble::tibble(s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], test = hyp_test$test, p_value = hyp_test$p_value)
-    output <- list(call = cl, s = chr_indx,
+    output <- list(s = chr_indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,

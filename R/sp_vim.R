@@ -36,7 +36,6 @@
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{cv_vim}}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 #' \item{v}{- the estimated predictiveness measure for each sampled subset}
 #'  \item{preds_lst}{ - the predicted values from the chosen method for each sampled subset}
@@ -192,14 +191,12 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     }, ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0, se_0 = se_none_0, delta = delta)
     p_values <- 1 - pnorm(test_statistics)
     hyp_tests <- p_values < alpha
-    ## get the call
-    cl <- match.call()
 
     ## create the output and return it
     ## create output tibble
     mat <- tibble::tibble(s = as.character(1:ncol(X)), est = est[-1], se = ses[-1], cil = cis[, 1],
                           ciu = cis[, 2], test = hyp_tests, p_value = p_values, var_v_contribs=var_v_contribs[-1], var_s_contribs=var_s_contribs[-1])
-    output <- list(call = cl, s = as.character(1:ncol(X)),
+    output <- list(s = as.character(1:ncol(X)),
                  SL.library = SL.library,
                  v = v,
                  preds_lst = c(list(preds_none), preds_lst),

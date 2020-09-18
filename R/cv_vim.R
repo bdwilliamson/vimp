@@ -41,7 +41,6 @@
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{cv_vim}}
 #'  \item{s}{ - the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 #'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
@@ -260,14 +259,11 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, weights = weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm)
     }
 
-    ## get the call
-    cl <- match.call()
-
     ## create the output and return it
     ## create output tibble
     chr_indx <- paste(as.character(indx), collapse = ",")
     mat <- tibble::tibble(s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], test = hyp_test$test, p_value = hyp_test$p_value)
-    output <- list(call = cl, s = chr_indx,
+    output <- list(s = chr_indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,
