@@ -92,7 +92,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2020-09-16</h4>
+            <h4 class="date">2020-09-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/introduction-to-vimp.Rmd"><code>vignettes/introduction-to-vimp.Rmd</code></a></small>
       <div class="hidden name"><code>introduction-to-vimp.Rmd</code></div>
@@ -133,7 +133,7 @@
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span>)
 </pre></div>
 <pre><code>## vimp version 2.1.1: Perform Inference on Algorithm-Agnostic Variable Importance</code></pre>
-<pre><code>## Package created on 2020-09-16</code></pre>
+<pre><code>## Package created on 2020-09-18</code></pre>
 <p>Next, create some data:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="co">## -------------------------------------------------------------</span>
@@ -180,24 +180,14 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <div class="sourceCode" id="cb14"><pre class="downlit">
 <span class="kw">est_1</span>
 </pre></div>
-<pre><code>## Call:
-## cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, folds = folds, 
-##     stratified = stratified, weights = weights, type = "r_squared", 
-##     run_regression = run_regression, SL.library = SL.library, 
-##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
-## 
+<pre><code>## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value    
 ## s = 1 0.1300958 0.04509153 [0.04171804, 0.2184736] TRUE     0.002255592</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw">est_1</span>)
 </pre></div>
-<pre><code>## Call:
-## cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, folds = folds, 
-##     stratified = stratified, weights = weights, type = "r_squared", 
-##     run_regression = run_regression, SL.library = SL.library, 
-##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1)
-## 
+<pre><code>## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value    
 ## s = 1 0.1300958 0.04509153 [0.04171804, 0.2184736] TRUE     0.002255592</code></pre>
@@ -266,10 +256,7 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <span class="co">## print out the matrix</span>
 <span class="kw">lm_mat</span>
 </pre></div>
-<pre><code>## Call:
-## merge_vim(lm_vim_sbp, lm_vim_tob, lm_vim_ldl, lm_vim_adi, lm_vim_fam, 
-##     lm_vim_tpa, lm_vim_obe, lm_vim_alc, lm_vim_age)
-## 
+<pre><code>## 
 ## Variable importance estimates:
 ##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
 ## s = 1 0.3371157 0.04993209 [0.23925061, 0.4349808] TRUE     2.659872e-12
@@ -393,12 +380,7 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <div class="sourceCode" id="cb29"><pre class="downlit">
 <span class="kw">fam_vim</span>
 </pre></div>
-<pre><code>## Call:
-## cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, folds = folds, 
-##     stratified = stratified, weights = weights, type = "r_squared", 
-##     run_regression = run_regression, SL.library = SL.library, 
-##     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1, cvControl = ..2)
-## 
+<pre><code>## 
 ## Variable importance estimates:
 ##       Estimate SE         95% CI         VIMP &gt; 0 p-value  
 ## s = 5 0        0.06348501 [0, 0.1244283] FALSE    0.8875672</code></pre>

@@ -236,21 +236,20 @@ of the confidence intervals.
 The function works by estimating
 In the interest of transparency, we return most of the calculations
 within the <code>vim</code> object. This results in a list containing:</p><ul>
-<li><p>call - the call to <code>cv_vim</code></p></li>
-<li><p>SL.library - the library of learners passed to <code>SuperLearner</code></p></li>
-<li><p>v- the estimated predictiveness measure for each sampled subset</p></li>
-<li><p>preds_lst - the predicted values from the chosen method for each sampled subset</p></li>
-<li><p>est - the estimated SPVIM value for each feature</p></li>
-<li><p>ic_lst - the influence functions for each sampled subset</p></li>
-<li><p>ic- a list of the SPVIM influence function contributions</p></li>
-<li><p>se - the standard errors for the estimated variable importance</p></li>
-<li><p>ci - the \((1-\alpha) \times 100\)% confidence intervals based on the variable importance estimates</p></li>
-<li><p>gamma- the fraction of the sample size used when sampling subsets</p></li>
-<li><p>alpha - the level, for confidence interval calculation</p></li>
-<li><p>delta- the <code>delta</code> value used for hypothesis testing</p></li>
-<li><p>y - the outcome</p></li>
-<li><p>weights - the weights</p></li>
-<li><p>mat- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values</p></li>
+<li><p>SL.library: the library of learners passed to <code>SuperLearner</code></p></li>
+<li><p>v: the estimated predictiveness measure for each sampled subset</p></li>
+<li><p>preds_lst: the predicted values from the chosen method for each sampled subset</p></li>
+<li><p>est: the estimated SPVIM value for each feature</p></li>
+<li><p>ic_lst: the influence functions for each sampled subset</p></li>
+<li><p>ic: a list of the SPVIM influence function contributions</p></li>
+<li><p>se: the standard errors for the estimated variable importance</p></li>
+<li><p>ci: the \((1-\alpha) \times 100\)% confidence intervals based on the variable importance estimates</p></li>
+<li><p>gamma: the fraction of the sample size used when sampling subsets</p></li>
+<li><p>alpha: the level, for confidence interval calculation</p></li>
+<li><p>delta: the <code>delta</code> value used for hypothesis testing</p></li>
+<li><p>y: the outcome</p></li>
+<li><p>weights: the weights</p></li>
+<li><p>mat: a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values</p></li>
 </ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
