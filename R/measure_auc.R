@@ -18,7 +18,7 @@ measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_w
     preds <- ROCR::prediction(predictions = fitted_values[C == 1], labels = y[C == 1])
     est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
     # compute the EIF: if there is coarsening, do a correction
-    if ((length(unique(ipc_weights)) > 1)) {
+    if (!all(ipc_weights == 1)) {
         # marginal probabilities
         p_0 <- mean(y[C == 1] == 0)
         p_1 <- mean(y[C == 1] == 1)

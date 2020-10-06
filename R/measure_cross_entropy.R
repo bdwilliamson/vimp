@@ -4,13 +4,18 @@
 #'
 #' @param fitted_values fitted values from a regression function.
 #' @param y the outcome.
-#' @param weights weights (IPW, etc.).
+#' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
+#' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
+#' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
+#' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
+#' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated cross-entropy of the fitted regression function, and (2) the estimated influence function.
 #' @export
-measure_cross_entropy <- function(fitted_values, y, weights = rep(1, length(y)), na.rm = FALSE) {
-    ## point estimates of all components
+measure_cross_entropy <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
+    # point estimates of all components
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)
     } else if (dim(y)[2] < 2) {
@@ -25,8 +30,21 @@ measure_cross_entropy <- function(fitted_values, y, weights = rep(1, length(y)),
     } else {
         fitted_mat <- fitted_values
     }
-    cross_entropy <- 2*sum(diag(t(weights*y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
-    ## influence curve
-    ic_cross_entropy <- weights*(2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - cross_entropy)
+    # compute the EIF: if there is coarsening, do a correction
+    if (!all(ipc_weights == 1)) {
+        obs_ce <- 2 * sum(diag(t(y_mult[C == 1, ]) %*% log(fitted_mat[C == 1, ])), na.rm = na.rm) / sum(C == 1)
+        obs_grad <- 2 * rowSums(y_mult[C == 1, ] * log(fitted_mat[C == 1, ]), na.rm = na.rm) - obs_ce
+        # if IPC EIF preds aren't entered, estimate the regression
+        if (ipc_fit_type != "external") {
+          ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = x[C == 1, , drop = FALSE], ...)
+          ipc_eif_preds <- predict(ipc_eif_mod)$pred
+        }
+        grad <- (C / ipc_weights) * obs_grad - (C / ipc_weights - 1) * ipc_eif_preds
+        est <- 2 * sum(diag(t(C / ipc_weights * y_mult) %*% log(fitted_mat)), na.rm = na.rm) / sum(C == 1)
+    } else {
+        cross_entropy <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
+        # influence curve
+        ic_cross_entropy <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - cross_entropy
+    }
     return(list(point_est = cross_entropy, ic = ic_cross_entropy))
 }
