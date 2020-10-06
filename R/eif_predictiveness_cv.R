@@ -5,9 +5,14 @@
 #' @param fitted_values fitted values from a regression function; a list of length V, where each object is a set of predictions on the validation data.
 #' @param y the outcome.
 #' @param folds the cross-validation folds
-#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
-#' @param type which risk parameter are you estimating (defaults to \code{r_squared}, for the $R^2$)?
-#' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
+#' @param type which parameter are you estimating (defaults to \code{r_squared}, for R-squared-based variable importance)?
+#' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
+#' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
+#' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
+#' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
+#' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
+#' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return The estimated influence function values for the given measure of predictiveness.
 #'
@@ -15,7 +20,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-eif_predictiveness_cv <- function(fitted_values, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
+eif_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
@@ -31,7 +36,7 @@ eif_predictiveness_cv <- function(fitted_values, y, folds, weights = rep(1, leng
     if (!is.na(measure_func)) {
         ic <- vector("numeric", length(y))
         for (v in 1:V) {
-            ics[1:length(y[folds == v]), v] <- measure_func[[1]](fitted_values[[v]], y[folds == v], weights[folds == v], na.rm)$ic
+            ics[1:length(y[folds == v]), v] <- measure_func[[1]](fitted_values = fitted_values[[v]], y = y[folds == v], x = x[folds == v, ], C = C[folds == v], ipc_weights = ipc_weights[folds == v], ipc_fit_type = ipc_fit_type, na.rm = na.rm, ...)$ic
             ic[folds == v] <- ics[1:length(y[folds == v]), v]
         }
         # ic <- rowMeans(ics, na.rm = TRUE)

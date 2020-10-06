@@ -12,13 +12,13 @@
 #'
 #' @return A named list of: (1) the estimated R-squared of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @export
-measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
+measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # compute the EIF: if there is coarsening, do a correction
     if (!all(ipc_weights == 1)) {
         # observed mse
         obs_mse <- measure_mse(fitted_values[C == 1], y[C == 1], na.rm = na.rm)
-        obs_var <- mean(((y - mean(y, na.rm = na.rm)) ^ 2)[C == 1], na.rm = na.rm)
-        obs_var_eif <- ((y - mean(y, na.rm = na.rm)) ^ 2)[C == 1] - obs_var
+        obs_var <- mean(((y - mean(y[C == 1], na.rm = na.rm)) ^ 2)[C == 1], na.rm = na.rm)
+        obs_var_eif <- ((y - mean(y[C == 1], na.rm = na.rm)) ^ 2)[C == 1] - obs_var
         obs_grad <- as.vector(matrix(c(1 / var, -obs_mse$point_est / (obs_var ^ 2)), nrow = 1) %*% t(cbind(obs_mse$ic, obs_var_eif)))
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {

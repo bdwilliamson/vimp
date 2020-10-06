@@ -13,7 +13,7 @@
 #'
 #' @return A named list of: (1) the estimated ANOVA (based on a one-step correction) of the fitted regression functions; (2) the estimated influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF predictions.
 #' @export
-measure_anova <- function(full, reduced, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
+measure_anova <- function(full, reduced, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # add on if they aren't equal length
     if (length(full) < length(reduced)) {
         full <- c(full, rep(NA, length(reduced) - length(full)))
