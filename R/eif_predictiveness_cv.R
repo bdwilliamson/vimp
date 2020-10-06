@@ -15,7 +15,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
+eif_predictiveness_cv <- function(fitted_values, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
@@ -23,7 +23,7 @@ cv_predictiveness_update <- function(fitted_values, y, folds, weights = rep(1, l
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
     measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA, measure_mse, measure_cross_entropy)
     measure_func <- measure_funcs[pmatch(type, types)]
-    
+
     V <- length(unique(folds))
     max_nrow <- max(apply(matrix(1:V), 1, function(x) length(y[folds == x])))
     ics <- matrix(NA, nrow = max_nrow, ncol = V)

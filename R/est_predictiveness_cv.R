@@ -14,7 +14,7 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-cv_predictiveness_point_est <- function(fitted_values, y, weights = rep(1, length(y)), folds, type = "r_squared", na.rm = FALSE) {
+est_predictiveness_cv <- function(fitted_values, y, weights = rep(1, length(y)), folds, type = "r_squared", na.rm = FALSE) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")

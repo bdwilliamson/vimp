@@ -14,7 +14,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-predictiveness_update <- function(fitted_values, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
+eif_predictiveness <- function(fitted_values, y, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")

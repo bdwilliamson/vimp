@@ -15,7 +15,7 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
+est_vimp <- function(full, reduced, y, folds, weights = rep(1, length(y)), type = "r_squared", na.rm = FALSE) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
@@ -32,8 +32,11 @@ vimp_point_est <- function(full, reduced, y, folds, weights = rep(1, length(y)),
         point_est <- point_est_full - point_est_redu
         corrected_est <- NA
     } else {
-        point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
-        corrected_est <- point_est + mean(vimp_update(full, reduced, y, folds = folds, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)
+        # point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
+        # corrected_est <- point_est + mean(vimp_update(full, reduced, y, folds = folds, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)
+        est <- measure_anova(full, reduced, y, na.rm = na.rm)
+        point_est <- est$naive
+        corrected_est <- est$point_est
     }
     return(c(corrected_est, point_est))
 }
