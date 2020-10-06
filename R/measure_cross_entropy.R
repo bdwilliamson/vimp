@@ -12,7 +12,7 @@
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
-#' @return A named list of: (1) the estimated cross-entropy of the fitted regression function, and (2) the estimated influence function.
+#' @return A named list of: (1) the estimated cross-entropy of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @export
 measure_cross_entropy <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # point estimates of all components
@@ -44,7 +44,7 @@ measure_cross_entropy <- function(fitted_values, y, x = NULL, C = rep(1, length(
     } else {
         cross_entropy <- 2*sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
         # influence curve
-        ic_cross_entropy <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - cross_entropy
+        grad <- 2*rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - cross_entropy
     }
-    return(list(point_est = cross_entropy, ic = ic_cross_entropy))
+    return(list(point_est = cross_entropy, ic = grad, ipc_eif_preds = ipc_eif_preds))
 }

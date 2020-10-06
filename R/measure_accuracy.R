@@ -12,7 +12,7 @@
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
-#' @return A named list of: (1) the estimated classification accuracy of the fitted regression function, and (2) the estimated influence function.
+#' @return A named list of: (1) the estimated classification accuracy of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @export
 measure_accuracy <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)),
                              ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)),
@@ -31,5 +31,5 @@ measure_accuracy <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), 
     est <- 1 - mean(((fitted_values > 1/2) != y), na.rm = na.rm)
     grad <- ((-1)*(((fitted_values > 1/2) != y) - mean((fitted_values > 1/2) != y, na.rm = na.rm)))
   }
-  return(list(point_est = est, ic = grad))
+  return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
 }

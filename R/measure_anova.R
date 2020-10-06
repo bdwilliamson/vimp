@@ -11,7 +11,7 @@
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
-#' @return A named list of: (1) the estimated R-squared of the fitted regression function, and (2) the estimated influence function.
+#' @return A named list of: (1) the estimated ANOVA (based on a one-step correction) of the fitted regression functions; (2) the estimated influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF predictions.
 #' @export
 measure_anova <- function(full, reduced, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
     # add on if they aren't equal length
@@ -45,5 +45,5 @@ measure_anova <- function(full, reduced, y, x = NULL, C = rep(1, length(y)), ipc
         denom_eif <- (y - mean(y, na.rm = TRUE)) ^ 2 - obs_denom
         grad <- num_eif / denom - num / (denom ^ 2) * denom_eif
     }
-    return(list(point_est = est, ic = grad, naive = num / denom))
+    return(list(point_est = est, ic = grad, naive = num / denom, ipc_eif_preds = ipc_eif_preds))
 }

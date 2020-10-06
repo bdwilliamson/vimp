@@ -10,7 +10,7 @@
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
-#' @return A named list of: (1) the estimated R-squared of the fitted regression function, and (2) the estimated influence function.
+#' @return A named list of: (1) the estimated R-squared of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @export
 measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
     # compute the EIF: if there is coarsening, do a correction
@@ -38,5 +38,5 @@ measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)),
         ic_var <- (y - mean(y, na.rm = na.rm))^2 - var
         grad <- as.vector(matrix(c(1/var, -mse$point_est/(var^2)), nrow = 1) %*% t(cbind(mse$ic, ic_var)))
     }
-    return(list(point_est = est, ic = grad))
+    return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
 }

@@ -11,7 +11,7 @@
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
-#' @return A named list of: (1) the estimated AUC of the fitted regression function, and (2) the estimated influence function.
+#' @return A named list of: (1) the estimated AUC of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @export
 measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
     # compute the point estimate (on only data with all obs, if IPC weights are entered)
@@ -61,5 +61,5 @@ measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_w
         # gradient
         grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1)*est)
     }
-    return(list(point_est = est, ic = grad))
+    return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
 }
