@@ -6,7 +6,7 @@
 #' @param Y the outcome.
 #' @param X the covariates.
 #' @param V the number of folds for cross-validation, defaults to 10.
-#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
+#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). 
 #' @param type the type of parameter (e.g., R-squared-based is \code{"r_squared"}).
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param univariate_SL.library (optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}
@@ -49,7 +49,7 @@
 #'  \item{alpha}{ - the level, for confidence interval calculation}
 #'  \item{delta}{- the \code{delta} value used for hypothesis testing}
 #'  \item{y}{ - the outcome}
-#'  \item{weights}{ - the weights}
+#'  \item{ipc_weights}{ - the weights}
 #'  \item{mat}{- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values}
 #' }
 #'
@@ -82,7 +82,7 @@
 #' @importFrom stats pnorm gaussian
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
-sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
+sp_vim <- function(Y, X, V = 5, ipc_weights = rep(1, length(Y)), type = "r_squared",
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
@@ -117,8 +117,8 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     for (v in 1:V) {
         preds_none[[v]] <- rep(mean(Y[outer_folds == 2, ][inner_folds_2 == v]), sum(inner_folds_2 == v))
     }
-    v_none <- cv_predictiveness_point_est(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est
-    ic_none <- cv_predictiveness_update(preds_none, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic
+    v_none <- cv_predictiveness_point_est(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est
+    ic_none <- cv_predictiveness_update(preds_none, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic
 
     ## get v, preds, ic for remaining non-null groups in S
     if (verbose) {
@@ -132,8 +132,8 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     if (verbose) {
         close(progress_bar)
     }
-    v_lst <- lapply(preds_lst, function(x) cv_predictiveness_point_est(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est)
-    ic_lst <- lapply(preds_lst, function(x) cv_predictiveness_update(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic)
+    v_lst <- lapply(preds_lst, function(x) cv_predictiveness_point_est(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est)
+    ic_lst <- lapply(preds_lst, function(x) cv_predictiveness_update(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic)
     v <- matrix(c(v_none, unlist(v_lst)))
     ## do constrained wls
     if (verbose) {
@@ -176,8 +176,8 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     for (v in 1:V) {
         preds_none_0[[v]] <- rep(mean(Y[outer_folds == 1, ][inner_folds_1 == v]), sum(inner_folds_1 == v))
     }
-    v_none_0 <- cv_predictiveness_point_est(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, weights = weights[outer_folds == 1], type = full_type, na.rm = na.rm)$point_est
-    ic_none_0 <- cv_predictiveness_update(preds_none_0, Y[outer_folds == 1, , drop = FALSE], inner_folds_1, weights[outer_folds == 1], type = full_type, na.rm = na.rm)$ic
+    v_none_0 <- cv_predictiveness_point_est(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, ipc_weights = ipc_weights[outer_folds == 1], type = full_type, na.rm = na.rm)$point_est
+    ic_none_0 <- cv_predictiveness_update(preds_none_0, Y[outer_folds == 1, , drop = FALSE], inner_folds_1, ipc_weights[outer_folds == 1], type = full_type, na.rm = na.rm)$ic
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) / sqrt(sum(outer_folds == 1))
     ## get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
@@ -209,7 +209,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
                  alpha = alpha,
                  delta = delta,
                  y = Y,
-                 weights = weights,
+                 ipc_weights = ipc_weights,
                  scale = "identity",
                  mat = mat)
 

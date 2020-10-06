@@ -7,7 +7,7 @@
 #' @param f1 the fitted values from a flexible estimation technique regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
-#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
+#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, and \code{anova}.
 #' @param run_regression if outcome Y and covariates X are passed to \code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
@@ -41,7 +41,7 @@
 #'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
 #'  \item{est}{ - the estimated variable importance}
 #'  \item{naive}{ - the naive estimator of variable importance}
-#'  \item{update}{ - the influence curve-based update}
+#'  \item{ic}{ - the estimated influence curve}
 #'  \item{se}{ - the standard error for the estimated variable importance}
 #'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
 #'  \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
@@ -51,7 +51,7 @@
 #'  \item{alpha}{ - the level, for confidence interval calculation}
 #'  \item{folds}{ - the folds used for hypothesis testing}
 #'  \item{y}{ - the outcome}
-#'  \item{weights}{ - the weights}
+#'  \item{ipc_weights}{ - the weights}
 #'  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 #' }
 #'
@@ -101,7 +101,7 @@
 #' @export
 
 
-vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, stratified = FALSE, ...) {
+vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, ipc_weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, stratified = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -174,12 +174,11 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
         full <- reduced <- NA
     }
-
     ## calculate the estimators
-    ests <- vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    ests <- vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, ipc_weights = ipc_weights, type = full_type, na.rm = na.rm)
 
     ## if type = "anova", then use corrected; else use plug-in
-    if (full_type == "anova" | full_type == "regression") {
+    if (full_type == "anova" || full_type == "regression") {
         est <- ests[1]
         naive <- ests[2]
         predictiveness_full <- NA
@@ -187,11 +186,11 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
     } else {
         est <- ests[2]
         naive <- NA
-        predictiveness_full <- predictiveness_point_est(fitted_values = fhat_ful, y = Y[folds == 1, , drop = FALSE], weights = weights[folds == 1], type = full_type, na.rm = na.rm)
-        predictiveness_redu <- predictiveness_point_est(fitted_values = fhat_red, y = Y[folds == 2, , drop = FALSE], weights = weights[folds == 2], type = full_type, na.rm = na.rm)
+        predictiveness_full <- predictiveness_point_est(fitted_values = fhat_ful, y = Y[folds == 1, , drop = FALSE], ipc_weights = ipc_weights[folds == 1], type = full_type, na.rm = na.rm)
+        predictiveness_redu <- predictiveness_point_est(fitted_values = fhat_red, y = Y[folds == 2, , drop = FALSE], ipc_weights = ipc_weights[folds == 2], type = full_type, na.rm = na.rm)
     }
     ## compute the update
-    update <- vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    update <- vimp_update(fhat_ful, fhat_red, Y, folds = folds, ipc_weights = ipc_weights, type = full_type, na.rm = na.rm)
 
     ## compute the standard error
     se <- vimp_se(est, update, scale = scale, na.rm = na.rm)
@@ -209,7 +208,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
 
     ## perform a hypothesis test against the null of zero importance
     if (full_type != "anova") {
-        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, weights = weights, type = full_type, alpha = alpha, scale = scale, na.rm = na.rm)
+        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, ipc_weights = ipc_weights, type = full_type, alpha = alpha, scale = scale, na.rm = na.rm)
     } else {
         hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA, predictiveness_ci_full = rep(NA, 2), predictiveness_ci_reduced = rep(NA, 2), se_full = NA, se_redu = NA, test_statistic = NA)
     }
@@ -226,7 +225,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,
                  naive = naive,
-                 update = update,
+                 ic = update,
                  se = se, ci = ci,
                  predictiveness_full = predictiveness_full,
                  predictiveness_reduced = predictiveness_redu,
@@ -247,7 +246,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, weights = rep(1, length(Y)
                  delta = delta,
                  y = Y,
                  folds = folds,
-                 weights = weights,
+                 ipc_weights = ipc_weights,
                  scale = scale,
                  mat = mat)
 

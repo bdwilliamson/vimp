@@ -12,7 +12,7 @@
 #' @param V the number of folds for cross-validation, defaults to 10.
 #' @param folds the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-validation).
 #' @param stratified if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)
-#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
+#' @param ipc_ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
 #' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
@@ -49,7 +49,7 @@
 #'  \item{est}{ - the estimated variable importance}
 #'  \item{naive}{ - the naive estimator of variable importance}
 #'  \item{naives}{ - the naive estimator on each fold}
-#'  \item{updates}{ - the influence curve-based update for each fold}
+#'  \item{ics}{ - the estimated influence curve for each fold}
 #'  \item{se}{ - the standard error for the estimated variable importance}
 #'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
 #'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
@@ -57,7 +57,7 @@
 #'  \item{alpha}{ - the level, for confidence interval calculation}
 #'  \item{folds}{ - the folds used for hypothesis testing and cross-validation}
 #'  \item{y}{ - the outcome}
-#'  \item{weights}{ - the weights}
+#'  \item{ipc_weights}{ - the weights}
 #'  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 #' }
 #'
@@ -127,7 +127,7 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, stratified = FALSE, weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, ...) {
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, stratified = FALSE, ipc_weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, ...) {
     ## check to see if f1 and f2 are missing
     ## if the data is missing, stop and throw an error
     if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
@@ -212,7 +212,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     }
     ## get point estimate based on cv
-    ests_lst <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    ests_lst <- cv_vimp_point_est(fhat_ful, fhat_red, Y, folds = folds, ipc_weights = ipc_weights, type = full_type, na.rm = na.rm)
         ests <- ests_lst$point_est
     all_ests <- ests_lst$all_ests
 
@@ -225,12 +225,12 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     } else { # compute all point ests, ics for hypothesis test
         est <- ests[2]
         naive <- NA
-        predictiveness_full <- cv_predictiveness_point_est(fitted_values = fhat_ful, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, weights = weights[outer_folds == 1], type = full_type, na.rm = na.rm)$point_est
-        predictiveness_redu <- cv_predictiveness_point_est(fitted_values = fhat_red, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est
+        predictiveness_full <- cv_predictiveness_point_est(fitted_values = fhat_ful, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, ipc_weights = ipc_weights[outer_folds == 1], type = full_type, na.rm = na.rm)$point_est
+        predictiveness_redu <- cv_predictiveness_point_est(fitted_values = fhat_red, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est
     }
 
     ## compute the update
-    update_lst <- cv_vimp_update(fhat_ful, fhat_red, Y, folds = folds, weights = weights, type = full_type, na.rm = na.rm)
+    update_lst <- cv_vimp_update(fhat_ful, fhat_red, Y, folds = folds, ipc_weights = ipc_weights, type = full_type, na.rm = na.rm)
     update <- update_lst$ic
     updates <- update_lst$all_ics
 
@@ -248,8 +248,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     ## calculate the confidence interval
     ci <- vimp_ci(est, se, scale = scale, 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y[outer_folds == 1, , drop = FALSE], inner_folds_1, weights[outer_folds == 1], type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, cv_predictiveness_update(fhat_red, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = vimp_se(predictiveness_full, cv_predictiveness_update(fhat_ful, Y[outer_folds == 1, , drop = FALSE], inner_folds_1, ipc_weights[outer_folds == 1], type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = vimp_se(predictiveness_redu, cv_predictiveness_update(fhat_red, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic, scale = scale), scale = scale, level = 1 - alpha)
 
     ## compute a hypothesis test against the null of zero importance
     ## note that for full risk for fold 1 is first-order independent of the V-1 other reduced-fold risks
@@ -257,7 +257,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         hyp_test <- list(test = NA, p_value = NA, predictiveness_full = NA, predictiveness_reduced = NA, predictiveness_ci_full = rep(NA, 2), predictiveness_ci_reduced = rep(NA, 2), se_full = NA, se_redu = NA, test_statistic = NA)
     } else {
         ## reject iff ALL pairwise comparisons with the V-1 other risk CIs don't overlap
-        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, weights = weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm)
+        hyp_test <- vimp_hypothesis_test(fhat_ful, fhat_red, Y, folds, delta = delta, ipc_weights = ipc_weights, type = type, alpha = alpha, cv = TRUE, scale = scale, na.rm = na.rm)
     }
 
     ## get the call
@@ -272,7 +272,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,
                  naive = naive,
-                 update = update,
+                 ics = updates,
                  se = se, ci = ci,
                  predictiveness_full = predictiveness_full,
                  predictiveness_reduced = predictiveness_redu,
@@ -293,7 +293,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  delta = delta,
                  folds = folds,
                  y = Y,
-                 weights = weights,
+                 ipc_weights = ipc_weights,
                  scale = scale,
                  mat = mat)
 
