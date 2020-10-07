@@ -36,8 +36,6 @@ est_vimp <- function(full, reduced, y, folds, type = "r_squared", x = NULL, C = 
         point_est <- point_est_full - point_est_redu
         corrected_est <- NA
     } else {
-        # point_est <- mean((full - reduced) ^ 2, na.rm = na.rm)/mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
-        # corrected_est <- point_est + mean(vimp_update(full, reduced, y, folds = folds, weights = weights, type = type, na.rm = na.rm), na.rm = na.rm)
         est <- measure_anova(full, reduced, y, x = x, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, na.rm = na.rm, ...)
         point_est <- est$naive
         corrected_est <- est$point_est
