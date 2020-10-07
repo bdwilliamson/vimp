@@ -20,7 +20,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-eif_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
+eif_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
@@ -36,55 +36,34 @@ eif_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", x
     if (!is.na(measure_func)) {
         ic <- vector("numeric", length(y))
         for (v in 1:V) {
-            ics[1:length(y[folds == v]), v] <- measure_func[[1]](fitted_values = fitted_values[[v]], y = y[folds == v], x = x[folds == v, ], C = C[folds == v], ipc_weights = ipc_weights[folds == v], ipc_fit_type = ipc_fit_type, na.rm = na.rm, ...)$ic
-            ic[folds == v] <- ics[1:length(y[folds == v]), v]
+            measures[[v]] <- measure_func[[1]](fitted_values = fitted_values[[v]], y = y[folds == v], x = x[folds == v, , drop =  FALSE], C = C[folds == v], ipc_weights = ipc_weights[folds == v], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds == v], na.rm = na.rm, ...)
+            ics[1:length(y[folds == v]), v] <- measures[[v]]$ic
+            ic[folds == v] <- measures[[v]]$ic
         }
-        # ic <- rowMeans(ics, na.rm = TRUE)
+        ipc_eif_preds <- sapply(1:V, function(v) measures[[v]]$ipc_eif_preds, simplify = FALSE)
     } else { # if type is anova, no plug-in from predictiveness
         ic <- rep(NA, length(y))
     }
     ## if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
+    do_ipcw <- as.numeric(!all(ipc_weights == 1))
+    mn_y <- mean(y, na.rm = na.rm)
     if (full_type == "r_squared") {
-        denom_point_est <- mean(weights*(y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-        denom_ic <- weights*((y - mean(y, na.rm = na.rm))^2 - denom_point_est)
-        mse_lst <- cv_predictiveness_point_est(fitted_values = fitted_values, y = y, weights = weights, folds = folds, type = type, na.rm = na.rm)
+        var <- measure_mse(fitted_values = rep(mn_y, length(y)), y, x, C, ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
 
-        point_ests <- 1 - mse_lst$all_ests/denom_point_est
-        point_est <- mean(point_ests)
-
-        ## influence curve
-        grad <- matrix(c(1/denom_point_est, -mse_lst$point_est/denom_point_est^2), nrow = 1)
-        ic <- as.vector((-1)*(grad %*% t(cbind(ic, denom_ic))))
-        grads <- cbind(1/denom_point_est, -mse_lst$all_ests/denom_point_est^2)
-        tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        grad <- (-1) * as.vector(matrix(c(1 / var$point_est, -point_est / (var$point_est ^ 2)), nrow = 1) %*% t(cbind(ic, var$ic)))
+        grads <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            tmp_ics[1:length(y[folds == v]), v] <- as.vector((-1)*(grads[v, ] %*% t(cbind(ics[1:length(y[folds == v]), v], denom_ic[folds == v]))))
+            grads[1:length(y[folds == v]), v] <- (-1) * as.vector(matrix(c(1 / var$point_est, -point_ests[v] / (var$point_est ^ 2)), nrow = 1) %*% t(cbind(ics[1:length(y[folds == v]), v], var$ic)))
         }
-        ics <- tmp_ics
     }
     if (full_type == "deviance") {
-        if (is.null(dim(y)) | dim(y)[2] == 1) { # assume that zero is in first column
-            y_mult <- cbind(1 - y, y)
-        } else {
-            y_mult <- y
-        }
-        p <- apply(weights*y_mult, 2, mean, na.rm = na.rm)
-        denom_point_est <- (-1)*sum(log(p))
-        denom_ic <- weights*rowSums(-1/p*((y_mult == 1) - p))
-        ce_lst <- cv_predictiveness_point_est(fitted_values = fitted_values, y = y, weights = weights, folds = folds, type = type, na.rm = na.rm)
+        var <- measure_cross_entropy(fitted_values = rep(mn_y, length(y)), y, x, C, ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
 
-        point_ests <- ce_lst$all_ests/denom_point_est
-        point_est <- mean(point_ests)
-
-        ## influence curve
-        grad <- matrix(c(1/denom_point_est, -ce_lst$point_est/denom_point_est^2), nrow = 1)
-        ic <- as.vector(grad %*% t(cbind(ic, denom_ic)))
-        grads <- cbind(1/denom_point_est, -ce_lst$all_ests/denom_point_est^2)
-        tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        grad <- (-1) * as.vector(matrix(c(1 / var$point_est, -point_est / (var$point_est ^ 2)), nrow = 1) %*% t(cbind(ic, var$ic)))
+        grads <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
-            tmp_ics[1:length(y[folds == v]), v] <- as.vector(grads[v, ] %*% t(cbind(ics[1:length(y[folds == v]), v], denom_ic[folds == v])))
+            grads[1:length(y[folds == v]), v] <- (-1) * as.vector(matrix(c(1 / var$point_est, -point_ests[v] / (var$point_est ^ 2)), nrow = 1) %*% t(cbind(ics[1:length(y[folds == v]), v], var$ic)))
         }
-        ics <- tmp_ics
     }
-    return(list(ic = ic, all_ics = ics))
+    return(list(ic = grad, all_ics = grads))
 }

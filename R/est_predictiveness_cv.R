@@ -40,32 +40,16 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", x
         point_est <- point_ests <- NA
     }
     # if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
+    do_ipcw <- as.numeric(!all(ipc_weights == 1))
+    mn_y <- mean(y, na.rm = na.rm)
     if (full_type == "r_squared") {
-        obs_var <- mean(((y - mean(y[C == 1], na.rm = na.rm))^2)[C == 1], na.rm = na.rm)
-        obs_var_eif <- ((y - mean(y[C == 1], na.rm = na.rm)) ^ 2)[C == 1] - obs_var
-        ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_var_eif, X = x[C == 1, , drop = FALSE], ...)
-        ipc_eif_preds <- predict(ipc_eif_mod)$pred
-        var_eif <- (C / ipc_weights) * obs_var_eif + (C / ipc_weights - 1) * ipc_eif_preds
-        denom_point_est <- mean((C / ipc_weights)*(y - mean(y, na.rm = na.rm))^2, na.rm = na.rm) + mean(var_eif)
-        point_ests <- 1 - point_ests/denom_point_est
+        var <- measure_mse(fitted_values = rep(mn_y, length(y)), y, x, C, ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
+        point_ests <- 1 - point_ests/var$point_est
         point_est <- mean(point_ests)
     }
     if (full_type == "deviance") {
-        if (is.null(dim(y))) { # assume that zero is in first column
-            y_mult <- cbind(1 - y, y)
-        } else if (dim(y)[2] == 1) {
-            y_mult <- cbind(1 - y, y)
-        } else {
-            y_mult <- y
-        }
-        obs_p <- colMeans(y_mult[C == 1, ], na.rm = na.rm)
-        obs_denom <- (-1)*sum(log(obs_p))
-        obs_ic_denom <- rowSums(-1 / obs_p * ((y_mult[C == 1, ] == 1) - obs_p))
-        ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_ic_denom, X = x[C == 1, , drop = FALSE], ...)
-        ipc_eif_preds <- predict(ipc_eif_mod)$pred
-        ic_denom <- (C / ipc_weights) * obs_ic_denom + (C / ipc_weights - 1) * ipc_eif_preds
-        denom_point_est <- (-1) * sum(log(colMeans((C / ipc_weights) * y_mult, na.rm = na.rm))) + mean(ic_denom)
-        point_ests <- point_ests/denom_point_est
+        denom <- measure_cross_entropy(fitted_values = rep(mn_y, length(y)), y, x, C, ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
+        point_ests <- 1 - point_ests / denom$point_est
         point_est <- mean(point_ests)
     }
     # return it

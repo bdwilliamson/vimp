@@ -37,10 +37,15 @@ est_vimp_cv <- function(full, reduced, y, folds, type = "r_squared", x = NULL, C
         point_ests <- point_est_full_lst$all_ests - point_est_redu_lst$all_ests
         corrected_est <- NA
     } else {
-        var <- mean(mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm))
-        point_est <- mean(sapply(seq_len(V), function(v) mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))) / var
-        corrected_est <- point_est + mean(cv_vimp_update(full, reduced, y, folds = folds, weights = weights, type = type, na.rm = na.rm)$ic, na.rm = na.rm)
-        point_ests <- NA
+        ests <- sapply(1:V, function(v) measure_anova(full[[v]], reduced[[v]], y[folds == v], x[folds == v, , drop = FALSE], C[folds == v], ipc_weights[folds == v], ipc_fit_type, ipc_eif_preds[folds == v], na.rm = na.rm, ...))
+        point_ests <- unlist(lapply(ests, function(x) x[1]))
+        corrected_est <- mean(point_ests)
+        point_est <- mean(unlist(lapply(ests, function(x) x[2])))
+        # var <- mean(mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm))
+        # point_est <- mean(unlist(lapply()))
+        # point_est <- mean(sapply(seq_len(V), function(v) mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))) / var
+        # corrected_est <- point_est + mean(cv_vimp_update(full, reduced, y, folds = folds, weights = weights, type = type, na.rm = na.rm)$ic, na.rm = na.rm)
+        # point_ests <- NA
     }
     return(list(point_est = c(corrected_est, point_est), all_ests = point_ests))
 }

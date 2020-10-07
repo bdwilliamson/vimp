@@ -25,8 +25,8 @@ eif_vimp_cv <- function(full, reduced, y, folds, weights = rep(1, length(y)), ty
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
 
     ## get ICs
-    ic_full_lst <- cv_predictiveness_update(fitted_values = full, y = y[folds[[1]] == 1, , drop = FALSE], folds = folds[[2]][[1]], weights = weights[folds[[1]] == 1], type = full_type, na.rm = na.rm)
-    ic_redu_lst <- cv_predictiveness_update(fitted_values = reduced, y = y[folds[[1]] == 2, , drop = FALSE], folds = folds[[2]][[2]], weights = weights[folds[[1]] == 2], type = full_type, na.rm = na.rm)
+    ic_full_lst <- eif_predictiveness_cv(fitted_values = full, y = y[folds[[1]] == 1, , drop = FALSE], folds = folds[[2]][[1]], weights = weights[folds[[1]] == 1], type = full_type, na.rm = na.rm)
+    ic_redu_lst <- eif_predictiveness_cv(fitted_values = reduced, y = y[folds[[1]] == 2, , drop = FALSE], folds = folds[[2]][[2]], weights = weights[folds[[1]] == 2], type = full_type, na.rm = na.rm)
     ic_full <- ic_full_lst$ic
     ic_redu <- ic_redu_lst$ic
     ics_full <- ic_full_lst$all_ics
@@ -55,7 +55,7 @@ eif_vimp_cv <- function(full, reduced, y, folds, weights = rep(1, length(y)), ty
         ics <- matrix(NA, nrow = max_nrow, ncol = V)
         ic <- vector("numeric", dim(y[folds[[1]] == 1, , drop = FALSE])[1])
         for (v in 1:V) {
-            ics[1:length(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v]), v] <- weights[folds[[1]] == 1][folds[[2]][[1]] == v]*(2*(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v] - full[[v]])*(full[[v]] - reduced[[v]]) + (full[[v]] - reduced[[v]]) ^ 2 - mean((full[[v]] - reduced[[v]]) ^ 2, na.rm = na.rm))
+            ics[1:length(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v]), v] <- measure_anova(full = full[[v]], reduced = reduced[[v]], y = y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v], x = x[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v, , drop = FALSE], C = C[folds[[1]] == 1][folds[[2]][[1]] == v], ipc_weights = ipc_weights[folds[[1]] == 1][folds[[2]][[1]] == v], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds[[1]] == 1][folds[[2]][[1]] == v], na.rm = na.rm, ...)
             ic[folds[[2]][[1]] == v] <- ics[1:length(y[folds[[1]] == 1, , drop = FALSE][folds[[2]][[1]] == v]), v]
         }
     }

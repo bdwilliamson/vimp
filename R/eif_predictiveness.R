@@ -19,7 +19,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #'
 #' @export
-eif_predictiveness <- function(fitted_values, y, type = "r_squared", x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", na.rm = FALSE, ...) {
+eif_predictiveness <- function(fitted_values, y, type = "r_squared", x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
 
     ## get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
@@ -30,7 +30,7 @@ eif_predictiveness <- function(fitted_values, y, type = "r_squared", x = NULL, C
 
     ## calculate the necessary pieces for the influence curve
     if (!is.na(measure_func)) {
-        ic <- measure_func[[1]](fitted_values = fitted_values, y = y, x = x, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, na.rm = na.rm, ...)$ic
+        ic <- measure_func[[1]](fitted_values = fitted_values, y = y, x = x, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, na.rm = na.rm, ...)$ic
     } else { # if type is anova, no plug-in from predictiveness
         ic <- NA
     }
