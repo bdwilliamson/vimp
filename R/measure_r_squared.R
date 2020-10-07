@@ -2,6 +2,7 @@
 #' Compute nonparametric estimate of R-squared.
 #'
 #' @param fitted_values fitted values from a regression function.
+#' @param y the outcome.
 #' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
@@ -17,12 +18,13 @@ measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)),
     if (!all(ipc_weights == 1)) {
         # observed mse
         obs_mse <- measure_mse(fitted_values[C == 1], y[C == 1], na.rm = na.rm)
-        obs_var <- mean(((y - mean(y[C == 1], na.rm = na.rm)) ^ 2)[C == 1], na.rm = na.rm)
-        obs_var_eif <- ((y - mean(y[C == 1], na.rm = na.rm)) ^ 2)[C == 1] - obs_var
-        obs_grad <- as.vector(matrix(c(1 / var, -obs_mse$point_est / (obs_var ^ 2)), nrow = 1) %*% t(cbind(obs_mse$ic, obs_var_eif)))
+        obs_mn_y <- mean(y[C == 1], na.rm = na.rm)
+        obs_var <- measure_mse(fitted_values = rep(obs_mn_y, sum(C == 1)), y[C == 1], na.rm = na.rm)
+        obs_grad <- as.vector(matrix(c(1 / obs_var$point_est, -obs_mse$point_est / (obs_var$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_mse$ic, obs_var$ic)))
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
-            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = x[C == 1, , drop = FALSE], ...)
+            df <- data.frame(y = y[C == 1], x[C == 1, , drop = FALSE])
+            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, df, ...)
             ipc_eif_preds <- predict(ipc_eif_mod)$pred
         }
         grad <- (C / ipc_weights) * obs_grad - (C / ipc_weights - 1) * ipc_eif_preds
@@ -32,11 +34,11 @@ measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)),
     } else {
         # point estimates of all components
         mse <- measure_mse(fitted_values, y, na.rm = na.rm)
-        var <- mean((y - mean(y, na.rm = na.rm))^2, na.rm = na.rm)
-        est <- 1 - mse$point_est/var
-        # influence curves
-        ic_var <- (y - mean(y, na.rm = na.rm))^2 - var
-        grad <- as.vector(matrix(c(1/var, -mse$point_est/(var^2)), nrow = 1) %*% t(cbind(mse$ic, ic_var)))
+        mn_y <- mean(y, na.rm = na.rm)
+        var <- measure_mse(fitted_values = rep(mn_y, length(y)), y, na.rm = na.rm)
+        est <- 1 - mse$point_est / var$point_est
+        # influence curve
+        grad <- (-1) * as.vector(matrix(c(1/var$point_est, -mse$point_est/(var$point_est^2)), nrow = 1) %*% t(cbind(mse$ic, var$ic)))
     }
     return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
 }

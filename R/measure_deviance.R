@@ -27,24 +27,23 @@ measure_deviance <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), 
     if (!all(ipc_weights == 1)) {
         # get full-data gradient on fully-observed data
         obs_ce <- measure_cross_entropy(fitted_values[C == 1], y[C == 1], na.rm = na.rm)
-        obs_p <- colMeans(y_mult[C == 1, ], na.rm = TRUE)
-        obs_denom <- (-1) * sum(log(obs_p))
-        obs_ic_denom <- rowSums(-1 / obs_p * ((y_mult[C == 1, ] == 1) - obs_p))
-        obs_grad <- as.vector(matrix(c(1 / obs_denom, obs_ce$point_est / (obs_denom ^ 2)), nrow = 1) %*% t(cbind(obs_ce$ic, obs_ic_denom)))
+        obs_pi_0 <- mean(y[C == 1], na.rm = na.rm)
+        obs_denom <- measure_cross_entropy(fitted_values = rep(obs_pi_0, sum(C == 1)), y[C == 1], na.rm = na.rm)
+        obs_grad <- as.vector(matrix(c(1 / obs_denom$point_est, obs_ce$point_est / (obs_denom$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_ce$ic, obs_denom$ic)))
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
-          ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = x[C == 1, , drop = FALSE], ...)
+          df <- data.frame(y = y[C == 1], x[C == 1, , drop = FALSE])
+          ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = df, ...)
           ipc_eif_preds <- predict(ipc_eif_mod)$pred
         }
         grad <- (C / ipc_weights) * obs_grad - (C / ipc_weights - 1) * ipc_eif_preds
-        est <- measure_cross_entropy(fitted_values, C / ipc_weights * y, na.rm = na.rm)$point_est / ((-1) * sum(log(colMeans(C / ipc_weights * y_mult, na.rm = na.rm)))) + mean(grad)
+        est <- 1 - measure_cross_entropy(fitted_values, C / ipc_weights * y, na.rm = na.rm)$point_est / measure_cross_entropy(fitted_values = mean(C / ipc_weights * y, na.rm = na.rm), C / ipc_weights * y, na.rm = na.rm) + mean(grad)
     } else {
         cross_entropy_meas <- measure_cross_entropy(fitted_values, y, na.rm = na.rm)
-        p <- apply(y_mult, 2, mean, na.rm = na.rm)
-        denom_point_est <- (-1)*sum(log(p))
-        est <- cross_entropy_meas$point_est / denom_point_est
-        ic_denom <- rowSums(-1/p*((y_mult == 1) - p))
-        grad <- as.vector(matrix(c(1/denom_point_est, -cross_entropy_meas$point_est/(denom_point_est^2)), nrow = 1) %*% t(cbind(cross_entropy_meas$ic, ic_denom)))
+        pi_0 <- mean(y, na.rm = na.rm)
+        denom <- measure_cross_entropy(fitted_values = rep(pi_0, length(y)), y, na.rm = na.rm)
+        est <- 1 - cross_entropy_meas$point_est / denom$point_est
+        grad <- as.vector(matrix(c(1/denom_point_est, -cross_entropy_meas$point_est/(denom_point_est^2)), nrow = 1) %*% t(cbind(cross_entropy_meas$ic, denom$ic)))
     }
     return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
 }

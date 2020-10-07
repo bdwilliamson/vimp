@@ -22,7 +22,8 @@ measure_accuracy <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), 
     obs_grad <- ((-1)*(((fitted_values[C == 1] > 1/2) != y[C == 1]) - mean((fitted_values[C == 1] > 1/2) != y[C == 1], na.rm = na.rm)))
     # if IPC EIF preds aren't entered, estimate the regression
     if (ipc_fit_type != "external") {
-      ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = x[C == 1, , drop = FALSE], ...)
+      df <- data.frame(y = y[C == 1], x[C == 1, , drop = FALSE])
+      ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = df, ...)
       ipc_eif_preds <- predict(ipc_eif_mod)$pred
     }
     grad <- (C / ipc_weights) * obs_grad - (C / ipc_weights - 1) * ipc_eif_preds
