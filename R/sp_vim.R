@@ -4,7 +4,7 @@
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
-#' @param V the number of folds for cross-validation, defaults to 10.
+#' @param V the number of folds for cross-fitting, defaults to 10.
 #' @param type the type of parameter (e.g., R-squared-based is \code{"r_squared"}).
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param univariate_SL.library (optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}
@@ -12,9 +12,10 @@
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
-#' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?
+#' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-fitting folds)?
 #' @param verbose should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character list specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
@@ -85,7 +86,8 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
-                   stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ...) {
+                   stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)),
+                   Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
     # if the data is missing, stop and throw an error
     if (missing(Y)) stop("You must enter an outcome, Y.")
     if (missing(X)) stop("You must enter a matrix of predictors, X.")
@@ -96,7 +98,7 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
 
-    # set up the cross-validation
+    # set up the cross-fitting
     outer_folds <- .make_folds(Y, V = 2, stratified = stratified, probs = c(0.25, 0.75))
     inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
     inner_folds_2 <- .make_folds(Y[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified)

@@ -17,6 +17,7 @@
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param scale scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character list specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
@@ -69,6 +70,6 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package, and \code{\link[ROCR]{performance}} for specific usage of the \code{ROCR} package.
 #' @export
-vimp_auc <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = TRUE, scale = "identity", C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)), ...) {
-  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type = "auc", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, ...)
+vimp_auc <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = TRUE, scale = "identity", C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)), ...) {
+  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type = "auc", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, C = C, Z = Z, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, ...)
 }

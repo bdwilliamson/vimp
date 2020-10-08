@@ -6,6 +6,7 @@
 #' @param y the outcome.
 #' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character list specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
@@ -14,7 +15,8 @@
 #'
 #' @return A named list of: (1) the estimated deviance of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @export
-measure_deviance <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
+measure_deviance <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
+    z_names <- names(Z)
     # point estimates of all components
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)
@@ -32,7 +34,7 @@ measure_deviance <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), 
         obs_grad <- as.vector(matrix(c(1 / obs_denom$point_est, obs_ce$point_est / (obs_denom$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_ce$eif, obs_denom$eif)))
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
-          df <- data.frame(y = y[C == 1], x[C == 1, , drop = FALSE])
+          df <- data.frame(y = y, x)[, z_names]
           ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = df, ...)
           ipc_eif_preds <- predict(ipc_eif_mod)$pred
         }
