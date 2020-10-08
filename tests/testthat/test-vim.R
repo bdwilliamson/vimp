@@ -1,8 +1,8 @@
 # load required functions and packages
 library("testthat")
 library("SuperLearner")
-library("vimp")
 library("xgboost")
+library("vimp")
 
 # generate the data
 set.seed(4747)
@@ -36,7 +36,7 @@ test_that("General variable importance estimates using internally-computed fitte
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check that influence curve worked
-  expect_length(est$update, sum(folds == 1))
+  expect_length(est$eif, sum(folds == 1))
 })
 
 # fit the data with all covariates
@@ -57,8 +57,8 @@ test_that("General variable importance estimates using externally-computed fitte
     # check that p-value exists
     expect_length(est$p_value, 1)
     # check that CIs with other transformations work
-    se_log <- vimp_se(est$est, est$update, scale = "log")
-    se_logit <- vimp_se(est$est, est$update, scale = "logit")
+    se_log <- vimp_se(est$est, est$eif, scale = "log")
+    se_logit <- vimp_se(est$est, est$eif, scale = "logit")
     ci_log <- vimp_ci(est$est, se_log, scale = "log", level = 0.95)
     ci_logit <- vimp_ci(est$est, se_logit, scale = "logit", level = 0.95)
     expect_length(ci_log, 2)
@@ -67,10 +67,9 @@ test_that("General variable importance estimates using externally-computed fitte
 
 
 test_that("Measures of predictiveness work", {
-  full_rsquared <- predictiveness_point_est(full_fitted, y[folds == 1], type = "r_squared")
-  expect_equal(full_rsquared, 0.44, tolerance = 0.1)
-  full_update <- predictiveness_update(full_fitted, y[folds == 1], type = "r_squared")
-  expect_length(full_update, sum(folds == 1))
+  full_rsquared <- est_predictiveness(full_fitted, y[folds == 1], type = "r_squared")
+  expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
+  expect_length(full_rsquared$eif, sum(folds == 1))
 })
 
 test_that("Error messages work", {
