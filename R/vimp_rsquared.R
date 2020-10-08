@@ -72,6 +72,6 @@
 #' @export
 
 
-vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = FALSE, C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)), ...) {
-  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type = "r_squared", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, C = C, Z = Z, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, ...)
+vimp_rsquared <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = FALSE, C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
+  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type = "r_squared", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, C = C, Z = Z, ipc_weights = ipc_weights, ...)
 }

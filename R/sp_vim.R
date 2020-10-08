@@ -15,7 +15,7 @@
 #' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-fitting folds)?
 #' @param verbose should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
-#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character list specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
+#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X (entered in lowercase) that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
@@ -113,9 +113,9 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     # get v, preds, ic for null set
     preds_none <- list()
     for (v in 1:V) {
-        preds_none[[v]] <- rep(mean(Y[outer_folds == 2, ][inner_folds_2 == v]), sum(inner_folds_2 == v))
+        preds_none[[v]] <- rep(mean(Y[(outer_folds == 2) & (C == 1), ][inner_folds_2 == v]), sum(inner_folds_2 == v))
     }
-    v_none_lst <- est_predictiveness_cv(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", type = full_type, na.rm = na.rm, SL.library = SL.library, ...)
+    v_none_lst <- est_predictiveness_cv(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], Z = Z, ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", type = full_type, na.rm = na.rm, SL.library = SL.library, ...)
     v_none <- v_none_lst$point_est
     ic_none <- v_none_lst$eif
 
@@ -126,12 +126,11 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     } else {
         progress_bar <- NULL
     }
-    preds_lst <- sapply(1:length(S[-1]), function(i) run_sl(Y[outer_folds == 2, , drop = FALSE], X[outer_folds == 2, ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = S[-1][[i]], folds = inner_folds_2, verbose = verbose, progress_bar = progress_bar, indx = i, weights = ipc_weights[outer_folds == 2], ...),
-                        simplify = FALSE)
+    preds_lst <- sapply(1:length(S[-1]), function(i) run_sl(Y[(outer_folds == 2), , drop = FALSE], X[(outer_folds == 2), ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = S[-1][[i]], folds = inner_folds_2, verbose = verbose, progress_bar = progress_bar, indx = i, weights = ipc_weights[(outer_folds == 2)], C = C, ...), simplify = FALSE)
     if (verbose) {
         close(progress_bar)
     }
-    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = l$folds, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...))
+    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = l$folds, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], Z = Z, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...))
     v_lst <- lapply(v_full_lst, function(l) l$point_est)
     ic_lst <- lapply(v_full_lst, function(l) l$eif)
     v <- matrix(c(v_none, unlist(v_lst)))
@@ -174,9 +173,9 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     # compute a hypothesis test against the null of zero importance
     preds_none_0 <- list()
     for (v in 1:V) {
-        preds_none_0[[v]] <- rep(mean(Y[outer_folds == 1, ][inner_folds_1 == v]), sum(inner_folds_1 == v))
+        preds_none_0[[v]] <- rep(mean(Y[(outer_folds == 1) & (C == 1), ][inner_folds_1 == v]), sum(inner_folds_1 == v))
     }
-    v_none_0_lst <- est_predictiveness_cv(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, C = C[outer_folds == 1], ipc_weights = ipc_weights[outer_folds == 1], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
+    v_none_0_lst <- est_predictiveness_cv(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, C = C[outer_folds == 1], Z = Z, ipc_weights = ipc_weights[outer_folds == 1], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
     v_none_0 <- v_none_0_lst$point_est
     ic_none_0 <- v_none_0_lst$eif
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) / sqrt(sum(outer_folds == 1))

@@ -33,6 +33,21 @@ get_full_type <- function(type) {
     if (full_type == "anova" ) warning("Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.")
     full_type
 }
+
+# -------------------------------------
+# get the data.table for IPCW
+# -------------------------------------
+get_dt <- function(y, x, Z) {
+    tmp_Z <- as.numeric(gsub("x", "", Z)[Z != "y"])
+    if (length(tmp_Z) > 0) {
+        Z <- c(Z[Z == "y"], "x")
+    }
+    df <- as.data.table(mget(Z))
+    if (length(tmp_Z) > 0) {
+        df <- df[, switch((grepl("y", Z)) + 1, tmp_Z, tmp_Z + 1)]
+    }
+    df
+}
 # -------------------------------------
 # Create Folds for Cross-Fitting
 # -------------------------------------
@@ -91,14 +106,11 @@ get_full_type <- function(type) {
 # @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
 # @keywords internal
 run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
-                   verbose = FALSE, progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)), ...) {
+                   verbose = FALSE, progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)), C = rep(1, nrow(X)), ...) {
   # if verbose, print what we're doing and make sure that SL is verbose
   L <- list(...)
   if (is.null(L$family)) {
     L$family <- gaussian()
-  }
-  if (is.null(L$obsWeights)) {
-    L$obsWeights <- weights
   }
   if (verbose) {
     # message(paste0("Fitting regression for s = ", paste(s, collapse = ",")))
@@ -109,10 +121,16 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
     }
   }
   # fit the super learner on each full/reduced pair
-  if (missing(folds)) {
-    folds <- .make_folds(Y, V = V, stratified = (length(unique(Y)) == 2))
-  }
+  Y_cc <- Y[C == 1]
+  X_cc <- X[C == 1, , drop = FALSE]
   red_X <- as.data.frame(X[, s, drop = FALSE])
+  red_X_cc <- as.data.frame(red_X[C == 1, , drop = FALSE])
+  if (is.null(L$obsWeights)) {
+    L$obsWeights <- weights[C == 1]
+  }
+  if (missing(folds)) {
+    folds <- .make_folds(Y_cc, V = V, stratified = (length(unique(Y)) == 2))
+  }
   this_sl_lib <- SL.library
   # if univariate regression (i.e., length(s) == 1) then check univariate_SL.library
   # if it exists, use it; otherwise, use the normal library
@@ -124,6 +142,7 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
     for (i in 1:length(requires_2d)) {
       if (any(grepl(requires_2d[i], this_sl_lib)) & (ncol(red_X) == 1)) {
         red_X <- cbind.data.frame(V0 = 0, red_X)
+        red_X_cc <- cbind.data.frame(V0 = 0, red_X_cc)
       }
     }
   }
@@ -133,17 +152,17 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
     # fit super learner
     this_L <- L
     this_L$obsWeights <- L$obsWeights[folds != v]
-    new_arg_list <- c(list(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], SL.library = this_sl_lib), this_L)
+    new_arg_list <- c(list(Y = Y_cc[folds != v, , drop = FALSE], X = red_X_cc[folds != v, , drop = FALSE], SL.library = this_sl_lib), this_L)
     if (length(this_sl_lib) == 1) { # no need to do SL CV
       fit_library <- SuperLearner:::.createLibrary(this_sl_lib)
       fitter <- get(fit_library$library$predAlgorithm[1], envir = new_arg_list$env)
-      fit <- fitter(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], newX = red_X[folds == v, , drop = FALSE],
+      fit <- fitter(Y = Y_cc[folds != v, , drop = FALSE], X = red_X_cc[folds != v, , drop = FALSE], newX = red_X[folds == v, , drop = FALSE],
                     family = new_arg_list$family, obsWeights = new_arg_list$obsWeights)
       fitted_v <- fit$fit
       fhat_ful[[v]] <- fit$pred
     } else {
       fit <- do.call(SuperLearner::SuperLearner, new_arg_list)
-      fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
+      fitted_v <- SuperLearner::predict.SuperLearner(fit, newdata = red_X)$pred
       # get predictions on the validation fold
       fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, , drop = FALSE])$pred
     }
