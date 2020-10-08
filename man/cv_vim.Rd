@@ -41,6 +41,8 @@ cv_vim(
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
+
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
 
 \item{run_regression}{if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
@@ -57,35 +59,36 @@ cv_vim(
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 
-\item{ipc_ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
+
+\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
 }
 \value{
 An object of class \code{vim}. See Details for more information.
 }
 \description{
-Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-fitting.
-This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
+Compute estimates and confidence intervals using cross-fitting for nonparametric variable importance based on the population-level contrast between the oracle predictiveness using the feature(s) of interest versus not.
 }
 \details{
-We define the population variable importance measure (VIM) for the group 
+We define the population variable importance measure (VIM) for the group
 of features (or single feature) \eqn{s} with respect to the predictiveness measure
-\eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is 
+\eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
 the population predictiveness maximizing function, \eqn{f_{0,s}} is the population
 predictiveness maximizing function that is only allowed to access the features with
 index not in \eqn{s}, and \eqn{P_0} is the true data-generating distribution. Cross-fitted
 VIM estimates are obtained by first splitting the data into \eqn{K} folds; then using each
-fold in turn as a hold-out set, constructing estimators \eqn{f_{n,k}} and \eqn{f_{n,k,s}} of 
-\eqn{f_0} and \eqn{f_{0,s}}, respectively on the training data and estimator \eqn{P_{n,k}} of 
-\eqn{P_0} using the test data; and finally, computing \deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}} 
+fold in turn as a hold-out set, constructing estimators \eqn{f_{n,k}} and \eqn{f_{n,k,s}} of
+\eqn{f_0} and \eqn{f_{0,s}}, respectively on the training data and estimator \eqn{P_{n,k}} of
+\eqn{P_0} using the test data; and finally, computing \deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}}
 See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind the \code{cv_vim} function, and the validity
 of the confidence intervals.
 
 In the interest of transparency, we return most of the calculations
-within the \code{vim} object. This results in a list containing:
+within the \code{vim} object. This results in a list including:
 \itemize{
- \item{call}{ - the call to \code{cv_vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
  \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
@@ -93,13 +96,16 @@ within the \code{vim} object. This results in a list containing:
  \item{est}{ - the estimated variable importance}
  \item{naive}{ - the naive estimator of variable importance}
  \item{naives}{ - the naive estimator on each fold}
- \item{ics}{ - the estimated influence curve for each fold}
+ \item{eif}{- the estimated influence function}
+ \item{all_eifs}{ - the estimated influence curve for each fold}
  \item{se}{ - the standard error for the estimated variable importance}
  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
+ \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
+ \item{p_value}{ - a p-value based on the same test as \code{test}}
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
  \item{alpha}{ - the level, for confidence interval calculation}
- \item{folds}{ - the folds used for hypothesis testing and cross-validation}
+ \item{folds}{ - the folds used for hypothesis testing and cross-fitting}
  \item{y}{ - the outcome}
  \item{ipc_weights}{ - the weights}
  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
@@ -110,30 +116,30 @@ library(SuperLearner)
 library(ranger)
 n <- 100
 p <- 2
-## generate the data
+# generate the data
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 
-## apply the function to the x's
+# apply the function to the x's
 smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 
-## generate Y ~ Normal (smooth, 1)
+# generate Y ~ Normal (smooth, 1)
 y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
-## set up a library for SuperLearner
+# set up a library for SuperLearner
 learners <- c("SL.mean", "SL.ranger")
 
-## -----------------------------------------
-## using Super Learner (with a small number of folds, for illustration only)
-## -----------------------------------------
+# -----------------------------------------
+# using Super Learner (with a small number of folds, for illustration only)
+# -----------------------------------------
 set.seed(4747)
 est <- cv_vim(Y = y, X = x, indx = 2, V = 2,
 type = "r_squared", run_regression = TRUE,
 SL.library = learners, cvControl = list(V = 2), alpha = 0.05)
 
-## ------------------------------------------
-## doing things by hand, and plugging them in (with a small number of folds, for illustration only)
-## ------------------------------------------
-## set up the folds
+# ------------------------------------------
+# doing things by hand, and plugging them in (with a small number of folds, for illustration only)
+# ------------------------------------------
+# set up the folds
 indx <- 2
 V <- 2
 set.seed(4747)
@@ -144,29 +150,29 @@ y_1 <- y[outer_folds == 1, , drop = FALSE]
 x_1 <- x[outer_folds == 1, , drop = FALSE]
 y_2 <- y[outer_folds == 2, , drop = FALSE]
 x_2 <- x[outer_folds == 2, , drop = FALSE]
-## get the fitted values by fitting the super learner on each pair
+# get the fitted values by fitting the super learner on each pair
 fhat_ful <- list()
 fhat_red <- list()
 for (v in 1:V) {
-    ## fit super learner
+    # fit super learner
     fit <- SuperLearner::SuperLearner(Y = y_1[inner_folds_1 != v, , drop = FALSE],
-     X = x_1[inner_folds_1 != v, , drop = FALSE], 
+     X = x_1[inner_folds_1 != v, , drop = FALSE],
      SL.library = learners, cvControl = list(V = V))
     fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-    ## get predictions on the validation fold
+    # get predictions on the validation fold
     fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
      newdata = x_1[inner_folds_1 == v, , drop = FALSE])$pred
-    ## fit the super learner on the reduced covariates
+    # fit the super learner on the reduced covariates
     red <- SuperLearner::SuperLearner(Y = y_2[inner_folds_2 != v, , drop = FALSE],
-     X = x_2[inner_folds_2 != v, -indx, drop = FALSE], 
+     X = x_2[inner_folds_2 != v, -indx, drop = FALSE],
      SL.library = learners, cvControl = list(V = V))
-    ## get predictions on the validation fold
+    # get predictions on the validation fold
     fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
      newdata = x_2[inner_folds_2 == v, -indx, drop = FALSE])$pred
 }
 est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-V = V, folds = list(outer_folds = outer_folds, 
-inner_folds = list(inner_folds_1, inner_folds_2)), 
+V = V, folds = list(outer_folds = outer_folds,
+inner_folds = list(inner_folds_1, inner_folds_2)),
 type = "r_squared", run_regression = FALSE, alpha = 0.05)
 
 }

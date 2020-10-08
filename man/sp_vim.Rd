@@ -28,7 +28,7 @@ sp_vim(
 
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings).}
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
 \item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}).}
 
@@ -49,13 +49,14 @@ sp_vim(
 \item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
+
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
 }
 \value{
 An object of class \code{vim}. See Details for more information.
 }
 \description{
 Compute estimates and confidence intervals for the SPVIMs, using cross-fitting.
-This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 }
 \details{
 We define the SPVIM as the weighted average of the population difference in
@@ -96,22 +97,22 @@ library(SuperLearner)
 library(ranger)
 n <- 100
 p <- 2
-## generate the data
+# generate the data
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 
-## apply the function to the x's
+# apply the function to the x's
 smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 
-## generate Y ~ Normal (smooth, 1)
+# generate Y ~ Normal (smooth, 1)
 y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
-## set up a library for SuperLearner
+# set up a library for SuperLearner
 learners <- c("SL.mean", "SL.ranger")
 
-## -----------------------------------------
-## using Super Learner (with a small number of CV folds,
-## for illustration only)
-## -----------------------------------------
+# -----------------------------------------
+# using Super Learner (with a small number of CV folds,
+# for illustration only)
+# -----------------------------------------
 set.seed(4747)
 est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared",
 SL.library = learners, alpha = 0.05)

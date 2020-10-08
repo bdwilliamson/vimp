@@ -23,6 +23,8 @@ measure_anova(
 
 \item{reduced}{fitted values from a regression on the reduced set of covariates.}
 
+\item{y}{the outcome.}
+
 \item{x}{the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}

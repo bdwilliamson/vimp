@@ -4,19 +4,12 @@
 \alias{vimp_se}
 \title{Estimate standard errors}
 \usage{
-vimp_se(
-  est,
-  update,
-  denom = NULL,
-  n = length(update),
-  scale = "log",
-  na.rm = FALSE
-)
+vimp_se(est, eif, denom = NULL, n = length(eif), scale = "log", na.rm = FALSE)
 }
 \arguments{
 \item{est}{the estimate of variable importance.}
 
-\item{update}{the influence curve-based update.}
+\item{eif}{the estimated efficient influence curve.}
 
 \item{denom}{a list of point estimate and influence curve for the denominator (if any) to make the measure of predictiveness interpretable.}
 

@@ -86,23 +86,23 @@ within the \code{vim} object. This results in a list containing:
 \examples{
 library(SuperLearner)
 library(ranger)
-## generate the data
-## generate X
+# generate the data
+# generate X
 p <- 2
 n <- 100
 x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
 
-## apply the function to the x's
+# apply the function to the x's
 f <- function(x) 0.5 + 0.3*x[1] + 0.2*x[2]
 smooth <- apply(x, 1, function(z) f(z))
 
-## generate Y ~ Normal (smooth, 1)
+# generate Y ~ Normal (smooth, 1)
 y <- matrix(rbinom(n, size = 1, prob = smooth))
 
-## set up a library for SuperLearner
+# set up a library for SuperLearner
 learners <- "SL.ranger"
 
-## estimate (with a small number of folds, for illustration only)
+# estimate (with a small number of folds, for illustration only)
 est <- vimp_auc(y, x, indx = 2,
            alpha = 0.05, run_regression = TRUE,
            SL.library = learners, V = 2, cvControl = list(V = 2))

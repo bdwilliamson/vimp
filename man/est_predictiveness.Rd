@@ -39,7 +39,7 @@ est_predictiveness(
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }
 \value{
-The estimated measure of predictiveness.
+A list, with: the estimated predictiveness; the estimated efficient influence function; and the predictions of the EIF based on inverse probability of censoring.
 }
 \description{
 Compute nonparametric estimates of the chosen measure of predictiveness.
