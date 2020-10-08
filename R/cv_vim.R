@@ -202,7 +202,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     }
     # calculate the estimators, EIFs
     if (full_type == "anova" || full_type == "regression") {
-        est_lst <- sapply(1:V, function(v) measure_anova(fhat_ful[[v]], fhat_red[[v]], Y[outer_folds == 1, , drop = FALSE][inner_folds_1 == v], x[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE], C[outer_folds == 1][inner_folds_1 == v], ipc_weights[outer_folds == 1][inner_folds_1 == v], ipc_fit_type, ipc_eif_preds[outer_folds == 1][inner_folds_1 == v], na.rm = na.rm, ...), simplify = FALSE)
+        est_lst <- sapply(1:V, function(v) measure_anova(fhat_ful[[v]], fhat_red[[v]], Y[outer_folds == 1, , drop = FALSE][inner_folds_1 == v], x[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE], C[outer_folds == 1][inner_folds_1 == v], ipc_weights[outer_folds == 1][inner_folds_1 == v], ipc_fit_type, ipc_eif_preds[outer_folds == 1][inner_folds_1 == v], na.rm = na.rm, SL.library = SL.library,  ...), simplify = FALSE)
         point_ests <- unlist(lapply(est_lst, function(x) x$point_est))
         naives <- unlist(lapply(est_lst, function(x) x$naive))
         est <- mean(point_ests)
@@ -219,8 +219,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         se_full <- rep(NA, V)
         se_redu <- rep(NA, V)
     } else {
-        est_lst_full <- est_predictiveness_cv(fitted_values = fhat_ful, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, type = full_type, x = X[outer_folds == 1, , drop = FALSE], C = C[outer_folds == 1], ipc_weights = ipc_weights[outer_folds == 1], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[outer_folds == 1], na.rm = na.rm, ...)
-        est_lst_redu <- est_predictiveness_cv(fitted_values = fhat_red, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, type = full_type, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[outer_folds == 2], na.rm = na.rm, ...)
+        est_lst_full <- est_predictiveness_cv(fitted_values = fhat_ful, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, type = full_type, x = X[outer_folds == 1, , drop = FALSE], C = C[outer_folds == 1], ipc_weights = ipc_weights[outer_folds == 1], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[outer_folds == 1], na.rm = na.rm, SL.library = SL.library, ...)
+        est_lst_redu <- est_predictiveness_cv(fitted_values = fhat_red, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, type = full_type, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[outer_folds == 2], na.rm = na.rm, SL.library = SL.library, ...)
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est
         all_eifs_full <- est_lst_full$all_eifs

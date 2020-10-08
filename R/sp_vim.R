@@ -113,7 +113,7 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     for (v in 1:V) {
         preds_none[[v]] <- rep(mean(Y[outer_folds == 2, ][inner_folds_2 == v]), sum(inner_folds_2 == v))
     }
-    v_none_lst <- est_predictiveness_cv(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", type = full_type, na.rm = na.rm)
+    v_none_lst <- est_predictiveness_cv(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", type = full_type, na.rm = na.rm, SL.library = SL.library, ...)
     v_none <- v_none_lst$point_est
     ic_none <- v_none_lst$eif
 
@@ -129,7 +129,7 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     if (verbose) {
         close(progress_bar)
     }
-    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = l$folds, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm))
+    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = l$folds, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...))
     v_lst <- lapply(v_full_lst, function(l) l$point_est)
     ic_lst <- lapply(v_full_lst, function(l) l$eif)
     v <- matrix(c(v_none, unlist(v_lst)))
@@ -174,7 +174,7 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     for (v in 1:V) {
         preds_none_0[[v]] <- rep(mean(Y[outer_folds == 1, ][inner_folds_1 == v]), sum(inner_folds_1 == v))
     }
-    v_none_0_lst <- est_predictiveness_cv(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, C = C[outer_folds == 1], ipc_weights = ipc_weights[outer_folds == 1], type = full_type, ipc_fit_type = "SL", na.rm = na.rm)
+    v_none_0_lst <- est_predictiveness_cv(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, C = C[outer_folds == 1], ipc_weights = ipc_weights[outer_folds == 1], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
     v_none_0 <- v_none_0_lst$point_est
     ic_none_0 <- v_none_0_lst$eif
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) / sqrt(sum(outer_folds == 1))
