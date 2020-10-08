@@ -8,7 +8,6 @@
 #' @return an object of class \code{vim} containing the (weighted) average of the individual importance estimates, as well as the appropriate standard error and confidence interval.
 #' This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{average_vim()}}
 #'  \item{s}{ - a list of the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
 #'  \item{full_fit}{ - a list of the fitted values of the chosen method fit to the full data}
@@ -68,7 +67,7 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	# extract the estimates and SEs from each element of the list
   	# also get the sample sizes
   	ests <- do.call(c, lapply(L, function(z) z$est))
-   naives <- do.call(c, lapply(L, function(z) z$naive))
+    naives <- do.call(c, lapply(L, function(z) z$naive))
   	ses <- do.call(c, lapply(L, function(z) z$se))
   	tests <- do.call(c, lapply(L, function(z) z$test))
   	p_values <- do.call(c, lapply(L, function(z) z$p_value))
@@ -76,46 +75,34 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	predictivenesses_reduced <- do.call(c, lapply(L, function(z) z$predictiveness_reduced))
   	predictiveness_cis_full <- do.call(rbind, lapply(L, function(z) z$predictiveness_ci_full))
   	predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$predictiveness_ci_reduced))
-  	hyp_test_predictivenesses_full <- do.call(c, lapply(L, function(z) z$hyp_test_predictiveness_full))
-  	hyp_test_predictivenesses_reduced <- do.call(c, lapply(L, function(z) z$hyp_test_predictiveness_red))
-  	hyp_test_predictiveness_cis_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_full))
-  	hyp_test_predictiveness_cis_reduced <- do.call(rbind, lapply(L, function(z) z$hyp_test_predictiveness_ci_reduced))
-  	hyp_test_ses_full <- do.call(rbind, lapply(L, function(z) z$hyp_test_se_full))
-  	hyp_test_ses_redu <- do.call(rbind, lapply(L, function(z) z$hyp_test_se_reduced))
   	test_statistics <- do.call(rbind, lapply(L, function(z) z$test_statistic))
   	delta <- min(do.call(c, lapply(L, function(z) z$delta)))
   	scale <- unique(unlist(lapply(L, function(z) z$scale)))
 
   	names(ests) <- "est"
   	names(ses) <- "se"
-   names(naives) <- "naive"
+    names(naives) <- "naive"
 
   	# create the (weighted) average
   	est_avg <- sum(weights*ests)
   	predictiveness_full <- sum(weights*predictivenesses_full)
   	predictiveness_reduced <- sum(weights*predictivenesses_reduced)
-  	hyp_test_predictiveness_full <- sum(weights*hyp_test_predictivenesses_full)
-  	hyp_test_predictiveness_redu <- sum(weights*hyp_test_predictivenesses_reduced)
 
   	# combine the variances correctly
   	# will need to use the covariance, if not independent
   	se_avg <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(ses^2))
-  	hyp_test_se_full <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(hyp_test_ses_full^2))
-  	hyp_test_se_redu <- sqrt(matrix(weights^2, nrow = 1)%*%as.matrix(hyp_test_ses_redu^2))
 
   	# create a CI
   	alpha <- min(unlist(lapply(L, function(z) z$alpha)))
   	ci_avg <- vimp_ci(est_avg, se_avg, level = 1 - alpha, scale = scale[1])
 
   	# hypothesis test:
-  	# test_statistic <- (hyp_test_predictiveness_full - hyp_test_predictiveness_redu - delta)/sqrt(hyp_test_se_full^2 + hyp_test_se_redu^2)
   	test_statistic <- sum(weights * test_statistics)
   	p_value <- 1 - pnorm(test_statistic)
   	hyp_test <- p_value < alpha
 
   	# now get lists of the remaining components
-  	call <- match.call()
-  	updates <- lapply(L, function(z) z$update)
+  	eifs <- lapply(L, function(z) z$eif)
   	s_lst <- lapply(L, function(z) z$s)
   	s <- paste0("avg_", paste(unlist(s_lst), collapse = "_"))
   	SL.library <- lapply(L, function(z) z$SL.library)
@@ -125,22 +112,12 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
   	red_mod <- lapply(L, function(z) z$red_mod)
 
   	# combine into a tibble
-  	mat <- tibble::tibble(s = s, est = est_avg, se = se_avg, cil = ci_avg[, 1], ciu = ci_avg[, 2],
-  	                      test = hyp_test, p_value = p_value) %>%
+  	mat <- tibble::tibble(s = s, est = est_avg, se = se_avg, cil = ci_avg[, 1], ciu = ci_avg[, 2], test = hyp_test, p_value = p_value) %>%
   	   dplyr::arrange(dplyr::desc(!! rlang::sym("est")))
 
-  	# create some of the necessary output
-  	if (is.null(hyp_test_predictiveness_cis_full)) {
-  	   ret_hyp_test_predictiveness_cis_full <- ret_hyp_test_predictiveness_cis_reduced <- NULL
-  	} else {
-  	   ret_hyp_test_predictiveness_cis_full <- colSums(weights*hyp_test_predictiveness_cis_full)
-  	   ret_hyp_test_predictiveness_cis_reduced <- colSums(weights*hyp_test_predictiveness_cis_reduced)
-  	}
-
   	# create output list
-    output <- list(call = call,
-              s = s, SL.library = SL.library, full_fit = full_fit,
-              red_fit = red_fit, est = mat$est, naive = naives, update = updates,
+    output <- list(s = s, SL.library = SL.library, full_fit = full_fit,
+              red_fit = red_fit, est = mat$est, naive = naives, eif = eifs,
               se = mat$se, ci = cbind(mat$cil, mat$ciu),
               predictiveness_full = predictiveness_full,
               predictiveness_reduced = predictiveness_reduced,
@@ -148,12 +125,6 @@ average_vim <- function(..., weights = rep(1/length(list(...)), length(list(...)
               predictiveness_ci_reduced = sum(weights*predictiveness_cis_reduced),
               test = hyp_test,
               p_value = p_value,
-              hyp_test_predictiveness_full = hyp_test_predictiveness_full,
-              hyp_test_predictiveness_reduced = hyp_test_predictiveness_redu,
-              hyp_test_predictiveness_ci_full = ret_hyp_test_predictiveness_cis_full,
-              hyp_test_predictiveness_ci_reduced = ret_hyp_test_predictiveness_cis_reduced,
-              hyp_test_se_full = hyp_test_se_full,
-              hyp_test_se_reduced = hyp_test_se_redu,
               mat = mat,
               full_mod = full_mod, red_mod = red_mod,
               alpha = alpha,

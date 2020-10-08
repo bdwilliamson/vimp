@@ -130,7 +130,7 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, stratified = FALSE, ipc_weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, ...) {
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, stratified = FALSE, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)),...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -221,8 +221,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         eif_full <- rowMeans(all_eifs_full)
         all_eifs_redu <- do.call(cbind, est_lst_redu$all_eifs)
         eif_redu <- rowMeans(all_eifs_redu)
-        se_full <- vimp_se(est_full, eif_full, scale = scale, na.rm = na.rm)
-        se_redu <- vimp_se(est_redu, eif_redu, scale = scale, na.rm = na.rm)
+        se_full <- vimp_se(predictiveness_full, eif_full, scale = scale, na.rm = na.rm)
+        se_redu <- vimp_se(predictiveness_redu, eif_redu, scale = scale, na.rm = na.rm)
         est <- est_lst_full$point_est - est_lst_redu$point_est
         naive <- NA
         len_full <- length(eif_full)
@@ -233,6 +233,11 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
             tmp_eifs_full <- rbind(all_eifs_full, matrix(0, nrow = max_length - len_full, ncol = V))
             tmp_eif_redu <- c(eif_redu, rep(0, max_length - len_redu))
             tmp_eifs_redu <- rbind(all_eifs_redu, matrix(0, nrow = max_length - len_redu, ncol = V))
+        } else {
+            tmp_eif_full <- eif_full
+            tmp_eif_redu <- eif_redu
+            tmp_eifs_full <- all_eifs_full
+            tmp_eifs_redu <- all_eifs_redu
         }
         eif <- tmp_eif_full - tmp_eif_redu
         all_eifs <- tmp_eifs_full - tmp_eifs_redu
@@ -248,14 +253,14 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     # calculate the confidence interval
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(est_full, se = se_full, scale = scale, level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(est_redu, se = se_redu, scale = scale, level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = se_full, scale = scale, level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = se_redu, scale = scale, level = 1 - alpha)
 
     # perform a hypothesis test against the null of zero importance
     if (full_type == "anova" || full_type == "regression") {
         hyp_test <- list(test = NA, p_value = NA, test_statistics = NA)
     } else {
-        hyp_test <- vimp_hypothesis_test(predictiveness_full = est_full, predictiveness_reduced = est_redu, se_full = se_full, se_reduced = se_redu, delta = delta, alpha = alpha)
+        hyp_test <- vimp_hypothesis_test(predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu, se_full = se_full, se_reduced = se_redu, delta = delta, alpha = alpha)
     }
 
     # create the output and return it (as a tibble)
@@ -268,9 +273,9 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
                  naive = naive,
                  eif = eif,
                  se = se, ci = ci,
-                 all_eifs = all_eifs
-                 predictiveness_full = est_full,
-                 predictiveness_reduced = est_redu,
+                 all_eifs = all_eifs,
+                 predictiveness_full = predictiveness_full,
+                 predictiveness_reduced = predictiveness_redu,
                  predictiveness_ci_full = predictiveness_ci_full,
                  predictiveness_ci_reduced = predictiveness_ci_redu,
                  test = hyp_test$test,

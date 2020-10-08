@@ -29,7 +29,7 @@ measure_deviance <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), 
         obs_ce <- measure_cross_entropy(fitted_values[C == 1], y[C == 1], na.rm = na.rm)
         obs_pi_0 <- mean(y[C == 1], na.rm = na.rm)
         obs_denom <- measure_cross_entropy(fitted_values = rep(obs_pi_0, sum(C == 1)), y[C == 1], na.rm = na.rm)
-        obs_grad <- as.vector(matrix(c(1 / obs_denom$point_est, obs_ce$point_est / (obs_denom$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_ce$ic, obs_denom$ic)))
+        obs_grad <- as.vector(matrix(c(1 / obs_denom$point_est, obs_ce$point_est / (obs_denom$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_ce$eif, obs_denom$eif)))
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
           df <- data.frame(y = y[C == 1], x[C == 1, , drop = FALSE])
@@ -43,7 +43,7 @@ measure_deviance <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), 
         pi_0 <- mean(y, na.rm = na.rm)
         denom <- measure_cross_entropy(fitted_values = rep(pi_0, length(y)), y, na.rm = na.rm)
         est <- 1 - cross_entropy_meas$point_est / denom$point_est
-        grad <- as.vector(matrix(c(1/denom_point_est, -cross_entropy_meas$point_est/(denom_point_est^2)), nrow = 1) %*% t(cbind(cross_entropy_meas$ic, denom$ic)))
+        grad <- as.vector(matrix(c(1/denom_point_est, -cross_entropy_meas$point_est/(denom_point_est^2)), nrow = 1) %*% t(cbind(cross_entropy_meas$eif, denom$eif)))
     }
     return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }

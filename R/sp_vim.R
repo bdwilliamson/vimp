@@ -36,7 +36,6 @@
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{cv_vim}}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 #' \item{v}{- the estimated predictiveness measure for each sampled subset}
 #'  \item{preds_lst}{ - the predicted values from the chosen method for each sampled subset}
@@ -82,11 +81,11 @@
 #' @importFrom stats pnorm gaussian
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
-sp_vim <- function(Y, X, V = 5, ipc_weights = rep(1, length(Y)), type = "r_squared",
+sp_vim <- function(Y, X, V = 5, type = "r_squared",
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
-                   stratified = FALSE, verbose = FALSE, ...) {
+                   stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ...) {
     # if the data is missing, stop and throw an error
     if (missing(Y)) stop("You must enter an outcome, Y.")
     if (missing(X)) stop("You must enter a matrix of predictors, X.")
@@ -130,7 +129,7 @@ sp_vim <- function(Y, X, V = 5, ipc_weights = rep(1, length(Y)), type = "r_squar
     if (verbose) {
         close(progress_bar)
     }
-    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = l$folds, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2] ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm))
+    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = l$folds, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm))
     v_lst <- lapply(v_full_lst, function(l) l$point_est)
     ic_lst <- lapply(v_full_lst, function(l) l$eif)
     v <- matrix(c(v_none, unlist(v_lst)))

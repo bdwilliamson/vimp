@@ -34,5 +34,5 @@ est_predictiveness <- function(fitted_values, y, type = "r_squared", x = NULL, C
         est_lst <- list(point_est = NA, ic = NA, ipc_eif_preds = rep(NA, length(y)))
     }
     # return it
-    return(list(point_est = point_est$point_est, eif = est_lst$eif, ipc_eif_preds = point_est$ipc_eif_preds))
+    return(list(point_est = est_lst$point_est, eif = est_lst$eif, ipc_eif_preds = est_lst$ipc_eif_preds))
 }

@@ -101,7 +101,7 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, ipc_weights = rep(1, length(Y)), type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, stratified = FALSE, ...) {
+vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, stratified = FALSE, C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)), ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -175,13 +175,13 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, ipc_weights = rep(1, lengt
         se_redu <- NA
     } else {
         est_lst_full <- est_predictiveness(fitted_values = fhat_ful, y = Y[folds == 1, , drop = FALSE], type = full_type, x = X[folds == 1, , drop = FALSE], C = C[folds == 1], ipc_weights = ipc_weights[folds == 1], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds == 1], na.rm = na.rm, ...)
-        est_lst_redu <- est_predictiveness(fitted_values = fhat_redu, y = Y[folds == 2, , drop = FALSE], type = full_type, x = X[folds == 2, , drop = FALSE], C = C[folds == 2], ipc_weights = ipc_weights[folds == 2], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds == 2], na.rm = na.rm, ...)
+        est_lst_redu <- est_predictiveness(fitted_values = fhat_red, y = Y[folds == 2, , drop = FALSE], type = full_type, x = X[folds == 2, , drop = FALSE], C = C[folds == 2], ipc_weights = ipc_weights[folds == 2], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds == 2], na.rm = na.rm, ...)
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est
         eif_full <- est_lst_full$eif
-        se_full <- vimp_se(est_full, eif_full, scale = scale, na.rm = na.rm)
+        se_full <- vimp_se(predictiveness_full, eif_full, scale = scale, na.rm = na.rm)
         eif_redu <- est_lst_redu$eif
-        se_redu <- vimp_se(est_redu, eif_redu, scale = scale, na.rm = na.rm)
+        se_redu <- vimp_se(predictiveness_redu, eif_redu, scale = scale, na.rm = na.rm)
         est <- est_lst_full$point_est - est_lst_redu$point_est
         naive <- NA
         len_full <- length(eif_full)
@@ -190,6 +190,9 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, ipc_weights = rep(1, lengt
             max_length <- max(len_full, len_redu)
             tmp_eif_full <- c(eif_full, rep(0, max_length - len_full))
             tmp_eif_redu <- c(eif_redu, rep(0, max_length - len_redu))
+        } else {
+            tmp_eif_full <- eif_full
+            tmp_eif_redu <- eif_redu
         }
         eif <- tmp_eif_full - tmp_eif_redu
     }
@@ -204,14 +207,14 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, ipc_weights = rep(1, lengt
 
     # compute the confidence intervals
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(est_full, se = se_full, scale = scale, level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(est_redu, se = se_redu, scale = scale, level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = se_full, scale = scale, level = 1 - alpha)
+    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = se_redu, scale = scale, level = 1 - alpha)
 
     # perform a hypothesis test against the null of zero importance
     if (full_type == "anova" || full_type == "regression") {
         hyp_test <- list(test = NA, p_value = NA, test_statistics = NA)
     } else {
-        hyp_test <- vimp_hypothesis_test(predictiveness_full = est_full, predictiveness_reduced = est_redu, se_full = se_full, se_reduced = se_redu, delta = delta, alpha = alpha)
+        hyp_test <- vimp_hypothesis_test(predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu, se_full = se_full, se_reduced = se_redu, delta = delta, alpha = alpha)
     }
     # create the output and return it (as a tibble)
     chr_indx <- paste(as.character(indx), collapse = ",")
@@ -223,8 +226,8 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, ipc_weights = rep(1, lengt
                  naive = naive,
                  eif = eif,
                  se = se, ci = ci,
-                 predictiveness_full = est_full,
-                 predictiveness_reduced = est_redu,
+                 predictiveness_full = predictiveness_full,
+                 predictiveness_reduced = predictiveness_redu,
                  predictiveness_ci_full = predictiveness_ci_full,
                  predictiveness_ci_reduced = predictiveness_ci_redu,
                  test = hyp_test$test,

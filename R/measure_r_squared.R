@@ -20,7 +20,7 @@ measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)),
         obs_mse <- measure_mse(fitted_values[C == 1], y[C == 1], na.rm = na.rm)
         obs_mn_y <- mean(y[C == 1], na.rm = na.rm)
         obs_var <- measure_mse(fitted_values = rep(obs_mn_y, sum(C == 1)), y[C == 1], na.rm = na.rm)
-        obs_grad <- as.vector(matrix(c(1 / obs_var$point_est, -obs_mse$point_est / (obs_var$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_mse$ic, obs_var$ic)))
+        obs_grad <- as.vector(matrix(c(1 / obs_var$point_est, -obs_mse$point_est / (obs_var$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_mse$eif, obs_var$eif)))
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             df <- data.frame(y = y[C == 1], x[C == 1, , drop = FALSE])
@@ -38,7 +38,7 @@ measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)),
         var <- measure_mse(fitted_values = rep(mn_y, length(y)), y, na.rm = na.rm)
         est <- 1 - mse$point_est / var$point_est
         # influence curve
-        grad <- (-1) * as.vector(matrix(c(1/var$point_est, -mse$point_est/(var$point_est^2)), nrow = 1) %*% t(cbind(mse$ic, var$ic)))
+        grad <- (-1) * as.vector(matrix(c(1/var$point_est, -mse$point_est/(var$point_est^2)), nrow = 1) %*% t(cbind(mse$eif, var$eif)))
     }
     return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }
