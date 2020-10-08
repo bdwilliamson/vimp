@@ -70,5 +70,5 @@
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package, and \code{\link[ROCR]{performance}} for specific usage of the \code{ROCR} package.
 #' @export
 vimp_auc <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = TRUE, scale = "identity", C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)), ...) {
-  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "auc", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, ...)
+  cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type = "auc", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, ...)
 }

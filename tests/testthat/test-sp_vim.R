@@ -1,8 +1,8 @@
 # load required functions and packages
 library("testthat")
 library("SuperLearner")
-library("vimp")
 library("xgboost")
+library("vimp")
 
 # generate the data
 set.seed(4747)
@@ -69,7 +69,7 @@ test_that("Estimating SPVIMs with verbose = TRUE works", {
                               SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
                               gamma = .1, alpha = 0.05, delta = 0,
                               cvControl = list(V = V), env = environment(), verbose = TRUE),
-                 "Fitting regression",
+                 "Fitting learners",
                  all = FALSE)
   # check that the estimate is approximately correct
   expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)

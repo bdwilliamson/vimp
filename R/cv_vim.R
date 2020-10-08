@@ -203,9 +203,15 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     # calculate the estimators, EIFs
     if (full_type == "anova" || full_type == "regression") {
         est_lst <- sapply(1:V, function(v) measure_anova(fhat_ful[[v]], fhat_red[[v]], Y[outer_folds == 1, , drop = FALSE][inner_folds_1 == v], x[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE], C[outer_folds == 1][inner_folds_1 == v], ipc_weights[outer_folds == 1][inner_folds_1 == v], ipc_fit_type, ipc_eif_preds[outer_folds == 1][inner_folds_1 == v], na.rm = na.rm, ...), simplify = FALSE)
-        point_ests <- unlist(lapply(est_lst, function(x) x$est))
+        point_ests <- unlist(lapply(est_lst, function(x) x$point_est))
         naives <- unlist(lapply(est_lst, function(x) x$naive))
-        eifs <- lapply(est_lst, function(x) x$eif)
+        est <- mean(point_ests)
+        naive <- mean(naives)
+        all_eifs <- lapply(est_lst, function(x) x$eif)
+        eif <- vector("numeric", nrow(Y))
+        for (v in 1:V) {
+            eif[inner_folds_1 == v] <- all_eifs[[v]]
+        }
         predictiveness_full <- rep(NA, V)
         predictiveness_redu <- rep(NA, V)
         eif_full <- rep(list(rep(NA, sum(outer_folds == 1))), V)

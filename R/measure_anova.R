@@ -43,9 +43,10 @@ measure_anova <- function(full, reduced, y, x = NULL, C = rep(1, length(y)), ipc
     } else {
         num <- mean((full - reduced) ^ 2, na.rm = na.rm)
         denom <- mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
-        num_eif <- 2 * (y - full) * (full - reduced) + (full - reduced) ^ 2 - obs_num
-        denom_eif <- (y - mean(y, na.rm = TRUE)) ^ 2 - obs_denom
+        num_eif <- 2 * (y - full) * (full - reduced) + (full - reduced) ^ 2 - num
+        denom_eif <- (y - mean(y, na.rm = TRUE)) ^ 2 - denom
         grad <- num_eif / denom - num / (denom ^ 2) * denom_eif
+        est <- num / denom + mean(grad)
     }
     return(list(point_est = est, eif = grad, naive = num / denom, ipc_eif_preds = ipc_eif_preds))
 }

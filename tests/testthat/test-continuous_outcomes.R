@@ -24,7 +24,7 @@ test_that("ANOVA-based R^2 with old function name works", {
   expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, SL.library = learners, cvControl = list(V = V), indx = 1, V = V, env = environment()))
 })
 test_that("ANOVA-based R^2 with new function name works", {
-  est <- vimp_anova(Y = y, X = x, run_regression = TRUE, SL.library = learners, cvControl = list(V = V), indx = 2, V = V, env = environment())
+  expect_warning(est <- vimp_anova(Y = y, X = x, run_regression = TRUE, SL.library = learners, cvControl = list(V = V), indx = 2, V = V, env = environment()))
   # check that the estimate is nearly correct
   expect_equal(est$est, (500/729)/(1 + 2497/7875 + 500/729), tolerance = 0.4, scale = 1)
 })

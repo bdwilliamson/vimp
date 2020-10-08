@@ -30,7 +30,7 @@ mu_0 <- matrix(c(0, 0), nrow = 1)
 mu_1 <- matrix(c(1.5, 2), nrow = 1)
 Sigma <- diag(1, nrow = 2)
 t_acc <- c(0.05110135, 0.1158337)
-t_dev <- c(0.14293485, 0.3001422) / 2
+t_dev <- c(0.14293485, 0.3001422)
 t_auc <- c(0.04011305, 0.1058621)
 n <- 10000
 set.seed(4747)
@@ -82,14 +82,12 @@ test_that("Deviance-based variable importance works", {
 })
 
 test_that("Measures of predictiveness work", {
- full_auc <- predictiveness_point_est(full_fitted, y[folds == 1], type = "auc")
+ full_auc <- est_predictiveness(full_fitted, y[folds == 1], type = "auc")$point_est
  expect_equal(full_auc, 0.96, tolerance = 0.1, scale = 1)
- weighted_auc <- predictiveness_point_est(full_fitted, y[folds == 1], weights = 0.5 * y[folds == 1] + (1 - y[folds == 1]), type = "auc")
- expect_equal(weighted_auc, 0.96, tolerance = 0.1, scale = 1)
- full_acc <- predictiveness_point_est(full_fitted, y[folds == 1], type = "accuracy")
+ full_acc <- est_predictiveness(full_fitted, y[folds == 1], type = "accuracy")$point_est
  expect_equal(full_acc, 0.9, tolerance = 0.1, scale = 1)
- full_dev <- predictiveness_point_est(full_fitted, y[folds == 1], type = "deviance")
- expect_equal(full_dev, -0.34, tolerance = 0.1, scale = 1)
- full_ce <- predictiveness_point_est(full_fitted, y[folds == 1], type = "cross_entropy")
- expect_equal(full_ce, -0.5, tolerance = 0.1, scale = 1)
+ full_dev <- est_predictiveness(full_fitted, y[folds == 1], type = "deviance")$point_est
+ expect_equal(full_dev, 0.63, tolerance = 0.1, scale = 1)
+ full_ce <- est_predictiveness(full_fitted, y[folds == 1], type = "cross_entropy")$point_est
+ expect_equal(full_ce, -0.24, tolerance = 0.1, scale = 1)
 })
