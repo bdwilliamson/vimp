@@ -11,7 +11,6 @@ vimp_regression(
   f2 = NULL,
   indx = 1,
   V = 10,
-  weights = rep(1, length(Y)),
   run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
   alpha = 0.05,
@@ -19,6 +18,10 @@ vimp_regression(
   na.rm = FALSE,
   folds,
   stratified = FALSE,
+  C = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)),
+  ipc_fit_type = "external",
+  ipc_eif_preds = rep(1, length(Y)),
   ...
 )
 }
@@ -35,8 +38,6 @@ vimp_regression(
 
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
-\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
-
 \item{run_regression}{if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
@@ -50,6 +51,14 @@ vimp_regression(
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
+
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
+
+\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
+
+\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -66,7 +75,6 @@ of the confidence intervals.
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{call}{ - the call to \code{vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
  \item{full_fit}{ - the fitted values of the chosen method fit to the full data}

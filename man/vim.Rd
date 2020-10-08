@@ -10,7 +10,6 @@ vim(
   f1 = NULL,
   f2 = NULL,
   indx = 1,
-  ipc_weights = rep(1, length(Y)),
   type = "r_squared",
   run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
@@ -20,6 +19,10 @@ vim(
   na.rm = FALSE,
   folds = NULL,
   stratified = FALSE,
+  C = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)),
+  ipc_fit_type = "external",
+  ipc_eif_preds = rep(1, length(Y)),
   ...
 )
 }
@@ -33,8 +36,6 @@ vim(
 \item{f2}{the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
-
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
 \item{type}{the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, \code{deviance}, and \code{anova}.}
 
@@ -54,13 +55,15 @@ vim(
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
-\item{...}{other arguments to the estimation tool, see "See also".}
-
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
 \item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
 
 \item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
+
+\item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
 An object of classes \code{vim} and the type of risk-based measure. See Details for more information.

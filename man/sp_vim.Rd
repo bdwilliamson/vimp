@@ -8,7 +8,6 @@ sp_vim(
   Y,
   X,
   V = 5,
-  ipc_weights = rep(1, length(Y)),
   type = "r_squared",
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
   univariate_SL.library = NULL,
@@ -18,6 +17,8 @@ sp_vim(
   na.rm = FALSE,
   stratified = FALSE,
   verbose = FALSE,
+  C = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)),
   ...
 )
 }
@@ -27,8 +28,6 @@ sp_vim(
 \item{X}{the covariates.}
 
 \item{V}{the number of folds for cross-validation, defaults to 10.}
-
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
 \item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}).}
 
@@ -48,9 +47,11 @@ sp_vim(
 
 \item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})}
 
-\item{...}{other arguments to the estimation tool, see "See also".}
-
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
+
+\item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
 An object of class \code{vim}. See Details for more information.
@@ -75,7 +76,6 @@ The function works by estimating
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{call}{ - the call to \code{cv_vim}}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 \item{v}{- the estimated predictiveness measure for each sampled subset}
  \item{preds_lst}{ - the predicted values from the chosen method for each sampled subset}

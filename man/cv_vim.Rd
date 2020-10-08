@@ -13,7 +13,6 @@ cv_vim(
   V = length(unique(folds)),
   folds = NULL,
   stratified = FALSE,
-  ipc_weights = rep(1, length(Y)),
   type = "r_squared",
   run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
@@ -21,6 +20,10 @@ cv_vim(
   delta = 0,
   scale = "identity",
   na.rm = FALSE,
+  C = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)),
+  ipc_fit_type = "external",
+  ipc_eif_preds = rep(1, length(Y)),
   ...
 )
 }
@@ -41,8 +44,6 @@ cv_vim(
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
-
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
 
 \item{run_regression}{if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
@@ -57,13 +58,15 @@ cv_vim(
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
-\item{...}{other arguments to the estimation tool, see "See also".}
-
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
 \item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
 
 \item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
+
+\item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
 An object of class \code{vim}. See Details for more information.
