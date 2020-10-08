@@ -45,5 +45,5 @@ measure_deviance <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), 
         est <- 1 - cross_entropy_meas$point_est / denom$point_est
         grad <- as.vector(matrix(c(1/denom_point_est, -cross_entropy_meas$point_est/(denom_point_est^2)), nrow = 1) %*% t(cbind(cross_entropy_meas$ic, denom$ic)))
     }
-    return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
+    return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }

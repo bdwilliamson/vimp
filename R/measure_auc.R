@@ -62,5 +62,5 @@ measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_w
         # gradient
         grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1)*est)
     }
-    return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
+    return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }

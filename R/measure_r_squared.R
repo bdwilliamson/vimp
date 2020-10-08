@@ -40,5 +40,5 @@ measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)),
         # influence curve
         grad <- (-1) * as.vector(matrix(c(1/var$point_est, -mse$point_est/(var$point_est^2)), nrow = 1) %*% t(cbind(mse$ic, var$ic)))
     }
-    return(list(point_est = est, ic = grad, ipc_eif_preds = ipc_eif_preds))
+    return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }

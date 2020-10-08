@@ -47,5 +47,5 @@ measure_cross_entropy <- function(fitted_values, y, x = NULL, C = rep(1, length(
         # influence curve
         grad <- rowSums(y_mult*log(fitted_mat), na.rm = na.rm) - cross_entropy
     }
-    return(list(point_est = cross_entropy, ic = grad, ipc_eif_preds = ipc_eif_preds))
+    return(list(point_est = cross_entropy, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }

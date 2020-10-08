@@ -33,5 +33,5 @@ measure_mse <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), ipc_w
         # influence curves
         grad <- (y - fitted_values)^2 - mse
     }
-    return(list(point_est = mse, ic = grad, ipc_eif_preds = ipc_eif_preds))
+    return(list(point_est = mse, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }

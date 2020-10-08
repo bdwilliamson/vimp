@@ -3,6 +3,7 @@
 #'
 #' @param full fitted values from a regression function of the outcome on the full set of covariates.
 #' @param reduced fitted values from a regression on the reduced set of covariates.
+#' @param y the outcome.
 #' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
@@ -46,5 +47,5 @@ measure_anova <- function(full, reduced, y, x = NULL, C = rep(1, length(y)), ipc
         denom_eif <- (y - mean(y, na.rm = TRUE)) ^ 2 - obs_denom
         grad <- num_eif / denom - num / (denom ^ 2) * denom_eif
     }
-    return(list(point_est = est, ic = grad, naive = num / denom, ipc_eif_preds = ipc_eif_preds))
+    return(list(point_est = est, eif = grad, naive = num / denom, ipc_eif_preds = ipc_eif_preds))
 }
