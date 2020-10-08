@@ -13,7 +13,7 @@ cv_vim(
   V = length(unique(folds)),
   folds = NULL,
   stratified = FALSE,
-  weights = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)),
   type = "r_squared",
   run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
@@ -41,8 +41,6 @@ cv_vim(
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
-\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
-
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
 
 \item{run_regression}{if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
@@ -58,6 +56,8 @@ cv_vim(
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
+
+\item{ipc_ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 }
 \value{
 An object of class \code{vim}. See Details for more information.
@@ -93,7 +93,7 @@ within the \code{vim} object. This results in a list containing:
  \item{est}{ - the estimated variable importance}
  \item{naive}{ - the naive estimator of variable importance}
  \item{naives}{ - the naive estimator on each fold}
- \item{updates}{ - the influence curve-based update for each fold}
+ \item{ics}{ - the estimated influence curve for each fold}
  \item{se}{ - the standard error for the estimated variable importance}
  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
@@ -101,7 +101,7 @@ within the \code{vim} object. This results in a list containing:
  \item{alpha}{ - the level, for confidence interval calculation}
  \item{folds}{ - the folds used for hypothesis testing and cross-validation}
  \item{y}{ - the outcome}
- \item{weights}{ - the weights}
+ \item{ipc_weights}{ - the weights}
  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }

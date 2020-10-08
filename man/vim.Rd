@@ -10,7 +10,7 @@ vim(
   f1 = NULL,
   f2 = NULL,
   indx = 1,
-  weights = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)),
   type = "r_squared",
   run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
@@ -34,7 +34,7 @@ vim(
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
-\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
 \item{type}{the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, and \code{anova}.}
 
@@ -83,7 +83,7 @@ within the \code{vim} object. This results in a list containing:
  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
  \item{est}{ - the estimated variable importance}
  \item{naive}{ - the naive estimator of variable importance}
- \item{update}{ - the influence curve-based update}
+ \item{ic}{ - the estimated influence curve}
  \item{se}{ - the standard error for the estimated variable importance}
  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
@@ -93,7 +93,7 @@ within the \code{vim} object. This results in a list containing:
  \item{alpha}{ - the level, for confidence interval calculation}
  \item{folds}{ - the folds used for hypothesis testing}
  \item{y}{ - the outcome}
- \item{weights}{ - the weights}
+ \item{ipc_weights}{ - the weights}
  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }

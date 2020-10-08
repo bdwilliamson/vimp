@@ -8,7 +8,7 @@ sp_vim(
   Y,
   X,
   V = 5,
-  weights = rep(1, length(Y)),
+  ipc_weights = rep(1, length(Y)),
   type = "r_squared",
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
   univariate_SL.library = NULL,
@@ -28,7 +28,7 @@ sp_vim(
 
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
-\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings).}
 
 \item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}).}
 
@@ -87,7 +87,7 @@ within the \code{vim} object. This results in a list containing:
  \item{alpha}{ - the level, for confidence interval calculation}
  \item{delta}{- the \code{delta} value used for hypothesis testing}
  \item{y}{ - the outcome}
- \item{weights}{ - the weights}
+ \item{ipc_weights}{ - the weights}
  \item{mat}{- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values}
 }
 }
