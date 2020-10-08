@@ -130,7 +130,7 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, stratified = FALSE, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)),...) {
+cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NULL, stratified = FALSE, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)), ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -217,10 +217,10 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         est_lst_redu <- est_predictiveness_cv(fitted_values = fhat_red, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, type = full_type, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[outer_folds == 2], na.rm = na.rm, ...)
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est
-        all_eifs_full <- do.call(cbind, est_lst_full$all_eifs)
-        eif_full <- rowMeans(all_eifs_full)
-        all_eifs_redu <- do.call(cbind, est_lst_redu$all_eifs)
-        eif_redu <- rowMeans(all_eifs_redu)
+        all_eifs_full <- est_lst_full$all_eifs
+        eif_full <- est_lst_full$eif
+        all_eifs_redu <- est_lst_redu$all_eifs
+        eif_redu <- est_lst_redu$eif
         se_full <- vimp_se(predictiveness_full, eif_full, scale = scale, na.rm = na.rm)
         se_redu <- vimp_se(predictiveness_redu, eif_redu, scale = scale, na.rm = na.rm)
         est <- est_lst_full$point_est - est_lst_redu$point_est

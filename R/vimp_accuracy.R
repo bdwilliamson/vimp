@@ -10,13 +10,16 @@
 #' @param V the number of folds for cross-validation, defaults to 10.
 #' @param folds the folds to use, if f1 and f2 are supplied.
 #' @param stratified if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)
-#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
 #' @param run_regression if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param scale scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")
+#' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
+#' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
+#' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and \code{vim_accuracy}. See Details for more information.
@@ -24,7 +27,6 @@
 #' @details In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
 #' \itemize{
-#'  \item{call}{ - the call to \code{vim}}
 #'  \item{s}{ - the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
 #'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
@@ -66,8 +68,6 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-
-
-vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, weights = rep(1, length(Y)), run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = TRUE, scale = "identity", ...) {
-    cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights = weights, type = "accuracy", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, ...)
+vimp_accuracy <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, V = 10, run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, stratified = TRUE, scale = "identity", C = rep(1, length(Y)), ipc_weights = rep(1, length(Y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(Y)), ...) {
+    cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type = "accuracy", run_regression = run_regression, SL.library = SL.library, alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, stratified = stratified, scale = scale, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, ...)
 }
