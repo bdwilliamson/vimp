@@ -7,12 +7,7 @@
 #' @export
 
 print.vim <- function(x, ...) {
-
-  ## print out the call
-  cat("Call:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
-        "\n", sep = "")
-
-  ## print out the matrix
+  # print out the matrix
   cat("\nVariable importance estimates:\n")
   print(format(x, ...), quote = FALSE)
 }

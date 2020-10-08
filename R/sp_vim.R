@@ -1,12 +1,10 @@
 #' Shapley Population Variable Importance Measure (SPVIM) Estimates and Inference
 #'
 #' Compute estimates and confidence intervals for the SPVIMs, using cross-fitting.
-#' This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
 #' @param V the number of folds for cross-validation, defaults to 10.
-#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). 
 #' @param type the type of parameter (e.g., R-squared-based is \code{"r_squared"}).
 #' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param univariate_SL.library (optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}
@@ -16,6 +14,8 @@
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?
 #' @param verbose should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})
+#' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -58,22 +58,22 @@
 #' library(ranger)
 #' n <- 100
 #' p <- 2
-#' ## generate the data
+#' # generate the data
 #' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 #'
-#' ## apply the function to the x's
+#' # apply the function to the x's
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 #'
-#' ## generate Y ~ Normal (smooth, 1)
+#' # generate Y ~ Normal (smooth, 1)
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #'
-#' ## set up a library for SuperLearner
+#' # set up a library for SuperLearner
 #' learners <- c("SL.mean", "SL.ranger")
 #'
-#' ## -----------------------------------------
-#' ## using Super Learner (with a small number of CV folds,
-#' ## for illustration only)
-#' ## -----------------------------------------
+#' # -----------------------------------------
+#' # using Super Learner (with a small number of CV folds,
+#' # for illustration only)
+#' # -----------------------------------------
 #' set.seed(4747)
 #' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared",
 #' SL.library = learners, alpha = 0.05)
@@ -87,55 +87,54 @@ sp_vim <- function(Y, X, V = 5, ipc_weights = rep(1, length(Y)), type = "r_squar
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
                    stratified = FALSE, verbose = FALSE, ...) {
-    ## check to see if f1 and f2 are missing
-    ## if the data is missing, stop and throw an error
+    # if the data is missing, stop and throw an error
     if (missing(Y)) stop("You must enter an outcome, Y.")
     if (missing(X)) stop("You must enter a matrix of predictors, X.")
 
-    ## check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
+    # check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
     if(is.null(dim(Y))) Y <- as.matrix(Y)
 
-    ## get the correct measure function; if not one of the supported ones, say so
-    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
-    full_type <- types[pmatch(type, types)]
-    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
+    # get the correct measure function; if not one of the supported ones, say so
+    full_type <- get_full_type(type)
 
-    ## set up the cross-validation
+    # set up the cross-validation
     outer_folds <- .make_folds(Y, V = 2, stratified = stratified, probs = c(0.25, 0.75))
     inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
     inner_folds_2 <- .make_folds(Y[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified)
 
-    ## sample subsets, set up Z
+    # sample subsets, set up Z
     z_w_lst <- sample_subsets(p = dim(X)[2], n = dim(X)[1], gamma = gamma)
     Z <- z_w_lst$Z
     W <- z_w_lst$W
     z_counts <- z_w_lst$z_counts
     S <- z_w_lst$S
 
-    ## get v, preds, ic for null set
+    # get v, preds, ic for null set
     preds_none <- list()
     for (v in 1:V) {
         preds_none[[v]] <- rep(mean(Y[outer_folds == 2, ][inner_folds_2 == v]), sum(inner_folds_2 == v))
     }
-    v_none <- cv_predictiveness_point_est(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est
-    ic_none <- cv_predictiveness_update(preds_none, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic
+    v_none_lst <- est_predictiveness_cv(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", type = full_type, na.rm = na.rm)
+    v_none <- v_none_lst$point_est
+    ic_none <- v_none_lst$eif
 
-    ## get v, preds, ic for remaining non-null groups in S
+    # get v, preds, ic for remaining non-null groups in S
     if (verbose) {
         message("Fitting learners. Progress:")
         progress_bar <- txtProgressBar(min = 0, max = length(S[-1]), style = 3)
     } else {
         progress_bar <- NULL
     }
-    preds_lst <- sapply(1:length(S[-1]), function(i) run_sl(Y[outer_folds == 2, , drop = FALSE], X[outer_folds == 2, ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = S[-1][[i]], folds = inner_folds_2, verbose = verbose, progress_bar = progress_bar, indx = i, ...),
+    preds_lst <- sapply(1:length(S[-1]), function(i) run_sl(Y[outer_folds == 2, , drop = FALSE], X[outer_folds == 2, ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = S[-1][[i]], folds = inner_folds_2, verbose = verbose, progress_bar = progress_bar, indx = i, weights = ipc_weights[outer_folds == 2], ...),
                         simplify = FALSE)
     if (verbose) {
         close(progress_bar)
     }
-    v_lst <- lapply(preds_lst, function(x) cv_predictiveness_point_est(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est)
-    ic_lst <- lapply(preds_lst, function(x) cv_predictiveness_update(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic)
+    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = l$folds, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2] ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm))
+    v_lst <- lapply(v_full_lst, function(l) l$point_est)
+    ic_lst <- lapply(v_full_lst, function(l) l$eif)
     v <- matrix(c(v_none, unlist(v_lst)))
-    ## do constrained wls
+    # do constrained wls
     if (verbose) {
         message("Fitting weighted least squares to estimate the SPVIM values.")
     }
@@ -153,33 +152,34 @@ sp_vim <- function(Y, X, V = 5, ipc_weights = rep(1, length(Y)), type = "r_squar
     est <- ls_solution[1:(ncol(X) + 1), , drop = FALSE]
     lambdas <- ls_solution[(ncol(X) + 2):dim(ls_solution)[1], , drop = FALSE]
 
-    ## compute the SPVIM ICs
+    # compute the SPVIM ICs
     ic_mat <- do.call(rbind, c(list(ic_none), ic_lst))
     ics <- spvim_ics(Z, z_counts, W, v, est, G, c_n, ic_mat, full_type)
 
-    ## calculate the standard error
+    # calculate the standard error
     ses <- vector("numeric", ncol(X) + 1)
     for (j in 1:(ncol(X) + 1)) {
         ses[j] <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
     }
-    ## if est < 0, set to zero and print warning
+    # if est < 0, set to zero and print warning
     if (any(est < 0)) {
         est[est < 0] <- 0
         warning("One or more original estimates < 0; returning zero for these indices.")
     }
 
-    ## calculate the confidence intervals
+    # calculate the confidence intervals
     cis <- vimp_ci(est[-1], ses[-1], scale = "identity", level = 1 - alpha)
 
-    ## compute a hypothesis test against the null of zero importance
+    # compute a hypothesis test against the null of zero importance
     preds_none_0 <- list()
     for (v in 1:V) {
         preds_none_0[[v]] <- rep(mean(Y[outer_folds == 1, ][inner_folds_1 == v]), sum(inner_folds_1 == v))
     }
-    v_none_0 <- cv_predictiveness_point_est(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, ipc_weights = ipc_weights[outer_folds == 1], type = full_type, na.rm = na.rm)$point_est
-    ic_none_0 <- cv_predictiveness_update(preds_none_0, Y[outer_folds == 1, , drop = FALSE], inner_folds_1, ipc_weights[outer_folds == 1], type = full_type, na.rm = na.rm)$ic
+    v_none_0_lst <- est_predictiveness_cv(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, C = C[outer_folds == 1], ipc_weights = ipc_weights[outer_folds == 1], type = full_type, ipc_fit_type = "SL", na.rm = na.rm)
+    v_none_0 <- v_none_0_lst$point_est
+    ic_none_0 <- v_none_0_lst$eif
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) / sqrt(sum(outer_folds == 1))
-    ## get shapley vals + null predictiveness
+    # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
     ses_one <- sqrt(ses ^ 2 + se_none_0 ^ 2)
     test_statistics <- sapply(2:length(est), function(j, ests, ses, est_0, se_0, delta) {
@@ -187,14 +187,12 @@ sp_vim <- function(Y, X, V = 5, ipc_weights = rep(1, length(Y)), type = "r_squar
     }, ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0, se_0 = se_none_0, delta = delta)
     p_values <- 1 - pnorm(test_statistics)
     hyp_tests <- p_values < alpha
-    ## get the call
-    cl <- match.call()
 
-    ## create the output and return it
-    ## create output tibble
+    # create the output and return it
+    # create output tibble
     mat <- tibble::tibble(s = as.character(1:ncol(X)), est = est[-1], se = ses[-1], cil = cis[, 1],
                           ciu = cis[, 2], test = hyp_tests, p_value = p_values)
-    output <- list(call = cl, s = as.character(1:ncol(X)),
+    output <- list(s = as.character(1:ncol(X)),
                  SL.library = SL.library,
                  v = v,
                  preds_lst = c(list(preds_none), preds_lst),
@@ -211,9 +209,12 @@ sp_vim <- function(Y, X, V = 5, ipc_weights = rep(1, length(Y)), type = "r_squar
                  y = Y,
                  ipc_weights = ipc_weights,
                  scale = "identity",
+                 outer_folds = outer_folds,
+                 inner_folds_1 = inner_folds_1,
+                 inner_folds_2 = inner_folds_2,
                  mat = mat)
 
-    ## make it also an vim object
+    # make it also an vim object
     tmp.cls <- class(output)
     class(output) <- c("vim", type, tmp.cls)
     return(output)

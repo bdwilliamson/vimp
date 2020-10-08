@@ -13,26 +13,26 @@
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
-#' @return The estimated measure of predictiveness.
+#' @return A list, with: the estimated predictiveness; the estimated efficient influence function; and the predictions of the EIF based on inverse probability of censoring.
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
 est_predictiveness <- function(fitted_values, y, type = "r_squared", x = NULL, C = rep(1, length(y)), ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
 
-    ## get the correct measure function; if not one of the supported ones, say so
+    # get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
     measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance, measure_r_squared, NA, measure_mse, measure_cross_entropy)
     measure_func <- measure_funcs[pmatch(type, types)]
 
-    ## compute plug-in point estimate
+    # compute plug-in point estimate, EIF, inverse-weighted EIF predictions
     if (!is.na(measure_func)) {
-        point_est <- measure_func[[1]](fitted_values = fitted_values, y = y, x = x, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, na.rm = na.rm, ...)$point_est
+        est_lst <- measure_func[[1]](fitted_values = fitted_values, y = y, x = x, C = C, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, na.rm = na.rm, ...)
     } else { # if type is anova, no plug-in from predictiveness
-        point_est <- NA
+        est_lst <- list(point_est = NA, ic = NA, ipc_eif_preds = rep(NA, length(y)))
     }
-    ## return it
-    return(point_est)
+    # return it
+    return(list(point_est = point_est$point_est, eif = est_lst$eif, ipc_eif_preds = point_est$ipc_eif_preds))
 }

@@ -40,5 +40,5 @@ est_vimp <- function(full, reduced, y, folds, type = "r_squared", x = NULL, C = 
         point_est <- est$naive
         corrected_est <- est$point_est
     }
-    return(c(corrected_est, point_est))
+    return(list(est = c(corrected_est, point_est), predictiveness_full = point_est_full, predictiveness_reduced = point_est_redu, ipc_eif_preds_))
 }

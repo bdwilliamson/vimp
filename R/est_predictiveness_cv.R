@@ -26,32 +26,47 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", x
     measure_funcs <- c(measure_accuracy, measure_auc, measure_cross_entropy, measure_mse, NA, measure_mse, measure_cross_entropy)
     measure_func <- measure_funcs[pmatch(type, types)]
 
-    # compute plug-in point estimate
+    # compute point estimate, EIF
     if (!is.na(measure_func)) {
         V <- length(unique(folds))
+        max_nrow <- max(sapply(1:V, function(v) length(y[folds == v])))
+        ics <- matrix(NA, nrow = max_nrow, ncol = V)
         measures <- vector("list", V)
         for (v in 1:V) {
             measures[[v]] <- measure_func[[1]](fitted_values = fitted_values[[v]], y = y[folds == v], x = x[folds == v, , drop =  FALSE], C = C[folds == v], ipc_weights = ipc_weights[folds == v], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds == v], na.rm = na.rm, ...)
+            ics[1:length(y[folds == v]), v] <- measures[[v]]$eif
         }
         point_ests <- sapply(1:V, function(v) measures[[v]]$point_est)
         point_est <- mean(point_ests)
+        ic <- rowMeans(do.call(cbind, ics))
         ipc_eif_preds <- sapply(1:V, function(v) measures[[v]]$ipc_eif_preds, simplify = FALSE)
     } else { # if type is anova, no plug-in from predictiveness
         point_est <- point_ests <- NA
+        ic <- rep(NA, length(y))
     }
     # if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
     do_ipcw <- as.numeric(!all(ipc_weights == 1))
     mn_y <- mean(y, na.rm = na.rm)
     if (full_type == "r_squared") {
         var <- measure_mse(fitted_values = rep(mn_y, length(y)), y, x, C, ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
+        ic <- (-1) * as.vector(matrix(c(1 / var$point_est, -point_est / (var$point_est ^ 2)), nrow = 1) %*% t(cbind(ic, var$eif)))
+        ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        for (v in 1:V) {
+            ics[1:length(y[folds == v]), v] <- (-1) * as.vector(matrix(c(1 / var$point_est, -point_ests[v] / (var$point_est ^ 2)), nrow = 1) %*% t(cbind(ics[1:length(y[folds == v]), v], var$eif)))
+        }
         point_ests <- 1 - point_ests/var$point_est
         point_est <- mean(point_ests)
     }
     if (full_type == "deviance") {
         denom <- measure_cross_entropy(fitted_values = rep(mn_y, length(y)), y, x, C, ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
+        ic <- (-1) * as.vector(matrix(c(1 / denom$point_est, -point_est / (denom$point_est ^ 2)), nrow = 1) %*% t(cbind(ic, denom$eif)))
+        ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        for (v in 1:V) {
+            ics[1:length(y[folds == v]), v] <- (-1) * as.vector(matrix(c(1 / denom$point_est, -point_ests[v] / (denom$point_est ^ 2)), nrow = 1) %*% t(cbind(ics[1:length(y[folds == v]), v], denom$eif)))
+        }
         point_ests <- 1 - point_ests / denom$point_est
         point_est <- mean(point_ests)
     }
     # return it
-    return(list(point_est = point_est, all_ests = point_ests, ipc_eif_preds = ipc_eif_preds))
+    return(list(point_est = point_est, all_ests = point_ests, eif = ic, all_eifs = ics, ipc_eif_preds = ipc_eif_preds))
 }

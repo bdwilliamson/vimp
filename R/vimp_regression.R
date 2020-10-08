@@ -45,22 +45,22 @@
 #' @examples
 #' library(SuperLearner)
 #' library(ranger)
-#' ## generate the data
-#' ## generate X
+#' # generate the data
+#' # generate X
 #' p <- 2
 #' n <- 100
 #' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 #'
-#' ## apply the function to the x's
+#' # apply the function to the x's
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 #'
-#' ## generate Y ~ Normal (smooth, 1)
+#' # generate Y ~ Normal (smooth, 1)
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
-#' ## set up a library for SuperLearner
+#' # set up a library for SuperLearner
 #' learners <- "SL.ranger"
 #'
-#' ## estimate (with a small number of folds, for illustration only)
+#' # estimate (with a small number of folds, for illustration only)
 #' est <- vimp_regression(y, x, indx = 2,
 #'            alpha = 0.05, run_regression = TRUE,
 #'            SL.library = learners, V = 2, cvControl = list(V = 2))

@@ -41,17 +41,6 @@ eif_vimp <- function(full, reduced, y, folds = folds, weights = rep(1, length(y)
         ic <- ic_full - ic_redu
     } else {
         ic <- measure_anova(full, reduced, y[folds == 1], na.rm = na.rm)$ic
-        # if (length(full) < length(reduced)) {
-        #     full <- c(full, rep(NA, length(reduced) - length(full)))
-        # }
-        # if (length(reduced) < length(full)) {
-        #     reduced <- c(reduced, rep(NA, length(reduced) - length(full)))
-        # }
-        # num <- mean((full - reduced) ^ 2, na.rm = na.rm)
-        # denom <- mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm )
-        # ic_num <- 2*(y[folds == 1, , drop = FALSE] - full)*(full - reduced) + (full - reduced) ^ 2 - num
-        # ic_denom <- (y[folds == 1] - mean(y, na.rm = na.rm)) ^ 2 - denom
-        # ic <- ic_num / denom - num / (denom ^ 2) * ic_denom
     }
     return(ic)
 }
