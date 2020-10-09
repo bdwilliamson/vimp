@@ -30,7 +30,8 @@ Imports:
     ROCR,
     tibble,
     rlang,
-    MASS
+    MASS,
+    data.table
 Suggests:
     knitr,
     rmarkdown,
