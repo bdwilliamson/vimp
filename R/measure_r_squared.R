@@ -1,9 +1,9 @@
 #' Estimate R-squared
 #' Compute nonparametric estimate of R-squared.
 #'
-#' @param fitted_values fitted values from a regression function.
-#' @param y the outcome.
-#' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
+#' @param fitted_values fitted values from a regression function using the observed data.
+#' @param y the observed outcome.
+#' @param x the observed covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among y and x that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
@@ -19,14 +19,14 @@ measure_r_squared <- function(fitted_values, y, x = NULL, C = rep(1, length(y)),
     # compute the EIF: if there is coarsening, do a correction
     if (!all(ipc_weights == 1)) {
         # observed mse
-        obs_mse <- measure_mse(fitted_values[C == 1], y[C == 1], na.rm = na.rm)
-        obs_mn_y <- mean(y[C == 1], na.rm = na.rm)
-        obs_var <- measure_mse(fitted_values = rep(obs_mn_y, sum(C == 1)), y[C == 1], na.rm = na.rm)
+        obs_mse <- measure_mse(fitted_values, y, na.rm = na.rm)
+        obs_mn_y <- mean(y, na.rm = na.rm)
+        obs_var <- measure_mse(fitted_values = rep(obs_mn_y, length(y)), y, na.rm = na.rm)
         obs_grad <- as.vector(matrix(c(1 / obs_var$point_est, -obs_mse$point_est / (obs_var$point_est ^ 2)), nrow = 1) %*% t(cbind(obs_mse$eif, obs_var$eif)))
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             df <- get_dt(y, x, Z)
-            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, subset(df, C == 1), ...)
+            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, df, ...)
             ipc_eif_preds <- predict(ipc_eif_mod, df)$pred
         }
         weighted_obs_grad <- rep(0, length(y))

@@ -2,9 +2,9 @@
 #'
 #' Compute nonparametric estimate of classification accuracy.
 #'
-#' @param fitted_values fitted values from a regression function.
-#' @param y the outcome.
-#' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
+#' @param fitted_values fitted values from a regression function using the observed data.
+#' @param y the observed outcome.
+#' @param x the observed covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among y and x that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
@@ -19,14 +19,14 @@
 measure_accuracy <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
   # compute the EIF: if there is coarsening, do a correction
   if (!all(ipc_weights == 1)) {
-    obs_grad <- ((-1)*(((fitted_values[C == 1] > 1/2) != y[C == 1]) - mean((fitted_values[C == 1] > 1/2) != y[C == 1], na.rm = na.rm)))
+    obs_grad <- ((-1)*(((fitted_values > 1/2) != y) - mean((fitted_values > 1/2) != y, na.rm = na.rm)))
     # if IPC EIF preds aren't entered, estimate the regression
     if (ipc_fit_type != "external") {
       df <- get_dt(y, x, Z)
-      ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, subset(df, C == 1), ...)
+      ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, df, ...)
       ipc_eif_preds <- predict(ipc_eif_mod, df)$pred
     }
-    weighted_obs_grad <- rep(0, length(y))
+    weighted_obs_grad <- rep(0, length(C))
     weighted_obs_grad[C == 1] <- obs_grad / ipc_weights[C == 1]
     grad <- weighted_obs_grad - (C / ipc_weights - 1) * ipc_eif_preds
     est <- (1 - mean((C / ipc_weights) * ((fitted_values > 1/2) != y), na.rm = na.rm)) + mean(grad)

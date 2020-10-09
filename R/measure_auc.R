@@ -2,8 +2,9 @@
 #'
 #' Compute nonparametric estimate of AUC.
 #'
-#' @param fitted_values fitted values from a regression function.
-#' @param x the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
+#' @param fitted_values fitted values from a regression function using the observed data.
+#' @param y the observed outcome.
+#' @param x the observed covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among y and x that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
@@ -17,16 +18,16 @@
 #' @export
 measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # compute the point estimate (on only data with all obs, if IPC weights are entered)
-    preds <- ROCR::prediction(predictions = fitted_values[C == 1], labels = y[C == 1])
+    preds <- ROCR::prediction(predictions = fitted_values, labels = y)
     est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
     # compute the EIF: if there is coarsening, do a correction
     if (!all(ipc_weights == 1)) {
         # marginal probabilities
-        p_0 <- mean(y[C == 1] == 0)
-        p_1 <- mean(y[C == 1] == 1)
+        p_0 <- mean(y == 0)
+        p_1 <- mean(y == 1)
         # sensitivity and specificity
-        sens <- unlist(lapply(as.list(fitted_values), function(x) mean(fitted_values[(y == 0) && (C == 1)] < x, na.rm = na.rm)))
-        spec <- unlist(lapply(as.list(fitted_values), function(x) mean(fitted_values[(y == 1) && (C == 1)] > x, na.rm = na.rm)))
+        sens <- unlist(lapply(as.list(fitted_values), function(x) mean(fitted_values[(y == 0)] < x, na.rm = na.rm)))
+        spec <- unlist(lapply(as.list(fitted_values), function(x) mean(fitted_values[(y == 1)] > x, na.rm = na.rm)))
 
         # contributions from cases and controls
         contrib_1 <- (y == 1)/p_1*sens
@@ -37,7 +38,7 @@ measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), Z = N
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             df <- get_dt(y, x, Z)
-            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, subset(df, C == 1), ...)
+            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, df, ...)
             ipc_eif_preds <- predict(ipc_eif_mod, df)$pred
         }
         weighted_obs_grad <- rep(0, length(y))

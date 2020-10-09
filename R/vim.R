@@ -128,7 +128,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
         full <- SuperLearner::SuperLearner(Y = Y_cc[(folds == 1), , drop = FALSE], X = X_cc[(folds == 1), , drop = FALSE], SL.library = SL.library, obsWeights = weights_cc[(folds == 1)], ...)
 
         # get the fitted values
-        fhat_ful <- SuperLearner::predict.SuperLearner(full, newdata = X)$pred
+        fhat_ful <- SuperLearner::predict.SuperLearner(full)$pred
 
         # fit the super learner on the reduced covariates:
         # if the reduced set of covariates is empty, return the mean
@@ -143,7 +143,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
                     arg_lst$Y <- Y_cc[(folds == 2), , drop = FALSE]
                 } else {
                     arg_lst$family <- stats::gaussian()
-                    arg_lst$Y <- fhat_ful[C == 1]
+                    arg_lst$Y <- SuperLearner::predict.SuperLearner(full, newdata = X_cc[(folds == 2), , drop = FALSE])$pred
                 }
                 arg_lst$X <- X_minus_s[(folds == 2), , drop = FALSE]
                 arg_lst$SL.library <- SL.library
@@ -152,13 +152,13 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
             reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
 
             # get the fitted values
-            fhat_red <- SuperLearner::predict.SuperLearner(reduced, newdata = X[folds == 2, -indx, drop = FALSE])$pred
-            # tmp_fhat_ful <- rep(NA, nrow(Y))
-            # tmp_fhat_red <- rep(NA, nrow(Y))
-            # tmp_fhat_ful[C == 1] <- fhat_ful
-            # tmp_fhat_red[C == 1] <- fhat_red
-            # fhat_ful <- tmp_fhat_ful
-            # fhat_red <- tmp_fhat_red
+            fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
+            tmp_fhat_ful <- rep(NA, nrow(Y) / 2)
+            tmp_fhat_red <- rep(NA, nrow(Y) / 2)
+            tmp_fhat_ful[C == 1][folds == 1] <- fhat_ful
+            tmp_fhat_red[C == 1][folds == 2] <- fhat_red
+            fhat_ful <- tmp_fhat_ful
+            fhat_red <- tmp_fhat_red
         }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
