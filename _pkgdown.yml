@@ -14,10 +14,6 @@ reference:
     - title: "Estimate variable importance"
       desc: "General functions to measure population variable importance and compute point estimates and confidence intervals."
       contents:
-      - est_vimp_cv
-      - eif_vimp_cv
-      - est_vimp
-      - eif_vimp
       - vim
       - cv_vim
       - vimp_se
@@ -37,9 +33,7 @@ reference:
       - measure_mse
       - measure_r_squared
       - est_predictiveness_cv
-      - eif_predictiveness_cv
       - est_predictiveness
-      - eif_predictiveness
       - predictiveness_se
       - predictiveness_ci
     - title: "Aggregate variable importance estimates"
