@@ -20,9 +20,8 @@ vimp_auc(
   stratified = TRUE,
   scale = "identity",
   C = rep(1, length(Y)),
+  Z = NULL,
   ipc_weights = rep(1, length(Y)),
-  ipc_fit_type = "external",
-  ipc_eif_preds = rep(1, length(Y)),
   ...
 )
 }
@@ -57,13 +56,15 @@ vimp_auc(
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
 
+\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character list specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
+
 \item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
+
+\item{...}{other arguments to the estimation tool, see "See also".}
 
 \item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
 
 \item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
-
-\item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
 An object of classes \code{vim} and \code{vim_auc}. See Details for more information.

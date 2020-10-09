@@ -21,9 +21,8 @@ cv_vim(
   scale = "identity",
   na.rm = FALSE,
   C = rep(1, length(Y)),
+  Z = NULL,
   ipc_weights = rep(1, length(Y)),
-  ipc_fit_type = "external",
-  ipc_eif_preds = rep(1, length(Y)),
   ...
 )
 }
@@ -38,11 +37,11 @@ cv_vim(
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
-\item{V}{the number of folds for cross-validation, defaults to 10.}
+\item{V}{the number of folds for cross-fitting, defaults to 10.}
 
-\item{folds}{the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-validation).}
+\item{folds}{the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-fitting).}
 
-\item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
+\item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-fitting folds)}
 
 \item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
 
@@ -60,11 +59,9 @@ cv_vim(
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
 
+\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
+
 \item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
-
-\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
-
-\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

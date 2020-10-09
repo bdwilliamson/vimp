@@ -9,25 +9,28 @@ est_predictiveness_cv(
   y,
   folds,
   type = "r_squared",
-  x = NULL,
   C = rep(1, length(y)),
-  ipc_weights = rep(1, length(y)),
+  Z = NULL,
+  folds_Z = folds,
+  ipc_weights = rep(1, length(C)),
   ipc_fit_type = "external",
-  ipc_eif_preds = rep(1, length(y)),
+  ipc_eif_preds = rep(1, length(C)),
   na.rm = FALSE,
   ...
 )
 }
 \arguments{
-\item{fitted_values}{fitted values from a regression function; a list of length V, where each object is a set of predictions on the validation data.}
+\item{fitted_values}{fitted values from a regression function using the observed data; a list of length V, where each object is a set of predictions on the validation data.}
 
-\item{y}{the outcome.}
+\item{y}{the observed outcome.}
 
-\item{folds}{the cross-validation folds}
-
-\item{x}{the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).}
+\item{folds}{the cross-validation folds for the observed data}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.}
+
+\item{folds_Z}{either the cross-validation folds for the observed data (no coarsening) or a vector of folds for the fully observed data Z.}
 
 \item{ipc_weights}{weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.}
 

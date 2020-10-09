@@ -8,25 +8,25 @@ est_predictiveness(
   fitted_values,
   y,
   type = "r_squared",
-  x = NULL,
   C = rep(1, length(y)),
-  ipc_weights = rep(1, length(y)),
+  Z = NULL,
+  ipc_weights = rep(1, length(C)),
   ipc_fit_type = "external",
-  ipc_eif_preds = rep(1, length(y)),
+  ipc_eif_preds = rep(1, length(C)),
   na.rm = FALSE,
   ...
 )
 }
 \arguments{
-\item{fitted_values}{fitted values from a regression function.}
+\item{fitted_values}{fitted values from a regression function using the observed data.}
 
-\item{y}{the outcome.}
+\item{y}{the observed outcome.}
 
 \item{type}{which parameter are you estimating (defaults to \code{r_squared}, for R-squared-based variable importance)?}
 
-\item{x}{the covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).}
-
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.}
 
 \item{ipc_weights}{weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.}
 

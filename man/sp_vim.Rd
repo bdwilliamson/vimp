@@ -18,6 +18,7 @@ sp_vim(
   stratified = FALSE,
   verbose = FALSE,
   C = rep(1, length(Y)),
+  Z = NULL,
   ipc_weights = rep(1, length(Y)),
   ...
 )
@@ -27,9 +28,9 @@ sp_vim(
 
 \item{X}{the covariates.}
 
-\item{V}{the number of folds for cross-validation, defaults to 10.}
+\item{V}{the number of folds for cross-fitting, defaults to 10.}
 
-\item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}).}
+\item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}). Note that \code{type = 'anova'} is not allowed for SPVIMs.}
 
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 
@@ -43,11 +44,13 @@ sp_vim(
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
-\item{stratified}{should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?}
+\item{stratified}{should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-fitting folds)?}
 
 \item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
 
 \item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
