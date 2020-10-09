@@ -40,9 +40,7 @@
 
 
 <meta property="og:title" content="Nonparametric Variable Importance Estimates and Inference using Cross-fitting — cv_vim" />
-<meta property="og:description" content="Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-fitting.
-This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits." />
+<meta property="og:description" content="Compute estimates and confidence intervals using cross-fitting for nonparametric variable importance based on the population-level contrast between the oracle predictiveness using the feature(s) of interest versus not." />
 
 
 
@@ -137,9 +135,7 @@ This essentially involves splitting the data into V train/test splits; train the
     </div>
 
     <div class="ref-description">
-    <p>Compute estimates and confidence intervals for the
-nonparametric variable importance parameter of interest, using cross-fitting.
-This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.</p>
+    <p>Compute estimates and confidence intervals using cross-fitting for nonparametric variable importance based on the population-level contrast between the oracle predictiveness using the feature(s) of interest versus not.</p>
     </div>
 
     <pre class="usage"><span class='fu'>cv_vim</span>(
@@ -151,7 +147,6 @@ This essentially involves splitting the data into V train/test splits; train the
   <span class='kw'>V</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>folds</span>)),
   <span class='kw'>folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>,
   <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.glmnet"</span>, <span class='st'>"SL.xgboost"</span>, <span class='st'>"SL.mean"</span>),
@@ -159,6 +154,9 @@ This essentially involves splitting the data into V train/test splits; train the
   <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
+  <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='no'>...</span>
 )</pre>
 
@@ -187,19 +185,15 @@ This essentially involves splitting the data into V train/test splits; train the
     </tr>
     <tr>
       <th>V</th>
-      <td><p>the number of folds for cross-validation, defaults to 10.</p></td>
+      <td><p>the number of folds for cross-fitting, defaults to 10.</p></td>
     </tr>
     <tr>
       <th>folds</th>
-      <td><p>the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-validation).</p></td>
+      <td><p>the folds to use, if f1 and f2 are supplied. A list of length two; the first element provides the outer folds (for hypothesis testing), while the second element is a list providing the inner folds (for cross-fitting).</p></td>
     </tr>
     <tr>
       <th>stratified</th>
-      <td><p>if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)</p></td>
+      <td><p>if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-fitting folds)</p></td>
     </tr>
     <tr>
       <th>type</th>
@@ -230,6 +224,18 @@ This essentially involves splitting the data into V train/test splits; train the
       <td><p>should we remove NA's in the outcome and fitted values in computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
+      <th>C</th>
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes unobserved).</p></td>
+    </tr>
+    <tr>
+      <th>Z</th>
+      <td><p>either (i) NULL (the default, in which case the argument <code>C</code> above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.</p></td>
+    </tr>
+    <tr>
+      <th>ipc_weights</th>
+      <td><p>weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>other arguments to the estimation tool, see "See also".</p></td>
     </tr>
@@ -240,22 +246,21 @@ This essentially involves splitting the data into V train/test splits; train the
     <p>An object of class <code>vim</code>. See Details for more information.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>We define the population variable importance measure (VIM) for the group 
+    <p>We define the population variable importance measure (VIM) for the group
 of features (or single feature) \(s\) with respect to the predictiveness measure
-\(V\) by $$\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),$$ where \(f_0\) is 
+\(V\) by $$\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),$$ where \(f_0\) is
 the population predictiveness maximizing function, \(f_{0,s}\) is the population
 predictiveness maximizing function that is only allowed to access the features with
 index not in \(s\), and \(P_0\) is the true data-generating distribution. Cross-fitted
 VIM estimates are obtained by first splitting the data into \(K\) folds; then using each
-fold in turn as a hold-out set, constructing estimators \(f_{n,k}\) and \(f_{n,k,s}\) of 
-\(f_0\) and \(f_{0,s}\), respectively on the training data and estimator \(P_{n,k}\) of 
-\(P_0\) using the test data; and finally, computing $$\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}$$ 
+fold in turn as a hold-out set, constructing estimators \(f_{n,k}\) and \(f_{n,k,s}\) of
+\(f_0\) and \(f_{0,s}\), respectively on the training data and estimator \(P_{n,k}\) of
+\(P_0\) using the test data; and finally, computing $$\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}$$
 See the paper by Williamson, Gilbert, Simon, and Carone for more
 details on the mathematics behind the <code>cv_vim</code> function, and the validity
 of the confidence intervals.</p>
 <p>In the interest of transparency, we return most of the calculations
-within the <code>vim</code> object. This results in a list containing:</p><ul>
-<li><p>call - the call to <code>cv_vim</code></p></li>
+within the <code>vim</code> object. This results in a list including:</p><ul>
 <li><p>s - the column(s) to calculate variable importance for</p></li>
 <li><p>SL.library - the library of learners passed to <code>SuperLearner</code></p></li>
 <li><p>full_fit - the fitted values of the chosen method fit to the full data (a list, for train and test data)</p></li>
@@ -263,15 +268,18 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 <li><p>est - the estimated variable importance</p></li>
 <li><p>naive - the naive estimator of variable importance</p></li>
 <li><p>naives - the naive estimator on each fold</p></li>
-<li><p>updates - the influence curve-based update for each fold</p></li>
+<li><p>eif- the estimated influence function</p></li>
+<li><p>all_eifs - the estimated influence curve for each fold</p></li>
 <li><p>se - the standard error for the estimated variable importance</p></li>
 <li><p>ci - the \((1-\alpha) \times 100\)% confidence interval for the variable importance estimate</p></li>
+<li><p>test - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test</p></li>
+<li><p>p_value - a p-value based on the same test as <code>test</code></p></li>
 <li><p>full_mod - the object returned by the estimation procedure for the full data regression (if applicable)</p></li>
 <li><p>red_mod - the object returned by the estimation procedure for the reduced data regression (if applicable)</p></li>
 <li><p>alpha - the level, for confidence interval calculation</p></li>
-<li><p>folds - the folds used for hypothesis testing and cross-validation</p></li>
+<li><p>folds - the folds used for hypothesis testing and cross-fitting</p></li>
 <li><p>y - the outcome</p></li>
-<li><p>weights - the weights</p></li>
+<li><p>ipc_weights - the weights</p></li>
 <li><p>mat- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value</p></li>
 </ul>
 
@@ -284,30 +292,30 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>ranger</span>)
 <span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
 <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
-<span class='co'>## generate the data</span>
+<span class='co'># generate the data</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='no'>p</span>, <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='no'>n</span>, -<span class='fl'>5</span>, <span class='fl'>5</span>)))
 
-<span class='co'>## apply the function to the x's</span>
+<span class='co'># apply the function to the x's</span>
 <span class='no'>smooth</span> <span class='kw'>&lt;-</span> (<span class='no'>x</span>[,<span class='fl'>1</span>]/<span class='fl'>5</span>)^<span class='fl'>2</span>*(<span class='no'>x</span>[,<span class='fl'>1</span>]+<span class='fl'>7</span>)/<span class='fl'>5</span> + (<span class='no'>x</span>[,<span class='fl'>2</span>]/<span class='fl'>3</span>)^<span class='fl'>2</span>
 
-<span class='co'>## generate Y ~ Normal (smooth, 1)</span>
+<span class='co'># generate Y ~ Normal (smooth, 1)</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>smooth</span> + <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>, <span class='fl'>0</span>, <span class='fl'>1</span>))
 
-<span class='co'>## set up a library for SuperLearner</span>
+<span class='co'># set up a library for SuperLearner</span>
 <span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.mean"</span>, <span class='st'>"SL.ranger"</span>)
 
-<span class='co'>## -----------------------------------------</span>
-<span class='co'>## using Super Learner (with a small number of folds, for illustration only)</span>
-<span class='co'>## -----------------------------------------</span>
+<span class='co'># -----------------------------------------</span>
+<span class='co'># using Super Learner (with a small number of folds, for illustration only)</span>
+<span class='co'># -----------------------------------------</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>4747</span>)
 <span class='no'>est</span> <span class='kw'>&lt;-</span> <span class='fu'>cv_vim</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>,
 <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
 <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>), <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>)
 
-<span class='co'>## ------------------------------------------</span>
-<span class='co'>## doing things by hand, and plugging them in (with a small number of folds, for illustration only)</span>
-<span class='co'>## ------------------------------------------</span>
-<span class='co'>## set up the folds</span>
+<span class='co'># ------------------------------------------</span>
+<span class='co'># doing things by hand, and plugging them in (with a small number of folds, for illustration only)</span>
+<span class='co'># ------------------------------------------</span>
+<span class='co'># set up the folds</span>
 <span class='no'>indx</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
 <span class='no'>V</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>4747</span>)
@@ -318,23 +326,23 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 <span class='no'>x_1</span> <span class='kw'>&lt;-</span> <span class='no'>x</span>[<span class='no'>outer_folds</span> <span class='kw'>==</span> <span class='fl'>1</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]
 <span class='no'>y_2</span> <span class='kw'>&lt;-</span> <span class='no'>y</span>[<span class='no'>outer_folds</span> <span class='kw'>==</span> <span class='fl'>2</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]
 <span class='no'>x_2</span> <span class='kw'>&lt;-</span> <span class='no'>x</span>[<span class='no'>outer_folds</span> <span class='kw'>==</span> <span class='fl'>2</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]
-<span class='co'>## get the fitted values by fitting the super learner on each pair</span>
+<span class='co'># get the fitted values by fitting the super learner on each pair</span>
 <span class='no'>fhat_ful</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
 <span class='no'>fhat_red</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>()
 <span class='kw'>for</span> (<span class='no'>v</span> <span class='kw'>in</span> <span class='fl'>1</span>:<span class='no'>V</span>) {
-    <span class='co'>## fit super learner</span>
+    <span class='co'># fit super learner</span>
     <span class='no'>fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y_1</span>[<span class='no'>inner_folds_1</span> <span class='kw'>!=</span> <span class='no'>v</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
      <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x_1</span>[<span class='no'>inner_folds_1</span> <span class='kw'>!=</span> <span class='no'>v</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
      <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))
     <span class='no'>fitted_v</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>fit</span>)$<span class='no'>pred</span>
-    <span class='co'>## get predictions on the validation fold</span>
+    <span class='co'># get predictions on the validation fold</span>
     <span class='no'>fhat_ful</span><span class='kw'>[[</span><span class='no'>v</span>]] <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>fit</span>,
      <span class='kw'>newdata</span> <span class='kw'>=</span> <span class='no'>x_1</span>[<span class='no'>inner_folds_1</span> <span class='kw'>==</span> <span class='no'>v</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>])$<span class='no'>pred</span>
-    <span class='co'>## fit the super learner on the reduced covariates</span>
+    <span class='co'># fit the super learner on the reduced covariates</span>
     <span class='no'>red</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y_2</span>[<span class='no'>inner_folds_2</span> <span class='kw'>!=</span> <span class='no'>v</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
      <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x_2</span>[<span class='no'>inner_folds_2</span> <span class='kw'>!=</span> <span class='no'>v</span>, -<span class='no'>indx</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
      <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))
-    <span class='co'>## get predictions on the validation fold</span>
+    <span class='co'># get predictions on the validation fold</span>
     <span class='no'>fhat_red</span><span class='kw'>[[</span><span class='no'>v</span>]] <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>red</span>,
      <span class='kw'>newdata</span> <span class='kw'>=</span> <span class='no'>x_2</span>[<span class='no'>inner_folds_2</span> <span class='kw'>==</span> <span class='no'>v</span>, -<span class='no'>indx</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>])$<span class='no'>pred</span>
 }

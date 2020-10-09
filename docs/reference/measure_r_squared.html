@@ -143,32 +143,62 @@ Compute nonparametric estimate of R-squared.</h1>
 Compute nonparametric estimate of R-squared.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>measure_r_squared</span>(<span class='no'>fitted_values</span>, <span class='no'>y</span>, <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)), <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>measure_r_squared</span>(
+  <span class='no'>fitted_values</span>,
+  <span class='no'>y</span>,
+  <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
+  <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
+  <span class='kw'>ipc_fit_type</span> <span class='kw'>=</span> <span class='st'>"external"</span>,
+  <span class='kw'>ipc_eif_preds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>fitted_values</th>
-      <td><p>fitted values from a regression function.</p></td>
+      <td><p>fitted values from a regression function using the observed data.</p></td>
     </tr>
     <tr>
       <th>y</th>
-      <td><p>the outcome.</p></td>
+      <td><p>the observed outcome.</p></td>
     </tr>
     <tr>
-      <th>weights</th>
-      <td><p>weights (IPW, etc.).</p></td>
+      <th>C</th>
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes unobserved).</p></td>
+    </tr>
+    <tr>
+      <th>Z</th>
+      <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object containing the fully observed data.</p></td>
+    </tr>
+    <tr>
+      <th>ipc_weights</th>
+      <td><p>weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.</p></td>
+    </tr>
+    <tr>
+      <th>ipc_fit_type</th>
+      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL", fit a SuperLearner to determine the correction to the efficient influence function</p></td>
+    </tr>
+    <tr>
+      <th>ipc_eif_preds</th>
+      <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
       <td><p>logical; should NA's be removed in computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments to SuperLearner, if <code>ipc_fit_type = "SL"</code>.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of: (1) the estimated R-squared of the fitted regression function, and (2) the estimated influence function.</p>
+    <p>A named list of: (1) the estimated R-squared of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -7,25 +7,22 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/average_vim.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/cv_predictiveness_point_est.html</loc>
-  </url>
-  <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/cv_predictiveness_update.html</loc>
-  </url>
-  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/cv_vim.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/cv_vimp_point_est.html</loc>
+    <loc>https://bdwilliamson.github.io/vimp/reference/est_predictiveness.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/cv_vimp_update.html</loc>
+    <loc>https://bdwilliamson.github.io/vimp/reference/est_predictiveness_cv.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/format.vim.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/measure_accuracy.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/measure_anova.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/measure_auc.html</loc>
@@ -49,13 +46,7 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/predictiveness_ci.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/predictiveness_point_est.html</loc>
-  </url>
-  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/predictiveness_se.html</loc>
-  </url>
-  <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/predictiveness_update.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/print.vim.html</loc>
@@ -97,9 +88,6 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/vimp_hypothesis_test.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/vimp_point_est.html</loc>
-  </url>
-  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/vimp_regression.html</loc>
   </url>
   <url>
@@ -107,9 +95,6 @@
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/vimp_se.html</loc>
-  </url>
-  <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/vimp_update.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/articles/introduction-to-vimp.html</loc>

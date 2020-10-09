@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate mean squared error — measure_mse • vimp</title>
+<title>Estimate a nonparametric predictiveness functional — est_predictiveness • vimp</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Estimate mean squared error — measure_mse" />
-<meta property="og:description" content="Compute nonparametric estimate of mean squared error." />
+<meta property="og:title" content="Estimate a nonparametric predictiveness functional — est_predictiveness" />
+<meta property="og:description" content="Compute nonparametric estimates of the chosen measure of predictiveness." />
 
 
 
@@ -129,23 +129,24 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate mean squared error</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/measure_mse.R'><code>R/measure_mse.R</code></a></small>
-    <div class="hidden name"><code>measure_mse.Rd</code></div>
+    <h1>Estimate a nonparametric predictiveness functional</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/est_predictiveness.R'><code>R/est_predictiveness.R</code></a></small>
+    <div class="hidden name"><code>est_predictiveness.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute nonparametric estimate of mean squared error.</p>
+    <p>Compute nonparametric estimates of the chosen measure of predictiveness.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>measure_mse</span>(
+    <pre class="usage"><span class='fu'>est_predictiveness</span>(
   <span class='no'>fitted_values</span>,
   <span class='no'>y</span>,
+  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>,
   <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
   <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
+  <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>C</span>)),
   <span class='kw'>ipc_fit_type</span> <span class='kw'>=</span> <span class='st'>"external"</span>,
-  <span class='kw'>ipc_eif_preds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
+  <span class='kw'>ipc_eif_preds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>C</span>)),
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='no'>...</span>
 )</pre>
@@ -160,6 +161,10 @@
     <tr>
       <th>y</th>
       <td><p>the observed outcome.</p></td>
+    </tr>
+    <tr>
+      <th>type</th>
+      <td><p>which parameter are you estimating (defaults to <code>r_squared</code>, for R-squared-based variable importance)?</p></td>
     </tr>
     <tr>
       <th>C</th>
@@ -193,7 +198,11 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of: (1) the estimated mean squared error of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.</p>
+    <p>A list, with: the estimated predictiveness; the estimated efficient influence function; and the predictions of the EIF based on inverse probability of censoring.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
+details on the mathematics behind this function and the definition of the parameter of interest.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

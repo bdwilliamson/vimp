@@ -143,57 +143,40 @@
     </div>
 
     <pre class="usage"><span class='fu'>vimp_hypothesis_test</span>(
-  <span class='no'>full</span>,
-  <span class='no'>reduced</span>,
-  <span class='no'>y</span>,
-  <span class='no'>folds</span>,
+  <span class='no'>predictiveness_full</span>,
+  <span class='no'>predictiveness_reduced</span>,
+  <span class='no'>se_full</span>,
+  <span class='no'>se_reduced</span>,
   <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
-  <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>,
-  <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-  <span class='kw'>cv</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+  <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>full</th>
-      <td><p>either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if <code>cv = FALSE</code>) or (ii) a list of predicted values from a cross-validated procedure (if <code>cv = TRUE</code>).</p></td>
+      <th>predictiveness_full</th>
+      <td><p>the estimated predictiveness of the regression including the covariate(s) of interest.</p></td>
     </tr>
     <tr>
-      <th>reduced</th>
-      <td><p>fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates; either (i) a single set of predictions (if <code>cv = FALSE</code>) fit on an independent split of the data from <code>full</code> or (ii) a list of predicted values from a cross-validated procedure (if <code>cv = TRUE</code>).</p></td>
+      <th>predictiveness_reduced</th>
+      <td><p>the estimated predictiveness of the regression excluding the covariate(s) of interest.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>the outcome.</p></td>
+      <th>se_full</th>
+      <td><p>the estimated standard error for the predictiveness of the regression including the covariate(s) of interest.</p></td>
     </tr>
     <tr>
-      <th>folds</th>
-      <td><p>the folds used for splitting. If <code>cv = FALSE</code>, assumed to be a vector with 1 for the full regression and 2 for the reduced regression (if V = 2). If <code>cv = TRUE</code>, assumed to be a list with first element the outer folds (for hypothesis testing) and second element a list with the inner cross-validation folds.</p></td>
+      <th>se_reduced</th>
+      <td><p>the estimated standard error for the predictiveness of the regression excluding the covariate(s) of interest.</p></td>
     </tr>
     <tr>
       <th>delta</th>
       <td><p>the value of the \(\delta\)-null (i.e., testing if importance &lt; \(\delta\)); defaults to 0.</p></td>
     </tr>
     <tr>
-      <th>weights</th>
-      <td><p>weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)</p></td>
-    </tr>
-    <tr>
-      <th>type</th>
-      <td><p>which parameter are you estimating (defaults to <code>r_squared</code>, for difference in R-squared-based variable importance)?</p></td>
-    </tr>
-    <tr>
       <th>alpha</th>
       <td><p>the desired type I error rate (defaults to 0.05).</p></td>
-    </tr>
-    <tr>
-      <th>cv</th>
-      <td><p>was V-fold cross-validation used to estimate the predictiveness (<code>TRUE</code>) or was the sample split in two (<code>FALSE</code>); defaults to <code>FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>scale</th>
@@ -207,7 +190,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><code>TRUE</code> if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, <code>FALSE</code>.</p>
+    <p>a list, with: the hypothesis testing decision (<code>TRUE</code> if the null hypothesis is rejected, <code>FALSE</code> otherwise); the p-value from the hypothesis test; and the test statistic from the hypothesis test.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
