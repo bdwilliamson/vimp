@@ -18,7 +18,7 @@
 #' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
-#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X (entered in lowercase) that are thought to play a role in the coarsening mechanism.
+#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
@@ -137,53 +137,74 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
     # check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
     if(is.null(dim(Y))) Y <- as.matrix(Y)
 
+    # set up internal data -- based on complete cases only
+    Y_cc <- subset(Y, C == 1, drop = FALSE)
+    X_cc <- subset(X, C == 1, drop = FALSE)
+    weights_cc <- ipc_weights[C == 1]
+    if (!all(C == 1)) {
+        if (is.character(Z)) {
+            Z_in <- data.table::as.data.table(mget(Z))
+            Z_names <- lapply(seq_along(Z), function(j) {
+                node <- mget(Z[j], inherits = TRUE)[[1]]
+                if (!is.null(dim(node)) && Z[j] != "Y") {
+                  colnames(node)
+                } else {
+                  Z[j]
+                }
+              })
+          colnames(Z_in) <- do.call(c, Z_names)
+        } else {
+            stop("Please enter a character vector corresponding to the names of the fully observed data.")
+        }
+    }
+
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
 
     # if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
-        # set up complete-case X, Y for regression
-        Y_cc <- Y[C == 1, , drop = FALSE]
-        X_cc <- X[C == 1, , drop = FALSE]
-        weights_cc <- ipc_weights[C == 1]
         # set up the cross-fitting
-        outer_folds <- .make_folds(Y_cc, V = 2, stratified = stratified)
-        inner_folds_1 <- .make_folds(Y_cc[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
-        inner_folds_2 <- .make_folds(Y_cc[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified)
+        outer_folds <- .make_folds(Y, V = 2, stratified = stratified)
+        inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
+        inner_folds_2 <- .make_folds(Y[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified)
+        outer_folds_cc <- outer_folds[C == 1]
+        inner_folds_1_cc <- inner_folds_1[C[outer_folds == 1] == 1]
+        inner_folds_2_cc <- inner_folds_2[C[outer_folds == 2] == 1]
+
         # fit the super learner on each full/reduced pair
         fhat_ful <- list()
         fhat_red <- list()
         for (v in 1:V) {
             # fit super learner
-            fit <- SuperLearner::SuperLearner(Y = Y_cc[(outer_folds == 1), , drop = FALSE][inner_folds_1 != v, , drop = FALSE], X = X_cc[(outer_folds == 1), , drop = FALSE][inner_folds_1 != v, , drop = FALSE], SL.library = SL.library, obsWeights = weights_cc[(outer_folds == 1)][inner_folds_1 != v], ...)
+            fit <- SuperLearner::SuperLearner(Y = Y_cc[(outer_folds_cc == 1), , drop = FALSE][inner_folds_1_cc != v, , drop = FALSE], X = X_cc[(outer_folds_cc == 1), , drop = FALSE][inner_folds_1_cc != v, , drop = FALSE], SL.library = SL.library, obsWeights = weights_cc[(outer_folds_cc == 1)][inner_folds_1_cc != v], ...)
             fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
             # get predictions on the validation fold
-            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X[(outer_folds == 1), , drop = FALSE][inner_folds_1 == v, , drop = FALSE])$pred
+            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X_cc[(outer_folds_cc == 1), , drop = FALSE][inner_folds_1_cc == v, , drop = FALSE])$pred
             # fit the super learner on the reduced covariates:
             # if the reduced set of covariates is empty, return the mean
             # otherwise, if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
-            if (ncol(X_cc[(outer_folds == 2), , drop = FALSE][, -indx, drop = FALSE]) == 0) {
-                fhat_red[[v]] <- mean(Y_cc[(outer_folds == 2), , drop = FALSE][inner_folds_2 != v, , drop = FALSE])
+            if (ncol(X_cc[(outer_folds_cc == 2), , drop = FALSE][, -indx, drop = FALSE]) == 0) {
+                fhat_red[[v]] <- mean(Y_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE])
             } else {
                 arg_lst <- list(...)
                 if (length(unique(fitted_v)) == 1) {
-                    arg_lst$Y <- Y_cc[(outer_folds == 2), , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
+                    arg_lst$Y <- Y_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE]
                 } else if (type == "r_squared" || type == "anova") {
                     arg_lst$family <- stats::gaussian()
-                    fit_2 <- SuperLearner::SuperLearner(Y = Y_cc[(outer_folds == 2), , drop = FALSE][inner_folds_2 != v, , drop = FALSE], X = X_cc[(outer_folds == 2), , drop = FALSE][inner_folds_2 != v, , drop = FALSE], SL.library = SL.library, ...)
+                    fit_2 <- SuperLearner::SuperLearner(Y = Y_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE], X = X_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE], SL.library = SL.library, ...)
                     arg_lst$Y <- SuperLearner::predict.SuperLearner(fit_2)$pred
                 } else {
-                    arg_lst$Y <- Y_cc[(outer_folds == 2), , drop = FALSE][inner_folds_2 != v, , drop = FALSE]
+                    arg_lst$Y <- Y_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE]
                     # get the family
                     if (is.character(arg_lst$family))
                         arg_lst$family <- get(arg_lst$family, mode = "function", envir = parent.frame())
                 }
-                arg_lst$X <- X_cc[(outer_folds == 2), , drop = FALSE][inner_folds_2 != v, -indx, drop = FALSE]
+                arg_lst$X <- X_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, -indx, drop = FALSE]
                 arg_lst$SL.library <- SL.library
-                arg_lst$obsWeights <- weights_cc[(outer_folds == 2)][inner_folds_2 != v]
+                arg_lst$obsWeights <- weights_cc[(outer_folds_cc == 2)][inner_folds_2_cc != v]
                 red <- do.call(SuperLearner::SuperLearner, arg_lst)
                 # get predictions on the validation fold
-                fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X[(outer_folds == 2), , drop = FALSE][inner_folds_2 == v, -indx, drop = FALSE])$pred
+                fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc == v, -indx, drop = FALSE])$pred
             }
         }
         full <- reduced <- NA
@@ -197,15 +218,17 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         fhat_red <- f2
         # set up the folds objects
         outer_folds <- folds[[1]]
+        outer_folds_cc <- outer_folds[C == 1]
         inner_folds_1 <- folds[[2]][[1]]
         inner_folds_2 <- folds[[2]][[2]]
+        inner_folds_1_cc <- inner_folds_1[C[outer_folds == 1] == 1]
+        inner_folds_2_cc <- inner_folds_2[C[outer_folds == 2] == 1]
 
         full <- reduced <- NA
-
     }
     # calculate the estimators, EIFs
     if (full_type == "anova" || full_type == "regression") {
-        est_lst <- sapply(1:V, function(v) measure_anova(fhat_ful[[v]], fhat_red[[v]], Y[outer_folds == 1, , drop = FALSE][inner_folds_1 == v], x[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE], C[outer_folds == 1][inner_folds_1 == v], ipc_weights[outer_folds == 1][inner_folds_1 == v], ipc_fit_type, ipc_eif_preds[outer_folds == 1][inner_folds_1 == v], na.rm = na.rm, SL.library = SL.library,  ...), simplify = FALSE)
+        est_lst <- sapply(1:V, function(v) measure_anova(fhat_ful[[v]], fhat_red[[v]], Y_cc[outer_folds_cc == 1, , drop = FALSE][inner_folds_1_cc == v], C[outer_folds == 1][inner_folds_1 == v], Z = Z_in[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , drop = FALSE], ipc_weights[outer_folds == 1][inner_folds_1 == v], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library,  ...), simplify = FALSE)
         point_ests <- unlist(lapply(est_lst, function(x) x$point_est))
         naives <- unlist(lapply(est_lst, function(x) x$naive))
         est <- mean(point_ests)
@@ -222,8 +245,8 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
         se_full <- rep(NA, V)
         se_redu <- rep(NA, V)
     } else {
-        est_lst_full <- est_predictiveness_cv(fitted_values = fhat_ful, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, type = full_type, x = X[outer_folds == 1, , drop = FALSE], C = C[outer_folds == 1], Z = Z, ipc_weights = ipc_weights[outer_folds == 1], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
-        est_lst_redu <- est_predictiveness_cv(fitted_values = fhat_red, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, type = full_type, x = X[outer_folds == 2, , drop = FALSE], C = C[outer_folds == 2], Z = Z, ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
+        est_lst_full <- est_predictiveness_cv(fitted_values = fhat_ful, y = Y_cc[outer_folds_cc == 1, , drop = FALSE], folds = inner_folds_1_cc, type = full_type, C = C[outer_folds == 1], Z = Z_in[outer_folds == 1, , drop = FALSE], folds_Z = inner_folds_1, ipc_weights = ipc_weights[outer_folds == 1], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
+        est_lst_redu <- est_predictiveness_cv(fitted_values = fhat_red, y = Y_cc[outer_folds_cc == 2, , drop = FALSE], folds = inner_folds_2_cc, type = full_type, C = C[outer_folds == 2], Z = Z_in[outer_folds == 2, , drop = FALSE], folds_Z = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est
         all_eifs_full <- est_lst_full$all_eifs

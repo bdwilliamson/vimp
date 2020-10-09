@@ -4,9 +4,8 @@
 #'
 #' @param fitted_values fitted values from a regression function using the observed data.
 #' @param y the observed outcome.
-#' @param x the observed covariates, only used if \code{ipc_weights} are entered (defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
-#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among y and x that are thought to play a role in the coarsening mechanism.
+#' @param Z either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
@@ -16,7 +15,7 @@
 #' @return A named list of: (1) the estimated AUC of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @importFrom data.table data.table as.data.table
 #' @export
-measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
+measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # compute the point estimate (on only data with all obs, if IPC weights are entered)
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
     est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
@@ -37,19 +36,18 @@ measure_auc <- function(fitted_values, y, x = NULL, C = rep(1, length(y)), Z = N
         obs_grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1)*est)
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
-            df <- get_dt(y, x, Z)
-            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, df, ...)
-            ipc_eif_preds <- predict(ipc_eif_mod, df)$pred
+            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, subset(Z, C == 1, drop = FALSE), ...)
+            ipc_eif_preds <- predict(ipc_eif_mod, newdata = Z)$pred
         }
-        weighted_obs_grad <- rep(0, length(y))
+        weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad / ipc_weights[C == 1]
         grad <- weighted_obs_grad - (C / ipc_weights - 1) * ipc_eif_preds
         # one-step correction to the estimate
         cases <- y == 1
         controls <- y == 0
         case_control_comparison <- apply(matrix(fitted_values[cases]), 1, function(x) x >= fitted_values[controls])
-        numerator <- sum(sweep(sweep(case_control_comparison, 2, C / ipc_weights[cases], "*"), 1, C / weights[controls], "*"))
-        denominator <- sum(sweep(sweep(matrix(1, nrow = nrow(case_control_comparison), ncol = ncol(case_control_comparison)), 1, C / weights[controls], "*"), 2, C / weights[cases], "*"))
+        numerator <- sum(sweep(sweep(case_control_comparison, 2, 1 / ipc_weights[C == 1][cases], "*"), 1, 1 / ipc_weights[C == 1][controls], "*"))
+        denominator <- sum(sweep(sweep(matrix(1, nrow = nrow(case_control_comparison), ncol = ncol(case_control_comparison)), 1, 1 / ipc_weights[C == 1][controls], "*"), 2, 1 / ipc_weights[C == 1][cases], "*"))
         est <- numerator/denominator + mean(grad)
     } else {
         # marginal probabilities
