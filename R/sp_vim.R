@@ -82,6 +82,7 @@
 #' @importFrom stats pnorm gaussian
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom MASS ginv
+#' @importFrom data.table as.data.table
 #' @export
 sp_vim <- function(Y, X, V = 5, type = "r_squared",
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
@@ -115,6 +116,8 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
         } else {
             stop("Please enter a character vector corresponding to the names of the fully observed data.")
         }
+    } else {
+        Z_in <- NULL
     }
 
     # get the correct measure function; if not one of the supported ones, say so
@@ -129,7 +132,7 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     inner_folds_2_cc <- inner_folds_2[C[outer_folds == 2] == 1]
 
     # sample subsets, set up Z
-    z_w_lst <- sample_subsets(p = ncol(X), n = dim(X)[1], gamma = gamma)
+    z_w_lst <- sample_subsets(p = ncol(X), n = nrow(X), gamma = gamma)
     Z <- z_w_lst$Z
     W <- z_w_lst$W
     z_counts <- z_w_lst$z_counts

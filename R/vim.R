@@ -99,6 +99,7 @@
 #'             type = "accuracy")
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+#' @importFrom data.table as.data.table
 #' @export
 vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, stratified = FALSE, C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
     # check to see if f1 and f2 are missing
@@ -126,6 +127,8 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
         } else {
             stop("Please enter a character vector corresponding to the names of the fully observed data.")
         }
+    } else {
+        Z_in <- NULL
     }
 
     # get the correct measure function; if not one of the supported ones, say so
