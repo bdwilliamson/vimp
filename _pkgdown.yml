@@ -34,8 +34,6 @@ reference:
       - measure_r_squared
       - est_predictiveness_cv
       - est_predictiveness
-      - predictiveness_se
-      - predictiveness_ci
     - title: "Aggregate variable importance estimates"
       desc: "Functions to aggregate individual variable importance objects (created with calls to `vim` or `cv_vim`) by averaging or merging into larger objects."
       contents:
