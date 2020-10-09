@@ -9,7 +9,7 @@ check_inputs <- function(Y, X, f1, f2, indx, folds) {
         if (any(indx > dim(X)[2])) stop("One of the feature indices in 'indx' is larger than the total number of features in X. Please specify a new index subgroup in 'indx'.")
     }
 }
-check_fitted_values <- function(Y, f1, f2, folds, cv = FALSE) {
+check_fitted_values <- function(Y, f1, f2, folds, V = NULL, cv = FALSE) {
     if (is.null(Y)) stop("Y must be entered.")
     if (!cv) {
         if (length(f1) != length(Y[folds == 1])) stop("Fitted values from the full regression must be the same length as the number of observations in the first fold.")

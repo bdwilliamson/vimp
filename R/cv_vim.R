@@ -139,7 +139,6 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     # set up internal data -- based on complete cases only
     Y_cc <- subset(Y, C == 1, drop = FALSE)
-    X_cc <- subset(X, C == 1, drop = FALSE)
     weights_cc <- ipc_weights[C == 1]
     if (!all(C == 1)) {
         if (is.character(Z)) {
@@ -163,6 +162,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     # if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
+        X_cc <- subset(X, C == 1, drop = FALSE)
         # set up the cross-fitting
         outer_folds <- .make_folds(Y, V = 2, stratified = stratified)
         inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
@@ -212,7 +212,7 @@ cv_vim <- function(Y, X, f1, f2, indx = 1, V = length(unique(folds)), folds = NU
 
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
-        check_fitted_values(Y, f1, f2, folds, cv = TRUE)
+        check_fitted_values(Y, f1, f2, folds, V = V, cv = TRUE)
         # set up the fitted value objects (both are lists!)
         fhat_ful <- f1
         fhat_red <- f2

@@ -2,7 +2,7 @@
 
 ## Major changes
 
-* Compute one-step estimators of variable importance if inverse probability of censoring weights are entered. You input the weights, and `vimp` will handle the rest.
+* Compute one-step estimators of variable importance if inverse probability of censoring weights are entered. You input the weights, indicator of coarsening,  and observed variables, and `vimp` will handle the rest.
 
 ## Minor changes
 
@@ -11,7 +11,7 @@
 * Added argument `verbose` to `sp_vim`; if `TRUE`, messages are printed throughout fitting that display progress and `verbose` is passed to `SuperLearner`
 * Change names of internal functions from `cv_predictiveness_point_est` and  `predictiveness_point_est` to `est_predictiveness_cv` and `est_predictiveness`, respectively
 * Removed functions `cv_predictiveness_update`, `cv_vimp_point_est`, `cv_vimp_update`, `predictiveness_update`, `vimp_point_est`, `vimp_update`; this functionality is now in `est_predictiveness_cv` and `est_predictiveness` (for the `*update*` functions) or directly in `vim` or `cv_vim` (for the `*vimp*` functions)
-* Changed `weights` argument to `ipc_weights`, clarifying that these weights are meant to be used as inverse probability of censoring weights
+* Changed `weights` argument to `ipc_weights`, clarifying that these weights are meant to be used as inverse probability of coarsening (e.g., censoring) weights
 
 # vimp 2.1.0
 

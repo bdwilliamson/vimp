@@ -110,7 +110,6 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
 
     # set up internal data -- based on complete cases only
     Y_cc <- subset(Y, C == 1, drop = FALSE)
-    X_cc <- subset(X, C == 1, drop = FALSE)
     weights_cc <- ipc_weights[C == 1]
     if (!all(C == 1)) {
         if (is.character(Z)) {
@@ -134,6 +133,7 @@ vim <- function(Y, X, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_re
 
     # if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
+        X_cc <- subset(X, C == 1, drop = FALSE)
         if (is.null(folds)) {
             folds <- .make_folds(Y, V = 2, stratified = stratified)
         }
