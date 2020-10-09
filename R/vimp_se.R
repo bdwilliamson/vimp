@@ -4,7 +4,6 @@
 #'
 #' @param est the estimate of variable importance.
 #' @param eif the estimated efficient influence curve.
-#' @param denom a list of point estimate and influence curve for the denominator (if any) to make the measure of predictiveness interpretable.
 #' @param n the sample size.
 #' @param scale the scale to compute SEs on (either "log", for log-scale, or "identity", for same scale as point estimate).
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE}).
@@ -16,7 +15,7 @@
 #'
 #' @importFrom stats complete.cases
 #' @export
-vimp_se <- function(est, eif, denom = NULL, n = length(eif), scale = "log", na.rm = FALSE) {
+vimp_se <- function(est, eif, n = length(eif), scale = "log", na.rm = FALSE) {
 
     # get scale
     scales <- c("log", "logit", "identity")
