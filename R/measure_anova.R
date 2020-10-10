@@ -13,7 +13,6 @@
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated ANOVA (based on a one-step correction) of the fitted regression functions; (2) the estimated influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF predictions.
-#' @importFrom data.table data.table as.data.table
 #' @export
 measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # add on if they aren't equal length

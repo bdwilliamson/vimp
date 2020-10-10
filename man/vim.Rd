@@ -5,8 +5,8 @@
 \title{Nonparametric Variable Importance Estimates and Inference}
 \usage{
 vim(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,

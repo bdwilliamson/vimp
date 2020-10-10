@@ -5,10 +5,10 @@
 \title{Nonparametric Variable Importance Estimates and Inference using Cross-fitting}
 \usage{
 cv_vim(
-  Y,
-  X,
-  f1,
-  f2,
+  Y = NULL,
+  X = NULL,
+  f1 = NULL,
+  f2 = NULL,
   indx = 1,
   V = length(unique(folds)),
   folds = NULL,

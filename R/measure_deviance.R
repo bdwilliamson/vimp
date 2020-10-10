@@ -13,7 +13,6 @@
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated deviance of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
-#' @importFrom data.table data.table as.data.table
 #' @export
 measure_deviance <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # point estimates of all components

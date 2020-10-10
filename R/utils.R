@@ -2,10 +2,10 @@
 # Checkers
 # -------------------------------------
 check_inputs <- function(Y, X, f1, f2, indx, folds) {
-    if (missing(f1) & missing(Y)) stop("You must enter either Y or fitted values for the full regression.")
-    if (missing(f2) & missing(X)) stop("You must enter either X or fitted values for the reduced regression.")
+    if (is.null(f1) && is.null(Y)) stop("You must enter either Y or fitted values for the full regression.")
+    if (is.null(f2) && is.null(X)) stop("You must enter either X or fitted values for the reduced regression.")
     # if indx is outside the range of X, stop and throw an error
-    if (!missing(X)) {
+    if (!is.null(X)) {
         if (any(indx > dim(X)[2])) stop("One of the feature indices in 'indx' is larger than the total number of features in X. Please specify a new index subgroup in 'indx'.")
     }
 }
@@ -68,7 +68,11 @@ get_full_type <- function(type) {
       folds[y == 1] <- folds_1
       folds[y == 0] <- folds_0
     } else {
-      folds <- sample(rep(seq_len(V), probs * length(y)))
+      these_probs <- round(probs * length(y))
+      if (sum(these_probs) != length(y)) {
+        these_probs[which.min(these_probs)] <- these_probs[which.min(these_probs)] - 1
+      }
+      folds <- sample(rep(seq_len(V), these_probs))
     }
   }
   return(folds)
@@ -111,7 +115,7 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
   if (is.null(L$obsWeights)) {
     L$obsWeights <- weights
   }
-  if (missing(folds)) {
+  if (is.null(folds)) {
     folds <- .make_folds(Y, V = V, stratified = (length(unique(Y)) == 2))
   }
   this_sl_lib <- SL.library

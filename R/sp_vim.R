@@ -82,17 +82,16 @@
 #' @importFrom stats pnorm gaussian
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom MASS ginv
-#' @importFrom data.table as.data.table
 #' @export
-sp_vim <- function(Y, X, V = 5, type = "r_squared",
+sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
                    stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)),
                    Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
     # if the data is missing, stop and throw an error
-    if (missing(Y)) stop("You must enter an outcome, Y.")
-    if (missing(X)) stop("You must enter a matrix of predictors, X.")
+    if (is.null(Y)) stop("You must enter an outcome, Y.")
+    if (is.null(X)) stop("You must enter a matrix of predictors, X.")
 
     # check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
     if(is.null(dim(Y))) Y <- as.matrix(Y)
@@ -103,7 +102,7 @@ sp_vim <- function(Y, X, V = 5, type = "r_squared",
     weights_cc <- ipc_weights[C == 1]
     if (!all(C == 1)) {
         if (is.character(Z)) {
-            Z_in <- data.table::as.data.table(mget(Z))
+            Z_in <- as.data.frame(mget(Z))
             Z_names <- lapply(seq_along(Z), function(j) {
                 node <- mget(Z[j], inherits = TRUE)[[1]]
                 if (!is.null(dim(node)) && Z[j] != "Y") {

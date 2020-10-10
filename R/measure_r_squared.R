@@ -12,7 +12,6 @@
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated R-squared of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
-#' @importFrom data.table data.table as.data.table
 #' @export
 measure_r_squared <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # compute the EIF: if there is coarsening, do a correction

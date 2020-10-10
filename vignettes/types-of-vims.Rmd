@@ -36,6 +36,7 @@ heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLe
 ## minor data cleaning
 heart <- heart_data[, 2:dim(heart_data)[2]]
 heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
+x <- heart[, -ncol(heart)]
 learners.2 <- c("SL.ranger")
 set.seed(12345)
 ```
@@ -48,7 +49,7 @@ The *reduced oracle predictiveness* is defined as $V(f_{0,-s}, P_0)$, where $f_{
 # note the use of a small V and a small number of SL folds, for illustration only
 V <- 2
 sl_cvcontrol <- list(V = 2)
-fam_vim_cond <- vimp_rsquared(Y = heart$chd, X = heart[, -ncol(heart)], indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+fam_vim_cond <- vimp_rsquared(Y = heart$chd, X = x, indx = 5, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
 ```
 
 ## Marginal VIMs
@@ -57,7 +58,7 @@ The *marginal oracle predictiveness* is defined as $V(f_{0,s}, P_0)$, where $f_{
 
 ```{r est-famhist-marg}
 # note the use of a small V and a small number of SL folds, for illustration only
-fam_vim_marg <- vimp_rsquared(Y = heart$chd, X = heart[, 5, drop = FALSE], indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+fam_vim_marg <- vimp_rsquared(Y = heart$chd, X = x[, 5, drop = FALSE], indx = 1, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
 ```
 
 ## Shapley VIMs
@@ -65,7 +66,7 @@ fam_vim_marg <- vimp_rsquared(Y = heart$chd, X = heart[, 5, drop = FALSE], indx 
 The Shapley population VIM (SPVIM) generalizes the marginal and conditional VIMs by averaging over all possible subsets. More specifically, the SPVIM for feature $j$ is given by $$\sum_{s \subseteq \{1,\ldots,p\} \setminus \{j\}} \binom{p-1}{\lvert s \rvert}^{-1}\{V(f_{0, s \cup \{j\}}, P_0)) - V(f_{0,s}, P_0)\};$$ this is the average gain in predictiveness from adding feature $j$ to each possible grouping of the other features. To estimate the SPVIM for family history of heart disease, I can use the following code (note that `sp_vim` returns VIM estimates for all features):
 
 ```{r est-famhist-spvim}
-all_vim_spvim <- sp_vim(Y = heart$chd, X = heart[, -ncol(heart)], SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+all_vim_spvim <- sp_vim(Y = heart$chd, X = x, type = "r_squared", SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol, env = environment())
 ```
 
 ## Adjusting for confounders

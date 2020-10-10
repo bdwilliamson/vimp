@@ -5,8 +5,8 @@
 \title{Shapley Population Variable Importance Measure (SPVIM) Estimates and Inference}
 \usage{
 sp_vim(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   V = 5,
   type = "r_squared",
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
