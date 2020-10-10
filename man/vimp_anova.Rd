@@ -5,8 +5,8 @@
 \title{Nonparametric Variable Importance Estimates: ANOVA}
 \usage{
 vimp_anova(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,

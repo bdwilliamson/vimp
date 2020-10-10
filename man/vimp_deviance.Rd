@@ -5,8 +5,8 @@
 \title{Nonparametric Variable Importance Estimates: Deviance}
 \usage{
 vimp_deviance(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,

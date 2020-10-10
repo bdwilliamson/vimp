@@ -5,8 +5,8 @@
 \title{Nonparametric Variable Importance Estimates}
 \usage{
 vimp_regression(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,

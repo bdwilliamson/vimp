@@ -5,8 +5,8 @@
 \title{Nonparametric Variable Importance Estimates: $R^2$}
 \usage{
 vimp_rsquared(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,

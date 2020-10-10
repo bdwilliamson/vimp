@@ -5,8 +5,8 @@
 \title{Nonparametric Variable Importance Estimates: AUC}
 \usage{
 vimp_auc(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,
