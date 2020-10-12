@@ -188,8 +188,13 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
 
     # calculate the standard error
     ses <- vector("numeric", ncol(X) + 1)
+    var_v_contribs <- vector("numeric", ncol(X) + 1)
+    var_s_contribs <- vector("numeric", ncol(X) + 1)
     for (j in 1:(ncol(X) + 1)) {
-        ses[j] <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
+        ses_res <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
+        ses[j] <- ses_res$se
+        var_v_contribs[j] <- ses_res$var_v_contrib
+        var_s_contribs[j] <- ses_res$var_s_contrib
     }
     # if est < 0, set to zero and print warning
     if (any(est < 0)) {
@@ -219,30 +224,29 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     hyp_tests <- p_values < alpha
 
     # create the output and return it
-    # create output tibble
     mat <- tibble::tibble(s = as.character(1:ncol(X)), est = est[-1], se = ses[-1], cil = cis[, 1],
-                          ciu = cis[, 2], test = hyp_tests, p_value = p_values)
+                          ciu = cis[, 2], test = hyp_tests, p_value = p_values, var_v_contribs=var_v_contribs[-1], var_s_contribs=var_s_contribs[-1])
     output <- list(s = as.character(1:ncol(X)),
-                 SL.library = SL.library,
-                 v = v,
-                 preds_lst = c(list(preds_none), preds_lst),
-                 est = est,
-                 ic_lst = c(list(ic_none), ic_lst),
-                 ic = ics,
-                 se = ses, ci = cis,
-                 test = hyp_tests,
-                 p_value = p_values,
-                 test_statistic = test_statistics,
-                 gamma = gamma,
-                 alpha = alpha,
-                 delta = delta,
-                 y = Y,
-                 ipc_weights = ipc_weights,
-                 scale = "identity",
-                 outer_folds = outer_folds,
-                 inner_folds_1 = inner_folds_1,
-                 inner_folds_2 = inner_folds_2,
-                 mat = mat)
+                   SL.library = SL.library,
+                   v = v,
+                   preds_lst = c(list(preds_none), preds_lst),
+                   est = est,
+                   ic_lst = c(list(ic_none), ic_lst),
+                   ic = ics,
+                   se = ses,
+                   var_v_contribs = var_v_contribs,
+                   var_s_contribs = var_s_contribs,
+                   ci = cis,
+                   test = hyp_tests,
+                   p_value = p_values,
+                   test_statistic = test_statistics,
+                   gamma = gamma,
+                   alpha = alpha,
+                   delta = delta,
+                   y = Y,
+                   weights = weights,
+                   scale = "identity",
+                   mat = mat)
 
     # make it also an vim object
     tmp.cls <- class(output)
