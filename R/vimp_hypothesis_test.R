@@ -10,8 +10,6 @@
 #' @param se_reduced the estimated standard error for the predictiveness of the regression excluding the covariate(s) of interest.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param alpha the desired type I error rate (defaults to 0.05).
-#' @param scale scale to compute CI on ("identity" for identity scale, "logit" for logit scale and back-transform)
-#' @param na.rm logical; should NAs be removed in computation? (defaults to \code{FALSE})
 #'
 #' @return a list, with: the hypothesis testing decision (\code{TRUE} if the null hypothesis is rejected, \code{FALSE} otherwise); the p-value from the hypothesis test; and the test statistic from the hypothesis test.
 #'

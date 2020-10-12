@@ -1,5 +1,4 @@
 #' Estimate R-squared
-#' Compute nonparametric estimate of R-squared.
 #'
 #' @param fitted_values fitted values from a regression function using the observed data.
 #' @param y the observed outcome.

@@ -1,5 +1,4 @@
-#' Estimate ANOVA
-#' Compute nonparametric estimate of the ANOVA decomposition.
+#' Estimate ANOVA decomposition-based variable importance.
 #'
 #' @param full fitted values from a regression function of the observed outcome on the full set of covariates.
 #' @param reduced fitted values from a regression on the reduced set of observed covariates.

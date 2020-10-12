@@ -26,6 +26,8 @@ est_predictiveness_cv(
 
 \item{folds}{the cross-validation folds for the observed data}
 
+\item{type}{which parameter are you estimating (defaults to \code{r_squared}, for R-squared-based variable importance)?}
+
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
 
 \item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.}

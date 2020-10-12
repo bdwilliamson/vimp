@@ -2,8 +2,7 @@
 % Please edit documentation in R/measure_anova.R
 \name{measure_anova}
 \alias{measure_anova}
-\title{Estimate ANOVA
-Compute nonparametric estimate of the ANOVA decomposition.}
+\title{Estimate ANOVA decomposition-based variable importance.}
 \usage{
 measure_anova(
   full,
@@ -43,6 +42,5 @@ measure_anova(
 A named list of: (1) the estimated ANOVA (based on a one-step correction) of the fitted regression functions; (2) the estimated influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF predictions.
 }
 \description{
-Estimate ANOVA
-Compute nonparametric estimate of the ANOVA decomposition.
+Estimate ANOVA decomposition-based variable importance.
 }

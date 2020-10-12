@@ -2,7 +2,6 @@
 library("testthat")
 library("SuperLearner")
 library("xgboost")
-library("data.table")
 library("vimp")
 
 # generate the data
@@ -27,7 +26,7 @@ shapley_val_2 <- (1/2) * (r2_two - 0) + (1/2) * (r2_full - r2_one)
 # get the true conditional VIM
 true_vim <- (500/729)/(1 + 2497/7875 + 500/729)
 
-# make this a two-phase study, assume that X is only measured on 
+# make this a two-phase study, assume that X is only measured on
 # subjects in the second phase; note C = 1 is inclusion
 C <- rbinom(n, size = 1, prob = exp(y) / (1 + exp(y)))
 tmp_x <- x

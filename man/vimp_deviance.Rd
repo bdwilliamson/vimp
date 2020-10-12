@@ -61,10 +61,6 @@ vimp_deviance(
 \item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
-
-\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
-
-\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
 }
 \value{
 An object of classes \code{vim} and \code{vim_deviance}. See Details for more information.

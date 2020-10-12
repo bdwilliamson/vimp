@@ -2,8 +2,7 @@
 % Please edit documentation in R/measure_r_squared.R
 \name{measure_r_squared}
 \alias{measure_r_squared}
-\title{Estimate R-squared
-Compute nonparametric estimate of R-squared.}
+\title{Estimate R-squared}
 \usage{
 measure_r_squared(
   fitted_values,
@@ -41,5 +40,4 @@ A named list of: (1) the estimated R-squared of the fitted regression function; 
 }
 \description{
 Estimate R-squared
-Compute nonparametric estimate of R-squared.
 }

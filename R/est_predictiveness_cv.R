@@ -5,6 +5,7 @@
 #' @param fitted_values fitted values from a regression function using the observed data; a list of length V, where each object is a set of predictions on the validation data.
 #' @param y the observed outcome.
 #' @param folds the cross-validation folds for the observed data
+#' @param type which parameter are you estimating (defaults to \code{r_squared}, for R-squared-based variable importance)?
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.
 #' @param folds_Z either the cross-validation folds for the observed data (no coarsening) or a vector of folds for the fully observed data Z.
