@@ -96,7 +96,8 @@ After using the `vimp` package, please cite the following (for R-squared-based v
       author={Williamson, BD and Gilbert, PB and Carone, M and Simon, R},
       title={Nonparametric variable importance assessment using machine learning techniques},
       journal={Biometrics},
-      year={2020}
+      year={2020},
+      doi={10.1111/biom.13392}
     }
 ```
 

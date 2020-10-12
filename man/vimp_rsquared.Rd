@@ -2,7 +2,7 @@
 % Please edit documentation in R/vimp_rsquared.R
 \name{vimp_rsquared}
 \alias{vimp_rsquared}
-\title{Nonparametric Variable Importance Estimates: $R^2$}
+\title{Nonparametric Variable Importance Estimates: R-squared}
 \usage{
 vimp_rsquared(
   Y = NULL,

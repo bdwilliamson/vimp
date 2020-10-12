@@ -1,4 +1,4 @@
-#' Nonparametric Variable Importance Estimates: $R^2$
+#' Nonparametric Variable Importance Estimates: R-squared
 #'
 #' Compute estimates of and confidence intervals for nonparametric $R^2$-based variable importance. This is a wrapper function for \code{cv_vim}, with \code{type = "r_squared"}.
 #'

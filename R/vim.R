@@ -111,7 +111,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
     # set up internal data -- based on complete cases only
     Y_cc <- subset(Y, C == 1, drop = FALSE)
     weights_cc <- ipc_weights[C == 1]
-    if (!all(C == 1)) {
+    if (!all(C == 1) || !all(ipc_weights == 1)) {
         if (is.character(Z)) {
             Z_in <- as.data.frame(mget(Z))
             Z_names <- lapply(seq_along(Z), function(j) {

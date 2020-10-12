@@ -100,7 +100,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     Y_cc <- subset(Y, C == 1, drop = FALSE)
     X_cc <- subset(X, C == 1, drop = FALSE)
     weights_cc <- ipc_weights[C == 1]
-    if (!all(C == 1)) {
+    if (!all(C == 1) || !all(ipc_weights == 1)) {
         if (is.character(Z)) {
             Z_in <- as.data.frame(mget(Z))
             Z_names <- lapply(seq_along(Z), function(j) {
