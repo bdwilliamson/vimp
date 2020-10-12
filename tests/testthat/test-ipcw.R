@@ -63,9 +63,9 @@ univariate_learners <- "SL.polymars"
 set.seed(91011)
 # test that SPVIM with inverse probability of coarsening weights works
 test_that("SPVIM with inverse probability of coarsening weights works", {
-  est_spvim <- sp_vim(Y = y, X = x, type = "r_squared", V = 2, SL.library = learners,
+  expect_warning(est_spvim <- sp_vim(Y = y, X = x, type = "r_squared", V = 2, SL.library = learners,
                       univariate_SL.library = univariate_learners, gamma = 0.1,
-                   alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
-                   cvControl = list(V = 2), env = environment())
+                      alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
+                      cvControl = list(V = 2), env = environment()))
   expect_equal(est_spvim$est[3], shapley_val_2, tolerance = 0.3, scale = 1)
 })
