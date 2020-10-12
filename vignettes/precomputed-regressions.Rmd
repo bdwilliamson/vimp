@@ -7,6 +7,19 @@ vignette: >
   %\VignetteIndexEntry{Using precomputed regression function estimates in `vimp`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+references:
+- id: hastie2009
+  title: The Elements of Statistical Learning
+  author:
+  - family: Hastie
+    given: T
+  - family: Tibshirani
+    given: R
+  - family: Friedman
+    given: J
+  type: book
+  issued:
+    year: 2009
 ---
 
 ```{r, include = FALSE}
@@ -366,3 +379,5 @@ cf_groups$mat %>%
 ## Conclusion
 
 In this document, we learned a second method for computing variable importance estimates: rather than having `vimp` run all regression functions for you, you can compute your own regressions and pass these to `vimp`. The results are equivalent, but there is a tradeoff: what you save in computation time by only computing the full regression once must be balanced with the mental overhead of correctly computing the regressions. Additionally, this task is more difficult when using cross-fitted variable importance, which I recommend in nearly all cases when using flexible machine learning tools.
+
+## References

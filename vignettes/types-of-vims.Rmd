@@ -7,6 +7,19 @@ vignette: >
   %\VignetteIndexEntry{Types of VIMs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+references:
+- id: hastie2009
+  title: The Elements of Statistical Learning
+  author:
+  - family: Hastie
+    given: T
+  - family: Tibshirani
+    given: R
+  - family: Friedman
+    given: J
+  type: book
+  issued:
+    year: 2009
 ---
 
 ```{r, include = FALSE}
@@ -90,3 +103,5 @@ This is simply a function of the fact that the VIMs are different population par
 * the SPVIM provides information about the predictiveness of the covariate averaged over all sets of adjustment variables.
 
 To choose a VIM, identify which of these three (there may be more than one) that best addresses your scientific question.
+
+## References

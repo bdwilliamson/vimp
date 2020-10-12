@@ -32,7 +32,7 @@ est_predictiveness_cv(
 
 \item{folds_Z}{either the cross-validation folds for the observed data (no coarsening) or a vector of folds for the fully observed data Z.}
 
-\item{ipc_weights}{weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.}
+\item{ipc_weights}{weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
 \item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
 
