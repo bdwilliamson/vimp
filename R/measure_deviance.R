@@ -33,7 +33,7 @@ measure_deviance <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, 
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
           ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...)
-          ipc_eif_preds <- predict(ipc_eif_mod, newdata = Z)$pred
+          ipc_eif_preds <- predict(ipc_eif_mod, newdata = Z, onlySL = TRUE)$pred
         }
         weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]

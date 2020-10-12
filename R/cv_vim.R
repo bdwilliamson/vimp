@@ -182,9 +182,9 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, V = lengt
         for (v in 1:V) {
             # fit super learner
             fit <- SuperLearner::SuperLearner(Y = Y_cc[(outer_folds_cc == 1), , drop = FALSE][inner_folds_1_cc != v, , drop = FALSE], X = X_cc[(outer_folds_cc == 1), , drop = FALSE][inner_folds_1_cc != v, , drop = FALSE], SL.library = SL.library, obsWeights = weights_cc[(outer_folds_cc == 1)][inner_folds_1_cc != v], ...)
-            fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
+            fitted_v <- SuperLearner::predict.SuperLearner(fit, onlySL = TRUE)$pred
             # get predictions on the validation fold
-            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X_cc[(outer_folds_cc == 1), , drop = FALSE][inner_folds_1_cc == v, , drop = FALSE])$pred
+            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = X_cc[(outer_folds_cc == 1), , drop = FALSE][inner_folds_1_cc == v, , drop = FALSE], onlySL = TRUE)$pred
             # fit the super learner on the reduced covariates:
             # if the reduced set of covariates is empty, return the mean
             # otherwise, if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
@@ -197,7 +197,7 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, V = lengt
                 } else if (type == "r_squared" || type == "anova") {
                     arg_lst$family <- stats::gaussian()
                     fit_2 <- SuperLearner::SuperLearner(Y = Y_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE], X = X_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE], SL.library = SL.library, ...)
-                    arg_lst$Y <- SuperLearner::predict.SuperLearner(fit_2)$pred
+                    arg_lst$Y <- SuperLearner::predict.SuperLearner(fit_2, onlySL = TRUE)$pred
                 } else {
                     arg_lst$Y <- Y_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc != v, , drop = FALSE]
                     # get the family
@@ -209,7 +209,7 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, V = lengt
                 arg_lst$obsWeights <- weights_cc[(outer_folds_cc == 2)][inner_folds_2_cc != v]
                 red <- do.call(SuperLearner::SuperLearner, arg_lst)
                 # get predictions on the validation fold
-                fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc == v, -indx, drop = FALSE])$pred
+                fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red, newdata = X_cc[(outer_folds_cc == 2), , drop = FALSE][inner_folds_2_cc == v, -indx, drop = FALSE], onlySL = TRUE)$pred
             }
         }
         full <- reduced <- NA

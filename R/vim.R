@@ -166,7 +166,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
                     arg_lst$Y <- Y_cc[(folds_cc == 2), , drop = FALSE]
                 } else {
                     arg_lst$family <- stats::gaussian()
-                    arg_lst$Y <- SuperLearner::predict.SuperLearner(full, newdata = X_cc[(folds_cc == 2), , drop = FALSE])$pred
+                    arg_lst$Y <- SuperLearner::predict.SuperLearner(full, newdata = X_cc[(folds_cc == 2), , drop = FALSE], onlySL = TRUE)$pred
                 }
                 arg_lst$X <- X_minus_s[(folds_cc == 2), , drop = FALSE]
                 arg_lst$SL.library <- SL.library
@@ -175,7 +175,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
             reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
 
             # get the fitted values
-            fhat_red <- SuperLearner::predict.SuperLearner(reduced)$pred
+            fhat_red <- SuperLearner::predict.SuperLearner(reduced, onlySL = TRUE)$pred
         }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect

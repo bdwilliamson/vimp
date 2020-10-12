@@ -148,9 +148,9 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
       fhat_ful[[v]] <- fit$pred
     } else {
       fit <- do.call(SuperLearner::SuperLearner, new_arg_list)
-      fitted_v <- SuperLearner::predict.SuperLearner(fit, newdata = red_X)$pred
+      fitted_v <- SuperLearner::predict.SuperLearner(fit, newdata = red_X, onlySL = TRUE)$pred
       # get predictions on the validation fold
-      fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, , drop = FALSE])$pred
+      fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, , drop = FALSE], onlySL = TRUE)$pred
     }
 
   }
