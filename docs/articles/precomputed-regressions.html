@@ -183,15 +183,15 @@
 <span class="no">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 9 0.2616031 0.05091034 [0.1618207, 0.3613855] TRUE     1.438515e-07</span>
-<span class="co">#&gt; s = 2 0.2558054 0.05094546 [0.1559541, 0.3556567] TRUE     2.276326e-07</span>
-<span class="co">#&gt; s = 1 0.2534974 0.05163077 [0.1523030, 0.3546919] TRUE     3.156853e-07</span>
-<span class="co">#&gt; s = 5 0.2533727 0.05145159 [0.1525295, 0.3542160] TRUE     3.328437e-07</span>
-<span class="co">#&gt; s = 7 0.2528205 0.05137189 [0.1521335, 0.3535076] TRUE     3.504889e-07</span>
-<span class="co">#&gt; s = 4 0.2504868 0.05156180 [0.1494275, 0.3515460] TRUE     4.515571e-07</span>
-<span class="co">#&gt; s = 8 0.2504376 0.05149715 [0.1495050, 0.3513702] TRUE     4.511267e-07</span>
-<span class="co">#&gt; s = 3 0.2504016 0.05150577 [0.1494522, 0.3513511] TRUE     4.525742e-07</span>
-<span class="co">#&gt; s = 6 0.2466328 0.05148531 [0.1457234, 0.3475421] TRUE     6.372214e-07</span></pre></body></html></div>
+<span class="co">#&gt; s = 9 0.2673280 0.04851166 [0.1722469, 0.3624091] TRUE     4.783630e-08</span>
+<span class="co">#&gt; s = 3 0.2511571 0.05201494 [0.1492097, 0.3531045] TRUE     4.604710e-07</span>
+<span class="co">#&gt; s = 6 0.2426781 0.05205464 [0.1406529, 0.3447034] TRUE     1.178600e-06</span>
+<span class="co">#&gt; s = 8 0.2419720 0.05188473 [0.1402798, 0.3436642] TRUE     1.240964e-06</span>
+<span class="co">#&gt; s = 5 0.2410632 0.05192519 [0.1392917, 0.3428347] TRUE     1.363296e-06</span>
+<span class="co">#&gt; s = 1 0.2370993 0.05203869 [0.1351053, 0.3390932] TRUE     1.885465e-06</span>
+<span class="co">#&gt; s = 7 0.2354519 0.05146736 [0.1345777, 0.3363260] TRUE     2.119822e-06</span>
+<span class="co">#&gt; s = 2 0.2347916 0.05135812 [0.1341316, 0.3354517] TRUE     2.259667e-06</span>
+<span class="co">#&gt; s = 4 0.2342256 0.05003994 [0.1361491, 0.3323021] TRUE     1.661097e-06</span></pre></body></html></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -234,7 +234,7 @@
 <span class="no">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1107966 [0, 0.2171573] FALSE    0.7687646</span></pre></body></html></div>
+<span class="co">#&gt; s = 6 0        0.1020836 [0, 0.2000802] FALSE    0.9297489</span></pre></body></html></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co">## set up the data, removing the columns for alcohol use and chd</span>
@@ -426,8 +426,6 @@
 <span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =</span>
 <span class="co">#&gt; "r_squared", : Original estimate &lt; 0; returning zero.</span>
 <span class="no">cf_tob_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">fhat_ful</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">fhat_red_tob</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">inner_folds_1</span>, <span class="no">inner_folds_2</span>)))
-<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =</span>
-<span class="co">#&gt; "r_squared", : Original estimate &lt; 0; returning zero.</span>
 <span class="no">cf_ldl_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">fhat_ful</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">fhat_red_ldl</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">folds</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">outer_folds</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="no">inner_folds_1</span>, <span class="no">inner_folds_2</span>)))
 <span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =</span>
 <span class="co">#&gt; "r_squared", : Original estimate &lt; 0; returning zero.</span>
