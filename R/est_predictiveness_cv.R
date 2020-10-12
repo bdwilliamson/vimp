@@ -8,7 +8,7 @@
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.
 #' @param folds_Z either the cross-validation folds for the observed data (no coarsening) or a vector of folds for the fully observed data Z.
-#' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
+#' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})

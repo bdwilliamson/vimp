@@ -16,7 +16,7 @@
 #' @param verbose should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
-#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)
+#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -102,16 +102,19 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     weights_cc <- ipc_weights[C == 1]
     if (!all(C == 1) || !all(ipc_weights == 1)) {
         if (is.character(Z)) {
-            Z_in <- as.data.frame(mget(Z))
-            Z_names <- lapply(seq_along(Z), function(j) {
-                node <- mget(Z[j], inherits = TRUE)[[1]]
-                if (!is.null(dim(node)) && Z[j] != "Y") {
-                  colnames(node)
+            tmp_Z <- Z[Z != "Y"]
+            minus_X <- as.numeric(gsub("X", "", tmp_Z))
+            # check to see if it is only part of X matrix
+            if (any(sapply(seq_along(minus_X), function(j) length(minus_X[j]) > 0))) {
+                if (any(grepl("Y", Z))) {
+                    Z_in <- as.data.frame(mget("Y"))
                 } else {
-                  Z[j]
+                    Z_in <- NULL
                 }
-              })
-          colnames(Z_in) <- do.call(c, Z_names)
+                Z_in <- cbind.data.frame(Z_in, X[, minus_X])
+            } else {
+                Z_in <- as.data.frame(mget(Z))
+            }
         } else {
             stop("Please enter a character vector corresponding to the names of the fully observed data.")
         }

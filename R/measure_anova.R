@@ -6,7 +6,7 @@
 #' @param y the observed outcome.
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.
-#' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation.
+#' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
@@ -32,14 +32,14 @@ measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc
         obs_grad <- obs_eif_num / obs_denom - obs_num / (obs_denom ^ 2) * obs_eif_denom
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
-            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, subset(Z, C == 1, drop = FALSE), ...)
+            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...)
             ipc_eif_preds <- predict(ipc_eif_mod, newdata = Z)$pred
         }
         weighted_obs_grad <- rep(0, length(C))
-        weighted_obs_grad[C == 1] <- obs_grad / ipc_weights
-        grad <- weighted_obs_grad - (C / ipc_weights - 1) * ipc_eif_preds
-        num <- mean((1 / ipc_weights[C == 1]) * ((full - reduced) ^ 2), na.rm = na.rm)
-        denom <- mean((1 / ipc_weights[C == 1]) * (y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
+        weighted_obs_grad[C == 1] <- obs_grad * ipc_weights
+        grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
+        num <- mean((1 * ipc_weights[C == 1]) * ((full - reduced) ^ 2), na.rm = na.rm)
+        denom <- mean((1 * ipc_weights[C == 1]) * (y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
         est <- num / denom + mean(grad)
     } else {
         num <- mean((full - reduced) ^ 2, na.rm = na.rm)
