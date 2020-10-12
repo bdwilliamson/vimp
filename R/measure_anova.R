@@ -12,6 +12,7 @@
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated ANOVA (based on a one-step correction) of the fitted regression functions; (2) the estimated influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF predictions.
+#' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
 measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
     # add on if they aren't equal length
@@ -32,7 +33,7 @@ measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), method = "method.CC_LS", ...)
-            ipc_eif_preds <- predict(ipc_eif_mod, newdata = Z, onlySL = TRUE)$pred
+            ipc_eif_preds <- SuperLearner::predict.SuperLearner(ipc_eif_mod, newdata = Z, onlySL = TRUE)$pred
         }
         weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights
