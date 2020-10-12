@@ -244,7 +244,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    alpha = alpha,
                    delta = delta,
                    y = Y,
-                   weights = weights,
+                   ipc_weights = ipc_weights,
                    scale = "identity",
                    mat = mat)
 
