@@ -32,7 +32,7 @@ measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc
         obs_grad <- obs_eif_num / obs_denom - obs_num / (obs_denom ^ 2) * obs_eif_denom
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
-            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...)
+            ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), method = "method.CC_LS", ...)
             ipc_eif_preds <- predict(ipc_eif_mod, newdata = Z, onlySL = TRUE)$pred
         }
         weighted_obs_grad <- rep(0, length(C))
