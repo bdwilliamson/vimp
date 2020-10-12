@@ -30,9 +30,12 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         # contributions from cases and controls
         contrib_1 <- (y == 1)/p_1*sens
         contrib_0 <- (y == 0)/p_0*spec
+        # observed AUC
+        obs_preds <- ROCR::prediction(predictions = fitted_values, labels = y)
+        obs_auc <- unlist(ROCR::performance(prediction.obj = obs_preds, measure = "auc", x.measure = "cutoff")@y.values)
 
         # gradient
-        obs_grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1)*est)
+        obs_grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1) * obs_auc)
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...)
@@ -61,8 +64,12 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         contrib_1 <- (y == 1)/p_1*sens
         contrib_0 <- (y == 0)/p_0*spec
 
+        # AUC
+        preds <- ROCR::prediction(predictions = fitted_values, labels = y)
+        auc <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
+
         # gradient
-        grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1)*est)
+        grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1) * auc)
     }
     return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }
