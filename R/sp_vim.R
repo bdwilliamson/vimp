@@ -1,21 +1,22 @@
 #' Shapley Population Variable Importance Measure (SPVIM) Estimates and Inference
 #'
 #' Compute estimates and confidence intervals for the SPVIMs, using cross-fitting.
-#' This essentially involves splitting the data into V train/test splits; train the learners on the training data, evaluate importance on the test data; and average over these splits.
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
-#' @param V the number of folds for cross-validation, defaults to 10.
-#' @param weights weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)
-#' @param type the type of parameter (e.g., R-squared-based is \code{"r_squared"}).
-#' @param SL.library either (1) a character vector of learners to pass to \code{SuperLearner} (defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}), or (2) a single algorithm (e.g., \code{SL.xgboost})
+#' @param V the number of folds for cross-fitting, defaults to 10.
+#' @param type the type of parameter (e.g., R-squared-based is \code{"r_squared"}). Note that \code{type = 'anova'} is not allowed for SPVIMs.
+#' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
 #' @param univariate_SL.library (optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}
 #' @param gamma the fraction of the sample size to use when sampling subsets (e.g., \code{gamma = 1} samples the same number of subsets as the sample size)
 #' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param na.rm should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})
-#' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)?
+#' @param stratified should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-fitting folds)?
 #' @param verbose should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})
+#' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
+#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
+#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -36,20 +37,20 @@
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
 #' \itemize{
-#'  \item{SL.library}{: the library of learners passed to \code{SuperLearner}}
-#'  \item{v}{: the estimated predictiveness measure for each sampled subset}
-#'  \item{preds_lst}{: the predicted values from the chosen method for each sampled subset}
-#'  \item{est}{: the estimated SPVIM value for each feature}
-#'  \item{ic_lst}{: the influence functions for each sampled subset}
-#'  \item{ic}{: a list of the SPVIM influence function contributions}
-#'  \item{se}{: the standard errors for the estimated variable importance}
-#'  \item{ci}{: the \eqn{(1-\alpha) \times 100}\% confidence intervals based on the variable importance estimates}
-#'  \item{gamma}{: the fraction of the sample size used when sampling subsets}
-#'  \item{alpha}{: the level, for confidence interval calculation}
-#'  \item{delta}{: the \code{delta} value used for hypothesis testing}
-#'  \item{y}{: the outcome}
-#'  \item{weights}{: the weights}
-#'  \item{mat}{: a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values}
+#'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
+#' \item{v}{- the estimated predictiveness measure for each sampled subset}
+#'  \item{preds_lst}{ - the predicted values from the chosen method for each sampled subset}
+#'  \item{est}{ - the estimated SPVIM value for each feature}
+#'  \item{ic_lst}{ - the influence functions for each sampled subset}
+#'  \item{ic}{- a list of the SPVIM influence function contributions}
+#'  \item{se}{ - the standard errors for the estimated variable importance}
+#'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence intervals based on the variable importance estimates}
+#'  \item{gamma}{- the fraction of the sample size used when sampling subsets}
+#'  \item{alpha}{ - the level, for confidence interval calculation}
+#'  \item{delta}{- the \code{delta} value used for hypothesis testing}
+#'  \item{y}{ - the outcome}
+#'  \item{ipc_weights}{ - the weights}
+#'  \item{mat}{- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values}
 #' }
 #'
 #' @examples
@@ -57,133 +58,158 @@
 #' library(ranger)
 #' n <- 100
 #' p <- 2
-#' ## generate the data
+#' # generate the data
 #' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 #'
-#' ## apply the function to the x's
+#' # apply the function to the x's
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 #'
-#' ## generate Y ~ Normal (smooth, 1)
+#' # generate Y ~ Normal (smooth, 1)
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #'
-#' ## set up a library for SuperLearner
+#' # set up a library for SuperLearner
 #' learners <- c("SL.mean", "SL.ranger")
 #'
-#' ## -----------------------------------------
-#' ## using Super Learner (with a small number of CV folds,
-#' ## for illustration only)
-#' ## -----------------------------------------
+#' # -----------------------------------------
+#' # using Super Learner (with a small number of CV folds,
+#' # for illustration only)
+#' # -----------------------------------------
 #' set.seed(4747)
 #' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared",
 #' SL.library = learners, alpha = 0.05)
 #'
-#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package. If a single learner is passed in to \code{SL.library}, it must take the same arguments as a SuperLearner wrapper.
+#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @importFrom stats pnorm gaussian
 #' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom MASS ginv
 #' @export
-sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
+sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
-                   stratified = FALSE, verbose = FALSE, ...) {
-    ## check to see if f1 and f2 are missing
-    ## if the data is missing, stop and throw an error
-    if (missing(Y)) stop("You must enter an outcome, Y.")
-    if (missing(X)) stop("You must enter a matrix of predictors, X.")
+                   stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)),
+                   Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
+    # if the data is missing, stop and throw an error
+    if (is.null(Y)) stop("You must enter an outcome, Y.")
+    if (is.null(X)) stop("You must enter a matrix of predictors, X.")
 
-    ## check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
+    # check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
     if(is.null(dim(Y))) Y <- as.matrix(Y)
 
-    ## get the correct measure function; if not one of the supported ones, say so
-    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
-    full_type <- types[pmatch(type, types)]
-    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
+    # set up internal data -- based on complete cases only
+    Y_cc <- subset(Y, C == 1, drop = FALSE)
+    X_cc <- subset(X, C == 1, drop = FALSE)
+    weights_cc <- ipc_weights[C == 1]
+    if (!all(C == 1) || !all(ipc_weights == 1)) {
+        if (is.character(Z)) {
+            tmp_Z <- Z[Z != "Y"]
+            minus_X <- as.numeric(gsub("X", "", tmp_Z))
+            # check to see if it is only part of X matrix
+            if (any(sapply(seq_along(minus_X), function(j) length(minus_X[j]) > 0))) {
+                if (any(grepl("Y", Z))) {
+                    Z_in <- as.data.frame(mget("Y"))
+                } else {
+                    Z_in <- NULL
+                }
+                Z_in <- cbind.data.frame(Z_in, X[, minus_X])
+            } else {
+                Z_in <- as.data.frame(mget(Z))
+            }
+        } else {
+            stop("Please enter a character vector corresponding to the names of the fully observed data.")
+        }
+    } else {
+        Z_in <- NULL
+    }
 
-    ## set up the cross-validation
+    # get the correct measure function; if not one of the supported ones, say so
+    full_type <- get_full_type(type)
+
+    # set up the cross-fitting
     outer_folds <- .make_folds(Y, V = 2, stratified = stratified, probs = c(0.25, 0.75))
     inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified)
     inner_folds_2 <- .make_folds(Y[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified)
+    outer_folds_cc <- outer_folds[C == 1]
+    inner_folds_1_cc <- inner_folds_1[C[outer_folds == 1] == 1]
+    inner_folds_2_cc <- inner_folds_2[C[outer_folds == 2] == 1]
 
-    ## sample subsets, set up Z
-    z_w_lst <- sample_subsets(p = dim(X)[2], n = dim(X)[1], gamma = gamma)
+    # sample subsets, set up Z
+    z_w_lst <- sample_subsets(p = ncol(X), n = nrow(X), gamma = gamma)
     Z <- z_w_lst$Z
     W <- z_w_lst$W
     z_counts <- z_w_lst$z_counts
     S <- z_w_lst$S
 
-    ## get v, preds, ic for null set
+    # get v, preds, ic for null set
     preds_none <- list()
     for (v in 1:V) {
-        preds_none[[v]] <- rep(mean(Y[outer_folds == 2, ][inner_folds_2 == v]), sum(inner_folds_2 == v))
+        preds_none[[v]] <- rep(mean(Y_cc[(outer_folds_cc == 2), ][inner_folds_2_cc == v]), sum(inner_folds_2_cc == v))
     }
-    v_none <- cv_predictiveness_point_est(fitted_values = preds_none, y = Y[outer_folds == 2, , drop = FALSE], folds = inner_folds_2, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est
-    ic_none <- cv_predictiveness_update(preds_none, Y[outer_folds == 2, , drop = FALSE], inner_folds_2, weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic
+    v_none_lst <- est_predictiveness_cv(fitted_values = preds_none, y = Y_cc[outer_folds_cc == 2, , drop = FALSE], folds = inner_folds_2_cc, C = C[outer_folds == 2], Z = Z_in[outer_folds == 2, , drop = FALSE], folds_Z = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], ipc_fit_type = "SL", type = full_type, na.rm = na.rm, SL.library = SL.library, ...)
+    v_none <- v_none_lst$point_est
+    ic_none <- v_none_lst$eif
 
-    ## get v, preds, ic for remaining non-null groups in S
+    # get v, preds, ic for remaining non-null groups in S
     if (verbose) {
-        message(paste("Fitting", length(S[-1]), "learners. Progress:"))
+        message("Fitting learners. Progress:")
         progress_bar <- txtProgressBar(min = 0, max = length(S[-1]), style = 3)
     } else {
         progress_bar <- NULL
     }
-    preds_lst <- sapply(1:length(S[-1]), function(i) run_sl(Y[outer_folds == 2, , drop = FALSE], X[outer_folds == 2, ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = S[-1][[i]], folds = inner_folds_2, verbose = verbose, progress_bar = progress_bar, indx = i, ...),
-                        simplify = FALSE)
+    preds_lst <- sapply(1:length(S[-1]), function(i) run_sl(Y_cc[(outer_folds_cc == 2), , drop = FALSE], X_cc[(outer_folds_cc == 2), ], V = V, SL.library = SL.library, univariate_SL.library = univariate_SL.library, s = S[-1][[i]], folds = inner_folds_2_cc, verbose = verbose, progress_bar = progress_bar, indx = i, weights = weights_cc[(outer_folds_cc == 2)], ...), simplify = FALSE)
     if (verbose) {
         close(progress_bar)
     }
-    v_lst <- lapply(preds_lst, function(x) cv_predictiveness_point_est(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$point_est)
-    ic_lst <- lapply(preds_lst, function(x) cv_predictiveness_update(fitted_values = x$preds, y = Y[outer_folds == 2, , drop = FALSE], folds = x$folds, weights = weights[outer_folds == 2], type = full_type, na.rm = na.rm)$ic)
+    v_full_lst <- lapply(preds_lst, function(l) est_predictiveness_cv(fitted_values = l$preds, y = Y_cc[outer_folds_cc == 2, , drop = FALSE], folds = l$folds, C = C[outer_folds == 2], Z = Z_in[outer_folds == 2, , drop = FALSE], folds_Z = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...))
+    v_lst <- lapply(v_full_lst, function(l) l$point_est)
+    ic_lst <- lapply(v_full_lst, function(l) l$eif)
     v <- matrix(c(v_none, unlist(v_lst)))
-    ## do constrained wls
+    # do constrained wls
     if (verbose) {
         message("Fitting weighted least squares to estimate the SPVIM values.")
     }
     A_W <- sqrt(W) %*% Z
     v_W <- sqrt(W) %*% v
-    G <- rbind(c(1, rep(0, dim(X)[2])), rep(1, dim(X)[2] + 1) - c(1, rep(0, dim(X)[2])))
+    G <- rbind(c(1, rep(0, ncol(X))), rep(1, ncol(X) + 1) - c(1, rep(0, ncol(X))))
     c_n <- matrix(c(v_none, v[length(v)] - v_none), ncol = 1)
     kkt_matrix_11 <- 2 * t(A_W) %*% A_W
     kkt_matrix_12 <- t(G)
     kkt_matrix_21 <- G
-    kkt_matrix_22 <- matrix(0, nrow = dim(kkt_matrix_21)[1],  ncol = dim(kkt_matrix_12)[2])
+    kkt_matrix_22 <- matrix(0, nrow = nrow(kkt_matrix_21),  ncol = ncol(kkt_matrix_12))
     kkt_matrix <- rbind(cbind(kkt_matrix_11, kkt_matrix_12), cbind(kkt_matrix_21, kkt_matrix_22))
     ls_matrix <- rbind(2 * t(A_W) %*% v_W, c_n)
     ls_solution <- MASS::ginv(kkt_matrix) %*% ls_matrix
     est <- ls_solution[1:(ncol(X) + 1), , drop = FALSE]
-    lambdas <- ls_solution[(ncol(X) + 2):dim(ls_solution)[1], , drop = FALSE]
+    lambdas <- ls_solution[(ncol(X) + 2):nrow(ls_solution), , drop = FALSE]
 
-    ## compute the SPVIM ICs
+    # compute the SPVIM ICs
     ic_mat <- do.call(rbind, c(list(ic_none), ic_lst))
     ics <- spvim_ics(Z, z_counts, W, v, est, G, c_n, ic_mat, full_type)
 
-    ## calculate the standard error
+    # calculate the standard error
     ses <- vector("numeric", ncol(X) + 1)
-    var_v_contribs <- vector("numeric", ncol(X) + 1)
-    var_s_contribs <- vector("numeric", ncol(X) + 1)
     for (j in 1:(ncol(X) + 1)) {
-        ses_res <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
-        ses[j] <- ses_res$se
-        var_v_contribs[j] <- ses_res$var_v_contrib
-        var_s_contribs[j] <- ses_res$var_s_contrib
+        ses[j] <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
     }
-    ## if est < 0, set to zero and print warning
+    # if est < 0, set to zero and print warning
     if (any(est < 0)) {
         est[est < 0] <- 0
         warning("One or more original estimates < 0; returning zero for these indices.")
     }
 
-    ## calculate the confidence intervals
+    # calculate the confidence intervals
     cis <- vimp_ci(est[-1], ses[-1], scale = "identity", level = 1 - alpha)
 
-    ## compute a hypothesis test against the null of zero importance
+    # compute a hypothesis test against the null of zero importance
     preds_none_0 <- list()
     for (v in 1:V) {
-        preds_none_0[[v]] <- rep(mean(Y[outer_folds == 1, ][inner_folds_1 == v]), sum(inner_folds_1 == v))
+        preds_none_0[[v]] <- rep(mean(Y_cc[(outer_folds_cc == 1), ][inner_folds_1_cc == v]), sum(inner_folds_1_cc == v))
     }
-    v_none_0 <- cv_predictiveness_point_est(fitted_values = preds_none_0, y = Y[outer_folds == 1, , drop = FALSE], folds = inner_folds_1, weights = weights[outer_folds == 1], type = full_type, na.rm = na.rm)$point_est
-    ic_none_0 <- cv_predictiveness_update(preds_none_0, Y[outer_folds == 1, , drop = FALSE], inner_folds_1, weights[outer_folds == 1], type = full_type, na.rm = na.rm)$ic
+    v_none_0_lst <- est_predictiveness_cv(fitted_values = preds_none_0, y = Y_cc[outer_folds_cc == 1, , drop = FALSE], folds = inner_folds_1_cc, C = C[outer_folds == 1], Z = Z_in[outer_folds == 1, , drop = FALSE], folds_Z = inner_folds_1, ipc_weights = ipc_weights[outer_folds == 1], type = full_type, ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
+    v_none_0 <- v_none_0_lst$point_est
+    ic_none_0 <- v_none_0_lst$eif
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) / sqrt(sum(outer_folds == 1))
-    ## get shapley vals + null predictiveness
+    # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
     ses_one <- sqrt(ses ^ 2 + se_none_0 ^ 2)
     test_statistics <- sapply(2:length(est), function(j, ests, ses, est_0, se_0, delta) {
@@ -192,10 +218,10 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
     p_values <- 1 - pnorm(test_statistics)
     hyp_tests <- p_values < alpha
 
-    ## create the output and return it
-    ## create output tibble
+    # create the output and return it
+    # create output tibble
     mat <- tibble::tibble(s = as.character(1:ncol(X)), est = est[-1], se = ses[-1], cil = cis[, 1],
-                          ciu = cis[, 2], test = hyp_tests, p_value = p_values, var_v_contribs=var_v_contribs[-1], var_s_contribs=var_s_contribs[-1])
+                          ciu = cis[, 2], test = hyp_tests, p_value = p_values)
     output <- list(s = as.character(1:ncol(X)),
                  SL.library = SL.library,
                  v = v,
@@ -203,10 +229,7 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
                  est = est,
                  ic_lst = c(list(ic_none), ic_lst),
                  ic = ics,
-                 se = ses,
-                 var_v_contribs = var_v_contribs,
-                 var_s_contribs = var_s_contribs,
-                 ci = cis,
+                 se = ses, ci = cis,
                  test = hyp_tests,
                  p_value = p_values,
                  test_statistic = test_statistics,
@@ -214,11 +237,14 @@ sp_vim <- function(Y, X, V = 5, weights = rep(1, length(Y)), type = "r_squared",
                  alpha = alpha,
                  delta = delta,
                  y = Y,
-                 weights = weights,
+                 ipc_weights = ipc_weights,
                  scale = "identity",
+                 outer_folds = outer_folds,
+                 inner_folds_1 = inner_folds_1,
+                 inner_folds_2 = inner_folds_2,
                  mat = mat)
 
-    ## make it also an vim object
+    # make it also an vim object
     tmp.cls <- class(output)
     class(output) <- c("vim", type, tmp.cls)
     return(output)

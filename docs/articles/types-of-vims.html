@@ -81,6 +81,31 @@
   </div>
 <!--/.container -->
 </div>
+<<<<<<< HEAD
+<!--/.navbar -->
+
+      
+
+      </header><script src="types-of-vims_files/header-attrs-2.3/header-attrs.js"></script><script src="types-of-vims_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+  <div class="col-md-9 contents">
+    <div class="page-header toc-ignore">
+      <h1 data-toc-skip>Types of VIMs</h1>
+                        <h4 class="author">Brian D. Williamson</h4>
+            
+            <h4 class="date">2020-10-12</h4>
+      
+      <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/types-of-vims.Rmd"><code>vignettes/types-of-vims.Rmd</code></a></small>
+      <div class="hidden name"><code>types-of-vims.Rmd</code></div>
+
+    </div>
+
+    
+    
+<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"vimp"</span>)
+<span class="co">#&gt; vimp version 2.1.1: Perform Inference on Algorithm-Agnostic Variable Importance</span>
+<span class="co">#&gt; Package created on 2020-10-12</span>
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"SuperLearner"</span>)
+=======
 <!--/.navbar -->
 
       
@@ -103,6 +128,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/bdwilliamson/vimp">"vimp"</a></span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span>)
+>>>>>>> master
 <span class="co">#&gt; Loading required package: nnls</span>
 <span class="co">#&gt; Super Learner</span>
 <span class="co">#&gt; Version: 2.0-26</span>
@@ -110,15 +136,56 @@
 </pre></div>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
+<<<<<<< HEAD
+<a href="#introduction" class="anchor"></a>Introduction</h2>
+<p>In the main vignette (<a href="introduction_to_vimp.html">“Introduction to <code>vimp</code>”</a>), I discussed variable importance defined using R-squared. I also mentioned that all of the analyses were carried out using a <em>condititonal</em> variable importance measure. In this document, I will discuss all three types of variable importance that may be computed using <code>vimp</code>.</p>
+<p>In general, I define variable importance as a function of the true population distribution (denoted by <span class="math inline">\(P_0\)</span>) and a predictiveness measure <span class="math inline">\(V\)</span> – large values of <span class="math inline">\(V\)</span> are assumed to be better. Currently, the measures <span class="math inline">\(V\)</span> implemented in <code>vimp</code> are <span class="math inline">\(R^2\)</span>, classification accuracy, area under the receiver operating characteristic curve (AUC), and deviance. For a fixed function <span class="math inline">\(f\)</span>, the predictiveness is given by <span class="math inline">\(V(f, P)\)</span>, where large values imply that <span class="math inline">\(f\)</span> is a good predictor of the outcome. The best possible prediction function, <span class="math inline">\(f_0\)</span>, is the <em>oracle</em> model – i.e., the prediction function that I would use if I had access to the distribution <span class="math inline">\(P_0\)</span>. Often, <span class="math inline">\(f_0\)</span> is the true conditional mean (e.g., for <span class="math inline">\(R^2\)</span>). Then the <em>total oracle predictiveness</em> can be defined as <span class="math inline">\(V(f_0, P_0)\)</span>. This is the best possible value of predictiveness.</p>
+<p>I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have <span class="math inline">\(p\)</span> variables, and an index set <span class="math inline">\(s\)</span> of interest (containing some subset of the <span class="math inline">\(p\)</span> variables). Throughout this document, I will use the South African heart disease study data <span class="citation">[@hastie2009]</span> to illustrate how each VIM may be estimated (freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>; more information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the <a href="introduction_to_vimp.html">main vignette</a>).</p>
+<div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## read in the data from the Elements website</span>
+=======
 <a href="#introduction" class="anchor"></a>Introduction</h2>
 <p>In the main vignette (<a href="introduction_to_vimp.html">“Introduction to <code>vimp</code>”</a>), I discussed variable importance defined using R-squared. I also mentioned that all of the analyses were carried out using a <em>condititonal</em> variable importance measure. In this document, I will discuss all three types of variable importance that may be computed using <code>vimp</code>.</p>
 <p>In general, I define variable importance as a function of the true population distribution (denoted by <span class="math inline">\(P_0\)</span>) and a predictiveness measure <span class="math inline">\(V\)</span> – large values of <span class="math inline">\(V\)</span> are assumed to be better. Currently, the measures <span class="math inline">\(V\)</span> implemented in <code>vimp</code> are <span class="math inline">\(R^2\)</span>, classification accuracy, area under the receiver operating characteristic curve (AUC), and deviance. For a fixed function <span class="math inline">\(f\)</span>, the predictiveness is given by <span class="math inline">\(V(f, P)\)</span>, where large values imply that <span class="math inline">\(f\)</span> is a good predictor of the outcome. The best possible prediction function <span class="math inline">\(f_0\)</span>, is the <em>oracle</em> model – i.e., the prediction function that I would use if I had access to the distribution <span class="math inline">\(P_0\)</span>. Often, <span class="math inline">\(f_0\)</span> is the true conditional mean (e.g., for <span class="math inline">\(R^2\)</span>). Then the <em>total oracle predictiveness</em> can be defined as <span class="math inline">\(V(f_0, P_0)\)</span>. This is the best possible value of predictiveness.</p>
 <p>I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have <span class="math inline">\(p\)</span> variables, and an index set <span class="math inline">\(s\)</span> of interest (containing some subset of the <span class="math inline">\(p\)</span> variables). Throughout this document, I will use the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span> to illustrate how each VIM may be estimated (freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>; more information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the <a href="introduction_to_vimp.html">main vignette</a>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co">## read in the data from the Elements website</span>
+>>>>>>> master
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"RCurl"</span>)
 <span class="kw">heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(text = <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html">getURL</a></span>(<span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span>), header = <span class="fl">TRUE</span>, stringsAsFactors = <span class="fl">FALSE</span>)
 <span class="co">## minor data cleaning</span>
+<<<<<<< HEAD
+<span class="no">heart</span> <span class="kw">&lt;-</span> <span class="no">heart_data</span>[, <span class="fl">2</span>:<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart_data</span>)[<span class="fl">2</span>]]
+<span class="no">heart</span>$<span class="no">famhist</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="no">heart</span>$<span class="no">famhist</span> <span class="kw">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span>)
+<span class="no">x</span> <span class="kw">&lt;-</span> <span class="no">heart</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">heart</span>)]
+<span class="no">learners.2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SL.ranger"</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">12345</span>)</pre></body></html></div>
+</div>
+<div id="conditional-vims" class="section level2">
+<h2 class="hasAnchor">
+<a href="#conditional-vims" class="anchor"></a>Conditional VIMs</h2>
+<p>The <em>reduced oracle predictiveness</em> is defined as <span class="math inline">\(V(f_{0,-s}, P_0)\)</span>, where <span class="math inline">\(f_{0,-s}\)</span> is the best possible prediction function that <em>does not use the covariates with index in <span class="math inline">\(s\)</span></em>. Then the conditional VIM is defined as <span class="math display">\[V(f_0, P_0) - V(f_{0,-s}, P_0).\]</span> This is the measure of importance that I estimated in the <a href="introduction_to_vimp.html">main vignette</a>. To estimate the conditional VIM for family history of heart disease, I can use the following code:</p>
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># note the use of a small V and a small number of SL folds, for illustration only</span>
+<span class="no">V</span> <span class="kw">&lt;-</span> <span class="fl">2</span>
+<span class="no">sl_cvcontrol</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">V</span> <span class="kw">=</span> <span class="fl">2</span>)
+<span class="no">fam_vim_cond</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)
+<span class="co">#&gt; Loading required namespace: ranger</span>
+<span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =</span>
+<span class="co">#&gt; "r_squared", : Original estimate &lt; 0; returning zero.</span></pre></body></html></div>
+</div>
+<div id="marginal-vims" class="section level2">
+<h2 class="hasAnchor">
+<a href="#marginal-vims" class="anchor"></a>Marginal VIMs</h2>
+<p>The <em>marginal oracle predictiveness</em> is defined as <span class="math inline">\(V(f_{0,s}, P_0)\)</span>, where <span class="math inline">\(f_{0,s}\)</span> is the best possible prediction function that <em>only uses the covariates with index in <span class="math inline">\(s\)</span></em>. The <em>null oracle predictiveness</em> is defined as <span class="math inline">\(V(f_{0, \emptyset}, P_0)\)</span>, where <span class="math inline">\(f_{0,\emptyset}\)</span> is the best possible prediction function that <em>uses no covariates</em> (i.e., is fitting the mean). Then the marginal VIM is defined as <span class="math display">\[V(f_{0,s}, P_0) - V(f_{0,\emptyset}, P_0).\]</span> To estimate the marginal VIM for family history of heart disease, I can use the following code:</p>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="co"># note the use of a small V and a small number of SL folds, for illustration only</span>
+<span class="no">fam_vim_marg</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>[, <span class="fl">5</span>, <span class="kw">drop</span> <span class="kw">=</span> <span class="fl">FALSE</span>], <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+</div>
+<div id="shapley-vims" class="section level2">
+<h2 class="hasAnchor">
+<a href="#shapley-vims" class="anchor"></a>Shapley VIMs</h2>
+<p>The Shapley population VIM (SPVIM) generalizes the marginal and conditional VIMs by averaging over all possible subsets. More specifically, the SPVIM for feature <span class="math inline">\(j\)</span> is given by <span class="math display">\[\sum_{s \subseteq \{1,\ldots,p\} \setminus \{j\}} \binom{p-1}{\lvert s \rvert}^{-1}\{V(f_{0, s \cup \{j\}}, P_0)) - V(f_{0,s}, P_0)\};\]</span> this is the average gain in predictiveness from adding feature <span class="math inline">\(j\)</span> to each possible grouping of the other features. To estimate the SPVIM for family history of heart disease, I can use the following code (note that <code>sp_vim</code> returns VIM estimates for all features):</p>
+<div class="sourceCode" id="cb5"><html><body><pre class="r"><span class="no">all_vim_spvim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/sp_vim.html">sp_vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">x</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>())
+<span class="co">#&gt; Warning in sp_vim(Y = heart$chd, X = x, type = "r_squared", SL.library =</span>
+=======
 <span class="kw">heart</span> <span class="op">&lt;-</span> <span class="kw">heart_data</span>[, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">heart_data</span>)[<span class="fl">2</span>]]
 <span class="kw">heart</span><span class="op">$</span><span class="kw">famhist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="kw">heart</span><span class="op">$</span><span class="kw">famhist</span> <span class="op">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span>)
 <span class="kw">learners.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SL.ranger"</span>)
@@ -155,6 +222,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="kw">all_vim_spvim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sp_vim.html">sp_vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">heart</span>[, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="kw">heart</span>)], SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
 <span class="co">#&gt; Warning in sp_vim(Y = heart$chd, X = heart[, -ncol(heart)], SL.library =</span>
+>>>>>>> master
 <span class="co">#&gt; learners.2, : One or more original estimates &lt; 0; returning zero for these</span>
 <span class="co">#&gt; indices.</span>
 </pre></div>
@@ -166,6 +234,15 @@
 </div>
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
+<<<<<<< HEAD
+<a href="#conclusion" class="anchor"></a>Conclusion</h2>
+<p>The three VIMs defined here may be different for a given feature of interest. Indeed, we can see this for family history of heart disease in the South African heart disease study data:</p>
+<div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">fam_vim_cond</span>
+<span class="co">#&gt; Variable importance estimates:</span>
+<span class="co">#&gt;       Estimate SE         95% CI         VIMP &gt; 0 p-value  </span>
+<span class="co">#&gt; s = 5 0        0.06716226 [0, 0.1316356] FALSE    0.8431478</span>
+<span class="no">fam_vim_marg</span>
+=======
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>
 <p>The three VIMs defined here may be different for a given feature of interest. Indeed, we can see this for family history of heart disease in the South African heart disease study data:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
@@ -186,10 +263,26 @@
 <span class="co">#&gt;     run_regression = run_regression, SL.library = SL.library, </span>
 <span class="co">#&gt;     alpha = alpha, delta = delta, na.rm = na.rm, env = ..1, cvControl = ..2)</span>
 <span class="co">#&gt; </span>
+>>>>>>> master
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate   SE         95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 1 0.08166248 0.07062743 [0, 0.2200897] FALSE    0.1515939</span>
+<span class="co">#&gt;       Estimate   SE         95% CI         VIMP &gt; 0 p-value   </span>
+<span class="co">#&gt; s = 1 0.08166248 0.04701503 [0, 0.1738103] TRUE     0.04208914</span>
 <span class="co"># note: need to look at row for s = 5</span>
+<<<<<<< HEAD
+<span class="no">all_vim_spvim</span>
+<span class="co">#&gt; Variable importance estimates:</span>
+<span class="co">#&gt;       Estimate    SE         95% CI                   VIMP &gt; 0 p-value     </span>
+<span class="co">#&gt; s = 1 0.000000000 0.03972640 [0.00000000, 0.07786232] FALSE    3.723285e-01</span>
+<span class="co">#&gt; s = 2 0.046551005 0.03735806 [0.00000000, 0.11977145] FALSE    5.690881e-02</span>
+<span class="co">#&gt; s = 3 0.041050517 0.04330605 [0.00000000, 0.12592881] FALSE    1.073190e-01</span>
+<span class="co">#&gt; s = 4 0.010203817 0.03737291 [0.00000000, 0.08345338] FALSE    2.687757e-01</span>
+<span class="co">#&gt; s = 5 0.129775063 0.02604069 [0.07873624, 0.18081389]  TRUE    3.568380e-08</span>
+<span class="co">#&gt; s = 6 0.002005364 0.02833515 [0.00000000, 0.05754123] FALSE    3.004849e-01</span>
+<span class="co">#&gt; s = 7 0.000000000 0.04426663 [0.00000000, 0.08676101] FALSE    3.848666e-01</span>
+<span class="co">#&gt; s = 8 0.000000000 0.03158518 [0.00000000, 0.06190582] FALSE    3.416995e-01</span>
+<span class="co">#&gt; s = 9 0.121589623 0.03560426 [0.05180656, 0.19137269]  TRUE    9.012922e-05</span></pre></body></html></div>
+<p>This is simply a function of the fact that the VIMs are different population parameters. All three likely provide useful information in practice:</p>
+=======
 <span class="kw">all_vim_spvim</span>
 <span class="co">#&gt; Call:</span>
 <span class="co">#&gt; sp_vim(Y = heart$chd, X = heart[, -ncol(heart)], V = V, SL.library = learners.2, </span>
@@ -208,6 +301,7 @@
 <span class="co">#&gt; s = 9 0.068934488 0.03846287 [0.00000000, 0.14432033] FALSE    0.17540507</span>
 </pre></div>
 <p>This is simply a function of the fact that the VIMs are different population parameters. All three likely provide useful information in practice:</p>
+>>>>>>> master
 <ul>
 <li>the marginal VIM provides information about the predictiveness of the covariate in isolation;</li>
 <li>the conditional VIM provides information about the predictiveness of the covariate adjusting for all other covariates; and</li>
@@ -230,6 +324,22 @@
 
         <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
     </nav>
+<<<<<<< HEAD
+</div>
+
+</div>
+
+
+
+      <footer><div class="copyright">
+  <p>Developed by Brian D. Williamson.</p>
+</div>
+
+<div class="pkgdown">
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+</div>
+
+=======
 </div>
 
 </div>
@@ -244,6 +354,7 @@
   <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
+>>>>>>> master
       </footer>
 </div>
 

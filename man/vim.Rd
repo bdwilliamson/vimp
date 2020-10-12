@@ -5,12 +5,11 @@
 \title{Nonparametric Variable Importance Estimates and Inference}
 \usage{
 vim(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,
-  weights = rep(1, length(Y)),
   type = "r_squared",
   run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
@@ -20,6 +19,9 @@ vim(
   na.rm = FALSE,
   folds = NULL,
   stratified = FALSE,
+  C = rep(1, length(Y)),
+  Z = NULL,
+  ipc_weights = rep(1, length(Y)),
   ...
 )
 }
@@ -34,9 +36,7 @@ vim(
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
 
-\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
-
-\item{type}{the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, and \code{anova}.}
+\item{type}{the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, \code{deviance}, and \code{anova}.}
 
 \item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
@@ -48,11 +48,17 @@ vim(
 
 \item{scale}{should CIs be computed on original ("identity") or logit ("logit") scale?}
 
-\item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
+\item{na.rm}{should we remove NAs in the outcome and fitted values in computation? (defaults to \code{FALSE})}
 
 \item{folds}{the folds used for \code{f1} and \code{f2}; assumed to be 1 for the observations used in \code{f1} and 2 for the observations used in \code{f2}. If there is only a single fold passed in, then hypothesis testing is not done.}
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
+
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
+
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
@@ -60,12 +66,12 @@ vim(
 An object of classes \code{vim} and the type of risk-based measure. See Details for more information.
 }
 \description{
-Compute estimates of and confidence intervals for nonparametric risk-based variable importance.
+Compute estimates of and confidence intervals for nonparametric variable importance based on the population-level contrast between the oracle predictiveness using the feature(s) of interest versus not.
 }
 \details{
-We define the population variable importance measure (VIM) for the group 
+We define the population variable importance measure (VIM) for the group
 of features (or single feature) \eqn{s} with respect to the predictiveness measure
-\eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is 
+\eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
 the population predictiveness maximizing function, \eqn{f_{0,s}} is the population
 predictiveness maximizing function that is only allowed to access the features with
 index not in \eqn{s}, and \eqn{P_0} is the true data-generating distribution. VIM estimates are
@@ -73,49 +79,49 @@ obtained by obtaining estimators \eqn{f_n} and \eqn{f_{n,s}} of \eqn{f_0} and \e
 respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally, setting \eqn{\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)}.
 
 In the interest of transparency, we return most of the calculations
-within the \code{vim} object. This results in a list containing:
+within the \code{vim} object. This results in a list including:
 \itemize{
- \item{s}{: the column(s) to calculate variable importance for}
- \item{SL.library}{: the library of learners passed to \code{SuperLearner}}
- \item{type}{: the type of risk-based variable importance measured}
- \item{full_fit}{: the fitted values of the chosen method fit to the full data}
- \item{red_fit}{: the fitted values of the chosen method fit to the reduced data}
- \item{est}{: the estimated variable importance}
- \item{naive}{: the naive estimator of variable importance}
- \item{update}{: the influence curve-based update}
- \item{se}{: the standard error for the estimated variable importance}
- \item{ci}{: the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
- \item{test}{: a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
- \item{pval}{: a conservative p-value based on the same conservative test as \code{test}}
- \item{full_mod}{: the object returned by the estimation procedure for the full data regression (if applicable)}
- \item{red_mod}{: the object returned by the estimation procedure for the reduced data regression (if applicable)}
- \item{alpha}{: the level, for confidence interval calculation}
- \item{folds}{: the folds used for hypothesis testing}
- \item{y}{: the outcome}
- \item{weights}{: the weights}
- \item{mat}{: a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
+ \item{s}{ - the column(s) to calculate variable importance for}
+ \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
+ \item{type}{ - the type of risk-based variable importance measured}
+ \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
+ \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
+ \item{est}{ - the estimated variable importance}
+ \item{naive}{ - the naive estimator of variable importance (only used if \code{type = "anova"})}
+ \item{eif}{ - the estimated influence curve}
+ \item{se}{ - the standard error for the estimated variable importance}
+ \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
+ \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
+ \item{p_value}{ - a p-value based on the same test as \code{test}}
+ \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
+ \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
+ \item{alpha}{ - the level, for confidence interval calculation}
+ \item{folds}{ - the folds used for hypothesis testing}
+ \item{y}{ - the outcome}
+ \item{ipc_weights}{ - the weights}
+ \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }
 \examples{
 library(SuperLearner)
 library(ranger)
-## generate the data
-## generate X
+# generate the data
+# generate X
 p <- 2
 n <- 100
 x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
 
-## apply the function to the x's
+# apply the function to the x's
 f <- function(x) 0.5 + 0.3*x[1] + 0.2*x[2]
 smooth <- apply(x, 1, function(z) f(z))
 
-## generate Y ~ Normal (smooth, 1)
+# generate Y ~ Normal (smooth, 1)
 y <- matrix(rbinom(n, size = 1, prob = smooth))
 
-## set up a library for SuperLearner
+# set up a library for SuperLearner
 learners <- "SL.ranger"
 
-## using Y and X; use class-balanced folds
+# using Y and X; use class-balanced folds
 folds_1 <- sample(rep(seq_len(2), length = sum(y == 1)))
 folds_0 <- sample(rep(seq_len(2), length = sum(y == 0)))
 folds <- vector("numeric", length(y))
@@ -126,7 +132,7 @@ est <- vim(y, x, indx = 2, type = "r_squared",
            SL.library = learners, cvControl = list(V = 2),
            folds = folds)
 
-## using pre-computed fitted values
+# using pre-computed fitted values
 full <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ],
 SL.library = learners, cvControl = list(V = 2))
 full.fit <- predict(full)$pred

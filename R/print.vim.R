@@ -7,8 +7,7 @@
 #' @export
 
 print.vim <- function(x, ...) {
-
-  ## print out the matrix
-  cat("\nVariable importance estimates:\n")
+  # print out the matrix
+  cat("Variable importance estimates:\n")
   print(format(x, ...), quote = FALSE)
 }

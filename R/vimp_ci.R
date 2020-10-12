@@ -13,16 +13,16 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
 vimp_ci <- function(est, se, scale = "identity", level = 0.95) {
-    ## set up the level
+    # set up the level
     a <- (1 - level)/2
     a <- c(a, 1 - a)
 
-    ## get the quantiles
+    # get the quantiles
     fac <- stats::qnorm(a)
 
-    ## create the ci
+    # create the ci
     ci <- array(NA, dim = c(length(est), 2L), dimnames = list(names(est)))
-    ## get scale
+    # get scale
     scales <- c("log", "logit", "identity")
     full_scale <- scales[pmatch(scale, scales)]
     if (full_scale == "log") {

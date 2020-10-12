@@ -92,12 +92,13 @@ vimp <- vimp_rsquared(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regr
 After using the `vimp` package, please cite the following (for R-squared-based variable importance):
 
 ```
-  @article{williamson2020,
-    author={Williamson, BD and Gilbert, PB and Carone, M and Simon, N},
-    title={Nonparametric variable importance assessment using machine learning techniques},
-    journal={Biometrics (to appear)},
-    year={2020}
-  }
+    @article{williamson2020,
+      author={Williamson, BD and Gilbert, PB and Carone, M and Simon, R},
+      title={Nonparametric variable importance assessment using machine learning techniques},
+      journal={Biometrics},
+      year={2020},
+      doi={10.1111/biom.13392}
+    }
 ```
 
 or the following (for general variable importance parameters):

@@ -5,13 +5,12 @@
 \title{Nonparametric Variable Importance Estimates}
 \usage{
 vimp_regression(
-  Y,
-  X,
+  Y = NULL,
+  X = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,
   V = 10,
-  weights = rep(1, length(Y)),
   run_regression = TRUE,
   SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
   alpha = 0.05,
@@ -19,6 +18,9 @@ vimp_regression(
   na.rm = FALSE,
   folds,
   stratified = FALSE,
+  C = rep(1, length(Y)),
+  Z = NULL,
+  ipc_weights = rep(1, length(Y)),
   ...
 )
 }
@@ -35,8 +37,6 @@ vimp_regression(
 
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
-\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
-
 \item{run_regression}{if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
 
 \item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
@@ -51,7 +51,17 @@ vimp_regression(
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
 
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character list specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
+
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
+
 \item{...}{other arguments to the estimation tool, see "See also".}
+
+\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
+
+\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
 }
 \value{
 An object of classes \code{vim} and \code{vim_regression}. See Details for more information.
@@ -66,7 +76,6 @@ of the confidence intervals.
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list containing:
 \itemize{
- \item{call}{ - the call to \code{vim}}
  \item{s}{ - the column(s) to calculate variable importance for}
  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
  \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
@@ -85,22 +94,22 @@ within the \code{vim} object. This results in a list containing:
 \examples{
 library(SuperLearner)
 library(ranger)
-## generate the data
-## generate X
+# generate the data
+# generate X
 p <- 2
 n <- 100
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 
-## apply the function to the x's
+# apply the function to the x's
 smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 
-## generate Y ~ Normal (smooth, 1)
+# generate Y ~ Normal (smooth, 1)
 y <- smooth + stats::rnorm(n, 0, 1)
 
-## set up a library for SuperLearner
+# set up a library for SuperLearner
 learners <- "SL.ranger"
 
-## estimate (with a small number of folds, for illustration only)
+# estimate (with a small number of folds, for illustration only)
 est <- vimp_regression(y, x, indx = 2,
            alpha = 0.05, run_regression = TRUE,
            SL.library = learners, V = 2, cvControl = list(V = 2))

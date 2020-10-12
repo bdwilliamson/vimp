@@ -5,44 +5,33 @@
 \title{Perform a hypothesis test against the null hypothesis of \eqn{\delta} importance}
 \usage{
 vimp_hypothesis_test(
-  full,
-  reduced,
-  y,
-  folds,
+  predictiveness_full,
+  predictiveness_reduced,
+  se_full,
+  se_reduced,
   delta = 0,
-  weights = rep(1, length(y)),
-  type = "r_squared",
-  alpha = 0.05,
-  cv = FALSE,
-  scale = "identity",
-  na.rm = FALSE
+  alpha = 0.05
 )
 }
 \arguments{
-\item{full}{either (i) fitted values from a regression of the outcome on the full set of covariates from a first independent split of the data (if \code{cv = FALSE}) or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
+\item{predictiveness_full}{the estimated predictiveness of the regression including the covariate(s) of interest.}
 
-\item{reduced}{fitted values from a regression either (1) of the outcome on the reduced set of covariates, or (2) of the predicted values from the full regression on the reduced set of covariates; either (i) a single set of predictions (if \code{cv = FALSE}) fit on an independent split of the data from \code{full} or (ii) a list of predicted values from a cross-validated procedure (if \code{cv = TRUE}).}
+\item{predictiveness_reduced}{the estimated predictiveness of the regression excluding the covariate(s) of interest.}
 
-\item{y}{the outcome.}
+\item{se_full}{the estimated standard error for the predictiveness of the regression including the covariate(s) of interest.}
 
-\item{folds}{the folds used for splitting. If \code{cv = FALSE}, assumed to be a vector with 1 for the full regression and 2 for the reduced regression (if V = 2). If \code{cv = TRUE}, assumed to be a list with first element the outer folds (for hypothesis testing) and second element a list with the inner cross-validation folds.}
+\item{se_reduced}{the estimated standard error for the predictiveness of the regression excluding the covariate(s) of interest.}
 
 \item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
 
-\item{weights}{weights for the computed influence curve (e.g., inverse probability weights for coarsened-at-random settings)}
-
-\item{type}{which parameter are you estimating (defaults to \code{r_squared}, for difference in R-squared-based variable importance)?}
-
 \item{alpha}{the desired type I error rate (defaults to 0.05).}
-
-\item{cv}{was V-fold cross-validation used to estimate the predictiveness (\code{TRUE}) or was the sample split in two (\code{FALSE}); defaults to \code{FALSE}.}
 
 \item{scale}{scale to compute CI on ("identity" for identity scale, "logit" for logit scale and back-transform)}
 
 \item{na.rm}{logical; should NAs be removed in computation? (defaults to \code{FALSE})}
 }
 \value{
-\code{TRUE} if the null hypothesis is rejected (i.e., if the confidence intervals do not overlap); otherwise, \code{FALSE}.
+a list, with: the hypothesis testing decision (\code{TRUE} if the null hypothesis is rejected, \code{FALSE} otherwise); the p-value from the hypothesis test; and the test statistic from the hypothesis test.
 }
 \description{
 Perform a hypothesis test against the null hypothesis of zero importance by:

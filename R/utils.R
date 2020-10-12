@@ -1,4 +1,42 @@
+# -------------------------------------
+# Checkers
+# -------------------------------------
+check_inputs <- function(Y, X, f1, f2, indx, folds) {
+    if (is.null(f1) && is.null(Y)) stop("You must enter either Y or fitted values for the full regression.")
+    if (is.null(f2) && is.null(X)) stop("You must enter either X or fitted values for the reduced regression.")
+    # if indx is outside the range of X, stop and throw an error
+    if (!is.null(X)) {
+        if (any(indx > dim(X)[2])) stop("One of the feature indices in 'indx' is larger than the total number of features in X. Please specify a new index subgroup in 'indx'.")
+    }
+}
+check_fitted_values <- function(Y, f1, f2, folds, V = NULL, cv = FALSE) {
+    if (is.null(Y)) stop("Y must be entered.")
+    if (!cv) {
+        if (length(f1) != length(Y[folds == 1])) stop("Fitted values from the full regression must be the same length as the number of observations in the first fold.")
+        if (length(f2) != length(Y[folds == 2])) stop("Fitted values from the reduced regression must be the same length as the number of observations in the second fold.")
+    } else {
+        if (is.null(f1)) stop("You must specify a list of predicted values from a regression of Y on X.")
+        if (is.null(f2)) stop("You must specify a list of predicted values from a regression of the fitted values from the Y on X regression on the reduced set of covariates.")
+        if (is.null(folds)) stop("You must specify a list of folds.")
+        if (length(f1) != V) stop("The number of folds from the full regression must be the same length as the number of folds.")
+        if (length(f2) != V) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
+    }
+}
+
+# -----------------------------
+# Match the type
+# -----------------------------
+get_full_type <- function(type) {
+    types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+    full_type <- types[pmatch(type, types)]
+    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
+    if (full_type == "anova" ) warning("Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.")
+    full_type
+}
+
+# -------------------------------------
 # Create Folds for Cross-Fitting
+# -------------------------------------
 #
 # @param y the outcome
 # @param V the number of folds
@@ -30,18 +68,24 @@
       folds[y == 1] <- folds_1
       folds[y == 0] <- folds_0
     } else {
-      folds <- sample(rep(seq_len(V), probs * length(y)))
+      these_probs <- round(probs * length(y))
+      if (sum(these_probs) != length(y)) {
+        these_probs[which.min(these_probs)] <- these_probs[which.min(these_probs)] - 1
+      }
+      folds <- sample(rep(seq_len(V), these_probs))
     }
   }
   return(folds)
 }
 
+# -------------------------------------
 # Run a Super Learner for the provided subset of features
+# -------------------------------------
 #
 # @param Y the outcome
 # @param X the covariates
 # @param V the number of folds
-# @param SL.library the library of candidate learners (a character vector), or a single function
+# @param SL.library the library of candidate learners
 # @param s the subset of interest
 # @param folds the CV folds
 # @param verbose should we print progress? defaults to FALSE
@@ -51,15 +95,12 @@
 #
 # @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
 # @keywords internal
-run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds, 
-                   verbose = FALSE, progress_bar = NULL, indx = 1, ...) {
+run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
+                   verbose = FALSE, progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)), ...) {
   # if verbose, print what we're doing and make sure that SL is verbose
   L <- list(...)
   if (is.null(L$family)) {
     L$family <- gaussian()
-  }
-  if (is.null(L$obsWeights)) {
-    L$obsWeights <- rep(1, length(Y))
   }
   if (verbose) {
     # message(paste0("Fitting regression for s = ", paste(s, collapse = ",")))
@@ -70,10 +111,13 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
     }
   }
   # fit the super learner on each full/reduced pair
-  if (missing(folds)) {
+  red_X <- as.data.frame(X[, s, drop = FALSE])
+  if (is.null(L$obsWeights)) {
+    L$obsWeights <- weights
+  }
+  if (is.null(folds)) {
     folds <- .make_folds(Y, V = V, stratified = (length(unique(Y)) == 2))
   }
-  red_X <- as.data.frame(X[, s, drop = FALSE])
   this_sl_lib <- SL.library
   # if univariate regression (i.e., length(s) == 1) then check univariate_SL.library
   # if it exists, use it; otherwise, use the normal library
@@ -91,30 +135,34 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
   fhat_ful <- list()
   fhat_red <- list()
   for (v in 1:V) {
-    ## fit super learner
+    # fit super learner
     this_L <- L
     this_L$obsWeights <- L$obsWeights[folds != v]
     new_arg_list <- c(list(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], SL.library = this_sl_lib), this_L)
-    if (!is.character(this_sl_lib)) { # only a single learner, so don't do CV
-      fit <- this_sl_lib(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], newX = red_X[folds == v, , drop = FALSE],
+    if (length(this_sl_lib) == 1) { # no need to do SL CV
+      fit_library <- SuperLearner:::.createLibrary(this_sl_lib)
+      fitter <- get(fit_library$library$predAlgorithm[1], envir = new_arg_list$env)
+      fit <- fitter(Y = Y[folds != v, , drop = FALSE], X = red_X[folds != v, , drop = FALSE], newX = red_X[folds == v, , drop = FALSE],
                     family = new_arg_list$family, obsWeights = new_arg_list$obsWeights)
       fitted_v <- fit$fit
       fhat_ful[[v]] <- fit$pred
     } else {
       fit <- do.call(SuperLearner::SuperLearner, new_arg_list)
-      fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-      ## get predictions on the validation fold
-      fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, , drop = FALSE])$pred  
+      fitted_v <- SuperLearner::predict.SuperLearner(fit, newdata = red_X, onlySL = TRUE)$pred
+      # get predictions on the validation fold
+      fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit, newdata = red_X[folds == v, , drop = FALSE], onlySL = TRUE)$pred
     }
-    
+
   }
   if (verbose) {
     setTxtProgressBar(progress_bar, indx)
   }
-  return(list(preds = fhat_ful, folds = folds))
+  return(list(preds = fhat_ful, folds = folds, fit = fit))
 }
 
+# -------------------------------------
 # release questions
+# -------------------------------------
 # @keywords internal
 release_questions <- function() {
   c(

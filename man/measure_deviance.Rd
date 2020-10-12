@@ -4,19 +4,39 @@
 \alias{measure_deviance}
 \title{Estimate the deviance}
 \usage{
-measure_deviance(fitted_values, y, weights = rep(1, length(y)), na.rm = FALSE)
+measure_deviance(
+  fitted_values,
+  y,
+  C = rep(1, length(y)),
+  Z = NULL,
+  ipc_weights = rep(1, length(y)),
+  ipc_fit_type = "external",
+  ipc_eif_preds = rep(1, length(y)),
+  na.rm = FALSE,
+  ...
+)
 }
 \arguments{
-\item{fitted_values}{fitted values from a regression function.}
+\item{fitted_values}{fitted values from a regression function using the observed data.}
 
-\item{y}{the outcome.}
+\item{y}{the opbserved outcome.}
 
-\item{weights}{weights (IPW, etc.).}
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+
+\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object containing the fully observed data.}
+
+\item{ipc_weights}{weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+
+\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
+
+\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
 
 \item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE})}
+
+\item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }
 \value{
-A named list of: (1) the estimated deviance of the fitted regression function, and (2) the estimated influence function.
+A named list of: (1) the estimated deviance of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 }
 \description{
 Compute nonparametric estimate of deviance.
