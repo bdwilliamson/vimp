@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate the classification accuracy — measure_accuracy • vimp</title>
+<title>Estimate a nonparametric predictiveness functional using cross-validation — est_predictiveness_cv • vimp</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Estimate the classification accuracy — measure_accuracy" />
-<meta property="og:description" content="Compute nonparametric estimate of classification accuracy." />
+<meta property="og:title" content="Estimate a nonparametric predictiveness functional using cross-validation — est_predictiveness_cv" />
+<meta property="og:description" content="Compute nonparametric estimates of the chosen measure of predictiveness." />
 
 
 
@@ -123,23 +123,26 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate the classification accuracy</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/measure_accuracy.R'><code>R/measure_accuracy.R</code></a></small>
-    <div class="hidden name"><code>measure_accuracy.Rd</code></div>
+    <h1>Estimate a nonparametric predictiveness functional using cross-validation</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/est_predictiveness_cv.R'><code>R/est_predictiveness_cv.R</code></a></small>
+    <div class="hidden name"><code>est_predictiveness_cv.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute nonparametric estimate of classification accuracy.</p>
+    <p>Compute nonparametric estimates of the chosen measure of predictiveness.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>measure_accuracy</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>est_predictiveness_cv</span><span class='op'>(</span>
   <span class='va'>fitted_values</span>,
   <span class='va'>y</span>,
+  <span class='va'>folds</span>,
+  type <span class='op'>=</span> <span class='st'>"r_squared"</span>,
   C <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>,
   Z <span class='op'>=</span> <span class='cn'>NULL</span>,
-  ipc_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>,
+  folds_Z <span class='op'>=</span> <span class='va'>folds</span>,
+  ipc_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>C</span><span class='op'>)</span><span class='op'>)</span>,
   ipc_fit_type <span class='op'>=</span> <span class='st'>"external"</span>,
-  ipc_eif_preds <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>,
+  ipc_eif_preds <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>C</span><span class='op'>)</span><span class='op'>)</span>,
   na.rm <span class='op'>=</span> <span class='cn'>FALSE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
@@ -149,11 +152,15 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>fitted_values</th>
-      <td><p>fitted values from a regression function using the observed data.</p></td>
+      <td><p>fitted values from a regression function using the observed data; a list of length V, where each object is a set of predictions on the validation data.</p></td>
     </tr>
     <tr>
       <th>y</th>
       <td><p>the observed outcome.</p></td>
+    </tr>
+    <tr>
+      <th>folds</th>
+      <td><p>the cross-validation folds for the observed data</p></td>
     </tr>
     <tr>
       <th>C</th>
@@ -162,6 +169,10 @@
     <tr>
       <th>Z</th>
       <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object containing the fully observed data.</p></td>
+    </tr>
+    <tr>
+      <th>folds_Z</th>
+      <td><p>either the cross-validation folds for the observed data (no coarsening) or a vector of folds for the fully observed data Z.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
@@ -187,7 +198,11 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of: (1) the estimated classification accuracy of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.</p>
+    <p>The estimated measure of predictiveness.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
+details on the mathematics behind this function and the definition of the parameter of interest.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

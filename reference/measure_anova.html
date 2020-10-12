@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate the classification accuracy — measure_accuracy • vimp</title>
+<title>Estimate ANOVA
+Compute nonparametric estimate of the ANOVA decomposition. — measure_anova • vimp</title>
 
 
 <!-- jquery -->
@@ -39,8 +40,10 @@
 
 
 
-<meta property="og:title" content="Estimate the classification accuracy — measure_accuracy" />
-<meta property="og:description" content="Compute nonparametric estimate of classification accuracy." />
+<meta property="og:title" content="Estimate ANOVA
+Compute nonparametric estimate of the ANOVA decomposition. — measure_anova" />
+<meta property="og:description" content="Estimate ANOVA
+Compute nonparametric estimate of the ANOVA decomposition." />
 
 
 
@@ -123,17 +126,20 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate the classification accuracy</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/measure_accuracy.R'><code>R/measure_accuracy.R</code></a></small>
-    <div class="hidden name"><code>measure_accuracy.Rd</code></div>
+    <h1>Estimate ANOVA
+Compute nonparametric estimate of the ANOVA decomposition.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/measure_anova.R'><code>R/measure_anova.R</code></a></small>
+    <div class="hidden name"><code>measure_anova.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute nonparametric estimate of classification accuracy.</p>
+    <p>Estimate ANOVA
+Compute nonparametric estimate of the ANOVA decomposition.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>measure_accuracy</span><span class='op'>(</span>
-  <span class='va'>fitted_values</span>,
+    <pre class="usage"><span class='fu'>measure_anova</span><span class='op'>(</span>
+  <span class='va'>full</span>,
+  <span class='va'>reduced</span>,
   <span class='va'>y</span>,
   C <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>,
   Z <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -148,8 +154,12 @@
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>fitted_values</th>
-      <td><p>fitted values from a regression function using the observed data.</p></td>
+      <th>full</th>
+      <td><p>fitted values from a regression function of the observed outcome on the full set of covariates.</p></td>
+    </tr>
+    <tr>
+      <th>reduced</th>
+      <td><p>fitted values from a regression on the reduced set of observed covariates.</p></td>
     </tr>
     <tr>
       <th>y</th>
@@ -187,7 +197,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of: (1) the estimated classification accuracy of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.</p>
+    <p>A named list of: (1) the estimated ANOVA (based on a one-step correction) of the fitted regression functions; (2) the estimated influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF predictions.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

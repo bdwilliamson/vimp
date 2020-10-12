@@ -78,12 +78,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -139,7 +133,9 @@
 <div id="major-changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes" class="anchor"></a>Major changes</h2>
-<p>None</p>
+<ul>
+<li>Compute one-step estimators of variable importance if inverse probability of censoring weights are entered. You input the weights, indicator of coarsening, and observed variables, and <code>vimp</code> will handle the rest.</li>
+</ul>
 </div>
 <div id="minor-changes" class="section level2">
 <h2 class="hasAnchor">
@@ -149,10 +145,10 @@
 <li>Updated main vignette to only use <code>run_regression = TRUE</code> for simplicity</li>
 <li>Added argument <code>verbose</code> to <code>sp_vim</code>; if <code>TRUE</code>, messages are printed throughout fitting that display progress and <code>verbose</code> is passed to <code>SuperLearner</code>
 </li>
-<li>
-<code>spvim_se</code> now returns the individual variance components from sampling observations and subsets; these are subsequently returned by <code>sp_vim</code>
-</li>
-<li>No longer print the call along with the output</li>
+<li>Change names of internal functions from <code>cv_predictiveness_point_est</code> and <code>predictiveness_point_est</code> to <code>est_predictiveness_cv</code> and <code>est_predictiveness</code>, respectively</li>
+<li>Removed functions <code>cv_predictiveness_update</code>, <code>cv_vimp_point_est</code>, <code>cv_vimp_update</code>, <code>predictiveness_update</code>, <code>vimp_point_est</code>, <code>vimp_update</code>; this functionality is now in <code>est_predictiveness_cv</code> and <code>est_predictiveness</code> (for the <code>*update*</code> functions) or directly in <code>vim</code> or <code>cv_vim</code> (for the <code>*vimp*</code> functions)</li>
+<li>Removed functions <code>predictiveness_se</code> and <code>predictiveness_ci</code> (functionality is now in <code>vimp_se</code> and <code>vimp_ci</code>, respectively)</li>
+<li>Changed <code>weights</code> argument to <code>ipc_weights</code>, clarifying that these weights are meant to be used as inverse probability of coarsening (e.g., censoring) weights</li>
 </ul>
 </div>
 </div>

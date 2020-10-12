@@ -38,12 +38,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -92,7 +86,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2020-09-18</h4>
+            <h4 class="date">2020-10-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/introduction-to-vimp.Rmd"><code>vignettes/introduction-to-vimp.Rmd</code></a></small>
       <div class="hidden name"><code>introduction-to-vimp.Rmd</code></div>
@@ -114,15 +108,13 @@
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>A stable version of the package may be downloaded and installed from CRAN. Type the following command in your R console to install the stable version of <code>vimp</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"vimp"</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"vimp"</span><span class="op">)</span></pre></div>
 <p>A development version of the package may be downloaded and installed from GitHub using the <code>devtools</code> package. Type the following command in your R console to install the development version of <code>vimp</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co"># only run if you don't have devtools</span>
 <span class="co"># previously installed</span>
 <span class="co"># install.packages("devtools")</span>
-<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"bdwilliamson/vimp"</span>)
-</pre></div>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bdwilliamson/vimp"</span><span class="op">)</span></pre></div>
 </div>
 <div id="quick-start" class="section level2">
 <h2 class="hasAnchor">
@@ -130,25 +122,23 @@
 <p>This section should serve as a quick guide to using the <code>vimp</code> package — we will cover the main functions for estimating <span class="math inline">\(R^2\)</span>-based variable importance using a simulated data example. More details are given in the next section.</p>
 <p>First, load the <code>vimp</code> package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span>)
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span><span class="op">)</span></pre></div>
 <pre><code>## vimp version 2.1.1: Perform Inference on Algorithm-Agnostic Variable Importance</code></pre>
-<pre><code>## Package created on 2020-09-18</code></pre>
+<pre><code>## Package created on 2020-10-12</code></pre>
 <p>Next, create some data:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
 <span class="co">## -------------------------------------------------------------</span>
 <span class="co">## problem setup</span>
 <span class="co">## -------------------------------------------------------------</span>
 <span class="co">## set up the data</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="fl">5678910</span>)
-<span class="kw">n</span> <span class="op">&lt;-</span> <span class="fl">1000</span>
-<span class="kw">p</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="kw">s</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># desire importance for X_1</span>
-<span class="kw">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span>(<span class="kw">p</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span>(<span class="kw">n</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>)))
-<span class="kw">y</span> <span class="op">&lt;-</span> (<span class="kw">x</span>[,<span class="fl">1</span>])<span class="op">^</span><span class="fl">2</span><span class="op">*</span>(<span class="kw">x</span>[,<span class="fl">1</span>]<span class="op">+</span><span class="fl">7</span><span class="op">/</span><span class="fl">5</span>) <span class="op">+</span> (<span class="fl">25</span><span class="op">/</span><span class="fl">9</span>)<span class="op">*</span>(<span class="kw">x</span>[,<span class="fl">2</span>])<span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span>(<span class="kw">n</span>, <span class="fl">0</span>, <span class="fl">1</span>)
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">5678910</span><span class="op">)</span>
+<span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1000</span>
+<span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">2</span>
+<span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># desire importance for X_1</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="va">p</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">+</span><span class="fl">7</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">25</span><span class="op">/</span><span class="fl">9</span><span class="op">)</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>
 <span class="co">## set up folds for hypothesis testing</span>
-<span class="kw">folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(<span class="fl">2</span>), length = <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">y</span>)))
-</pre></div>
+<span class="va">folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p>This creates a matrix of covariates <code>x</code> with two columns, a vector <code>y</code> of normally-distributed outcome values, and a set of folds for a sample of <code>n = 100</code> study participants.</p>
 <p>The workhorse function of <code>vimp</code>, for <span class="math inline">\(R^2\)</span>-based variable importance, is <code>vimp_rsquared</code>. There are two ways to compute variable importance: in the first method, you allow <code>vimp</code> to run regressions for you and return variable importance; in the second method (discussed in <a href="precomputed-regressions.html">“Using precomputed regression function estimates in <code>vimp</code>”</a>), you run the regressions yourself and plug these into <code>vimp</code>. I will focus on the first method here. The basic arguments are</p>
 <ul>
@@ -161,37 +151,30 @@
 </ul>
 <p>This second-to-last argument, <code>SL.library</code>, determines the estimators you want to use for the conditional mean of Y given X. Estimates of variable importance rely on good estimators of the conditional mean, so we suggest using flexible estimators and model stacking to do so. One option for this is the <code>SuperLearner</code> package; load that package using</p>
 <div class="sourceCode" id="cb7"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span>)
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span><span class="op">)</span></pre></div>
 <pre><code>## Loading required package: nnls</code></pre>
 <pre><code>## Super Learner</code></pre>
 <pre><code>## Version: 2.0-26</code></pre>
 <pre><code>## Package created on 2019-10-27</code></pre>
 <div class="sourceCode" id="cb12"><pre class="downlit">
 <span class="co">## load specific algorithms</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://github.com/imbs-hl/ranger">"ranger"</a></span>)
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/imbs-hl/ranger">"ranger"</a></span><span class="op">)</span></pre></div>
 <p>The code</p>
 <div class="sourceCode" id="cb13"><pre class="downlit">
-<span class="kw">est_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">y</span>, X = <span class="kw">x</span>, indx = <span class="fl">1</span>, run_regression = <span class="fl">TRUE</span>,
-SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SL.ranger"</span>, <span class="st">"SL.mean"</span>), V = <span class="fl">2</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>())
-</pre></div>
+<span class="va">est_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>,
+SL.library <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SL.ranger"</span>, <span class="st">"SL.mean"</span><span class="op">)</span>, V <span class="op">=</span> <span class="fl">2</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p>uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance for the importance of <span class="math inline">\(X_1\)</span>. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit">
-<span class="kw">est_1</span>
-</pre></div>
-<pre><code>## 
-## Variable importance estimates:
-##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value    
-## s = 1 0.1300958 0.04509153 [0.04171804, 0.2184736] TRUE     0.002255592</code></pre>
+<span class="va">est_1</span></pre></div>
+<pre><code>## Variable importance estimates:
+##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
+## s = 1 0.1300958 0.04034518 [0.05102072, 0.2091709] TRUE     0.0005922123</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="kw">est_1</span>)
-</pre></div>
-<pre><code>## 
-## Variable importance estimates:
-##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value    
-## s = 1 0.1300958 0.04509153 [0.04171804, 0.2184736] TRUE     0.002255592</code></pre>
-<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.13, with a 95% confidence interval of [0.042, 0.218].</p>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">est_1</span><span class="op">)</span></pre></div>
+<pre><code>## Variable importance estimates:
+##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
+## s = 1 0.1300958 0.04034518 [0.05102072, 0.2091709] TRUE     0.0005922123</code></pre>
+<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.13, with a 95% confidence interval of [0.051, 0.209].</p>
 </div>
 <div id="detailed-guide" class="section level2">
 <h2 class="hasAnchor">
@@ -212,14 +195,13 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <p>Throughout this document I will use the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span>, freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>. Information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit">
 <span class="co">## read in the data from the Elements website</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"RCurl"</span>)
-<span class="kw">heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(text = <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html">getURL</a></span>(<span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span>), header = <span class="fl">TRUE</span>, stringsAsFactors = <span class="fl">FALSE</span>)
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"RCurl"</span><span class="op">)</span>
+<span class="va">heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html">getURL</a></span><span class="op">(</span><span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="co">## minor data cleaning</span>
-<span class="kw">heart</span> <span class="op">&lt;-</span> <span class="kw">heart_data</span>[, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">heart_data</span>)[<span class="fl">2</span>]]
-<span class="kw">heart</span><span class="op">$</span><span class="kw">famhist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span>(<span class="kw">heart</span><span class="op">$</span><span class="kw">famhist</span> <span class="op">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span>)
+<span class="va">heart</span> <span class="op">&lt;-</span> <span class="va">heart_data</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">heart_data</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
+<span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>
 <span class="co">## sample-splitting folds for hypothesis testing</span>
-<span class="kw">heart_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(<span class="fl">2</span>), length = <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">heart</span>)[<span class="fl">1</span>]))
-</pre></div>
+<span class="va">heart_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></pre></div>
 <p>In addition to the indicator of myocardial infarction <code>chd</code>, the outcome of interest, there are measurements on two groups of variables. First are behavioral features: cumulative tobacco consumption, current alcohol consumption, and type A behavior (a behavioral pattern linked to stress). Second are biological features: systolic blood pressure, low-density lipoprotein (LDL) cholesterol, adiposity (similar to body mass index), family history of heart disease, obesity, and age.</p>
 <p>Since there are nine features and two groups, it is of interest to determine variable importance both for the nine individual features separately and for the two groups of features.</p>
 </div>
@@ -228,20 +210,19 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <a href="#a-first-approach-linear-regression" class="anchor"></a>A first approach: linear regression</h3>
 <p>Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. Note that because I chose to fit the regression functions first and then plug them into <code>vimp</code>, I need to explicitly specify the folds used for hypothesis testing. The analysis is achieved by the following:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit">
-<span class="kw">X</span> <span class="op">&lt;-</span> <span class="kw">heart</span>[, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">heart</span>)[<span class="fl">2</span>]]
-<span class="kw">lm_vim_sbp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">1</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_tob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">2</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_ldl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">3</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_adi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">4</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_fam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">5</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_tpa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">6</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_obe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">7</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_alc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">8</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
-<span class="kw">lm_vim_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>, indx = <span class="fl">9</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="st">"SL.lm"</span>, type = <span class="st">"r_squared"</span>)
+<span class="va">X</span> <span class="op">&lt;-</span> <span class="va">heart</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
+<span class="va">lm_vim_sbp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_tob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">2</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_ldl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">3</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_adi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">4</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_fam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">5</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_tpa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">6</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_obe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">7</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_alc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">8</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
+<span class="va">lm_vim_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">9</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
 
 <span class="co">## make a table with the estimates using the merge_vim() function</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://dplyr.tidyverse.org">"dplyr"</a></span>)
-</pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org">"dplyr"</a></span><span class="op">)</span></pre></div>
 <pre><code>## 
 ## Attaching package: 'dplyr'</code></pre>
 <pre><code>## The following objects are masked from 'package:stats':
@@ -251,23 +232,21 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <div class="sourceCode" id="cb23"><pre class="downlit">
-<span class="kw">lm_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="kw">lm_vim_sbp</span>, <span class="kw">lm_vim_tob</span>, <span class="kw">lm_vim_ldl</span>, <span class="kw">lm_vim_adi</span>,
-                <span class="kw">lm_vim_fam</span>, <span class="kw">lm_vim_tpa</span>, <span class="kw">lm_vim_obe</span>, <span class="kw">lm_vim_alc</span>, <span class="kw">lm_vim_age</span>)
+<span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">lm_vim_sbp</span>, <span class="va">lm_vim_tob</span>, <span class="va">lm_vim_ldl</span>, <span class="va">lm_vim_adi</span>,
+                <span class="va">lm_vim_fam</span>, <span class="va">lm_vim_tpa</span>, <span class="va">lm_vim_obe</span>, <span class="va">lm_vim_alc</span>, <span class="va">lm_vim_age</span><span class="op">)</span>
 <span class="co">## print out the matrix</span>
-<span class="kw">lm_mat</span>
-</pre></div>
-<pre><code>## 
-## Variable importance estimates:
-##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
-## s = 1 0.3371157 0.04993209 [0.23925061, 0.4349808] TRUE     2.659872e-12
-## s = 6 0.3176448 0.05266687 [0.21441966, 0.4208700] TRUE     1.751050e-10
-## s = 9 0.2891234 0.05186115 [0.18747738, 0.3907693] TRUE     1.039253e-08
-## s = 2 0.2650302 0.04985431 [0.16731760, 0.3627429] TRUE     6.205484e-08
-## s = 8 0.2589936 0.05154871 [0.15795998, 0.3600272] TRUE     7.363791e-08
-## s = 7 0.2582700 0.05432108 [0.15180267, 0.3647374] TRUE     9.989136e-07
-## s = 5 0.2226357 0.04923309 [0.12614064, 0.3191308] TRUE     2.454009e-06
-## s = 4 0.1940524 0.05269473 [0.09077263, 0.2973322] TRUE     1.016225e-04
-## s = 3 0.1607018 0.05093162 [0.06087763, 0.2605259] TRUE     5.784691e-04</code></pre>
+<span class="va">lm_mat</span></pre></div>
+<pre><code>## Variable importance estimates:
+##       Estimate     SE         95% CI                  VIMP &gt; 0 p-value     
+## s = 6 0.2306968687 0.07754543 [0.07871062, 0.3826831]  TRUE    0.0008709805
+## s = 2 0.2297583908 0.07408769 [0.08454918, 0.3749676]  TRUE    0.0014740077
+## s = 1 0.1243845280 0.06401668 [0.00000000, 0.2498549]  TRUE    0.0323404939
+## s = 9 0.0931209210 0.06962164 [0.00000000, 0.2295768] FALSE    0.0935529736
+## s = 7 0.0845631815 0.07720069 [0.00000000, 0.2358737] FALSE    0.1308871251
+## s = 4 0.0754359734 0.07307546 [0.00000000, 0.2186612] FALSE    0.1545292248
+## s = 5 0.0393849670 0.06391775 [0.00000000, 0.1646615] FALSE    0.2698421118
+## s = 8 0.0299019189 0.07034801 [0.00000000, 0.1677815] FALSE    0.3314648344
+## s = 3 0.0003397151 0.06646206 [0.00000000, 0.1306030] FALSE    0.4979267053</code></pre>
 </div>
 <div id="building-a-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -278,42 +257,41 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <p>For instance, my library could include the elastic net, random forests <span class="citation">(Breiman 2001)</span>, and gradient boosted trees <span class="citation">(Friedman 2001)</span> as follows:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit">
 <span class="co">## load the library</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/ecpolley/SuperLearner">SuperLearner</a></span>)
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ecpolley/SuperLearner">SuperLearner</a></span><span class="op">)</span>
 
 <span class="co">## create a function for boosted stumps</span>
-<span class="kw">SL.gbm.1</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">...</span>, <span class="kw">interaction.depth</span> = <span class="fl">1</span>) <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gbm</a></span>(<span class="kw">...</span>, interaction.depth = <span class="kw">interaction.depth</span>)
+<span class="va">SL.gbm.1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span>, <span class="va">interaction.depth</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gbm</a></span><span class="op">(</span><span class="va">...</span>, interaction.depth <span class="op">=</span> <span class="va">interaction.depth</span><span class="op">)</span>
 
 <span class="co">## create GAMs with different degrees of freedom</span>
-<span class="kw">SL.gam.3</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">...</span>, <span class="kw">deg.gam</span> = <span class="fl">3</span>) <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gam</a></span>(<span class="kw">...</span>, deg.gam = <span class="kw">deg.gam</span>)
-<span class="kw">SL.gam.4</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">...</span>, <span class="kw">deg.gam</span> = <span class="fl">4</span>) <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gam</a></span>(<span class="kw">...</span>, deg.gam = <span class="kw">deg.gam</span>)
-<span class="kw">SL.gam.5</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">...</span>, <span class="kw">deg.gam</span> = <span class="fl">5</span>) <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gam</a></span>(<span class="kw">...</span>, deg.gam = <span class="kw">deg.gam</span>)
+<span class="va">SL.gam.3</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span>, <span class="va">deg.gam</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gam</a></span><span class="op">(</span><span class="va">...</span>, deg.gam <span class="op">=</span> <span class="va">deg.gam</span><span class="op">)</span>
+<span class="va">SL.gam.4</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span>, <span class="va">deg.gam</span> <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gam</a></span><span class="op">(</span><span class="va">...</span>, deg.gam <span class="op">=</span> <span class="va">deg.gam</span><span class="op">)</span>
+<span class="va">SL.gam.5</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span>, <span class="va">deg.gam</span> <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gam</a></span><span class="op">(</span><span class="va">...</span>, deg.gam <span class="op">=</span> <span class="va">deg.gam</span><span class="op">)</span>
 
 <span class="co">## add more levels of alpha for glmnet</span>
-<span class="kw">create.SL.glmnet</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">alpha</span> = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>)) {
-  <span class="co">for</span> (<span class="kw">mm</span> <span class="co">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="kw">alpha</span>))) {
-    <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span>(file = <span class="st">""</span>, text = <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">'SL.glmnet.'</span>, <span class="kw">alpha</span>[<span class="kw">mm</span>], <span class="st">'&lt;- function(..., alpha = '</span>, <span class="kw">alpha</span>[<span class="kw">mm</span>], <span class="st">') SL.glmnet(..., alpha = alpha)'</span>, sep = <span class="st">''</span>)), envir = <span class="kw">.GlobalEnv</span>)
-  }
-  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fl">TRUE</span>)
-}
-<span class="fu">create.SL.glmnet</span>()
+<span class="va">create.SL.glmnet</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">alpha</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">for</span> <span class="op">(</span><span class="va">mm</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">alpha</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">""</span>, text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">'SL.glmnet.'</span>, <span class="va">alpha</span><span class="op">[</span><span class="va">mm</span><span class="op">]</span>, <span class="st">'&lt;- function(..., alpha = '</span>, <span class="va">alpha</span><span class="op">[</span><span class="va">mm</span><span class="op">]</span>, <span class="st">') SL.glmnet(..., alpha = alpha)'</span>, sep <span class="op">=</span> <span class="st">''</span><span class="op">)</span><span class="op">)</span>, envir <span class="op">=</span> <span class="va">.GlobalEnv</span><span class="op">)</span>
+  <span class="op">}</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">create.SL.glmnet</span><span class="op">(</span><span class="op">)</span>
 
 <span class="co">## add tuning parameters for randomForest</span>
-<span class="kw">create.SL.randomForest</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">tune</span> = <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(mtry = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span>), nodesize = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span>))) {
-  <span class="kw">tuneGrid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span>(<span class="kw">tune</span>, stringsAsFactors = <span class="fl">FALSE</span>)
-  <span class="co">for</span> (<span class="kw">mm</span> <span class="co">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(<span class="kw">tuneGrid</span>))) {
-    <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span>(file = <span class="st">""</span>, text = <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"SL.randomForest."</span>, <span class="kw">mm</span>, <span class="st">"&lt;- function(..., mtry = "</span>, <span class="kw">tuneGrid</span>[<span class="kw">mm</span>, <span class="fl">1</span>], <span class="st">", nodesize = "</span>, <span class="kw">tuneGrid</span>[<span class="kw">mm</span>, <span class="fl">2</span>], <span class="st">") SL.randomForest(..., mtry = mtry, nodesize = nodesize)"</span>, sep = <span class="st">""</span>)), envir = <span class="kw">.GlobalEnv</span>)
-  }
-  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span>(<span class="fl">TRUE</span>)
-}
-<span class="fu">create.SL.randomForest</span>()
+<span class="va">create.SL.randomForest</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tune</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mtry <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span>, nodesize <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="va">tuneGrid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span><span class="op">(</span><span class="va">tune</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+  <span class="kw">for</span> <span class="op">(</span><span class="va">mm</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">tuneGrid</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">""</span>, text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"SL.randomForest."</span>, <span class="va">mm</span>, <span class="st">"&lt;- function(..., mtry = "</span>, <span class="va">tuneGrid</span><span class="op">[</span><span class="va">mm</span>, <span class="fl">1</span><span class="op">]</span>, <span class="st">", nodesize = "</span>, <span class="va">tuneGrid</span><span class="op">[</span><span class="va">mm</span>, <span class="fl">2</span><span class="op">]</span>, <span class="st">") SL.randomForest(..., mtry = mtry, nodesize = nodesize)"</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span>, envir <span class="op">=</span> <span class="va">.GlobalEnv</span><span class="op">)</span>
+  <span class="op">}</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="fu">create.SL.randomForest</span><span class="op">(</span><span class="op">)</span>
 
 <span class="co">## create the library</span>
-<span class="kw">learners</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SL.glmnet"</span>, <span class="st">"SL.glmnet.0.25"</span>, <span class="st">"SL.glmnet.0.5"</span>, <span class="st">"SL.glmnet.0.75"</span>,
+<span class="va">learners</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SL.glmnet"</span>, <span class="st">"SL.glmnet.0.25"</span>, <span class="st">"SL.glmnet.0.5"</span>, <span class="st">"SL.glmnet.0.75"</span>,
               <span class="st">"SL.randomForest"</span>, <span class="st">"SL.randomForest.1"</span>, <span class="st">"SL.randomForest.2"</span>, <span class="st">"SL.randomForest.3"</span>,
               <span class="st">"SL.randomForest.4"</span>, <span class="st">"SL.randomForest.5"</span>, <span class="st">"SL.randomForest.6"</span>, <span class="st">"SL.randomForest.7"</span>,
               <span class="st">"SL.randomForest.8"</span>, <span class="st">"SL.randomForest.9"</span>,
-              <span class="st">"SL.gbm.1"</span>)
-</pre></div>
+              <span class="st">"SL.gbm.1"</span><span class="op">)</span></pre></div>
 <p>Now that I have created the library of learners, I can move on to estimating variable importance.</p>
 </div>
 <div id="estimating-variable-importance-for-a-single-variable" class="section level3">
@@ -352,42 +330,37 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <p>The call to <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> looks like this:</p>
 <div class="sourceCode" id="cb26"><pre class="downlit">
 <span class="co">## load the library</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span>)
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span><span class="op">)</span>
 
 <span class="co">## now estimate variable importance</span>
-<span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">X</span>,
-    indx = <span class="fl">5</span>, run_regression = <span class="fl">TRUE</span>, SL.library = <span class="kw">learners</span>, V = <span class="fl">5</span>)
-</pre></div>
+<span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>,
+    indx <span class="op">=</span> <span class="fl">5</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="va">learners</span>, V <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></pre></div>
 <p>While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay — in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.</p>
 <p>However, for the sake of illustration, I can estimate varibable importance for family history only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):</p>
 <div class="sourceCode" id="cb27"><pre class="downlit">
 <span class="co">## load the library</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span>)
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span><span class="op">)</span>
 
 <span class="co"># small learners library</span>
-<span class="kw">learners.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SL.ranger"</span>)
+<span class="va">learners.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SL.ranger"</span><span class="op">)</span>
 <span class="co"># small number of cross-fitting folds</span>
-<span class="kw">V</span> <span class="op">&lt;-</span> <span class="fl">2</span>
+<span class="va">V</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="co"># small number of CV folds for Super Learner</span>
-<span class="kw">sl_cvcontrol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(V = <span class="fl">2</span>)
+<span class="va">sl_cvcontrol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
 <span class="co">## now estimate variable importance</span>
-<span class="kw">fam_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="kw">heart</span>[, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">heart</span>)[<span class="fl">2</span>]]), indx = <span class="fl">5</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-</pre></div>
-<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =
-## weights, : Original estimate &lt; 0; returning zero.</code></pre>
+<span class="va">fam_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">heart</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, indx <span class="op">=</span> <span class="fl">5</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></pre></div>
+<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =
+## "r_squared", : Original estimate &lt; 0; returning zero.</code></pre>
 <p>This code takes approximately 5 seconds to run on a (not very fast) PC. I can display these estimates:</p>
 <div class="sourceCode" id="cb29"><pre class="downlit">
-<span class="kw">fam_vim</span>
-</pre></div>
-<pre><code>## 
-## Variable importance estimates:
+<span class="va">fam_vim</span></pre></div>
+<pre><code>## Variable importance estimates:
 ##       Estimate SE         95% CI         VIMP &gt; 0 p-value  
-## s = 5 0        0.06348501 [0, 0.1244283] FALSE    0.8875672</code></pre>
+## s = 5 0        0.06027933 [0, 0.1181453] FALSE    0.9145452</code></pre>
 <p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
 <div class="sourceCode" id="cb31"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw">fam_vim</span><span class="op">$</span><span class="kw">full_fit</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fam_vim</span><span class="op">$</span><span class="va">full_fit</span><span class="op">)</span></pre></div>
 <pre><code>## [[1]]
 ##              [,1]
 ##   [1,] 0.55456667
@@ -625,8 +598,7 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 ## [114,] 0.43753333
 ## [115,] 0.49806667</code></pre>
 <div class="sourceCode" id="cb33"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw">fam_vim</span><span class="op">$</span><span class="kw">red_fit</span>)
-</pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fam_vim</span><span class="op">$</span><span class="va">red_fit</span><span class="op">)</span></pre></div>
 <pre><code>## [[1]]
 ##              [,1]
 ##   [1,] 0.27694171
@@ -866,82 +838,76 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <p>I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):</p>
 <div class="sourceCode" id="cb35"><pre class="downlit">
 <span class="co">## set up the data, removing the columns for alcohol use and chd</span>
-<span class="kw">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span>(<span class="kw">heart</span>[, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">heart</span>)[<span class="fl">2</span>]])
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">heart</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 
 <span class="co">## estimate variable importance</span>
-<span class="kw">tpa_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">6</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-</pre></div>
-<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =
-## weights, : Original estimate &lt; 0; returning zero.</code></pre>
+<span class="va">tpa_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">6</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></pre></div>
+<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =
+## "r_squared", : Original estimate &lt; 0; returning zero.</code></pre>
 <div class="sourceCode" id="cb37"><pre class="downlit">
-<span class="kw">alc_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">8</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-</pre></div>
-<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =
-## weights, : Original estimate &lt; 0; returning zero.</code></pre>
+<span class="va">alc_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">8</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></pre></div>
+<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =
+## "r_squared", : Original estimate &lt; 0; returning zero.</code></pre>
 <div class="sourceCode" id="cb39"><pre class="downlit">
-<span class="kw">sbp_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">1</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-</pre></div>
-<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =
-## weights, : Original estimate &lt; 0; returning zero.</code></pre>
+<span class="va">sbp_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">1</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></pre></div>
+<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =
+## "r_squared", : Original estimate &lt; 0; returning zero.</code></pre>
 <div class="sourceCode" id="cb41"><pre class="downlit">
-<span class="kw">tob_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">2</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-<span class="kw">ldl_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">3</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-<span class="kw">adi_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">4</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-</pre></div>
-<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =
-## weights, : Original estimate &lt; 0; returning zero.</code></pre>
+<span class="va">tob_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">2</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
+<span class="va">ldl_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">3</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
+<span class="va">adi_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">4</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></pre></div>
+<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =
+## "r_squared", : Original estimate &lt; 0; returning zero.</code></pre>
 <div class="sourceCode" id="cb43"><pre class="downlit">
-<span class="kw">obe_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">5</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-<span class="kw">age_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fl">9</span>, SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-</pre></div>
+<span class="va">obe_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">5</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
+<span class="va">age_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">9</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></pre></div>
 <p>Now that I have estimates of each of individual feature’s variable importance, I can view them all simultaneously by plotting:</p>
 <div class="sourceCode" id="cb44"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://dplyr.tidyverse.org">"dplyr"</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://tibble.tidyverse.org">"tibble"</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="http://ggplot2.tidyverse.org">"ggplot2"</a></span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="https://wilkelab.org/cowplot">"cowplot"</a></span>)
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span>(<span class="fu"><a href="https://rdrr.io/pkg/cowplot/man/theme_cowplot.html">theme_cowplot</a></span>())
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st"><a href="http://forcats.tidyverse.org">"forcats"</a></span>)
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org">"dplyr"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://tibble.tidyverse.org/">"tibble"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://ggplot2.tidyverse.org">"ggplot2"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://wilkelab.org/cowplot/">"cowplot"</a></span><span class="op">)</span>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="http://forcats.tidyverse.org">"forcats"</a></span><span class="op">)</span>
 <span class="co">## combine the objects together</span>
-<span class="kw">ests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="kw">sbp_vim</span>, <span class="kw">tob_vim</span>, <span class="kw">ldl_vim</span>, <span class="kw">adi_vim</span>,
-                <span class="kw">fam_vim</span>, <span class="kw">tpa_vim</span>, <span class="kw">obe_vim</span>, <span class="kw">alc_vim</span>, <span class="kw">age_vim</span>)
+<span class="va">ests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">sbp_vim</span>, <span class="va">tob_vim</span>, <span class="va">ldl_vim</span>, <span class="va">adi_vim</span>,
+                <span class="va">fam_vim</span>, <span class="va">tpa_vim</span>, <span class="va">obe_vim</span>, <span class="va">alc_vim</span>, <span class="va">age_vim</span><span class="op">)</span>
 
-<span class="kw">get_nm</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">s</span>) {
-  <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">1</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Sys. blood press."</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">2</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Tobacco consump."</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">3</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"LDL cholesterol"</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">4</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Adiposity"</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">5</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Family history"</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">6</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Type A behavior"</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">7</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Obesity"</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">8</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Alcohol consump."</span>)
-  } <span class="co">else</span> <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="fl">9</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Age"</span>)
-  }
-}
-<span class="kw">get_nms</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">ests</span>) {
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span>(<span class="kw">ests</span><span class="op">$</span><span class="kw">s</span>)), <span class="fl">1</span>, <span class="kw">get_nm</span>))
-}
+<span class="va">get_nm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Sys. blood press."</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Tobacco consump."</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">3</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"LDL cholesterol"</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">4</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Adiposity"</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">5</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Family history"</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">6</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Type A behavior"</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">7</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Obesity"</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">8</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Alcohol consump."</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="fl">9</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Age"</span><span class="op">)</span>
+  <span class="op">}</span>
+<span class="op">}</span>
+<span class="va">get_nms</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ests</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">ests</span><span class="op">$</span><span class="va">s</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span>, <span class="va">get_nm</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
 
 <span class="co">## plot</span>
-<span class="kw">ests</span><span class="op">$</span><span class="kw">mat</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(<span class="kw">est</span>)) <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(ord_group = <span class="kw">forcats</span>::<span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html">fct_reorder</a></span>(<span class="fu">get_nms</span>(<span class="kw">ests</span><span class="op">$</span><span class="kw">mat</span>), <span class="kw">est</span>)) <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">est</span>, y = <span class="kw">ord_group</span>)) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html">geom_errorbarh</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(xmin = <span class="kw">cil</span>, xmax = <span class="kw">ciu</span>)) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Variable importance estimates: "</span>, <span class="kw">R</span><span class="op">^</span><span class="fl">2</span>, sep = <span class="st">""</span>))) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">""</span>) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Variable importance estimates for individual features in the South African heart disease study data"</span>)
-</pre></div>
+<span class="va">ests</span><span class="op">$</span><span class="va">mat</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">est</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>ord_group <span class="op">=</span> <span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html">fct_reorder</a></span><span class="op">(</span><span class="fu">get_nms</span><span class="op">(</span><span class="va">ests</span><span class="op">$</span><span class="va">mat</span><span class="op">)</span>, <span class="va">est</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">est</span>, y <span class="op">=</span> <span class="va">ord_group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html">geom_errorbarh</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">cil</span>, xmax <span class="op">=</span> <span class="va">ciu</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Variable importance estimates for individual features in the South African heart disease study data"</span><span class="op">)</span></pre></div>
 <p><img src="introduction-to-vimp_files/figure-html/heart-vim-1.png" width="816"></p>
 </div>
 </div>
@@ -952,36 +918,34 @@ SL.library = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></spa
 <p>The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for <code>s</code>; I can use any of the options listed in the previous section to compute these estimates.</p>
 <div class="sourceCode" id="cb45"><pre class="downlit">
 <span class="co">## get the estimates</span>
-<span class="kw">behav_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>), SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
-</pre></div>
-<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, weights =
-## weights, : Original estimate &lt; 0; returning zero.</code></pre>
+<span class="va">behav_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></pre></div>
+<pre><code>## Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =
+## "r_squared", : Original estimate &lt; 0; returning zero.</code></pre>
 <div class="sourceCode" id="cb47"><pre class="downlit">
-<span class="kw">bios_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(Y = <span class="kw">heart</span><span class="op">$</span><span class="kw">chd</span>, X = <span class="kw">x</span>, indx = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), SL.library = <span class="kw">learners.2</span>, na.rm = <span class="fl">TRUE</span>, env = <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), V = <span class="kw">V</span>, cvControl = <span class="kw">sl_cvcontrol</span>)
+<span class="va">bios_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
 
 <span class="co">## combine and plot</span>
-<span class="kw">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="kw">behav_vim</span>, <span class="kw">bios_vim</span>)
-<span class="kw">nms.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Behavioral features"</span>, <span class="st">"Biological features"</span>)
-<span class="kw">nms_grp</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">s</span>) {
-  <span class="co">if</span> (<span class="kw">s</span> <span class="op">==</span> <span class="st">"1,3,4,5,7,9"</span>) {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Biological features"</span>)
-  } <span class="co">else</span> {
-    <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="st">"Behavioral features"</span>)
-  }
-}
-<span class="kw">get_nms_grp</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">ests</span>) {
-  <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/list.html">as.list</a></span>(<span class="kw">ests</span><span class="op">$</span><span class="kw">s</span>), <span class="fu">function</span>(<span class="kw">x</span>) <span class="fu">nms_grp</span>(<span class="kw">x</span>))))
-}
-<span class="kw">groups</span><span class="op">$</span><span class="kw">mat</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(<span class="kw">est</span>)) <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(ord_group = <span class="kw">forcats</span>::<span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html">fct_reorder</a></span>(<span class="fu">get_nms_grp</span>(<span class="kw">groups</span><span class="op">$</span><span class="kw">mat</span>), <span class="kw">est</span>)) <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(x = <span class="kw">est</span>, y = <span class="kw">ord_group</span>)) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span>() <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html">geom_errorbarh</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(xmin = <span class="kw">cil</span>, xmax = <span class="kw">ciu</span>)) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span>(<span class="st">"Variable importance estimates: "</span>, <span class="kw">R</span><span class="op">^</span><span class="fl">2</span>, sep = <span class="st">""</span>))) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span>(<span class="st">""</span>) <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"Variable importance estimates for groups of features in the South African heart disease study data"</span>)
-</pre></div>
+<span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">behav_vim</span>, <span class="va">bios_vim</span><span class="op">)</span>
+<span class="va">nms.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Behavioral features"</span>, <span class="st">"Biological features"</span><span class="op">)</span>
+<span class="va">nms_grp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">==</span> <span class="st">"1,3,4,5,7,9"</span><span class="op">)</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Biological features"</span><span class="op">)</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="st">"Behavioral features"</span><span class="op">)</span>
+  <span class="op">}</span>
+<span class="op">}</span>
+<span class="va">get_nms_grp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">ests</span><span class="op">)</span> <span class="op">{</span>
+  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">as.list</a></span><span class="op">(</span><span class="va">ests</span><span class="op">$</span><span class="va">s</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">nms_grp</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
+<span class="va">groups</span><span class="op">$</span><span class="va">mat</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="va">est</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>ord_group <span class="op">=</span> <span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html">fct_reorder</a></span><span class="op">(</span><span class="fu">get_nms_grp</span><span class="op">(</span><span class="va">groups</span><span class="op">$</span><span class="va">mat</span><span class="op">)</span>, <span class="va">est</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">est</span>, y <span class="op">=</span> <span class="va">ord_group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html">geom_errorbarh</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">cil</span>, xmax <span class="op">=</span> <span class="va">ciu</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Variable importance estimates for groups of features in the South African heart disease study data"</span><span class="op">)</span></pre></div>
 <p><img src="introduction-to-vimp_files/figure-html/heart-group-vim-1.png" width="816"></p>
 </div>
 <div id="types-of-population-variable-importance" class="section level2">

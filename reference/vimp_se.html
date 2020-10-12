@@ -79,12 +79,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
@@ -138,14 +132,7 @@
     <p>Compute standard error estimates for estimates of variable importance.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vimp_se</span>(
-  <span class='kw'>est</span>,
-  <span class='kw'>update</span>,
-  denom = <span class='kw'>NULL</span>,
-  n = <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='kw'>update</span>),
-  scale = <span class='st'>"log"</span>,
-  na.rm = <span class='fl'>FALSE</span>
-)</pre>
+    <pre class="usage"><span class='fu'>vimp_se</span><span class='op'>(</span><span class='va'>est</span>, <span class='va'>eif</span>, n <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>eif</span><span class='op'>)</span>, scale <span class='op'>=</span> <span class='st'>"log"</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,12 +142,8 @@
       <td><p>the estimate of variable importance.</p></td>
     </tr>
     <tr>
-      <th>update</th>
-      <td><p>the influence curve-based update.</p></td>
-    </tr>
-    <tr>
-      <th>denom</th>
-      <td><p>a list of point estimate and influence curve for the denominator (if any) to make the measure of predictiveness interpretable.</p></td>
+      <th>eif</th>
+      <td><p>the estimated efficient influence curve.</p></td>
     </tr>
     <tr>
       <th>n</th>
