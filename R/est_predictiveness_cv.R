@@ -12,6 +12,7 @@
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
+#' @param scale if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
@@ -20,7 +21,7 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", C = rep(1, length(y)), Z = NULL, folds_Z = folds, ipc_weights = rep(1, length(C)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(C)), na.rm = FALSE, ...) {
+est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", C = rep(1, length(y)), Z = NULL, folds_Z = folds, ipc_weights = rep(1, length(C)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(C)), scale = "identity", na.rm = FALSE, ...) {
     # get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
     full_type <- types[pmatch(type, types)]
@@ -36,7 +37,7 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", C
         ic <- vector("numeric", length = length(C))
         measures <- vector("list", V)
         for (v in 1:V) {
-            measures[[v]] <- measure_func[[1]](fitted_values = fitted_values[[v]], y = y[folds == v], C = C[folds_Z == v], Z = Z[folds_Z == v, , drop = FALSE], ipc_weights = ipc_weights[folds_Z == v], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds_Z == v], na.rm = na.rm, ...)
+            measures[[v]] <- measure_func[[1]](fitted_values = fitted_values[[v]], y = y[folds == v], C = C[folds_Z == v], Z = Z[folds_Z == v, , drop = FALSE], ipc_weights = ipc_weights[folds_Z == v], ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds[folds_Z == v], scale = scale, na.rm = na.rm, ...)
             ics[1:length(C[folds_Z == v]), v] <- measures[[v]]$eif
             ic[folds_Z == v] <- measures[[v]]$eif
         }
@@ -52,7 +53,7 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", C
     mn_y <- mean(y, na.rm = na.rm)
     # if full_type is "r_squared" or "deviance", post-hoc computing from "mse" or "cross_entropy"
     if (full_type == "r_squared") {
-        var <- measure_mse(fitted_values = rep(mn_y, length(y)), y, C = switch(do_ipcw + 1, rep(1, length(C)), C), Z = Z, ipc_weights = ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
+        var <- measure_mse(fitted_values = rep(mn_y, length(y)), y, C = switch(do_ipcw + 1, rep(1, length(C)), C), Z = Z, ipc_weights = ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, scale = "identity", na.rm = na.rm, ...)
         ic <- (-1) * as.vector(matrix(c(1 / var$point_est, -point_est / (var$point_est ^ 2)), nrow = 1) %*% t(cbind(ic, var$eif)))
         tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {
@@ -63,7 +64,7 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", C
         ics <- tmp_ics
     }
     if (full_type == "deviance") {
-        denom <- measure_cross_entropy(fitted_values = rep(mn_y, length(y)), y, C = switch(do_ipcw + 1, rep(1, length(C)), C), Z = Z, ipc_weights = ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, na.rm = na.rm, ...)
+        denom <- measure_cross_entropy(fitted_values = rep(mn_y, length(y)), y, C = switch(do_ipcw + 1, rep(1, length(C)), C), Z = Z, ipc_weights = ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, scale = "identity", na.rm = na.rm, ...)
         ic <- (-1) * as.vector(matrix(c(1 / denom$point_est, -point_est / (denom$point_est ^ 2)), nrow = 1) %*% t(cbind(ic, denom$eif)))
         tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
         for (v in 1:V) {

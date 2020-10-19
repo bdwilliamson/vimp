@@ -34,6 +34,19 @@ get_full_type <- function(type) {
     full_type
 }
 
+# ------------------------------
+# Logit, expit for one-step correction
+# ------------------------------
+expit <- function(x) {
+    exp(x) / (1 + exp(x))
+}
+logit <- function(x) {
+    log(x / (1 - x))
+}
+logit_derivative <- function(x) {
+    1 / x + 1 / (1 - x)
+}
+
 # -------------------------------------
 # Create Folds for Cross-Fitting
 # -------------------------------------

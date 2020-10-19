@@ -8,13 +8,14 @@
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
-#' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
+#' @param scale if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)
+#' @param na.rm logical; should \code{NA}s be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated ANOVA (based on a one-step correction) of the fitted regression functions; (2) the estimated influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
+measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), scale = "identity", na.rm = FALSE, ...) {
     # add on if they aren't equal length
     if (length(full) < length(reduced)) {
         full <- c(full, rep(NA, length(reduced) - length(full)))
@@ -40,7 +41,14 @@ measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL, ipc
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
         num <- mean((1 * ipc_weights[C == 1]) * ((full - reduced) ^ 2), na.rm = na.rm)
         denom <- mean((1 * ipc_weights[C == 1]) * (y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
-        est <- num / denom + mean(grad)
+        obs_est <- num / denom
+        if (scale == "logit") {
+            est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
+        } else if (scale == "log") {
+            est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
+        } else {
+            est <- obs_est + mean(grad)
+        }
     } else {
         num <- mean((full - reduced) ^ 2, na.rm = na.rm)
         denom <- mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)

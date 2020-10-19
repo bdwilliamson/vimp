@@ -9,13 +9,14 @@
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
-#' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
+#' @param scale if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)
+#' @param na.rm logical; should \code{NA}s be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated AUC of the fitted regression function; (2) the estimated influence function; and (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), na.rm = FALSE, ...) {
+measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), scale = "identity", na.rm = FALSE, ...) {
     # compute the point estimate (on only data with all obs, if IPC weights are entered)
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
     est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", x.measure = "cutoff")@y.values)
@@ -48,7 +49,14 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         case_control_comparison <- apply(matrix(fitted_values[cases]), 1, function(x) x >= fitted_values[controls])
         numerator <- sum(sweep(sweep(case_control_comparison, 2, 1 * ipc_weights[C == 1][cases], "*"), 1, 1 * ipc_weights[C == 1][controls], "*"))
         denominator <- sum(sweep(sweep(matrix(1, nrow = nrow(case_control_comparison), ncol = ncol(case_control_comparison)), 1, 1 * ipc_weights[C == 1][controls], "*"), 2, 1 * ipc_weights[C == 1][cases], "*"))
-        est <- numerator/denominator + mean(grad)
+        obs_est <- numerator / denominator
+        if (scale == "logit") {
+            est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
+        } else if (scale == "log") {
+            est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
+        } else {
+            est <- obs_est + mean(grad)
+        }
     } else {
         # marginal probabilities
         p_0 <- mean(y == 0)

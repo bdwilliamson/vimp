@@ -48,6 +48,15 @@ test_that("VIM with inverse probability of coarsening weights works", {
              cvControl = list(V = 3), env = environment())
   expect_equal(est$est, true_vim, tolerance = 0.2, scale = 1)
 })
+# test that VIM with IPCW and scale = "logit" works
+set.seed(4747)
+test_that("VIM with inverse probability of coarsening weights and scale = 'logit' works", {
+  est_log <- vim(Y = y, X = x, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = learners,
+             alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
+             scale = "log",
+             cvControl = list(V = 3), env = environment())
+  expect_equal(est_log$est, true_vim, tolerance = 0.3, scale = 1)
+})
 
 set.seed(5678)
 # test that VIM with inverse probability of coarsening weights and cross-fitting works

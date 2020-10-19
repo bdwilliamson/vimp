@@ -10,6 +10,7 @@
 #' @param ipc_weights weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
 #' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function
 #' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.
+#' @param scale if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
@@ -18,7 +19,7 @@
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @export
-est_predictiveness <- function(fitted_values, y, type = "r_squared", C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(C)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(C)), na.rm = FALSE, ...) {
+est_predictiveness <- function(fitted_values, y, type = "r_squared", C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(C)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(C)), scale = "identity", na.rm = FALSE, ...) {
 
     # get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", "cross_entropy")
@@ -29,7 +30,7 @@ est_predictiveness <- function(fitted_values, y, type = "r_squared", C = rep(1, 
 
     # compute plug-in point estimate, EIF, inverse-weighted EIF predictions
     if (!is.na(measure_func)) {
-        est_lst <- measure_func[[1]](fitted_values = fitted_values, y = y, C = C, Z = Z, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, na.rm = na.rm, ...)
+        est_lst <- measure_func[[1]](fitted_values = fitted_values, y = y, C = C, Z = Z, ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds, scale = scale, na.rm = na.rm, ...)
     } else { # if type is anova, no plug-in from predictiveness
         est_lst <- list(point_est = NA, ic = NA, ipc_eif_preds = rep(NA, length(y)))
     }

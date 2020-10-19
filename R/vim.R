@@ -201,14 +201,14 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
         se_full <- NA
         se_redu <- NA
     } else {
-        est_lst_full <- est_predictiveness(fitted_values = fhat_ful, y = Y_cc[folds_cc == 1, , drop = FALSE], type = full_type, C = C[folds == 1], Z = Z_in[folds == 1, , drop = FALSE], ipc_weights = ipc_weights[folds == 1], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
-        est_lst_redu <- est_predictiveness(fitted_values = fhat_red, y = Y_cc[folds_cc == 2, , drop = FALSE], type = full_type, C = C[folds == 2], Z = Z_in[folds == 2, , drop = FALSE], ipc_weights = ipc_weights[folds == 2], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
+        est_lst_full <- est_predictiveness(fitted_values = fhat_ful, y = Y_cc[folds_cc == 1, , drop = FALSE], type = full_type, C = C[folds == 1], Z = Z_in[folds == 1, , drop = FALSE], ipc_weights = ipc_weights[folds == 1], ipc_fit_type = "SL", scale = scale, na.rm = na.rm, SL.library = SL.library, ...)
+        est_lst_redu <- est_predictiveness(fitted_values = fhat_red, y = Y_cc[folds_cc == 2, , drop = FALSE], type = full_type, C = C[folds == 2], Z = Z_in[folds == 2, , drop = FALSE], ipc_weights = ipc_weights[folds == 2], ipc_fit_type = "SL", scale = scale, na.rm = na.rm, SL.library = SL.library, ...)
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est
         eif_full <- est_lst_full$eif
-        se_full <- vimp_se(predictiveness_full, eif_full, scale = scale, na.rm = na.rm)
+        se_full <- vimp_se(predictiveness_full, eif_full, na.rm = na.rm)
         eif_redu <- est_lst_redu$eif
-        se_redu <- vimp_se(predictiveness_redu, eif_redu, scale = scale, na.rm = na.rm)
+        se_redu <- vimp_se(predictiveness_redu, eif_redu, na.rm = na.rm)
         est <- est_lst_full$point_est - est_lst_redu$point_est
         naive <- NA
         len_full <- length(eif_full)
@@ -224,7 +224,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
         eif <- tmp_eif_full - tmp_eif_redu
     }
     # compute the standard error
-    se <- vimp_se(est, eif, scale = scale, na.rm = na.rm)
+    se <- vimp_se(est, eif, na.rm = na.rm)
 
     # if est < 0, set to zero and print warning
     if (est < 0) {
