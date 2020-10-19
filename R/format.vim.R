@@ -13,7 +13,7 @@ format.vim <- function(x, ...) {
     ## combine the columns for cis
     tmp.ci <- cbind(format(x$mat$cil, ...), format(x$mat$ciu, ...))
     if (!any(grepl("anova", class(x)))) {
-      output <- cbind(format(x$mat$est, ...), format(x$mat$se, ...), 
+      output <- cbind(format(x$mat$est, ...), format(x$mat$se, ...),
                       apply(tmp.ci, 1, function(x) paste("[", paste(x, collapse = ", "), "]", sep = "")),
                       format(x$mat$test, ...),
                       format(x$mat$p_value, ...))
@@ -43,13 +43,6 @@ format.vim <- function(x, ...) {
   if (!any(grepl("anova", class(x)))) {
     tmp <- c(col_nms, paste0("VIMP > ", x$delta), "p-value")
     col_nms <- tmp
-  }
-  if (grepl("log", x$scale) & !grepl("logit", x$scale)) {
-    col_nms[2] <- "SE (log scale)"
-  } else if (grepl("logit", x$scale)) {
-    col_nms[2] <- "SE (logit scale)"
-  } else {
-
   }
   colnames(output) <- col_nms
   return(output)

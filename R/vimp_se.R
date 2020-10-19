@@ -5,7 +5,6 @@
 #' @param est the estimate of variable importance.
 #' @param eif the estimated efficient influence curve.
 #' @param n the sample size.
-#' @param scale the scale to compute SEs on (either "log", for log-scale, or "identity", for same scale as point estimate).
 #' @param na.rm logical; should NA's be removed in computation? (defaults to \code{FALSE}).
 #'
 #' @return The standard error for the estimated variable importance for the given group of left-out covariates.
@@ -15,35 +14,16 @@
 #'
 #' @importFrom stats complete.cases
 #' @export
-vimp_se <- function(est, eif, n = length(eif), scale = "log", na.rm = FALSE) {
-
-    # get scale
-    scales <- c("log", "logit", "identity")
-    full_scale <- scales[pmatch(scale, scales)]
+vimp_se <- function(est, eif, n = length(eif), na.rm = FALSE) {
     # get the influence curve
     ic <- matrix(eif, ncol = 1)
-    if (full_scale == "log") {
-        if (est == 0 & !is.na(est)) {
-            tmp <- 1e-6
-            est <- tmp
-        }
-        grad <- matrix(1/est, nrow = 1)
-    } else if (full_scale == "logit") {
-        if (est == 0 & !is.na(est)) {
-            tmp <- 1e-6
-            est <- tmp
-        }
-        grad <- matrix(1/est + 1/(1 - est), nrow = 1)
-    } else {
-        grad <- matrix(1, nrow = 1)
-    }
     # calculate se
     if (na.rm) {
         n <- length(eif[!is.na(eif)])
         ic <- ic[complete.cases(ic), ]
     }
     # compute the variance
-    var <- (grad %*% t(ic) %*% ic %*% t(grad))/n
+    var <- (t(ic) %*% ic)/n
     # compute the se
     se <- sqrt(var/n)
     return(se)

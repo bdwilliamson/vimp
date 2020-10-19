@@ -4,7 +4,7 @@
 #'
 #' @param est estimate of variable importance, e.g., from a call to \code{vimp_point_est}.
 #' @param se estimate of the standard error of \code{est}, e.g., from a call to \code{vimp_se}.
-#' @param scale scale to compute interval estimate on (defaults to "identity": compute SE and CI on log scale and back-transform).
+#' @param scale scale to compute interval estimate on (defaults to "identity": compute Wald-type CI).
 #' @param level confidence interval type (defaults to 0.95).
 #'
 #' @return The Wald-based confidence interval for the true importance of the given group of left-out covariates.
@@ -32,20 +32,18 @@ vimp_ci <- function(est, se, scale = "identity", level = 0.95) {
             tmp <- 0
             is_zero <- TRUE
         }
-        ci[] <- exp(tmp + (se) %o% fac)
+        ci[] <- exp(tmp + ((1 / est)^2 * se) %o% fac)
         if (is_zero) {
             ci[, 1] <- 0
         }
     } else if (full_scale == "logit") {
-        expit <- function(x) exp(x)/(1 + exp(x))
-        logit <- function(x) log(x/(1-x))
         tmp <- suppressWarnings(logit(est))
         is_zero <- FALSE
         if ((is.na(tmp) & est <= 0 & !is.na(est)) | is.infinite(tmp)) {
             tmp <- 0
             is_zero <- TRUE
         }
-        ci[] <- expit(tmp + (se) %o% fac)
+        ci[] <- expit(tmp + ((logit_derivative(est) ^ 2) * se) %o% fac)
         if (is_zero) {
             ci[, 1] <- 0
         }
