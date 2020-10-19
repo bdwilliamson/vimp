@@ -1,3 +1,13 @@
+# vimp 2.1.1.1
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Allow confidence interval (CI) and inverse probability of coarsening corrections on different scales (e.g., log) to ensure that estimates and CIs lie in the parameter space
+
 # vimp 2.1.1
 
 ## Major changes
