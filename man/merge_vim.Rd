@@ -19,7 +19,7 @@ from the individual \code{vim} objects. This results in a list containing:
  \item{red_fit}{ - a list of the fitted values of the chosen method fit to the reduced data}
  \item{est}{- a vector with the corrected estimates}
  \item{naive}{- a vector with the naive estimates}
- \item{update}{- a list with the influence curve-based updates}
+ \item{eif}{- a list with the influence curve-based updates}
  \item{se}{- a vector with the standard errors}
  \item{ci}{- a matrix with the CIs}
  \item{mat}{ - a tibble with the estimated variable importance, the standard errors, and the \eqn{(1-\alpha) \times 100}\% confidence intervals}

@@ -11,7 +11,7 @@ vimp_ci(est, se, scale = "identity", level = 0.95)
 
 \item{se}{estimate of the standard error of \code{est}, e.g., from a call to \code{vimp_se}.}
 
-\item{scale}{scale to compute interval estimate on (defaults to "identity": compute SE and CI on log scale and back-transform).}
+\item{scale}{scale to compute interval estimate on (defaults to "identity": compute Wald-type CI).}
 
 \item{level}{confidence interval type (defaults to 0.95).}
 }

@@ -15,6 +15,7 @@ est_predictiveness_cv(
   ipc_weights = rep(1, length(C)),
   ipc_fit_type = "external",
   ipc_eif_preds = rep(1, length(C)),
+  scale = "identity",
   na.rm = FALSE,
   ...
 )
@@ -39,6 +40,8 @@ est_predictiveness_cv(
 \item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", fit a SuperLearner to determine the correction to the efficient influence function}
 
 \item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
+
+\item{scale}{if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)}
 
 \item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE})}
 

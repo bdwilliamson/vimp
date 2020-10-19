@@ -12,6 +12,7 @@ measure_mse(
   ipc_weights = rep(1, length(y)),
   ipc_fit_type = "external",
   ipc_eif_preds = rep(1, length(y)),
+  scale = "identity",
   na.rm = FALSE,
   ...
 )
@@ -31,7 +32,9 @@ measure_mse(
 
 \item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.}
 
-\item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE})}
+\item{scale}{if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)}
+
+\item{na.rm}{logical; should \code{NA}s be removed in computation? (defaults to \code{FALSE})}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }
