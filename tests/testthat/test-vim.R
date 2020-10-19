@@ -57,10 +57,8 @@ test_that("General variable importance estimates using externally-computed fitte
     # check that p-value exists
     expect_length(est$p_value, 1)
     # check that CIs with other transformations work
-    se_log <- vimp_se(est$est, est$eif, scale = "log")
-    se_logit <- vimp_se(est$est, est$eif, scale = "logit")
-    ci_log <- vimp_ci(est$est, se_log, scale = "log", level = 0.95)
-    ci_logit <- vimp_ci(est$est, se_logit, scale = "logit", level = 0.95)
+    ci_log <- vimp_ci(est$est, est$se, scale = "log", level = 0.95)
+    ci_logit <- vimp_ci(est$est, est$se, scale = "logit", level = 0.95)
     expect_length(ci_log, 2)
     expect_length(ci_logit, 2)
 })

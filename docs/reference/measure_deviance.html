@@ -146,6 +146,7 @@
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
   <span class='kw'>ipc_fit_type</span> <span class='kw'>=</span> <span class='st'>"external"</span>,
   <span class='kw'>ipc_eif_preds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
+  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='no'>...</span>
 )</pre>
@@ -182,8 +183,12 @@
       <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.</p></td>
     </tr>
     <tr>
+      <th>scale</th>
+      <td><p>if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)</p></td>
+    </tr>
+    <tr>
       <th>na.rm</th>
-      <td><p>logical; should NA's be removed in computation? (defaults to <code>FALSE</code>)</p></td>
+      <td><p>logical; should <code>NA</code>s be removed in computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
       <th>...</th>

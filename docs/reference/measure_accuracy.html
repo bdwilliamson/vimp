@@ -146,6 +146,7 @@
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
   <span class='kw'>ipc_fit_type</span> <span class='kw'>=</span> <span class='st'>"external"</span>,
   <span class='kw'>ipc_eif_preds</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
+  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='no'>...</span>
 )</pre>
@@ -171,19 +172,23 @@
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for inverse probability of coarsening (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
+      <td><p>weights for inverse probability of coarsening (IPC) (e.g., inverse weights from a two-phase sample) weighted estimation. Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
     </tr>
     <tr>
       <th>ipc_fit_type</th>
-      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL", fit a SuperLearner to determine the correction to the efficient influence function</p></td>
+      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL", fit a SuperLearner to determine the IPC correction to the efficient influence function</p></td>
     </tr>
     <tr>
       <th>ipc_eif_preds</th>
       <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values from a regression of the full-data EIF on the fully observed covariates/outcome; otherwise, not used.</p></td>
     </tr>
     <tr>
+      <th>scale</th>
+      <td><p>if doing an IPC correction, then the scale that the correction should be computed on (e.g., "identity"; or "logit" to logit-transform, apply the correction, and back-transform)</p></td>
+    </tr>
+    <tr>
       <th>na.rm</th>
-      <td><p>logical; should NA's be removed in computation? (defaults to <code>FALSE</code>)</p></td>
+      <td><p>logical; should <code>NA</code>s be removed in computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
       <th>...</th>

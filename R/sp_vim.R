@@ -17,6 +17,7 @@
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
 #' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
 #' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
+#' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -88,7 +89,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
                    stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)),
-                   Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
+                   Z = NULL, ipc_weights = rep(1, length(Y)), scale = "identity", ...) {
     # if the data is missing, stop and throw an error
     if (is.null(Y)) stop("You must enter an outcome, Y.")
     if (is.null(X)) stop("You must enter a matrix of predictors, X.")
@@ -203,7 +204,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     }
 
     # calculate the confidence intervals
-    cis <- vimp_ci(est[-1], ses[-1], scale = "identity", level = 1 - alpha)
+    cis <- vimp_ci(est[-1], ses[-1], scale = scale, level = 1 - alpha)
 
     # compute a hypothesis test against the null of zero importance
     preds_none_0 <- list()

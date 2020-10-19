@@ -154,6 +154,7 @@
   <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
+  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='no'>...</span>
 )</pre>
 
@@ -219,6 +220,10 @@
     <tr>
       <th>ipc_weights</th>
       <td><p>weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
+    </tr>
+    <tr>
+      <th>scale</th>
+      <td><p>should CIs be computed on original ("identity") or logit ("logit") scale?</p></td>
     </tr>
     <tr>
       <th>...</th>

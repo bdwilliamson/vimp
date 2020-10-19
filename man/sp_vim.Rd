@@ -20,6 +20,7 @@ sp_vim(
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
+  scale = "identity",
   ...
 )
 }
@@ -53,6 +54,8 @@ sp_vim(
 \item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
 
 \item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+
+\item{scale}{should CIs be computed on original ("identity") or logit ("logit") scale?}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
