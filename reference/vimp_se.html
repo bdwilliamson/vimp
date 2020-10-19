@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.1.1</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@
     <p>Compute standard error estimates for estimates of variable importance.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vimp_se</span><span class='op'>(</span><span class='va'>est</span>, <span class='va'>eif</span>, n <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>eif</span><span class='op'>)</span>, scale <span class='op'>=</span> <span class='st'>"log"</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>vimp_se</span><span class='op'>(</span><span class='va'>est</span>, <span class='va'>eif</span>, n <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>eif</span><span class='op'>)</span>, na.rm <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -148,10 +148,6 @@
     <tr>
       <th>n</th>
       <td><p>the sample size.</p></td>
-    </tr>
-    <tr>
-      <th>scale</th>
-      <td><p>the scale to compute SEs on (either "log", for log-scale, or "identity", for same scale as point estimate).</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
