@@ -1,3 +1,13 @@
+# vimp 2.1.2
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Bugfix from 2.1.1.1: compute the correction correctly
+
 # vimp 2.1.1.1
 
 ## Major changes
