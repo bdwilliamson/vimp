@@ -45,13 +45,7 @@ measure_cross_entropy <- function(fitted_values, y, C = rep(1, length(y)), Z = N
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
         obs_est <- sum(diag(t(1 * ipc_weights[C == 1] * y_mult) %*% log(fitted_mat)), na.rm = na.rm) / sum(C == 1)
-        if (scale == "logit") {
-            est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
-        } else if (scale == "log") {
-            est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
-        } else {
-            est <- obs_est + mean(grad)
-        }
+        est <- scale_est(obs_est, grad, scale = scale)
     } else {
         cross_entropy <- sum(diag(t(y_mult)%*%log(fitted_mat)), na.rm = na.rm)/dim(y_mult)[1]
         # influence curve

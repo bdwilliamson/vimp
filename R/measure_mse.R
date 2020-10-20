@@ -31,13 +31,7 @@ measure_mse <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
         obs_est <- mean((1 * ipc_weights[C == 1]) * (y - fitted_values) ^ 2, na.rm = na.rm)
-        if (scale == "logit") {
-            est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
-        } else if (scale == "log") {
-            est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
-        } else {
-            est <- obs_est + mean(grad)
-        }
+        est <- scale_est(obs_est, grad, scale = scale)
     } else {
         est <- mean((y - fitted_values)^2, na.rm = na.rm)
         # influence curves

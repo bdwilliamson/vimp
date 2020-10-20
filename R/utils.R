@@ -35,18 +35,27 @@ get_full_type <- function(type) {
 }
 
 # ------------------------------
-# Logit, expit for one-step correction
+# Logit, expit, one-step est for one-step correction
 # ------------------------------
 expit <- function(x) {
     exp(x) / (1 + exp(x))
 }
-logit <- function(x) {
+logit <- function(x = NULL) {
     log(x / (1 - x))
 }
-logit_derivative <- function(x) {
+logit_derivative <- function(x = NULL) {
     1 / x + 1 / (1 - x)
 }
-
+scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
+  if (scale == "logit") {
+    est <- expit(logit(obs_est) + logit_derivative(obs_est) * mean(grad))
+  } else if (scale == "log") {
+    est <- exp(log(obs_est) + (1 / obs_est) * mean(grad))
+  } else {
+    est <- obs_est + mean(grad)
+  }
+  est
+}
 # -------------------------------------
 # Create Folds for Cross-Fitting
 # -------------------------------------

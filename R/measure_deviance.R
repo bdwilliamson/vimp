@@ -41,13 +41,7 @@ measure_deviance <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, 
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
         obs_est <- 1 - measure_cross_entropy(fitted_values, 1 * ipc_weights[C == 1] * y, na.rm = na.rm)$point_est / measure_cross_entropy(fitted_values = mean(1 * ipc_weights[C == 1] * y, na.rm = na.rm), 1 * ipc_weights[C == 1] * y, na.rm = na.rm)
-        if (scale == "logit") {
-            est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
-        } else if (scale == "log") {
-            est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
-        } else {
-            est <- obs_est + mean(grad)
-        }
+        est <- scale_est(obs_est, grad, scale = scale)
     } else {
         cross_entropy_meas <- measure_cross_entropy(fitted_values, y, na.rm = na.rm)
         pi_0 <- mean(y, na.rm = na.rm)

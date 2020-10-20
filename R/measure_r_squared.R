@@ -33,13 +33,7 @@ measure_r_squared <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         mse <- mean((1 * ipc_weights[C == 1]) * (y - fitted_values) ^ 2, na.rm = na.rm)
         var <- mean((1 * ipc_weights[C == 1]) * (y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
         obs_est <- (1 - mse / var)
-        if (scale == "logit") {
-            est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
-        } else if (scale == "log") {
-            est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
-        } else {
-            est <- obs_est + mean(grad)
-        }
+        est <- scale_est(obs_est, grad, scale = scale)
     } else {
         # point estimates of all components
         mse <- measure_mse(fitted_values, y, na.rm = na.rm)

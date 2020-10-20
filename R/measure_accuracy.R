@@ -29,13 +29,7 @@ measure_accuracy <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, 
     weighted_obs_grad <- rep(0, length(C))
     weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
     grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
-    if (scale == "logit") {
-        est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
-    } else if (scale == "log") {
-        est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
-    } else {
-        est <- obs_est + mean(grad)
-    }
+    est <- scale_est(obs_est, grad, scale = scale)
   } else {
     est <- 1 - mean(((fitted_values > 1/2) != y), na.rm = na.rm)
     grad <- ((-1)*(((fitted_values > 1/2) != y) - mean((fitted_values > 1/2) != y, na.rm = na.rm)))

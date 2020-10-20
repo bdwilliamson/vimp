@@ -46,17 +46,13 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         # one-step correction to the estimate
         cases <- y == 1
         controls <- y == 0
-        case_control_comparison <- apply(matrix(fitted_values[cases]), 1, function(x) x >= fitted_values[controls])
-        numerator <- sum(sweep(sweep(case_control_comparison, 2, 1 * ipc_weights[C == 1][cases], "*"), 1, 1 * ipc_weights[C == 1][controls], "*"))
-        denominator <- sum(sweep(sweep(matrix(1, nrow = nrow(case_control_comparison), ncol = ncol(case_control_comparison)), 1, 1 * ipc_weights[C == 1][controls], "*"), 2, 1 * ipc_weights[C == 1][cases], "*"))
+        f_comparison <- apply(matrix(fitted_values), 1, function(x) x >= fitted_values)
+        weights <- matrix(rep(ipc_weights[C == 1], sum(C == 1)), nrow = sum(C == 1), byrow = TRUE)
+        y_mat <- apply(matrix(y), 1, function(x) x > y)
+        numerator <- sum((1/2) * weights * f_comparison * y_mat)
+        denominator <- sum((1/2) * weights * y_mat)
         obs_est <- numerator / denominator
-        if (scale == "logit") {
-            est <- expit(logit(obs_est) + logit_derivative(obs_est) ^ 2 * mean(grad))
-        } else if (scale == "log") {
-            est <- exp(log(obs_est) + (1 / obs_est) ^ 2 * mean(grad))
-        } else {
-            est <- obs_est + mean(grad)
-        }
+        est <- scale_est(obs_est, grad, scale = scale)
     } else {
         # marginal probabilities
         p_0 <- mean(y == 0)
