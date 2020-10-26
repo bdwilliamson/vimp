@@ -1,3 +1,13 @@
+# vimp 2.1.3
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Compute logit transforms using `stats::qlogis` and `stats::plogis` rather than bespoke functions
+
 # vimp 2.1.2
 
 ## Major changes

@@ -34,23 +34,13 @@ get_full_type <- function(type) {
     full_type
 }
 
-# ------------------------------
-# Logit, expit, one-step est for one-step correction
-# ------------------------------
-expit <- function(x) {
-    exp(x) / (1 + exp(x))
-}
-logit <- function(x = NULL) {
-    log(x / (1 - x))
-}
-logit_derivative <- function(x = NULL) {
-    1 / x + 1 / (1 - x)
-}
 scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
   if (scale == "logit") {
-    est <- expit(logit(obs_est) + logit_derivative(obs_est) * mean(grad))
+    this_grad <- 1 / (obs_est - obs_est ^ 2)
+    est <- stats::plogis(stats::qlogis(obs_est) + this_grad * mean(grad))
   } else if (scale == "log") {
-    est <- exp(log(obs_est) + (1 / obs_est) * mean(grad))
+    this_grad <- 1 / obs_est
+    est <- exp(log(obs_est) + this_grad * mean(grad))
   } else {
     est <- obs_est + mean(grad)
   }

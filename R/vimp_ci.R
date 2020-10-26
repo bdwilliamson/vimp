@@ -11,6 +11,7 @@
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #' details on the mathematics behind this function and the definition of the parameter of interest.
+#' @importFrom stats qlogis plogis
 #' @export
 vimp_ci <- function(est, se, scale = "identity", level = 0.95) {
     # set up the level
@@ -32,18 +33,20 @@ vimp_ci <- function(est, se, scale = "identity", level = 0.95) {
             tmp <- 0
             is_zero <- TRUE
         }
-        ci[] <- exp(tmp + ((1 / est)^2 * se) %o% fac)
+        grad <- 1 / est
+        ci[] <- exp(tmp + sqrt(se ^ 2 * grad ^ 2) %o% fac)
         if (is_zero) {
             ci[, 1] <- 0
         }
     } else if (full_scale == "logit") {
-        tmp <- suppressWarnings(logit(est))
+        tmp <- suppressWarnings(qlogis(est))
         is_zero <- FALSE
         if ((is.na(tmp) & est <= 0 & !is.na(est)) | is.infinite(tmp)) {
             tmp <- 0
             is_zero <- TRUE
         }
-        ci[] <- expit(tmp + ((logit_derivative(est) ^ 2) * se) %o% fac)
+        grad <- 1 / (est - est ^ 2)
+        ci[] <- plogis(tmp + sqrt(se ^ 2 * grad ^ 2) %o% fac)
         if (is_zero) {
             ci[, 1] <- 0
         }
