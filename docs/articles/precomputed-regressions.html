@@ -6,6 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Using precomputed regression function estimates in `vimp` • vimp</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
@@ -13,6 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Using precomputed regression function estimates in `vimp`">
 <meta property="og:description" content="vimp">
+<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -31,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.5</span>
       </span>
     </div>
 
@@ -92,7 +99,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2020-10-27</h4>
+            <h4 class="date">2020-11-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -102,8 +109,8 @@
     
     
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"vimp"</span>)
-<span class="co">#&gt; vimp version 2.1.4: Perform Inference on Algorithm-Agnostic Variable Importance</span>
-<span class="co">#&gt; Package created on 2020-10-27</span>
+<span class="co">#&gt; vimp version 2.1.5: Perform Inference on Algorithm-Agnostic Variable Importance</span>
+<span class="co">#&gt; Package created on 2020-11-03</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"SuperLearner"</span>)
 <span class="co">#&gt; Loading required package: nnls</span>
 <span class="co">#&gt; Super Learner</span>
@@ -182,16 +189,16 @@
 <span class="co">## print out the matrix</span>
 <span class="no">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 3 0.2388370 0.04584048 [0.1489913, 0.3286827] TRUE     1.939597e-07</span>
-<span class="co">#&gt; s = 2 0.2348686 0.04521803 [0.1462429, 0.3234943] TRUE     3.301368e-07</span>
-<span class="co">#&gt; s = 9 0.2272950 0.04589655 [0.1373394, 0.3172506] TRUE     8.186821e-07</span>
-<span class="co">#&gt; s = 4 0.2263485 0.04596273 [0.1362632, 0.3164338] TRUE     8.067121e-07</span>
-<span class="co">#&gt; s = 5 0.2242998 0.04586671 [0.1344027, 0.3141969] TRUE     1.112896e-06</span>
-<span class="co">#&gt; s = 8 0.2238496 0.04600379 [0.1336839, 0.3140154] TRUE     1.125269e-06</span>
-<span class="co">#&gt; s = 1 0.2232615 0.04581091 [0.1334738, 0.3130492] TRUE     1.237314e-06</span>
-<span class="co">#&gt; s = 7 0.2178556 0.04532599 [0.1290183, 0.3066930] TRUE     1.742744e-06</span>
-<span class="co">#&gt; s = 6 0.2112983 0.04531598 [0.1224806, 0.3001159] TRUE     2.818528e-06</span></pre></body></html></div>
+<span class="co">#&gt;       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     </span>
+<span class="co">#&gt; s = 9 0.1919961 0.04910369 [0.09575464, 0.2882376] TRUE     4.005104e-05</span>
+<span class="co">#&gt; s = 6 0.1815918 0.04958494 [0.08440715, 0.2787765] TRUE     1.002866e-04</span>
+<span class="co">#&gt; s = 8 0.1732576 0.04965639 [0.07593285, 0.2705823] TRUE     1.890998e-04</span>
+<span class="co">#&gt; s = 3 0.1698090 0.05019140 [0.07143564, 0.2681823] TRUE     2.702836e-04</span>
+<span class="co">#&gt; s = 4 0.1687494 0.05010972 [0.07053614, 0.2669626] TRUE     2.897319e-04</span>
+<span class="co">#&gt; s = 7 0.1662636 0.05034694 [0.06758543, 0.2649418] TRUE     3.489258e-04</span>
+<span class="co">#&gt; s = 5 0.1635617 0.05004717 [0.06547103, 0.2616523] TRUE     4.249037e-04</span>
+<span class="co">#&gt; s = 1 0.1614496 0.04987559 [0.06369519, 0.2592039] TRUE     4.723922e-04</span>
+<span class="co">#&gt; s = 2 0.1578717 0.04954685 [0.06076163, 0.2549817] TRUE     5.945917e-04</span></pre></body></html></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -233,8 +240,8 @@
 
 <span class="no">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value </span>
-<span class="co">#&gt; s = 6 0        0.1089651 [0, 0.2135676] FALSE    0.998133</span></pre></body></html></div>
+<span class="co">#&gt;       Estimate SE       95% CI         VIMP &gt; 0 p-value  </span>
+<span class="co">#&gt; s = 6 0        0.108145 [0, 0.2119603] FALSE    0.9916447</span></pre></body></html></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co">## set up the data, removing the columns for alcohol use and chd</span>
