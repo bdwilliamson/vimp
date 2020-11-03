@@ -1,3 +1,13 @@
+# vimp 2.1.5
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Fixed a bug where if the number of rows in the different folds (for cross-fitting or sample-splitting) differed, the matrix of fold-specific EIFs had the wrong number of rows
+
 # vimp 2.1.4
 
 ## Major changes

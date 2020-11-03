@@ -272,8 +272,18 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, V = lengt
             tmp_eif_full <- eif_full
             tmp_eif_redu <- eif_redu
         }
+        nrow_full <- nrow(all_eifs_full)
+        nrow_redu <- nrow(all_eifs_redu)
+        if (nrow_full != nrow_redu) {
+            max_nrow <- max(nrow_full, nrow_redu)
+            tmp_eifs_full <- rbind(all_eifs_full, matrix(NA, nrow = max_nrow - nrow_full, ncol = ncol(all_eifs_full)))
+            tmp_eifs_redu <- rbind(all_eifs_redu, matrix(NA, nrow = max_nrow - nrow_redu, ncol = ncol(all_eifs_redu)))
+        } else {
+            tmp_eifs_full <- all_eifs_full
+            tmp_eifs_redu <- all_eifs_redu
+        }
         eif <- tmp_eif_full - tmp_eif_redu
-        all_eifs <- all_eifs_full - all_eifs_redu
+        all_eifs <- tmp_eifs_full - tmp_eifs_redu
     }
     # compute the standard error
     se <- vimp_se(est, eif, na.rm = na.rm)
