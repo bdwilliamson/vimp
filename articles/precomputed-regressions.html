@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.5</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2020-10-27</h4>
+            <h4 class="date">2020-11-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -98,8 +98,8 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span><span class="op">)</span>
-<span class="co">#&gt; vimp version 2.1.4: Perform Inference on Algorithm-Agnostic Variable Importance</span>
-<span class="co">#&gt; Package created on 2020-10-27</span>
+<span class="co">#&gt; vimp version 2.1.5: Perform Inference on Algorithm-Agnostic Variable Importance</span>
+<span class="co">#&gt; Package created on 2020-11-03</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: nnls</span>
 <span class="co">#&gt; Super Learner</span>
@@ -181,15 +181,15 @@
 <span class="va">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 9 0.2973403 0.05700319 [0.1856161, 0.4090645] TRUE     6.771652e-08</span>
-<span class="co">#&gt; s = 8 0.2966595 0.05635089 [0.1862138, 0.4071052] TRUE     6.629990e-08</span>
-<span class="co">#&gt; s = 7 0.2956902 0.05712475 [0.1837277, 0.4076526] TRUE     8.409809e-08</span>
-<span class="co">#&gt; s = 4 0.2925506 0.05714907 [0.1805405, 0.4045608] TRUE     1.137050e-07</span>
-<span class="co">#&gt; s = 6 0.2923762 0.05711057 [0.1804415, 0.4043108] TRUE     1.156873e-07</span>
-<span class="co">#&gt; s = 1 0.2902067 0.05685414 [0.1787746, 0.4016387] TRUE     1.372091e-07</span>
-<span class="co">#&gt; s = 5 0.2888822 0.05705859 [0.1770494, 0.4007150] TRUE     1.547855e-07</span>
-<span class="co">#&gt; s = 2 0.2882433 0.05720633 [0.1761210, 0.4003657] TRUE     1.662350e-07</span>
-<span class="co">#&gt; s = 3 0.2858243 0.05692800 [0.1742474, 0.3974011] TRUE     1.959486e-07</span></pre></div>
+<span class="co">#&gt; s = 3 0.2722225 0.04447559 [0.1850519, 0.3593930] TRUE     1.429230e-09</span>
+<span class="co">#&gt; s = 9 0.2626064 0.04577637 [0.1728864, 0.3523264] TRUE     1.429737e-08</span>
+<span class="co">#&gt; s = 6 0.2583571 0.04585385 [0.1684852, 0.3482290] TRUE     2.520210e-08</span>
+<span class="co">#&gt; s = 7 0.2582920 0.04573896 [0.1686452, 0.3479387] TRUE     2.416331e-08</span>
+<span class="co">#&gt; s = 8 0.2571912 0.04581532 [0.1673948, 0.3469876] TRUE     2.877188e-08</span>
+<span class="co">#&gt; s = 4 0.2537929 0.04584171 [0.1639448, 0.3436410] TRUE     4.134926e-08</span>
+<span class="co">#&gt; s = 1 0.2485622 0.04534088 [0.1596957, 0.3374287] TRUE     6.551111e-08</span>
+<span class="co">#&gt; s = 2 0.2451761 0.04547787 [0.1560411, 0.3343111] TRUE     9.110391e-08</span>
+<span class="co">#&gt; s = 5 0.2343645 0.04590492 [0.1443925, 0.3243365] TRUE     3.441221e-07</span></pre></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -233,8 +233,8 @@
 
 <span class="va">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1114511 [0, 0.2184401] FALSE    0.8432753</span></pre></div>
+<span class="co">#&gt;       Estimate SE        95% CI        VIMP &gt; 0 p-value  </span>
+<span class="co">#&gt; s = 6 0        0.1031483 [0, 0.202167] FALSE    0.9985685</span></pre></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit">
