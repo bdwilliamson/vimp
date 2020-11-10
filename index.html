@@ -116,20 +116,20 @@
 <h2 class="hasAnchor">
 <a href="#r-installation" class="anchor"></a>R installation</h2>
 <p>You may install a stable release of <code>vimp</code> from <a href="https://cran.r-project.org/web/packages/vimp/index.html">CRAN</a> via <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("vimp")</a></code>. You may also install a stable release of <code>vimp</code> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/"><code>devtools</code></a> by running the following code (replace <code>v2.1.0</code> with the tag for the specific release you wish to install):</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co">## install.packages("devtools") # only run this line if necessary</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"bdwilliamson/vimp@v2.1.0"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## install.packages("devtools") # only run this line if necessary</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"bdwilliamson/vimp@v2.1.0"</span><span class="op">)</span></code></pre></div>
 <p>You may install a development release of <code>vimp</code> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/"><code>devtools</code></a> by running the following code:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co">## install.packages("devtools") # only run this line if necessary</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"bdwilliamson/vimp"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## install.packages("devtools") # only run this line if necessary</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"bdwilliamson/vimp"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
 <p>This example shows how to use <code>vimp</code> in a simple setting with simulated data, using <code>SuperLearner</code> to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the <a href="https://bdwilliamson.github.io/vimp/introduction_to_vimp.html">vignette</a>.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="co">## load required functions and libraries</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co">## load required functions and libraries</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/dmlc/xgboost">"xgboost"</a></span><span class="op">)</span>
@@ -164,7 +164,7 @@
 <span class="co">## get variable importance!</span>
 <span class="co">## -------------------------------------------------------------</span>
 <span class="co">## get the variable importance estimate, SE, and CI</span>
-<span class="va">vimp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, f1 <span class="op">=</span> <span class="va">full_fit</span>, f2 <span class="op">=</span> <span class="va">reduced_fit</span>, indx <span class="op">=</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></pre></div>
+<span class="va">vimp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, f1 <span class="op">=</span> <span class="va">full_fit</span>, f2 <span class="op">=</span> <span class="va">reduced_fit</span>, indx <span class="op">=</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="citation" class="section level2">
 <h2 class="hasAnchor">
@@ -223,7 +223,7 @@ SOFTWARE.</code></pre>
 <div id="logo" class="section level2">
 <h2 class="hasAnchor">
 <a href="#logo" class="anchor"></a>Logo</h2>
-<p>The logo was created using <a href="https://github.com/GuangchuangYu/hexSticker">hexSticker</a> and <a href="https://github.com/tyluRp/lisa">lisa</a>. Many thanks to the maintainers of these packages and the <a href="https://lisa-pkg.netlify.app/">Color Lisa</a> team.</p>
+<p>The logo was created using <a href="https://github.com/GuangchuangYu/hexSticker">hexSticker</a> and <a href="https://github.com/tyluRp/lisa">lisa</a>. Many thanks to the maintainers of these packages and the <a href="http://colorlisa.com/">Color Lisa</a> team.</p>
 </div>
 </div>
   </div>
