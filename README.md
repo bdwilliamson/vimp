@@ -155,4 +155,4 @@ SOFTWARE.
 
 ## Logo
 
-The logo was created using [hexSticker](https://github.com/GuangchuangYu/hexSticker) and [lisa](https://github.com/tyluRp/lisa). Many thanks to the maintainers of these packages and the [Color Lisa](https://lisa-pkg.netlify.app/) team.
+The logo was created using [hexSticker](https://github.com/GuangchuangYu/hexSticker) and [lisa](https://github.com/tyluRp/lisa). Many thanks to the maintainers of these packages and the [Color Lisa](http://colorlisa.com/) team.
