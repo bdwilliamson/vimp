@@ -47,10 +47,10 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         cases <- y == 1
         controls <- y == 0
         f_comparison <- apply(matrix(fitted_values), 1, function(x) x >= fitted_values)
-        weights <- matrix(rep(ipc_weights[C == 1], sum(C == 1)), nrow = sum(C == 1), byrow = TRUE)
+        weights <- apply(matrix(ipc_weights[C == 1], 1, function(x) x * ipc_weights[C == 1]))
         y_mat <- apply(matrix(y), 1, function(x) x > y)
-        numerator <- sum((1/2) * weights * f_comparison * y_mat)
-        denominator <- sum((1/2) * weights * y_mat)
+        numerator <- sum(weights * f_comparison * y_mat)
+        denominator <- sum(weights * y_mat)
         obs_est <- numerator / denominator
         est <- scale_est(obs_est, grad, scale = scale)
     } else {

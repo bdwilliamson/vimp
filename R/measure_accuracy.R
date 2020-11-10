@@ -19,8 +19,8 @@
 measure_accuracy <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_weights = rep(1, length(y)), ipc_fit_type = "external", ipc_eif_preds = rep(1, length(y)), scale = "identity", na.rm = FALSE, ...) {
   # compute the EIF: if there is coarsening, do a correction
   if (!all(ipc_weights == 1)) {
-    obs_grad <- ((-1)*(((fitted_values > 1/2) != y) - mean((fitted_values > 1/2) != y, na.rm = na.rm)))
-    obs_est <- (1 - mean((1 * ipc_weights[C == 1]) * ((fitted_values > 1/2) != y), na.rm = na.rm))
+    obs_grad <- ((fitted_values > 1/2) == y) - mean((fitted_values > 1/2) == y, na.rm = na.rm)
+    obs_est <- mean((1 * ipc_weights[C == 1]) * ((fitted_values > 1/2) == y), na.rm = na.rm)
     # if IPC EIF preds aren't entered, estimate the regression
     if (ipc_fit_type != "external") {
       ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), method = "method.CC_LS", ...)
@@ -31,8 +31,8 @@ measure_accuracy <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, 
     grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
     est <- scale_est(obs_est, grad, scale = scale)
   } else {
-    est <- 1 - mean(((fitted_values > 1/2) != y), na.rm = na.rm)
-    grad <- ((-1)*(((fitted_values > 1/2) != y) - mean((fitted_values > 1/2) != y, na.rm = na.rm)))
+    est <- mean(((fitted_values > 1/2) == y), na.rm = na.rm)
+    grad <- ((fitted_values > 1/2) == y) - mean((fitted_values > 1/2) == y, na.rm = na.rm)
   }
   return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }
