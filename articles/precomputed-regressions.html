@@ -93,7 +93,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2020-11-10</h4>
+            <h4 class="date">2020-11-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -105,7 +105,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp">"vimp"</a></span><span class="op">)</span>
 <span class="co">#&gt; vimp version 2.1.5: Perform Inference on Algorithm-Agnostic Variable Importance</span>
-<span class="co">#&gt; Package created on 2020-11-10</span>
+<span class="co">#&gt; Package created on 2020-11-13</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: nnls</span>
 <span class="co">#&gt; Super Learner</span>
@@ -187,15 +187,15 @@
 <span class="va">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 2 0.3244002 0.04935080 [0.2276745, 0.4211260] TRUE     6.829748e-11</span>
-<span class="co">#&gt; s = 9 0.3209148 0.04938002 [0.2241317, 0.4176979] TRUE     1.188163e-10</span>
-<span class="co">#&gt; s = 1 0.3198825 0.04914569 [0.2235587, 0.4162063] TRUE     1.203951e-10</span>
-<span class="co">#&gt; s = 4 0.3197234 0.04945740 [0.2227887, 0.4166582] TRUE     1.325935e-10</span>
-<span class="co">#&gt; s = 8 0.3195191 0.04941029 [0.2226767, 0.4163615] TRUE     1.430784e-10</span>
-<span class="co">#&gt; s = 7 0.3194369 0.04959086 [0.2222406, 0.4166332] TRUE     1.252222e-10</span>
-<span class="co">#&gt; s = 3 0.3181628 0.04899788 [0.2221287, 0.4141969] TRUE     1.544828e-10</span>
-<span class="co">#&gt; s = 6 0.3128817 0.04941449 [0.2160311, 0.4097323] TRUE     3.016916e-10</span>
-<span class="co">#&gt; s = 5 0.2887979 0.04967082 [0.1914449, 0.3861509] TRUE     3.385565e-09</span></code></pre></div>
+<span class="co">#&gt; s = 1 0.3132110 0.05157176 [0.2121322, 0.4142898] TRUE     2.389798e-10</span>
+<span class="co">#&gt; s = 3 0.3117682 0.05102069 [0.2117695, 0.4117669] TRUE     2.823513e-10</span>
+<span class="co">#&gt; s = 9 0.3085866 0.05168607 [0.2072837, 0.4098894] TRUE     5.301047e-10</span>
+<span class="co">#&gt; s = 6 0.3082791 0.05151088 [0.2073196, 0.4092385] TRUE     5.648062e-10</span>
+<span class="co">#&gt; s = 8 0.3052939 0.05175405 [0.2038578, 0.4067300] TRUE     8.276202e-10</span>
+<span class="co">#&gt; s = 4 0.2993244 0.05231400 [0.1967909, 0.4018580] TRUE     1.568680e-09</span>
+<span class="co">#&gt; s = 7 0.2963572 0.05188610 [0.1946623, 0.3980521] TRUE     2.192750e-09</span>
+<span class="co">#&gt; s = 5 0.2871033 0.05194995 [0.1852833, 0.3889233] TRUE     6.137398e-09</span>
+<span class="co">#&gt; s = 2 0.2710531 0.04902934 [0.1749574, 0.3671488] TRUE     1.613123e-08</span></code></pre></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -234,13 +234,11 @@
 <span class="va">reduced_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">full_fit_2</span>, X <span class="op">=</span> <span class="va">heart</span><span class="op">[</span><span class="va">fam_vim</span><span class="op">$</span><span class="va">folds</span> <span class="op">==</span> <span class="fl">2</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
 <span class="va">red_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">reduced_fit</span><span class="op">)</span><span class="op">$</span><span class="va">pred</span>
 <span class="va">tpa_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, f1 <span class="op">=</span> <span class="va">full_fit_2</span>, f2 <span class="op">=</span> <span class="va">red_fit</span>, indx <span class="op">=</span> <span class="fl">6</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span>, type <span class="op">=</span> <span class="st">"r_squared"</span>, folds <span class="op">=</span> <span class="va">heart_folds</span><span class="op">)</span>
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit_2, f2 = red_fit, indx = 6,</span>
-<span class="co">#&gt; run_regression = FALSE, : Original estimate &lt; 0; returning zero.</span>
 
 <span class="va">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1196565 [0, 0.2345224] FALSE    0.5725794</span></code></pre></div>
+<span class="co">#&gt;       Estimate   SE        95% CI        VIMP &gt; 0 p-value  </span>
+<span class="co">#&gt; s = 6 0.01284507 0.1066152 [0, 0.221807] FALSE    0.4496471</span></code></pre></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
