@@ -30,11 +30,11 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         spec <- unlist(lapply(as.list(fitted_values), function(x) mean(fitted_values[(y == 1)] > x, na.rm = na.rm)))
 
         # contributions from cases and controls
-        contrib_1 <- (y == 1)/p_1*sens
-        contrib_0 <- (y == 0)/p_0*spec
+        contrib_1 <- (y == 1) / p_1 * sens
+        contrib_0 <- (y == 0) / p_0 * spec
 
         # gradient
-        obs_grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1) * est)
+        obs_grad <- contrib_1 + contrib_0 - ( (y == 0) / p_0 + (y == 1) / p_1 ) * est
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             ipc_eif_mod <- SuperLearner::SuperLearner(Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), method = "method.CC_LS", ...)
@@ -63,11 +63,11 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, ipc_w
         spec <- unlist(lapply(as.list(fitted_values), function(x) mean(fitted_values[y == 1] > x, na.rm = na.rm)))
 
         # contributions from cases and controls
-        contrib_1 <- (y == 1)/p_1*sens
-        contrib_0 <- (y == 0)/p_0*spec
+        contrib_1 <- (y == 1) / p_1 * sens
+        contrib_0 <- (y == 0) / p_0 * spec
 
         # gradient
-        grad <- (contrib_1 + contrib_0 - ((y == 0)/p_0 + (y == 1)/p_1) * est)
+        grad <- contrib_1 + contrib_0 - ( (y == 0) / p_0 + (y == 1) / p_1 ) * est
     }
     return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }
