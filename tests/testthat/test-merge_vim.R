@@ -1,8 +1,6 @@
 # load required functions and packages
 library("testthat")
 library("SuperLearner")
-library("vimp")
-library("xgboost")
 
 # generate the data
 set.seed(4747)

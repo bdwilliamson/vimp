@@ -1,7 +1,6 @@
 # load required functions and packages
 library("testthat")
 library("SuperLearner")
-library("ranger")
 library("vimp")
 
 # generate the data

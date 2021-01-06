@@ -8,6 +8,7 @@ None
 
 * Fixed a bug where if the number of rows in the different folds (for cross-fitting or sample-splitting) differed, the matrix of fold-specific EIFs had the wrong number of rows
 * Changes to internals of `measure_accuracy` and `measure_auc` for project-wide consistency
+* Update all tests in `testthat/` to not explicitly load `xgboost`
 
 # vimp 2.1.4
 
