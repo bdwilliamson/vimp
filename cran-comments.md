@@ -1,8 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Added two vignettes, "Types of VIMs" and "Using precomputed regression function
-* Updated the main vignette to only use `run_regression = TRUE` for simplicity
+* Fixed ERRORs in CRAN checks
+* Compute one-step estimators of variable importance if inverse probability of censoring weights are entered. You input the weights, indicator of coarsening, and observed variables, and `vimp` will handle the rest.
 
 ## Test environments
 * local ubuntu 18.04, R 4.0.2
