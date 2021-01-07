@@ -1,7 +1,5 @@
 # load required functions and packages
 library("testthat")
-library("SuperLearner")
-library("vimp")
 
 # generate the data
 make_y <- function(b, p) rbinom(b, 1, p)
@@ -39,51 +37,72 @@ x <- as.data.frame(dat$x)
 folds <- sample(rep(seq_len(2), length = length(y)))
 
 # set up a library for SuperLearner
-learners <- c("SL.glm.interaction", "SL.polymars", "SL.mean")
+learners <- c("SL.glm", "SL.mean")
 V <- 2
 
 # fit the data with all covariates
-full_fit <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], SL.library = learners, family = "binomial", cvControl = list(V = V))
-full_fitted <- predict(full_fit)$pred
+full_fit <- SuperLearner::SuperLearner(Y = y[folds == 1], 
+                                       X = x[folds == 1, ], 
+                                       SL.library = learners, 
+                                       family = "binomial",
+                                       cvControl = list(V = V))
+full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 
 # fit the data with only X1
-reduced_fit <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -1, drop = FALSE], SL.library = learners, family = "binomial", cvControl = list(V = V))
-reduced_fitted <- predict(reduced_fit)$pred
+reduced_fit <- SuperLearner::SuperLearner(Y = y[folds == 2], 
+                                          X = x[folds == 2, -1, drop = FALSE], 
+                                          SL.library = learners, 
+                                          family = "binomial", 
+                                          cvControl = list(V = V))
+reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 
-est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE, SL.library = learners, indx = 1, V = V, family = "binomial",
-                     env = environment())
+est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE, 
+                     SL.library = learners, indx = 1, V = V, 
+                     family = "binomial", env = environment())
 test_that("Accuracy-based variable importance works", {
   expect_equal(est$est, t_acc[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "accuracy", folds = folds)
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, 
+                   f2 = reduced_fitted, run_regression = FALSE, 
+                   indx = 1, type = "accuracy", folds = folds)
   expect_equal(est_noncv$est, t_acc[1], tolerance = 0.1, scale = 1)
 })
 
 test_that("AUC-based variable importance works", {
-  est <- vimp_auc(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = V,
+  est <- vimp_auc(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, 
+                  folds = est$folds, run_regression = FALSE, indx = 1, V = V,
                   env = environment())
   expect_equal(est$est, t_auc[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "auc", folds = folds)
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, 
+                   run_regression = FALSE, indx = 1, type = "auc", 
+                   folds = folds)
   expect_equal(est_noncv$est, t_auc[1], tolerance = 0.1, scale = 1)
 })
 
 test_that("Deviance-based variable importance works", {
-  est <- vimp_deviance(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, folds = est$folds, run_regression = FALSE, indx = 1, V = V,
-                       env = environment())
+  est <- vimp_deviance(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, 
+                       folds = est$folds, run_regression = FALSE, indx = 1, 
+                       V = V, env = environment())
   expect_equal(est$est, t_dev[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, run_regression = FALSE, indx = 1, type = "deviance", folds = folds)
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, 
+                   run_regression = FALSE, indx = 1, type = "deviance", 
+                   folds = folds)
   expect_equal(est_noncv$est, t_dev[1], tolerance = 0.1, scale = 1)
 })
 
 test_that("Measures of predictiveness work", {
- full_auc <- est_predictiveness(full_fitted, y[folds == 1], type = "auc")$point_est
+ full_auc <- est_predictiveness(full_fitted, y[folds == 1], 
+                                type = "auc")$point_est
  expect_equal(full_auc, 0.96, tolerance = 0.1, scale = 1)
- full_acc <- est_predictiveness(full_fitted, y[folds == 1], type = "accuracy")$point_est
+ full_acc <- est_predictiveness(full_fitted, y[folds == 1], 
+                                type = "accuracy")$point_est
  expect_equal(full_acc, 0.9, tolerance = 0.1, scale = 1)
- full_dev <- est_predictiveness(full_fitted, y[folds == 1], type = "deviance")$point_est
+ full_dev <- est_predictiveness(full_fitted, y[folds == 1],
+                                type = "deviance")$point_est
  expect_equal(full_dev, 0.63, tolerance = 0.1, scale = 1)
- full_ce <- est_predictiveness(full_fitted, y[folds == 1], type = "cross_entropy")$point_est
+ full_ce <- est_predictiveness(full_fitted, y[folds == 1], 
+                               type = "cross_entropy")$point_est
  expect_equal(full_ce, -0.24, tolerance = 0.1, scale = 1)
 })
