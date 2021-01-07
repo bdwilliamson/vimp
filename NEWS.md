@@ -7,7 +7,8 @@ None
 ## Minor changes
 
 * Updated links to DOIs and package vignettes throughout
-* Updated all tests in `testthat/` to use `glm` rather than `xgboost`
+* Updated all tests in `testthat/` to use `glm` rather than `xgboost` (increases speed)
+* Updated all examples to use `glm` rather than `xgboost` or `ranger` (increases speed, even though the regression is now misspecified for the truth)
 
 # vimp 2.1.5
 
