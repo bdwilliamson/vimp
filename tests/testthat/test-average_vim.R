@@ -6,7 +6,7 @@ library("vimp")
 # generate the data
 set.seed(4747)
 p <- 2
-n <- 1e5
+n <- 5e4
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 # apply the function to the x's
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
