@@ -1,6 +1,5 @@
 # load required functions and packages
 library("testthat")
-library("SuperLearner")
 
 # generate the data -- note that this is a simple setting, for speed
 set.seed(4747)
@@ -44,7 +43,8 @@ test_that("Estimating SPVIMs works", {
 })
 test_that("Estimating SPVIMs with special univariate library works", {
   est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
-                SL.library = learners, univariate_SL.library = univariate_learners,
+                SL.library = learners, 
+                univariate_SL.library = univariate_learners,
                 gamma = .1, alpha = 0.05, delta = 0,
                 cvControl = list(V = V), env = environment())
   # check that the estimate is approximately correct
@@ -52,7 +52,8 @@ test_that("Estimating SPVIMs with special univariate library works", {
 })
 test_that("Estimating SPVIMs with a single library function works", {
   est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
-                SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
+                SL.library = "SL.glm", 
+                univariate_SL.library = univariate_learners,
                 gamma = .1, alpha = 0.05, delta = 0,
                 cvControl = list(V = V), env = environment())
   # check that the estimate is approximately correct
@@ -60,9 +61,11 @@ test_that("Estimating SPVIMs with a single library function works", {
 })
 test_that("Estimating SPVIMs with verbose = TRUE works", {
   expect_message(est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
-                              SL.library = "SL.ranger", univariate_SL.library = univariate_learners,
+                              SL.library = "SL.glm", 
+                              univariate_SL.library = univariate_learners,
                               gamma = .1, alpha = 0.05, delta = 0,
-                              cvControl = list(V = V), env = environment(), verbose = TRUE),
+                              cvControl = list(V = V), env = environment(), 
+                              verbose = TRUE),
                  "Fitting learners",
                  all = FALSE)
   # check that the estimate is approximately correct
