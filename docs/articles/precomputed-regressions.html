@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.6</span>
       </span>
     </div>
 
@@ -109,7 +109,7 @@
     
     
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"vimp"</span>)
-<span class="co">#&gt; vimp version 2.1.5: Perform Inference on Algorithm-Agnostic Variable Importance</span>
+<span class="co">#&gt; vimp version 2.1.6: Perform Inference on Algorithm-Agnostic Variable Importance</span>
 <span class="co">#&gt; Package created on 2021-01-07</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"SuperLearner"</span>)
 <span class="co">#&gt; Loading required package: nnls</span>
@@ -119,7 +119,7 @@
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>In the main vignette <a href="introduction_to_vimp.html">“Introduction to <code>vimp</code>”</a>, we analyzed the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span> (freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>; more information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>). In each of the analyses, I used <code>run_regression = TRUE</code>. In this vignette, I discuss how to use precomputed regression function estimates with <code>vimp</code>. The results of this analysis replicate the analysis in the <a href="introduction_to_vimp.html">main vignette</a>.</p>
+<p>In the main vignette, we analyzed the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span> (freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>; more information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>). In each of the analyses, I used <code>run_regression = TRUE</code>. In this vignette, I discuss how to use precomputed regression function estimates with <code>vimp</code>. The results of this analysis replicate the analysis in the main vignette.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="co">## read in the data from the Elements website</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"RCurl"</span>)
 <span class="no">heart_data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span>(<span class="kw">text</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html">getURL</a></span>(<span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span>), <span class="kw">header</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">stringsAsFactors</span> <span class="kw">=</span> <span class="fl">FALSE</span>)
@@ -135,7 +135,7 @@
 <div id="a-first-approach-linear-regression" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-first-approach-linear-regression" class="anchor"></a>A first approach: linear regression</h3>
-<p>As in the <a href="introduction_to_vimp.html">main vignette</a>, we first start by fitting only linear regression models. In this section, we use the function <code><a href="../reference/vim.html">vim()</a></code>; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.</p>
+<p>As in the main vignette, we first start by fitting only linear regression models. In this section, we use the function <code><a href="../reference/vim.html">vim()</a></code>; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.</p>
 <div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">full_mod</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span>(<span class="no">chd</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span>(<span class="no">heart</span>, <span class="no">heart_folds</span> <span class="kw">==</span> <span class="fl">1</span>))
 <span class="no">full_fit</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span>(<span class="no">full_mod</span>)
 
@@ -189,16 +189,16 @@
 <span class="co">## print out the matrix</span>
 <span class="no">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 3 0.2859511 0.05354642 [0.1810021, 0.3909002] TRUE     3.251838e-08</span>
-<span class="co">#&gt; s = 9 0.2842956 0.05429689 [0.1778757, 0.3907156] TRUE     9.543348e-08</span>
-<span class="co">#&gt; s = 7 0.2823109 0.05377473 [0.1769144, 0.3877075] TRUE     1.027509e-07</span>
-<span class="co">#&gt; s = 4 0.2807015 0.05445948 [0.1739629, 0.3874401] TRUE     1.404048e-07</span>
-<span class="co">#&gt; s = 8 0.2805206 0.05447482 [0.1737519, 0.3872893] TRUE     1.422189e-07</span>
-<span class="co">#&gt; s = 2 0.2773881 0.05426871 [0.1710234, 0.3837529] TRUE     1.862388e-07</span>
-<span class="co">#&gt; s = 6 0.2773355 0.05471355 [0.1700989, 0.3845721] TRUE     1.891124e-07</span>
-<span class="co">#&gt; s = 5 0.2762601 0.05427523 [0.1698826, 0.3826376] TRUE     2.086609e-07</span>
-<span class="co">#&gt; s = 1 0.2736600 0.05391426 [0.1679900, 0.3793300] TRUE     2.441694e-07</span></pre></body></html></div>
+<span class="co">#&gt;       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     </span>
+<span class="co">#&gt; s = 9 0.2233705 0.05031366 [0.12475759, 0.3219835] TRUE     8.462593e-06</span>
+<span class="co">#&gt; s = 5 0.2149552 0.05166020 [0.11370306, 0.3162073] TRUE     2.290277e-05</span>
+<span class="co">#&gt; s = 3 0.2091463 0.05187861 [0.10746609, 0.3108265] TRUE     3.667283e-05</span>
+<span class="co">#&gt; s = 6 0.2049869 0.05174384 [0.10357087, 0.3064030] TRUE     5.123903e-05</span>
+<span class="co">#&gt; s = 1 0.2023643 0.05117497 [0.10206316, 0.3026654] TRUE     5.718599e-05</span>
+<span class="co">#&gt; s = 8 0.2015006 0.05260090 [0.09840470, 0.3045964] TRUE     6.438929e-05</span>
+<span class="co">#&gt; s = 2 0.2010271 0.05174557 [0.09960768, 0.3024466] TRUE     6.732323e-05</span>
+<span class="co">#&gt; s = 4 0.1980778 0.05147176 [0.09719499, 0.2989606] TRUE     7.661118e-05</span>
+<span class="co">#&gt; s = 7 0.1913784 0.05101521 [0.09139040, 0.2913663] TRUE     1.029270e-04</span></pre></body></html></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -241,7 +241,7 @@
 <span class="no">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1157684 [0, 0.2269018] FALSE    0.7150954</span></pre></body></html></div>
+<span class="co">#&gt; s = 6 0        0.1025153 [0, 0.2009262] FALSE    0.9586217</span></pre></body></html></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co">## set up the data, removing the columns for alcohol use and chd</span>
@@ -392,7 +392,7 @@
 <h2 class="hasAnchor">
 <a href="#using-precomputed-regression-function-estimates-with-cross-fitting" class="anchor"></a>Using precomputed regression function estimates with cross-fitting</h2>
 <p>In this section, we will use cross-fitting and pre-computed estimates of the regression functions. This can be especially useful if you have already run a call to <code>CV.SuperLearner</code> – that function returns estimates based on each observation being part of the hold-out set. However, while this approach can save you some computation time, it requires a hefty amount of mental overhead.</p>
-<p>To replicate the Super Learning analysis from above using cross-fitting, we have to first create a set of folds for hypothesis testing (this involves simply splitting the dataset in two halves) and then create two sets of folds (one for each half) specifying the indices for cross-fitting. For this analysis, we will use <code>V = 5</code> folds for cross-fitting (as we did in the <a href="introduction_to_vimp.html">main vignette</a>).</p>
+<p>To replicate the Super Learning analysis from above using cross-fitting, we have to first create a set of folds for hypothesis testing (this involves simply splitting the dataset in two halves) and then create two sets of folds (one for each half) specifying the indices for cross-fitting. For this analysis, we will use <code>V = 5</code> folds for cross-fitting (as we did in the main vignette).</p>
 <div class="sourceCode" id="cb10"><html><body><pre class="r"><span class="co"># the outer folds for hypothesis testing</span>
 <span class="no">outer_folds</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span>(<span class="fl">2</span>), <span class="kw">length</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span>(<span class="no">heart</span>$<span class="no">chd</span>)))
 <span class="co"># the first set of inner folds for cross-fitting</span>

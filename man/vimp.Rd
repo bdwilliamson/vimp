@@ -28,8 +28,8 @@ Methodology authors:
 
 Manuscripts:
 \itemize{
-  \item{\url{https://doi.org/10.1111/biom.13392} (R-squared-based variable importance)}
-  \item{\url{https://doi.org/10.1111/biom.13389} (Rejoinder to discussion on R-squared-based variable importance article)}
+  \item{\doi{10.1111/biom.13392} (R-squared-based variable importance)}
+  \item{\doi{10.1111/biom.13389} (Rejoinder to discussion on R-squared-based variable importance article)}
   \item{\url{http://proceedings.mlr.press/v119/williamson20a.html} (general Shapley-based variable importance)}
 }
 Preprints:
