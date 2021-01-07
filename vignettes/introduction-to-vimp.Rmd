@@ -191,7 +191,7 @@ folds <- sample(rep(seq_len(2), length = length(y)))
 
 This creates a matrix of covariates `x` with two columns, a vector `y` of normally-distributed outcome values, and a set of folds for a sample of `n = 100` study participants.
 
-The workhorse function of `vimp`, for $R^2$-based variable importance, is `vimp_rsquared`. There are two ways to compute variable importance: in the first method, you allow `vimp` to run regressions for you and return variable importance; in the second method (discussed in "Using precomputed regression function estimates in `vimp`"), you run the regressions yourself and plug these into `vimp`. I will focus on the first method here. The basic arguments are
+The workhorse function of `vimp`, for $R^2$-based variable importance, is `vimp_rsquared`. There are two ways to compute variable importance: in the first method, you allow `vimp` to run regressions for you and return variable importance; in the second method (discussed in ["Using precomputed regression function estimates in `vimp`"](precomputed-regressions.html)), you run the regressions yourself and plug these into `vimp`. I will focus on the first method here. The basic arguments are
 
 * Y: the outcome (in this example, `y`)
 * X: the covariates (in this example, `x`)
@@ -237,7 +237,7 @@ Once we have a good estimate of the conditional mean, it is often of scientific 
 
 Assume that our data are generated according to the mechanism $P_0$. We define the population $R^2$ value of a given regression function $\mu$ as $R^2(\mu, P_0) = 1 - \frac{E_{P_0}\{Y - \mu(X)\}^2}{var_{P_0}(Y)}$, where the numerator of this expression is the population mean squared error and the denominator is the population variance. We can then define a nonparametric measure of variable importance, \[\psi_{0, s} = R^2(\mu_{P_0}, P_0) - R^2(\mu_{P_0,s}, P_0),\] which is the proportion of the variability in the outcome explained by including $X_j$ in our chosen estimation technique.
 
-This document introduces you to the basic tools in `vimp` and how to apply them to a dataset. I will explore one method for obtaining variable estimates using `vimp`: you only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, s}$; you allow `vimp` to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates. A second method (using precomputed estimates of the regression functions) exists and is described in "Using precomputed regression function estimates in `vimp`".
+This document introduces you to the basic tools in `vimp` and how to apply them to a dataset. I will explore one method for obtaining variable estimates using `vimp`: you only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, s}$; you allow `vimp` to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates. A second method (using precomputed estimates of the regression functions) exists and is described in ["Using precomputed regression function estimates in `vimp`"](precomputed-regressions.html).
 
 ### A look at the South African heart disease study data
 
@@ -342,7 +342,7 @@ The main function for R-squared-based variable importance in the `vimp` package 
 - `SL.library`, the library of candidate learners
 - `V`, the number of cross-validation folds to use for computing variable importance
 
-The main arguments differ if precomputed regression function estimates are used; please see "Using precomputed regression function estimates in `vimp`" for further discussion of this case.
+The main arguments differ if precomputed regression function estimates are used; please see ["Using precomputed regression function estimates in `vimp`"](precomputed-regressions.html) for further discussion of this case.
 
 Suppose that the first feature that I want to estimate variable importance for is family history of heart disease, `fam`. Then supplying `vimp_rsquared()` with
 
@@ -501,6 +501,6 @@ groups$mat %>%
 
 ## Types of population variable importance
 
-In this document, I have focused on one particular definition of population variable importance that I call *conditional* variable importance. For a further discussion of what I call *marginal* variable importance and *Shapley population* variable importance, please see "Types of VIMs".
+In this document, I have focused on one particular definition of population variable importance that I call *conditional* variable importance. For a further discussion of what I call *marginal* variable importance and *Shapley population* variable importance, please see ["Types of VIMs"](types-of-vims.html).
 
 ## References

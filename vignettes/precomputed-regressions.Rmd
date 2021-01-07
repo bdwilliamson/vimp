@@ -36,7 +36,7 @@ library("SuperLearner")
 
 ## Introduction
 
-In the main vignette, we analyzed the South African heart disease study data [@hastie2009] (freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data); more information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt)). In each of the analyses, I used `run_regression = TRUE`. In this vignette, I discuss how to use precomputed regression function estimates with `vimp`. The results of this analysis replicate the analysis in the main vignette.
+In the [main vignette](introduction-to-vimp.html), we analyzed the South African heart disease study data [@hastie2009] (freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data); more information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt)). In each of the analyses, I used `run_regression = TRUE`. In this vignette, I discuss how to use precomputed regression function estimates with `vimp`. The results of this analysis replicate the analysis in the [main vignette](introduction-to-vimp.html).
 
 ```{r load-heart-data}
 ## read in the data from the Elements website
@@ -53,7 +53,7 @@ heart_folds <- sample(rep(seq_len(2), length = dim(heart)[1]))
 
 ### A first approach: linear regression
 
-As in the main vignette, we first start by fitting only linear regression models. In this section, we use the function `vim()`; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.
+As in the [main vignette](introduction-to-vimp.html), we first start by fitting only linear regression models. In this section, we use the function `vim()`; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.
 
 ```{r est-heart-regressions-lm}
 full_mod <- lm(chd ~ ., data = subset(heart, heart_folds == 1))
@@ -276,7 +276,7 @@ groups$mat %>%
 
 In this section, we will use cross-fitting and pre-computed estimates of the regression functions. This can be especially useful if you have already run a call to `CV.SuperLearner` -- that function returns estimates based on each observation being part of the hold-out set. However, while this approach can save you some computation time, it requires a hefty amount of mental overhead.
 
-To replicate the Super Learning analysis from above using cross-fitting, we have to first create a set of folds for hypothesis testing (this involves simply splitting the dataset in two halves) and then create two sets of folds (one for each half) specifying the indices for cross-fitting. For this analysis, we will use `V = 5` folds for cross-fitting (as we did in the main vignette).
+To replicate the Super Learning analysis from above using cross-fitting, we have to first create a set of folds for hypothesis testing (this involves simply splitting the dataset in two halves) and then create two sets of folds (one for each half) specifying the indices for cross-fitting. For this analysis, we will use `V = 5` folds for cross-fitting (as we did in the [main vignette](introduction-to-vimp.html)).
 
 ```{r create-folds}
 # the outer folds for hypothesis testing
