@@ -57,8 +57,6 @@
 #' }
 #'
 #' @examples
-#' library(SuperLearner)
-#' library(ranger)
 #' # generate the data
 #' # generate X
 #' p <- 2
@@ -72,8 +70,8 @@
 #' # generate Y ~ Normal (smooth, 1)
 #' y <- matrix(rbinom(n, size = 1, prob = smooth))
 #'
-#' # set up a library for SuperLearner
-#' learners <- "SL.ranger"
+#' # set up a library for SuperLearner; note simple library for speed
+#' learners <- "SL.glm"
 #'
 #' # using Y and X; use class-balanced folds
 #' folds_1 <- sample(rep(seq_len(2), length = sum(y == 1)))
@@ -87,12 +85,13 @@
 #'            folds = folds)
 #'
 #' # using pre-computed fitted values
-#' full <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ],
+#' full <- SuperLearner::SuperLearner(Y = y[folds == 1], X = x[folds == 1, ],
 #' SL.library = learners, cvControl = list(V = 2))
-#' full.fit <- predict(full)$pred
-#' reduced <- SuperLearner(Y = y[folds == 2], X = x[folds == 2, -2, drop = FALSE],
+#' full.fit <- SuperLearner::predict.SuperLearner(full)$pred
+#' reduced <- SuperLearner::SuperLearner(Y = y[folds == 2], 
+#' X = x[folds == 2, -2, drop = FALSE],
 #' SL.library = learners, cvControl = list(V = 2))
-#' red.fit <- predict(reduced)$pred
+#' red.fit <- SuperLearner::predict.SuperLearner(reduced)$pred
 #'
 #' est <- vim(Y = y, f1 = full.fit, f2 = red.fit,
 #'             indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds,

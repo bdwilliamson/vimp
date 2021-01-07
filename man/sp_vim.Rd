@@ -99,8 +99,6 @@ within the \code{vim} object. This results in a list containing:
 }
 }
 \examples{
-library(SuperLearner)
-library(ranger)
 n <- 100
 p <- 2
 # generate the data
@@ -112,8 +110,8 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 # generate Y ~ Normal (smooth, 1)
 y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
-# set up a library for SuperLearner
-learners <- c("SL.mean", "SL.ranger")
+# set up a library for SuperLearner; note simple library for speed
+learners <- c("SL.mean", "SL.glm")
 
 # -----------------------------------------
 # using Super Learner (with a small number of CV folds,

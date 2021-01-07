@@ -7,7 +7,7 @@ None
 ## Minor changes
 
 * Updated links to DOIs and package vignettes throughout
-* Updated all tests in `testthat/` to use `polymars` and `ranger` rather than `xgboost`
+* Updated all tests in `testthat/` to use `glm` rather than `xgboost`
 
 # vimp 2.1.5
 

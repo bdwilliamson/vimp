@@ -24,24 +24,22 @@
 #' }
 #'
 #' @examples
-#' library(SuperLearner)
-#' library(ranger)
-#' ## generate the data
-#' ## generate X
+#' # generate the data
+#' # generate X
 #' p <- 2
 #' n <- 100
 #' x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 #'
-#' ## apply the function to the x's
+#' # apply the function to the x's
 #' smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 #'
-#' ## generate Y ~ Normal (smooth, 1)
+#' # generate Y ~ Normal (smooth, 1)
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
-#' ## set up a library for SuperLearner
-#' learners <- "SL.ranger"
+#' # set up a library for SuperLearner; note simple library for speed
+#' learners <- "SL.glm"
 #'
-#' ## using Super Learner (with a small number of folds, for illustration only)
+#' # using Super Learner (with a small number of folds, for illustration only)
 #' est_2 <- vimp_regression(Y = y, X = x, indx = 2, V = 2,
 #'            run_regression = TRUE, alpha = 0.05,
 #'            SL.library = learners, cvControl = list(V = 2))
@@ -55,12 +53,12 @@
 #' @importFrom rlang "!!" sym
 #' @export
 merge_vim <- function(...) {
-  ## capture the arguments
+  # capture the arguments
   L <- list(...)
   names(L) <- unlist(match.call(expand.dots=F)$...)
   p <- length(L)
 
-  ## extract the estimates and CIs from each element of the list
+  # extract the estimates and CIs from each element of the list
   ests <- do.call(c, lapply(L, function(z) z$est))
   naives <- do.call(c, lapply(L, function(z) z$naive))
   ses <- do.call(c, lapply(L, function(z) z$se))
@@ -74,12 +72,12 @@ merge_vim <- function(...) {
   delta <- min(do.call(c, lapply(L, function(z) z$delta)))
   scale <- unique(unlist(lapply(L, function(z) z$scale)))
 
-  ## put on names
+  # put on names
   names(ests) <- "est"
   names(tests) <- "test"
   names(p_values) <- "p_value"
 
-  ## now get lists of the remaining components
+  # now get lists of the remaining components
   eifs <- lapply(L, function(z) z$eif)
   s <- do.call(c, lapply(L, function(z) z$s))
   SL.library <- lapply(L, function(z) z$SL.library)
@@ -90,11 +88,11 @@ merge_vim <- function(...) {
   alpha <- min(unlist(lapply(L, function(z) z$alpha)))
   scale <- unique(unlist(lapply(L, function(z) z$scale)))
 
-  ## combine into a tibble
+  # combine into a tibble
   mat <- do.call(dplyr::bind_rows, lapply(L, function(z) z$mat)) %>%
     dplyr::arrange(dplyr::desc(!! rlang::sym("est")))
 
-  ## create output list
+  # create output list
   output <- list(s = s, SL.library = SL.library, full_fit = full_fit,
               red_fit = red_fit, est = mat$est, naive = naives, eif = eifs,
               se = mat$se, ci = cbind(mat$cil, mat$ciu),

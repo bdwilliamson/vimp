@@ -23,8 +23,6 @@
 #' }
 
 #' @examples
-#' library(SuperLearner)
-#' library(ranger)
 #' # generate the data
 #' p <- 2
 #' n <- 100
@@ -36,8 +34,8 @@
 #' # generate Y ~ Normal (smooth, 1)
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
-#' # set up a library for SuperLearner
-#' learners <- "SL.ranger"
+#' # set up a library for SuperLearner; note simple library for speed
+#' learners <- "SL.glm"
 #'
 #' # get estimates on independent splits of the data
 #' samp <- sample(1:n, n/2, replace = FALSE)

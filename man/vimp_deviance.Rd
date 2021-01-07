@@ -88,8 +88,6 @@ within the \code{vim} object. This results in a list containing:
 }
 }
 \examples{
-library(SuperLearner)
-library(ranger)
 # generate the data
 # generate X
 p <- 2
@@ -103,8 +101,8 @@ smooth <- apply(x, 1, function(z) f(z))
 # generate Y ~ Normal (smooth, 1)
 y <- matrix(stats::rbinom(n, size = 1, prob = smooth))
 
-# set up a library for SuperLearner
-learners <- "SL.ranger"
+# set up a library for SuperLearner; note simple library for speed
+learners <- "SL.glm"
 
 # estimate (with a small number of folds, for illustration only)
 est <- vimp_deviance(y, x, indx = 2,

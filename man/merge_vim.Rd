@@ -33,24 +33,22 @@ Take the output from multiple different calls to \code{vimp_regression} and
 merge into a single \code{vim} object; mostly used for plotting results.
 }
 \examples{
-library(SuperLearner)
-library(ranger)
-## generate the data
-## generate X
+# generate the data
+# generate X
 p <- 2
 n <- 100
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 
-## apply the function to the x's
+# apply the function to the x's
 smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 
-## generate Y ~ Normal (smooth, 1)
+# generate Y ~ Normal (smooth, 1)
 y <- smooth + stats::rnorm(n, 0, 1)
 
-## set up a library for SuperLearner
-learners <- "SL.ranger"
+# set up a library for SuperLearner; note simple library for speed
+learners <- "SL.glm"
 
-## using Super Learner (with a small number of folds, for illustration only)
+# using Super Learner (with a small number of folds, for illustration only)
 est_2 <- vimp_regression(Y = y, X = x, indx = 2, V = 2,
            run_regression = TRUE, alpha = 0.05,
            SL.library = learners, cvControl = list(V = 2))

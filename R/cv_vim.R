@@ -64,8 +64,6 @@
 #' }
 #'
 #' @examples
-#' library(SuperLearner)
-#' library(ranger)
 #' n <- 100
 #' p <- 2
 #' # generate the data
@@ -77,8 +75,8 @@
 #' # generate Y ~ Normal (smooth, 1)
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #'
-#' # set up a library for SuperLearner
-#' learners <- c("SL.mean", "SL.ranger")
+#' # set up a library for SuperLearner; note simple library for speed
+#' learners <- c("SL.mean", "SL.glm")
 #'
 #' # -----------------------------------------
 #' # using Super Learner (with a small number of folds, for illustration only)
@@ -89,7 +87,8 @@
 #' SL.library = learners, cvControl = list(V = 2), alpha = 0.05)
 #'
 #' # ------------------------------------------
-#' # doing things by hand, and plugging them in (with a small number of folds, for illustration only)
+#' # doing things by hand, and plugging them in 
+#' # (with a small number of folds, for illustration only)
 #' # ------------------------------------------
 #' # set up the folds
 #' indx <- 2

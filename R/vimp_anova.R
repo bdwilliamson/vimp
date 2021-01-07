@@ -45,8 +45,6 @@
 #' }
 #'
 #' @examples
-#' library(SuperLearner)
-#' library(ranger)
 #' # generate the data
 #' # generate X
 #' p <- 2
@@ -59,8 +57,8 @@
 #' # generate Y ~ Normal (smooth, 1)
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
-#' # set up a library for SuperLearner
-#' learners <- "SL.ranger"
+#' # set up a library for SuperLearner; note simple library for speed
+#' learners <- "SL.glm"
 #'
 #' # estimate (with a small number of folds, for illustration only)
 #' est <- vimp_anova(y, x, indx = 2,
