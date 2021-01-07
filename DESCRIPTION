@@ -6,7 +6,7 @@ Authors@R:
     c(person(given = "Brian D.",
              family = "Williamson",
              role = c("aut", "cre"),
-             email = "brianw26@uw.edu",
+             email = "bwillia2@fredhutch.org",
              comment = c(ORCID = "0000-0002-7024-548X")),
       person(given = "Jean",
              family = "Feng",
