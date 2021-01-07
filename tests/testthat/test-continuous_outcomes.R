@@ -12,10 +12,7 @@ x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
 y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + stats::rnorm(n, 0, 1)
 
 # set up a library for SuperLearner
-SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
-  SL.xgboost(..., objective = 'reg:squarederror', max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
-}
-learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
+learners <- c("SL.glm.interaction", "SL.polymars", "SL.mean")
 V <- 2
 
 test_that("ANOVA-based R^2 with old function name works", {

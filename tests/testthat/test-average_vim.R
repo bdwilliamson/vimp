@@ -6,7 +6,7 @@ library("vimp")
 # generate the data
 set.seed(4747)
 p <- 2
-n <- 10000
+n <- 1e5
 x <- data.frame(replicate(p, stats::runif(n, -5, 5)))
 # apply the function to the x's
 y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
@@ -21,10 +21,7 @@ x_nsamp <- x[-samp, ]
 folds <- sample(rep(seq_len(2), length = length(samp)))
 
 # set up a library for SuperLearner
-SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
-  SL.xgboost(..., objective = 'reg:squarederror', max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
-}
-learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
+learners <- c("SL.glm.interaction", "SL.polymars", "SL.mean")
 V <- 2
 
 # fit the data with all covariates

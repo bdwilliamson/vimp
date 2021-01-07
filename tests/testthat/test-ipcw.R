@@ -34,13 +34,14 @@ x <- tmp_x
 ipc_weights <- 1 / predict(glm(C ~ y, family = "binomial"), type = "response")
 
 learners <- c("SL.glm.interaction", "SL.ranger", "SL.mean")
+V <- 2
 
 set.seed(1234)
 # test that VIM with inverse probability of coarsening weights works
 test_that("VIM with inverse probability of coarsening weights works", {
   est <- vim(Y = y, X = x, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = learners,
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
-             cvControl = list(V = 3), env = environment())
+             cvControl = list(V = V), env = environment())
   expect_equal(est$est, true_vim, tolerance = 0.2, scale = 1)
 })
 # test that VIM with IPCW and scale = "logit" works
@@ -49,7 +50,7 @@ test_that("VIM with inverse probability of coarsening weights and scale = 'logit
   est_log <- vim(Y = y, X = x, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = learners,
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
              scale = "log",
-             cvControl = list(V = 3), env = environment())
+             cvControl = list(V = V), env = environment())
   expect_equal(est_log$est, true_vim, tolerance = 0.3, scale = 1)
 })
 
@@ -58,7 +59,7 @@ set.seed(5678)
 test_that("VIM with inverse probability of coarsening weights and cross-fitting works", {
   est_cv <- cv_vim(Y = y, X = x, indx = 1, type = "r_squared", V = 2, run_regression = TRUE, SL.library = learners,
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
-             cvControl = list(V = 3), env = environment())
+             cvControl = list(V = V), env = environment())
   expect_equal(est_cv$est, true_vim, tolerance = 0.3, scale = 1)
 })
 

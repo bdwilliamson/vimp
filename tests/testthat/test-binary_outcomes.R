@@ -39,10 +39,7 @@ x <- as.data.frame(dat$x)
 folds <- sample(rep(seq_len(2), length = length(y)))
 
 # set up a library for SuperLearner
-SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
-  SL.xgboost(..., objective = 'binary:logistic', max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
-}
-learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
+learners <- c("SL.glm.interaction", "SL.polymars", "SL.mean")
 V <- 2
 
 # fit the data with all covariates

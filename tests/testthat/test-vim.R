@@ -13,15 +13,13 @@ y <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2 + rnorm(n, 0, 1)
 folds <- sample(rep(seq_len(2), length = length(y)))
 
 # set up a library for SuperLearner
-SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
-  SL.xgboost(..., objective = 'reg:squarederror', max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
-}
-learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.mean")
+learners <- c("SL.glm.interaction", "SL.polymars", "SL.mean")
+V <- 2
 true_vim <- (500/729)/(1 + 2497/7875 + 500/729)
 
 test_that("General variable importance estimates using internally-computed fitted values work", {
   est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
-                SL.library = learners, alpha = 0.05, cvControl = list(V = 3),
+                SL.library = learners, alpha = 0.05, cvControl = list(V = V),
              env = environment(), folds = folds)
   # check that the estimate is approximately correct
   expect_equal(est$est, true_vim, tolerance = 0.2, scale = 1)
@@ -39,10 +37,10 @@ test_that("General variable importance estimates using internally-computed fitte
 })
 
 # fit the data with all covariates
-full_fit <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], SL.library = learners, cvControl = list(V = 3))
+full_fit <- SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], SL.library = learners, cvControl = list(V = V))
 full_fitted <- predict(full_fit)$pred
 # fit the data with only X1
-reduced_fit <- SuperLearner(Y = full_fitted, X = x[folds == 2, -2, drop = FALSE], SL.library = learners, cvControl = list(V = 3))
+reduced_fit <- SuperLearner(Y = full_fitted, X = x[folds == 2, -2, drop = FALSE], SL.library = learners, cvControl = list(V = V))
 reduced_fitted <- predict(reduced_fit)$pred
 
 test_that("General variable importance estimates using externally-computed fitted values work", {

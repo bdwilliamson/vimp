@@ -149,7 +149,7 @@ I can achieve the same results by also estimating the regression function based 
 ## set up the data, removing the columns for alcohol use and chd
 x <- heart[, -c(8, dim(heart)[2])]
 
-## fit an xgboost model using SuperLearner
+## fit an RF model using SuperLearner
 reduced_mod <- SuperLearner(Y = full_fit_2, X = x[fam_vim$folds == 2, ], SL.library = learners.2, cvControl = sl_cvcontrol)
 reduced_fit <- predict(reduced_mod)$pred
 ## this takes 2 seconds

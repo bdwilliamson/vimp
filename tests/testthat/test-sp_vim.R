@@ -23,10 +23,7 @@ shapley_val_1 <- (1/2) * (r2_one - 0) + (1/2) * (r2_full - r2_two)
 shapley_val_2 <- (1/2) * (r2_two - 0) + (1/2) * (r2_full - r2_one)
 
 # set up a library for SuperLearner
-SL.xgboost1 <- function(..., max_depth = 1, ntree = 500, shrinkage = 0.1){
-  SL.xgboost(..., objective = 'reg:squarederror', max_depth = max_depth, ntree = ntree, shrinkage = shrinkage)
-}
-learners <- c("SL.glm.interaction", "SL.xgboost1", "SL.glmnet", "SL.mean")
+learners <- c("SL.glm.interaction", "SL.polymars", "SL.mean")
 univariate_learners <- "SL.polymars"
 V <- 2
 

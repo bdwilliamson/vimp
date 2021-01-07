@@ -13,7 +13,7 @@ choose a variable importance measure, and specify variable(s) of interest;
 }
 \section{Author(s)}{
 
-\bold{Maintainer}: Brian Williamson \url{http://bdwilliamson.github.io}
+\bold{Maintainer}: Brian Williamson \url{https://bdwilliamson.github.io/}
 
 Methodology authors:
 \itemize{
@@ -26,18 +26,22 @@ Methodology authors:
 
 \section{See Also}{
 
+Manuscripts:
+\itemize{
+  \item{\url{https://doi.org/10.1111/biom.13392} (R-squared-based variable importance)}
+  \item{\url{https://doi.org/10.1111/biom.13389} (Rejoinder to discussion on R-squared-based variable importance article)}
+  \item{\url{http://proceedings.mlr.press/v119/williamson20a.html} (general Shapley-based variable importance)}
+}
 Preprints:
 \itemize{
-  \item{\url{http://biostats.bepress.com/uwbiostat/paper422/} (R-squared-based variable importance)}
-  \item{\url{http://arxiv.org/abs/2004.03683} (general variable importance)}
-  \item{\url{https://arxiv.org/abs/2006.09481} (general Shapley-based variable importance)}
+  \item{\url{https://arxiv.org/abs/2004.03683} (general variable importance)}
 }
 
 Other useful links:
 \itemize{
-  \item{\url{http://bdwilliamson.github.io/vimp}}
-  \item{\url{http://github.com/bdwilliamson/vimp}}
-  \item{Report bugs at \url{http://github.com/bdwilliamson/vimp/issues}}
+  \item{\url{https://bdwilliamson.github.io/vimp/}}
+  \item{\url{https://github.com/bdwilliamson/vimp}}
+  \item{Report bugs at \url{https://github.com/bdwilliamson/vimp/issues}}
 }
 }
 

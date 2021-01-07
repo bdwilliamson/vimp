@@ -116,13 +116,16 @@ or the following (for general variable importance parameters):
 or the following (for Shapley-based variable importance):
 
 ```
-  @article{williamson2020,
-      author={Williamson, BD and Feng, J},
-      title={Efficient nonparametric statistical inference on population feature importance using Shapley values},
-      journal={arXiv:2006.09481},
-      year={2020},
-      note={URL: https://arxiv.org/abs/2006.09481}
-    }
+  @inproceedings{williamson2020,
+    title={Efficient nonparametric statistical inference on population feature importance using {S}hapley values},
+    author={Williamson, BD and Feng, J},
+    year={2020},
+    booktitle={Proceedings of the 37th International Conference on Machine Learning},
+    volume={119},
+    pages={10282--10291},
+    series = {Proceedings of Machine Learning Research},
+    URL = {http://proceedings.mlr.press/v119/williamson20a.html}
+}
 ```
 
 ## License
@@ -132,7 +135,7 @@ The contents of this repository are distributed under the MIT license. See below
 ```
 MIT License
 
-Copyright (c) [2018-2020] [Brian D. Williamson]
+Copyright (c) [2018-2021] [Brian D. Williamson]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

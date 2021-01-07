@@ -22,7 +22,7 @@ Authors@R:
 Description: Calculate point estimates of and valid confidence intervals for
     nonparametric, algorithm-agnostic variable importance measures in high and low dimensions,
     using flexible estimators of the underlying regression functions. For more information
-    about the methods, please see Williamson et al. (Biometrics, 2020),  Williamson et al. (arXiv, 2020+) <arXiv:2004.03683>, and Williamson and Feng (ICML, 2020) <arXiv:2006.09481>.
+    about the methods, please see Williamson et al. (Biometrics, 2020),  Williamson et al. (arXiv, 2020+) <arXiv:2004.03683>, and Williamson and Feng (ICML, 2020).
 Depends:
     R (>= 3.1.0)
 Imports:
@@ -50,7 +50,7 @@ Suggests:
     RCurl,
     forcats
 License: MIT + file LICENSE
-URL: https://bdwilliamson.github.io/vimp, https://github.com/bdwilliamson/vimp
+URL: https://bdwilliamson.github.io/vimp/, https://github.com/bdwilliamson/vimp
 BugReports: https://github.com/bdwilliamson/vimp/issues
 LazyData: TRUE
 RoxygenNote: 7.1.1
