@@ -22,19 +22,17 @@ V <- 2
 
 set.seed(1234)
 test_that("General variable importance estimates using internally-computed fitted values work", {
-  expect_warning(
   est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
                 SL.library = learners, alpha = 0.05, cvControl = list(V = V),
              env = environment(), folds = folds)
-  )
   # check that the estimate is approximately correct
-  expect_equal(est$est, r2_two, tolerance = 0.35, scale = 1)
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
   # check that the SE, CI work
   expect_length(est$ci, 2)
   expect_length(est$se, 1)
   # check that the p-value worked
   expect_length(est$p_value, 1)
-  expect_false(est$test)
+  expect_true(est$test)
   # check that printing, plotting, etc. work
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
@@ -67,7 +65,7 @@ test_that("General variable importance estimates using externally-computed fitte
                f1 = full_fitted, f2 = reduced_fitted,
              folds = folds)
     # check that estimate worked
-    expect_equal(est$est, r2_two, tolerance = 0.35, scale = 1)
+    expect_equal(est$est, r2_two, tolerance = 0.15, scale = 1)
     # check that p-value exists
     expect_length(est$p_value, 1)
     # check that CIs with other transformations work
@@ -81,7 +79,7 @@ test_that("General variable importance estimates using externally-computed fitte
 test_that("Measures of predictiveness work", {
   full_rsquared <- est_predictiveness(full_fitted, y[folds == 1], 
                                       type = "r_squared")
-  expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.44)
+  expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
   expect_length(full_rsquared$eif, sum(folds == 1))
 })
 
@@ -92,7 +90,7 @@ test_that("Error messages work", {
     expect_error(vim(Y = y, X = x, run_regression = FALSE))
     expect_error(vim(Y = y, f1 = mean(y)))
     expect_error(vim(Y = y, f1 = rep(mean(y), length(y)), f2 = mean(y)))
-    expect_error(vim(Y = y, X = x, SL.library = learners,
+    expect_error(vim(Y = y, X = as.data.frame(x), SL.library = learners,
                      type = "nonsense_type"))
     expect_error(vim(Y = y, X = X, SL.library = learners, indx = ncol(X) + 1))
 })

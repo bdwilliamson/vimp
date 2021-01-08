@@ -12,6 +12,7 @@ check_inputs <- function(Y, X, f1, f2, indx, folds) {
 check_fitted_values <- function(Y, f1, f2, folds, V = NULL, cv = FALSE) {
     if (is.null(Y)) stop("Y must be entered.")
     if (!cv) {
+        if (length(f1) == 0 || length(f2) == 0) stop("Fitted values must be entered if run_regression = FALSE.")
         if (length(f1) != length(Y[folds == 1])) stop("Fitted values from the full regression must be the same length as the number of observations in the first fold.")
         if (length(f2) != length(Y[folds == 2])) stop("Fitted values from the reduced regression must be the same length as the number of observations in the second fold.")
     } else {
