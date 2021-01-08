@@ -227,9 +227,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
     se <- vimp_se(est, eif, na.rm = na.rm)
 
     # if est < 0, set to zero and print warning
-    if (est < 0) {
+    if (est < 0 && !is.na(est)) {
         est <- 0
         warning("Original estimate < 0; returning zero.")
+    } else if (is.na(est)) {
+        warning("Original estimate NA; consider using a different library of learners.")
     }
 
     # compute the confidence intervals
