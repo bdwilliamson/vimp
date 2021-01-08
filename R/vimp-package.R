@@ -12,6 +12,7 @@
 #' Methodology authors:
 #' \itemize{
 #'   \item{Brian D. Williamson}
+#'   \item{Jean Feng}
 #'   \item{Peter B. Gilbert}
 #'   \item{Noah R. Simon}
 #'   \item{Marco Carone}

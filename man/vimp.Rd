@@ -18,6 +18,7 @@ choose a variable importance measure, and specify variable(s) of interest;
 Methodology authors:
 \itemize{
   \item{Brian D. Williamson}
+  \item{Jean Feng}
   \item{Peter B. Gilbert}
   \item{Noah R. Simon}
   \item{Marco Carone}

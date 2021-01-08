@@ -285,9 +285,7 @@ within the <code>vim</code> object. This results in a list including:</p><ul>
     <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the <code>SuperLearner</code> function and package.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>SuperLearner</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>ranger</span>)
-<span class='co'># generate the data</span>
+    <pre class="examples"><div class='input'><span class='co'># generate the data</span>
 <span class='co'># generate X</span>
 <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
 <span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
@@ -300,8 +298,9 @@ within the <code>vim</code> object. This results in a list including:</p><ul>
 <span class='co'># generate Y ~ Normal (smooth, 1)</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>prob</span> <span class='kw'>=</span> <span class='no'>smooth</span>))
 
-<span class='co'># set up a library for SuperLearner</span>
-<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='st'>"SL.ranger"</span>
+<span class='co'># set up a library for SuperLearner; note simple library for speed</span>
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"SuperLearner"</span>)
+<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.glm"</span>, <span class='st'>"SL.mean"</span>)
 
 <span class='co'># using Y and X; use class-balanced folds</span>
 <span class='no'>folds_1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='fl'>2</span>), <span class='kw'>length</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>y</span> <span class='kw'>==</span> <span class='fl'>1</span>)))
@@ -315,12 +314,13 @@ within the <code>vim</code> object. This results in a list including:</p><ul>
            <span class='kw'>folds</span> <span class='kw'>=</span> <span class='no'>folds</span>)
 
 <span class='co'># using pre-computed fitted values</span>
-<span class='no'>full</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>1</span>], <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>1</span>, ],
+<span class='no'>full</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>1</span>], <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>1</span>, ],
 <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))
-<span class='no'>full.fit</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>full</span>)$<span class='no'>pred</span>
-<span class='no'>reduced</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>2</span>], <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>2</span>, -<span class='fl'>2</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
+<span class='no'>full.fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>full</span>)$<span class='no'>pred</span>
+<span class='no'>reduced</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>2</span>],
+<span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>2</span>, -<span class='fl'>2</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
 <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))
-<span class='no'>red.fit</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span>(<span class='no'>reduced</span>)$<span class='no'>pred</span>
+<span class='no'>red.fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>reduced</span>)$<span class='no'>pred</span>
 
 <span class='no'>est</span> <span class='kw'>&lt;-</span> <span class='fu'>vim</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>f1</span> <span class='kw'>=</span> <span class='no'>full.fit</span>, <span class='kw'>f2</span> <span class='kw'>=</span> <span class='no'>red.fit</span>,
             <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>folds</span> <span class='kw'>=</span> <span class='no'>folds</span>,
