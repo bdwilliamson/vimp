@@ -175,17 +175,17 @@ library("vimp")
 
 Next, create some data:
 ```{r gen-data}
-## -------------------------------------------------------------
-## problem setup
-## -------------------------------------------------------------
-## set up the data
+# -------------------------------------------------------------
+# problem setup
+# -------------------------------------------------------------
+# set up the data
 set.seed(5678910)
 n <- 1000
 p <- 2
 s <- 1 # desire importance for X_1
 x <- data.frame(replicate(p, runif(n, -1, 1)))
 y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1)
-## set up folds for hypothesis testing
+# set up folds for hypothesis testing
 folds <- sample(rep(seq_len(2), length = length(y)))
 ```
 
@@ -204,7 +204,7 @@ This second-to-last argument, `SL.library`, determines the estimators you want t
 
 ```{r learner-lib-small}
 library("SuperLearner")
-## load specific algorithms
+# load specific algorithms
 library("ranger")
 ```
 
@@ -244,13 +244,13 @@ This document introduces you to the basic tools in `vimp` and how to apply them 
 Throughout this document I will use the South African heart disease study data [@hastie2009], freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data). Information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt).
 
 ```{r load-heart-data}
-## read in the data from the Elements website
+# read in the data from the Elements website
 library("RCurl")
 heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
-## minor data cleaning
+# minor data cleaning
 heart <- heart_data[, 2:dim(heart_data)[2]]
 heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
-## sample-splitting folds for hypothesis testing
+# sample-splitting folds for hypothesis testing
 heart_folds <- sample(rep(seq_len(2), length = dim(heart)[1]))
 ```
 
@@ -273,11 +273,11 @@ lm_vim_obe <- vim(Y = heart$chd, X = X, indx = 7, run_regression = TRUE, SL.libr
 lm_vim_alc <- vim(Y = heart$chd, X = X, indx = 8, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
 lm_vim_age <- vim(Y = heart$chd, X = X, indx = 9, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
 
-## make a table with the estimates using the merge_vim() function
+# make a table with the estimates using the merge_vim() function
 library("dplyr")
 lm_mat <- merge_vim(lm_vim_sbp, lm_vim_tob, lm_vim_ldl, lm_vim_adi,
                 lm_vim_fam, lm_vim_tpa, lm_vim_obe, lm_vim_alc, lm_vim_age)
-## print out the matrix
+# print out the matrix
 lm_mat
 ```
 
@@ -292,18 +292,18 @@ This motivates using `SuperLearner` to allow the data to determine the optimal c
 For instance, my library could include the elastic net, random forests [@breiman2001], and gradient boosted trees [@friedman2001] as follows:
 
 ```{r full-learner-lib}
-## load the library
+# load the library
 library(SuperLearner)
 
-## create a function for boosted stumps
+# create a function for boosted stumps
 SL.gbm.1 <- function(..., interaction.depth = 1) SL.gbm(..., interaction.depth = interaction.depth)
 
-## create GAMs with different degrees of freedom
+# create GAMs with different degrees of freedom
 SL.gam.3 <- function(..., deg.gam = 3) SL.gam(..., deg.gam = deg.gam)
 SL.gam.4 <- function(..., deg.gam = 4) SL.gam(..., deg.gam = deg.gam)
 SL.gam.5 <- function(..., deg.gam = 5) SL.gam(..., deg.gam = deg.gam)
 
-## add more levels of alpha for glmnet
+# add more levels of alpha for glmnet
 create.SL.glmnet <- function(alpha = c(0.25, 0.5, 0.75)) {
   for (mm in seq(length(alpha))) {
     eval(parse(file = "", text = paste('SL.glmnet.', alpha[mm], '<- function(..., alpha = ', alpha[mm], ') SL.glmnet(..., alpha = alpha)', sep = '')), envir = .GlobalEnv)
@@ -312,7 +312,7 @@ create.SL.glmnet <- function(alpha = c(0.25, 0.5, 0.75)) {
 }
 create.SL.glmnet()
 
-## add tuning parameters for randomForest
+# add tuning parameters for randomForest
 create.SL.randomForest <- function(tune = list(mtry = c(1, 5, 7), nodesize = c(1, 5, 10))) {
   tuneGrid <- expand.grid(tune, stringsAsFactors = FALSE)
   for (mm in seq(nrow(tuneGrid))) {
@@ -322,7 +322,7 @@ create.SL.randomForest <- function(tune = list(mtry = c(1, 5, 7), nodesize = c(1
 }
 create.SL.randomForest()
 
-## create the library
+# create the library
 learners <- c("SL.glmnet", "SL.glmnet.0.25", "SL.glmnet.0.5", "SL.glmnet.0.75",
               "SL.randomForest", "SL.randomForest.1", "SL.randomForest.2", "SL.randomForest.3",
               "SL.randomForest.4", "SL.randomForest.5", "SL.randomForest.6", "SL.randomForest.7",
@@ -360,10 +360,10 @@ means that:
 
 The call to `vimp_rsquared()` looks like this:
 ```{r vimp-with-sl-1, eval = FALSE}
-## load the library
+# load the library
 library("vimp")
 
-## now estimate variable importance
+# now estimate variable importance
 vimp_rsquared(Y = heart$chd, X = X,
     indx = 5, run_regression = TRUE, SL.library = learners, V = 5)
 ```
@@ -372,7 +372,7 @@ While this is the preferred method for estimating variable importance, using a l
 
 However, for the sake of illustration, I can estimate varibable importance for family history only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):
 ```{r vimp-with-sl-fam, message = FALSE}
-## load the library
+# load the library
 library("vimp")
 
 # small learners library
@@ -382,7 +382,7 @@ V <- 2
 # small number of CV folds for Super Learner
 sl_cvcontrol <- list(V = 2)
 
-## now estimate variable importance
+# now estimate variable importance
 fam_vim <- vimp_rsquared(Y = heart$chd, X = as.data.frame(heart[, -dim(heart)[2]]), indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 ```
 
@@ -401,17 +401,17 @@ head(fam_vim$red_fit)
 
 I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):
 ```{r heart-sl}
-## set up the data, removing the columns for alcohol use and chd
+# set up the data, removing the columns for alcohol use and chd
 x <- as.data.frame(heart[, -dim(heart)[2]])
 
-## estimate variable importance
+# estimate variable importance
 tpa_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 6, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 alc_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 8, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 sbp_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 tob_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 2, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 ldl_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 3, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 adi_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 4, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-obe_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+obe_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 7, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 age_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 9, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 ```
 
@@ -422,46 +422,29 @@ library("tibble")
 library("ggplot2")
 library("cowplot")
 theme_set(theme_cowplot())
-library("forcats")
-## combine the objects together
+# combine the objects together
 ests <- merge_vim(sbp_vim, tob_vim, ldl_vim, adi_vim,
                 fam_vim, tpa_vim, obe_vim, alc_vim, age_vim)
+all_vars <- c("Sys. blood press.", "Tobacco consump.", "LDL cholesterol",
+              "Adiposity", "Family history", "Type A behavior", "Obesity",
+              "Alcohol consump.", "Age")
 
-get_nm <- function(s) {
-  if (s == 1) {
-    return("Sys. blood press.")
-  } else if (s == 2) {
-    return("Tobacco consump.")
-  } else if (s == 3) {
-    return("LDL cholesterol")
-  } else if (s == 4) {
-    return("Adiposity")
-  } else if (s == 5) {
-    return("Family history")
-  } else if (s == 6) {
-    return("Type A behavior")
-  } else if (s == 7) {
-    return("Obesity")
-  } else if (s == 8) {
-    return("Alcohol consump.")
-  } else if (s == 9) {
-    return("Age")
-  }
-}
-get_nms <- function(ests) {
-  return(apply(matrix(as.numeric(ests$s)), 1, get_nm))
-}
+est_plot_tib <- ests$mat %>% 
+  mutate(
+    var_fct = rev(factor(s, levels = ests$mat$s,
+                     labels = all_vars[as.numeric(ests$mat$s)], 
+                     ordered = TRUE))
+  )
 
-## plot
-ests$mat %>%
-  arrange(desc(est)) %>%
-  mutate(ord_group = forcats::fct_reorder(get_nms(ests$mat), est)) %>%
-  ggplot(aes(x = est, y = ord_group)) +
+# plot
+est_plot_tib %>%
+  ggplot(aes(x = est, y = var_fct)) +
   geom_point() +
   geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
   xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
   ylab("") +
-  ggtitle("Variable importance estimates for individual features in the South African heart disease study data")
+  ggtitle("Estimated individual feature importance") +
+  labs(subtitle = "in the South African heart disease study data")
 ```
 
 ## Estimating variable importance for a group of variables
@@ -471,32 +454,29 @@ Now that I have estimated variable importance for each of the individual feature
 The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for `s`; I can use any of the options listed in the previous section to compute these estimates.
 
 ```{r heart-group-vim, fig.width = 8.5, fig.height = 8}
-## get the estimates
+# get the estimates
 behav_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = c(2, 6, 8), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 bios_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = c(1, 3, 4, 5, 7, 9), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 
-## combine and plot
+# combine and plot
 groups <- merge_vim(behav_vim, bios_vim)
-nms.2 <- c("Behavioral features", "Biological features")
-nms_grp <- function(s) {
-  if (s == "1,3,4,5,7,9") {
-    return("Biological features")
-  } else {
-    return("Behavioral features")
-  }
-}
-get_nms_grp <- function(ests) {
-  return(unlist(lapply(as.list(ests$s), function(x) nms_grp(x))))
-}
-groups$mat %>%
-  arrange(desc(est)) %>%
-  mutate(ord_group = forcats::fct_reorder(get_nms_grp(groups$mat), est)) %>%
-  ggplot(aes(x = est, y = ord_group)) +
+all_grp_nms <- c("Behavioral features", "Biological features")
+
+grp_plot_tib <- groups$mat %>% 
+  mutate(
+    grp_fct = factor(case_when(
+      s == "2,6,8" ~ "1",
+      s == "1,3,4,5,7,9" ~ "2"
+    ), levels = c("1", "2"),  labels = all_grp_nms, ordered = TRUE)
+  )
+grp_plot_tib %>%
+  ggplot(aes(x = est, y = grp_fct)) +
   geom_point() +
   geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
   xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
   ylab("") +
-  ggtitle("Variable importance estimates for groups of features in the South African heart disease study data")
+  ggtitle("Estimated feature group importance") +
+  labs(subtitle = "in the South African heart disease study data")
 ```
 
 ## Types of population variable importance

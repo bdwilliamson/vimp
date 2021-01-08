@@ -47,8 +47,7 @@ Suggests:
     testthat,
     ggplot2,
     cowplot,
-    RCurl,
-    forcats
+    RCurl
 License: MIT + file LICENSE
 URL: https://bdwilliamson.github.io/vimp/, https://github.com/bdwilliamson/vimp
 BugReports: https://github.com/bdwilliamson/vimp/issues
