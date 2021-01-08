@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.6</span>
       </span>
     </div>
 
@@ -279,9 +279,7 @@ within the <code>vim</code> object. This results in a list including:</p><ul>
     <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the <code>SuperLearner</code> function and package.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/ecpolley/SuperLearner'>SuperLearner</a></span><span class='op'>)</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/imbs-hl/ranger'>ranger</a></span><span class='op'>)</span>
-<span class='co'># generate the data</span>
+    <pre class="examples"><div class='input'><span class='co'># generate the data</span>
 <span class='co'># generate X</span>
 <span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
 <span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span>
@@ -294,8 +292,9 @@ within the <code>vim</code> object. This results in a list including:</p><ul>
 <span class='co'># generate Y ~ Normal (smooth, 1)</span>
 <span class='va'>y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span><span class='op'>(</span><span class='va'>n</span>, size <span class='op'>=</span> <span class='fl'>1</span>, prob <span class='op'>=</span> <span class='va'>smooth</span><span class='op'>)</span><span class='op'>)</span>
 
-<span class='co'># set up a library for SuperLearner</span>
-<span class='va'>learners</span> <span class='op'>&lt;-</span> <span class='st'>"SL.ranger"</span>
+<span class='co'># set up a library for SuperLearner; note simple library for speed</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/ecpolley/SuperLearner'>"SuperLearner"</a></span><span class='op'>)</span>
+<span class='va'>learners</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SL.glm"</span>, <span class='st'>"SL.mean"</span><span class='op'>)</span>
 
 <span class='co'># using Y and X; use class-balanced folds</span>
 <span class='va'>folds_1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span><span class='op'>(</span><span class='fl'>2</span><span class='op'>)</span>, length <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>y</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span>
@@ -309,12 +308,13 @@ within the <code>vim</code> object. This results in a list including:</p><ul>
            folds <span class='op'>=</span> <span class='va'>folds</span><span class='op'>)</span>
 
 <span class='co'># using pre-computed fitted values</span>
-<span class='va'>full</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span>, X <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>1</span>, <span class='op'>]</span>,
+<span class='va'>full</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>1</span><span class='op'>]</span>, X <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>1</span>, <span class='op'>]</span>,
 SL.library <span class='op'>=</span> <span class='va'>learners</span>, cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>full.fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>full</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span>
-<span class='va'>reduced</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>2</span><span class='op'>]</span>, X <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>2</span>, <span class='op'>-</span><span class='fl'>2</span>, drop <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>,
+<span class='va'>full.fit</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>full</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span>
+<span class='va'>reduced</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>2</span><span class='op'>]</span>, 
+X <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span><span class='va'>folds</span> <span class='op'>==</span> <span class='fl'>2</span>, <span class='op'>-</span><span class='fl'>2</span>, drop <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>,
 SL.library <span class='op'>=</span> <span class='va'>learners</span>, cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>red.fit</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>reduced</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span>
+<span class='va'>red.fit</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>reduced</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span>
 
 <span class='va'>est</span> <span class='op'>&lt;-</span> <span class='fu'>vim</span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span>, f1 <span class='op'>=</span> <span class='va'>full.fit</span>, f2 <span class='op'>=</span> <span class='va'>red.fit</span>,
             indx <span class='op'>=</span> <span class='fl'>2</span>, run_regression <span class='op'>=</span> <span class='cn'>FALSE</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, folds <span class='op'>=</span> <span class='va'>folds</span>,
