@@ -57,8 +57,9 @@
 #' y <- smooth + stats::rnorm(n, 0, 1)
 #'
 #' # set up a library for SuperLearner; note simple library for speed
-#' learners <- "SL.glm"
-#'
+#' library("SuperLearner")
+#' learners <- c("SL.glm", "SL.mean")
+#' 
 #' # estimate (with a small number of folds, for illustration only)
 #' est <- vimp_regression(y, x, indx = 2,
 #'            alpha = 0.05, run_regression = TRUE,

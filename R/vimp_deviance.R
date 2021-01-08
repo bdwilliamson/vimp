@@ -56,8 +56,9 @@
 #' y <- matrix(stats::rbinom(n, size = 1, prob = smooth))
 #'
 #' # set up a library for SuperLearner; note simple library for speed
-#' learners <- "SL.glm"
-#'
+#' library("SuperLearner")
+#' learners <- c("SL.glm", "SL.mean")
+#' 
 #' # estimate (with a small number of folds, for illustration only)
 #' est <- vimp_deviance(y, x, indx = 2,
 #'            alpha = 0.05, run_regression = TRUE,

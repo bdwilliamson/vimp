@@ -67,7 +67,8 @@
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #'
 #' # set up a library for SuperLearner; note simple library for speed
-#' learners <- c("SL.mean", "SL.glm")
+#' library("SuperLearner")
+#' learners <- c("SL.glm", "SL.mean")
 #'
 #' # -----------------------------------------
 #' # using Super Learner (with a small number of CV folds,

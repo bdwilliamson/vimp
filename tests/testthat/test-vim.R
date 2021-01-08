@@ -1,8 +1,10 @@
 # load required functions and packages
 library("testthat")
+library("SuperLearner")
 
 # generate the data -- note that this is a simple setting, for speed
 set.seed(4747)
+p <- 2
 n <- 5e4
 x <- replicate(p, stats::rnorm(n, 0, 1))
 # apply the function to the x's

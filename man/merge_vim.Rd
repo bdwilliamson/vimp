@@ -46,7 +46,8 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 y <- smooth + stats::rnorm(n, 0, 1)
 
 # set up a library for SuperLearner; note simple library for speed
-learners <- "SL.glm"
+library("SuperLearner")
+learners <- c("SL.glm", "SL.mean")
 
 # using Super Learner (with a small number of folds, for illustration only)
 est_2 <- vimp_regression(Y = y, X = x, indx = 2, V = 2,

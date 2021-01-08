@@ -76,7 +76,8 @@
 #' y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 #'
 #' # set up a library for SuperLearner; note simple library for speed
-#' learners <- c("SL.mean", "SL.glm")
+#' library("SuperLearner")
+#' learners <- c("SL.glm", "SL.mean")
 #'
 #' # -----------------------------------------
 #' # using Super Learner (with a small number of folds, for illustration only)
@@ -288,9 +289,11 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, V = lengt
     se <- vimp_se(est, eif, na.rm = na.rm)
 
     # if est < 0, set to zero and print warning
-    if (est < 0) {
+    if (est < 0 && !is.na(est)) {
         est <- 0
         warning("Original estimate < 0; returning zero.")
+    } else if (is.na(est)) {
+        warning("Original estimate NA; consider using a different library of learners.")
     }
 
     # calculate the confidence interval

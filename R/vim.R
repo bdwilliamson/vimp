@@ -71,7 +71,8 @@
 #' y <- matrix(rbinom(n, size = 1, prob = smooth))
 #'
 #' # set up a library for SuperLearner; note simple library for speed
-#' learners <- "SL.glm"
+#' library("SuperLearner")
+#' learners <- c("SL.glm", "SL.mean")
 #'
 #' # using Y and X; use class-balanced folds
 #' folds_1 <- sample(rep(seq_len(2), length = sum(y == 1)))

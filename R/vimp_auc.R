@@ -57,7 +57,8 @@
 #' y <- matrix(rbinom(n, size = 1, prob = smooth))
 #'
 #' # set up a library for SuperLearner; note simple library for speed
-#' learners <- "SL.glm"
+#' library("SuperLearner")
+#' learners <- c("SL.glm", "SL.mean")
 #'
 #' # estimate (with a small number of folds, for illustration only)
 #' est <- vimp_auc(y, x, indx = 2,

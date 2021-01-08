@@ -45,6 +45,7 @@ smooth <- (x[,1]/5)^2*(x[,1]+7)/5 + (x[,2]/3)^2
 y <- smooth + stats::rnorm(n, 0, 1)
 
 # set up a library for SuperLearner; note simple library for speed
+library("SuperLearner")
 learners <- c("SL.glm", "SL.mean")
 
 # get estimates on independent splits of the data
