@@ -258,21 +258,27 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- NA
         se_redu <- NA
     } else {
-        est_lst_full <- est_predictiveness(
-            fitted_values = fhat_ful, y = Y_cc[folds_cc == 1, , drop = FALSE], 
-            type = full_type, C = C[folds == 1], 
-            Z = Z_in[folds == 1, , drop = FALSE], 
-            ipc_weights = ipc_weights[folds == 1], 
-            ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
-            SL.library = SL.library, arg_lst
+        est_lst_full <- do.call(
+            est_predictiveness, 
+            args = c(list(fitted_values = fhat_ful, 
+                          y = Y_cc[folds_cc == 1, , drop = FALSE], 
+                          type = full_type, C = C[folds == 1], 
+                          Z = Z_in[folds == 1, , drop = FALSE], 
+                          ipc_weights = ipc_weights[folds == 1], 
+                          ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                          SL.library = SL.library), 
+                     arg_lst)
         )
-        est_lst_redu <- est_predictiveness(
-            fitted_values = fhat_red, y = Y_cc[folds_cc == 2, , drop = FALSE], 
-            type = full_type, C = C[folds == 2], 
-            Z = Z_in[folds == 2, , drop = FALSE], 
-            ipc_weights = ipc_weights[folds == 2], 
-            ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
-            SL.library = SL.library, arg_lst
+        est_lst_redu <- do.call(
+            est_predictiveness,
+            args = c(list(fitted_values = fhat_red, 
+                          y = Y_cc[folds_cc == 2, , drop = FALSE], 
+                          type = full_type, C = C[folds == 2], 
+                          Z = Z_in[folds == 2, , drop = FALSE], 
+                          ipc_weights = ipc_weights[folds == 2], 
+                          ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                          SL.library = SL.library),
+                     arg_lst)
         )
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est

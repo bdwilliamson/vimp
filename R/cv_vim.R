@@ -326,17 +326,23 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         est_lst <- sapply(
             1:V, 
             function(v) 
-                measure_anova(
-                    fhat_ful[[v]], fhat_red[[v]], 
-                    Y_cc[outer_folds_cc == 1, , 
-                         drop = FALSE][inner_folds_1_cc == v], 
-                    C[outer_folds == 1][inner_folds_1 == v], 
-                    Z = Z_in[outer_folds == 1, , 
-                             drop = FALSE][inner_folds_1 == v, , 
-                                           drop = FALSE], 
-                    ipc_weights[outer_folds == 1][inner_folds_1 == v], 
-                    ipc_fit_type = "SL", na.rm = na.rm, 
-                    SL.library = SL.library,  arg_lst
+                do.call(
+                    measure_anova,
+                    args = c(
+                        list(full = fhat_ful[[v]], 
+                             reduced = fhat_red[[v]], 
+                             y = Y_cc[outer_folds_cc == 1, , 
+                                  drop = FALSE][inner_folds_1_cc == v], 
+                             C = C[outer_folds == 1][inner_folds_1 == v], 
+                             Z = Z_in[outer_folds == 1, , 
+                                      drop = FALSE][inner_folds_1 == v, , 
+                                                    drop = FALSE], 
+                             ipc_weights = ipc_weights[outer_folds == 1][inner_folds_1 == v], 
+                             ipc_fit_type = "SL", na.rm = na.rm, 
+                             scale = scale,
+                             SL.library = SL.library),
+                        arg_lst
+                    )
                 ), 
             simplify = FALSE
         )
@@ -356,27 +362,35 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- rep(NA, V)
         se_redu <- rep(NA, V)
     } else {
-        est_lst_full <- est_predictiveness_cv(
-            fitted_values = fhat_ful, 
-            y = Y_cc[outer_folds_cc == 1, , drop = FALSE], 
-            folds = inner_folds_1_cc, type = full_type, 
-            C = C[outer_folds == 1], 
-            Z = Z_in[outer_folds == 1, , drop = FALSE], 
-            folds_Z = inner_folds_1, 
-            ipc_weights = ipc_weights[outer_folds == 1], 
-            ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
-            SL.library = SL.library, arg_lst
+        est_lst_full <- do.call(
+            est_predictiveness_cv,
+            args = c(
+                list(fitted_values = fhat_ful, 
+                     y = Y_cc[outer_folds_cc == 1, , drop = FALSE], 
+                     folds = inner_folds_1_cc, type = full_type, 
+                     C = C[outer_folds == 1], 
+                     Z = Z_in[outer_folds == 1, , drop = FALSE], 
+                     folds_Z = inner_folds_1, 
+                     ipc_weights = ipc_weights[outer_folds == 1], 
+                     ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                     SL.library = SL.library),
+                arg_lst
+            )
         )
-        est_lst_redu <- est_predictiveness_cv(
-            fitted_values = fhat_red, 
-            y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
-            folds = inner_folds_2_cc, type = full_type, 
-            C = C[outer_folds == 2], 
-            Z = Z_in[outer_folds == 2, , drop = FALSE], 
-            folds_Z = inner_folds_2, 
-            ipc_weights = ipc_weights[outer_folds == 2], 
-            ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
-            SL.library = SL.library, arg_lst
+        est_lst_redu <- do.call(
+            est_predictiveness_cv,
+            args = c(
+                list(fitted_values = fhat_red, 
+                     y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
+                     folds = inner_folds_2_cc, type = full_type, 
+                     C = C[outer_folds == 2], 
+                     Z = Z_in[outer_folds == 2, , drop = FALSE], 
+                     folds_Z = inner_folds_2, 
+                     ipc_weights = ipc_weights[outer_folds == 2], 
+                     ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                     SL.library = SL.library),
+                arg_lst
+            )
         )
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est

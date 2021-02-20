@@ -180,14 +180,18 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
             sum(inner_folds_2_cc == v)
         )
     }
-    v_none_lst <- est_predictiveness_cv(
-        fitted_values = preds_none, 
-        y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
-        folds = inner_folds_2_cc, C = C[outer_folds == 2], 
-        Z = Z_in[outer_folds == 2, , drop = FALSE], 
-        folds_Z = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], 
-        ipc_fit_type = "SL", type = full_type, scale = scale, na.rm = na.rm, 
-        SL.library = SL.library, arg_lst
+    v_none_lst <- do.call(
+        est_predictiveness_cv,
+        args = c(
+            list(fitted_values = preds_none, 
+                 y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
+                 folds = inner_folds_2_cc, C = C[outer_folds == 2], 
+                 Z = Z_in[outer_folds == 2, , drop = FALSE], 
+                 folds_Z = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], 
+                 ipc_fit_type = "SL", type = full_type, scale = scale, na.rm = na.rm, 
+                 SL.library = SL.library),
+            arg_lst
+        )
     )
     v_none <- v_none_lst$point_est
     ic_none <- v_none_lst$eif
@@ -215,16 +219,21 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     }
     v_full_lst <- lapply(
         preds_lst, 
-        function(l) est_predictiveness_cv(
-            fitted_values = l$preds, 
-            y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
-            folds = l$folds, C = C[outer_folds == 2], 
-            Z = Z_in[outer_folds == 2, , drop = FALSE], 
-            folds_Z = inner_folds_2, 
-            ipc_weights = ipc_weights[outer_folds == 2], 
-            type = full_type, ipc_fit_type = "SL", scale = scale, 
-            na.rm = na.rm, SL.library = SL.library, arg_lst
-        )
+        function(l) 
+            do.call(
+                est_predictiveness_cv,
+                args = c(
+                    list(fitted_values = l$preds, 
+                         y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
+                         folds = l$folds, C = C[outer_folds == 2], 
+                         Z = Z_in[outer_folds == 2, , drop = FALSE], 
+                         folds_Z = inner_folds_2, 
+                         ipc_weights = ipc_weights[outer_folds == 2], 
+                         type = full_type, ipc_fit_type = "SL", scale = scale, 
+                         na.rm = na.rm, SL.library = SL.library),
+                    arg_lst
+                )
+            )
     )
     v_lst <- lapply(v_full_lst, function(l) l$point_est)
     ic_lst <- lapply(v_full_lst, function(l) l$eif)
@@ -280,15 +289,19 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
             sum(inner_folds_1_cc == v)
         )
     }
-    v_none_0_lst <- est_predictiveness_cv(
-        fitted_values = preds_none_0, 
-        y = Y_cc[outer_folds_cc == 1, , drop = FALSE], 
-        folds = inner_folds_1_cc, C = C[outer_folds == 1], 
-        Z = Z_in[outer_folds == 1, , drop = FALSE], 
-        folds_Z = inner_folds_1, 
-        ipc_weights = ipc_weights[outer_folds == 1], 
-        type = full_type, ipc_fit_type = "SL", scale = scale, 
-        na.rm = na.rm, SL.library = SL.library, arg_lst
+    v_none_0_lst <- do.call(
+        est_predictiveness_cv,
+        args = c(
+            list(fitted_values = preds_none_0, 
+                 y = Y_cc[outer_folds_cc == 1, , drop = FALSE], 
+                 folds = inner_folds_1_cc, C = C[outer_folds == 1], 
+                 Z = Z_in[outer_folds == 1, , drop = FALSE], 
+                 folds_Z = inner_folds_1, 
+                 ipc_weights = ipc_weights[outer_folds == 1], 
+                 type = full_type, ipc_fit_type = "SL", scale = scale, 
+                 na.rm = na.rm, SL.library = SL.library),
+            arg_lst
+        )
     )
     v_none_0 <- v_none_0_lst$point_est
     ic_none_0 <- v_none_0_lst$eif
