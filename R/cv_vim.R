@@ -205,12 +205,14 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     if (run_regression) {
         X_cc <- subset(X, C == 1, drop = FALSE)
         # set up the cross-fitting
-        outer_folds <- .make_folds(Y, V = 2, stratified = stratified)
+        outer_folds <- .make_folds(Y, V = 2, C = C, stratified = stratified)
         inner_folds_1 <- .make_folds(
-            Y[outer_folds == 1, , drop = FALSE], V = V, stratified = stratified
+            Y[outer_folds == 1, , drop = FALSE], V = V, 
+            C = C[outer_folds == 1], stratified = stratified
         )
         inner_folds_2 <- .make_folds(
-            Y[outer_folds == 2, , drop = FALSE], V = V, stratified = stratified
+            Y[outer_folds == 2, , drop = FALSE], V = V, 
+            C = C[outer_folds == 2], stratified = stratified
         )
         outer_folds_cc <- outer_folds[C == 1]
         inner_folds_1_cc <- inner_folds_1[C[outer_folds == 1] == 1]

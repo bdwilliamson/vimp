@@ -54,32 +54,74 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 # @param y the outcome
 # @param V the number of folds
 # @param stratified should the folds be stratified based on the outcome?
+# @param C a vector indicating whether or not the observation is fully observed;
+#    1 denotes yes, 0 denotes no
 # @param probs vector of proportions for each fold number
 # @return a vector of folds
 # @keywords internal
-.make_folds <- function(y, V = 2, stratified = FALSE, probs = rep(1/V, V)) {
+.make_folds <- function(y, V = 2, stratified = FALSE, 
+                        C = NULL,
+                        probs = rep(1/V, V)) {
   folds <- vector("numeric", length(y))
   if (length(unique(probs)) == 1) {
     if (stratified) {
-      folds_1 <- sample(rep(seq_len(V), length = sum(y == 1)))
-      folds_0 <- sample(rep(seq_len(V), length = sum(y == 0)))
-      folds[y == 1] <- folds_1
-      folds[y == 0] <- folds_0
+      if (length(unique(C)) == 1) {
+        folds_1 <- sample(rep(seq_len(V), length = sum(y == 1)))
+        folds_0 <- sample(rep(seq_len(V), length = sum(y == 0)))
+        folds[y == 1] <- folds_1
+        folds[y == 0] <- folds_0  
+      } else {
+        folds_11 <- sample(rep(seq_len(V), length = sum(y == 1 & C == 1)))
+        folds_10 <- sample(rep(seq_len(V), length = sum(y == 0 & C == 1)))
+        folds_01 <- sample(rep(seq_len(V), length = sum(y == 1 & C == 0)))
+        folds_00 <- sample(rep(seq_len(V), length = sum(y == 0 & C == 0)))
+        folds[y == 1 & C == 1] <- folds_11
+        folds[y == 0 & C == 1] <- folds_10
+        folds[y == 1 & C == 0] <- folds_01
+        folds[y == 0 & C == 0] <- folds_00
+      }
     } else {
       folds <- sample(rep(seq_len(V), length = length(y)))
     }
   } else {
     if (stratified) {
-      folds_1 <- rep(seq_len(V), probs * sum(y == 1))
-      folds_1 <- c(folds_1, sample(seq_len(V), size = sum(y == 1) - length(folds_1),
-                                   replace = TRUE, prob = probs))
-      folds_0 <- rep(seq_len(V), probs * sum(y == 0))
-      folds_0 <- c(folds_0, sample(seq_len(V), size = sum(y == 0) - length(folds_0),
-                                   replace = TRUE, prob = probs))
-      folds_1 <- sample(folds_1)
-      folds_0 <- sample(folds_0)
-      folds[y == 1] <- folds_1
-      folds[y == 0] <- folds_0
+      if (length(unique(C)) == 1) {
+        folds_1 <- rep(seq_len(V), probs * sum(y == 1))
+        folds_1 <- c(folds_1, sample(seq_len(V), size = sum(y == 1) - length(folds_1),
+                                     replace = TRUE, prob = probs))
+        folds_0 <- rep(seq_len(V), probs * sum(y == 0))
+        folds_0 <- c(folds_0, sample(seq_len(V), size = sum(y == 0) - length(folds_0),
+                                     replace = TRUE, prob = probs))
+        folds_1 <- sample(folds_1)
+        folds_0 <- sample(folds_0)
+        folds[y == 1] <- folds_1
+        folds[y == 0] <- folds_0  
+      } else {
+        folds_11 <- rep(seq_len(V), probs * sum(y == 1 & C == 1))
+        folds_10 <- rep(seq_len(V), probs * sum(y == 1 & C == 0))
+        folds_01 <- rep(seq_len(V), probs * sum(y == 0 & C == 1))
+        folds_00 <- rep(seq_len(V), probs * sum(y == 0 & C == 0))
+        folds_11 <- c(folds_11, sample(seq_len(V), size = sum(y == 1 & C == 1) - 
+                                         length(folds_11),
+                                       replace = TRUE, prob = probs))
+        folds_01 <- c(folds_01, sample(seq_len(V), size = sum(y == 0 & C == 1) - 
+                                         length(folds_01),
+                                       replace = TRUE, prob = probs))
+        folds_10 <- c(folds_10, sample(seq_len(V), size = sum(y == 1 & C == 0) - 
+                                         length(folds_10),
+                                       replace = TRUE, prob = probs))
+        folds_00 <- c(folds_00, sample(seq_len(V), size = sum(y == 0 & C == 0) - 
+                                         length(folds_00),
+                                       replace = TRUE, prob = probs))
+        folds_11 <- sample(folds_11)
+        folds_01 <- sample(folds_01)
+        folds_10 <- sample(folds_10)
+        folds_00 <- sample(folds_00)
+        folds[y == 1 & C == 1] <- folds_11
+        folds[y == 0 & C == 1] <- folds_10
+        folds[y == 1 & C == 0] <- folds_01
+        folds[y == 0 & C == 0] <- folds_00
+      }
     } else {
       these_probs <- round(probs * length(y))
       if (sum(these_probs) != length(y)) {

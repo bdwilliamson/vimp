@@ -176,7 +176,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     if (run_regression) {
         X_cc <- subset(X, C == 1, drop = FALSE)
         if (is.null(folds)) {
-            folds <- .make_folds(Y, V = 2, stratified = stratified)
+            folds <- .make_folds(Y, V = 2, C = C, stratified = stratified)
         }
         folds_cc <- folds[C == 1]
 
