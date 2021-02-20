@@ -1,27 +1,57 @@
 #' Nonparametric Variable Importance Estimates and Inference
 #'
-#' Compute estimates of and confidence intervals for nonparametric variable importance based on the population-level contrast between the oracle predictiveness using the feature(s) of interest versus not.
+#' Compute estimates of and confidence intervals for nonparametric variable 
+#' importance based on the population-level contrast between the oracle 
+#' predictiveness using the feature(s) of interest versus not.
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
-#' @param f1 the fitted values from a flexible estimation technique regressing Y on X.
-#' @param f2 the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.
-#' @param indx the indices of the covariate(s) to calculate variable importance for; defaults to 1.
-#' @param type the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, \code{deviance}, and \code{anova}.
-#' @param run_regression if outcome Y and covariates X are passed to \code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.
-#' @param SL.library a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
-#' @param alpha the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.
-#' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
-#' @param scale should CIs be computed on original ("identity") or logit ("logit") scale?
-#' @param na.rm should we remove NAs in the outcome and fitted values in computation? (defaults to \code{FALSE})
-#' @param folds the folds used for \code{f1} and \code{f2}; assumed to be 1 for the observations used in \code{f1} and 2 for the observations used in \code{f2}. If there is only a single fold passed in, then hypothesis testing is not done.
-#' @param stratified if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)
-#' @param C the indicator of coarsening (1 denotes observed, 0 denotes unobserved).
-#' @param Z either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.
-#' @param ipc_weights weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
+#' @param f1 the fitted values from a flexible estimation technique 
+#'   regressing Y on X.
+#' @param f2 the fitted values from a flexible estimation technique 
+#'   regressing Y on X withholding the columns in \code{indx}.
+#' @param indx the indices of the covariate(s) to calculate variable 
+#'   importance for; defaults to 1.
+#' @param type the type of importance to compute; defaults to 
+#'   \code{r_squared}, but other supported options are \code{auc}, 
+#'   \code{accuracy}, \code{deviance}, and \code{anova}.
+#' @param run_regression if outcome Y and covariates X are passed to 
+#'   \code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, 
+#'   then Super Learner will be used; otherwise, variable importance 
+#'   will be computed using the inputted fitted values.
+#' @param SL.library a character vector of learners to pass to 
+#'   \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, 
+#'   respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, 
+#'   and \code{SL.mean}.
+#' @param alpha the level to compute the confidence interval at. 
+#'   Defaults to 0.05, corresponding to a 95\% confidence interval.
+#' @param delta the value of the \eqn{\delta}-null (i.e., testing if 
+#'   importance < \eqn{\delta}); defaults to 0.
+#' @param scale should CIs be computed on original ("identity") or 
+#'   logit ("logit") scale?
+#' @param na.rm should we remove NAs in the outcome and fitted values 
+#'   in computation? (defaults to \code{FALSE})
+#' @param folds the folds used for \code{f1} and \code{f2}; assumed to be 1 
+#'   for the observations used in \code{f1} and 2 for the observations used 
+#'   in \code{f2}. If there is only a single fold passed in, then hypothesis 
+#'   testing is not done.
+#' @param stratified if run_regression = TRUE, then should the generated 
+#'   folds be stratified based on the outcome (helps to ensure class balance 
+#'   across cross-validation folds)
+#' @param C the indicator of coarsening (1 denotes observed, 0 denotes 
+#'   unobserved).
+#' @param Z either (i) NULL (the default, in which case the argument 
+#'   \code{C} above must be all ones), or (ii) a character vector 
+#'   specifying the variable(s) among Y and X that are thought to play a 
+#'   role in the coarsening mechanism.
+#' @param ipc_weights weights for the computed influence curve (i.e., 
+#'   inverse probability weights for coarsened-at-random settings). 
+#'   Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated 
+#'   probability weights]).
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
-#' @return An object of classes \code{vim} and the type of risk-based measure. See Details for more information.
+#' @return An object of classes \code{vim} and the type of risk-based measure. 
+#'   See Details for more information.
 #'
 #' @details We define the population variable importance measure (VIM) for the group
 #' of features (or single feature) \eqn{s} with respect to the predictiveness measure
@@ -100,12 +130,18 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_squared", run_regression = TRUE, SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, folds = NULL, stratified = FALSE, C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
+vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, 
+                type = "r_squared", run_regression = TRUE, 
+                SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
+                alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, 
+                folds = NULL, stratified = FALSE, C = rep(1, length(Y)), 
+                Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
 
-    # check to see if Y is a matrix or data.frame; if not, make it one (just for ease of reading)
+    # check to see if Y is a matrix or data.frame; if not, make it one 
+    # (just for ease of reading)
     if(is.null(dim(Y))) Y <- as.matrix(Y)
 
     # set up internal data -- based on complete cases only
@@ -148,14 +184,20 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
         X_minus_s <- X_cc[, -indx, drop = FALSE]
 
         # fit the Super Learner given the specified library
-        full <- SuperLearner::SuperLearner(Y = Y_cc[(folds_cc == 1), , drop = FALSE], X = X_cc[(folds_cc == 1), , drop = FALSE], SL.library = SL.library, obsWeights = weights_cc[(folds_cc == 1)], ...)
+        full <- SuperLearner::SuperLearner(
+            Y = Y_cc[(folds_cc == 1), , drop = FALSE], 
+            X = X_cc[(folds_cc == 1), , drop = FALSE], 
+            SL.library = SL.library, 
+            obsWeights = weights_cc[(folds_cc == 1)], ...
+        )
 
         # get the fitted values
         fhat_ful <- SuperLearner::predict.SuperLearner(full)$pred
 
         # fit the super learner on the reduced covariates:
         # if the reduced set of covariates is empty, return the mean
-        # otherwise, if "r_squared" or "anova", regress the fitted values on the remaining covariates
+        # otherwise, if "r_squared" or "anova", regress the 
+        # fitted values on the remaining covariates
         if (ncol(X_minus_s) == 0) {
             reduced <- NA
             fhat_red <- mean(Y_cc[(folds_cc == 2), , drop = FALSE])
@@ -166,7 +208,10 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
                     arg_lst$Y <- Y_cc[(folds_cc == 2), , drop = FALSE]
                 } else {
                     arg_lst$family <- stats::gaussian()
-                    arg_lst$Y <- SuperLearner::predict.SuperLearner(full, newdata = X_cc[(folds_cc == 2), , drop = FALSE], onlySL = TRUE)$pred
+                    arg_lst$Y <- SuperLearner::predict.SuperLearner(
+                        full, newdata = X_cc[(folds_cc == 2), , drop = FALSE], 
+                        onlySL = TRUE
+                    )$pred
                 }
                 arg_lst$X <- X_minus_s[(folds_cc == 2), , drop = FALSE]
                 arg_lst$SL.library <- SL.library
@@ -175,7 +220,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
             reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
 
             # get the fitted values
-            fhat_red <- SuperLearner::predict.SuperLearner(reduced, onlySL = TRUE)$pred
+            fhat_red <- SuperLearner::predict.SuperLearner(reduced, 
+                                                           onlySL = TRUE)$pred
         }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
@@ -189,8 +235,19 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
         full <- reduced <- NA
     }
     # calculate the estimators, EIFs
+    arg_lst <- list(...)
+    if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
+        arg_lst$cvControl$stratifyCV <- FALSE
+    }
     if (full_type == "anova" || full_type == "regression") {
-        est_lst <- measure_anova(full = fhat_ful, reduced = fhat_red, y = Y_cc[folds_cc == 1, , drop = FALSE], C = C[folds == 1], Z = Z_in, ipc_weights = ipc_weights[folds == 1], ipc_fit_type = "SL", na.rm = na.rm, SL.library = SL.library, ...)
+        est_lst <- measure_anova(
+            full = fhat_ful, reduced = fhat_red, 
+            y = Y_cc[folds_cc == 1, , drop = FALSE], 
+            C = C[folds == 1], Z = Z_in, 
+            ipc_weights = ipc_weights[folds == 1], 
+            ipc_fit_type = "SL", na.rm = na.rm, 
+            SL.library = SL.library, arg_lst
+        )
         est <- est_lst$point_est
         naive <- est_lst$naive
         eif <- est_lst$eif
@@ -201,8 +258,22 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
         se_full <- NA
         se_redu <- NA
     } else {
-        est_lst_full <- est_predictiveness(fitted_values = fhat_ful, y = Y_cc[folds_cc == 1, , drop = FALSE], type = full_type, C = C[folds == 1], Z = Z_in[folds == 1, , drop = FALSE], ipc_weights = ipc_weights[folds == 1], ipc_fit_type = "SL", scale = scale, na.rm = na.rm, SL.library = SL.library, ...)
-        est_lst_redu <- est_predictiveness(fitted_values = fhat_red, y = Y_cc[folds_cc == 2, , drop = FALSE], type = full_type, C = C[folds == 2], Z = Z_in[folds == 2, , drop = FALSE], ipc_weights = ipc_weights[folds == 2], ipc_fit_type = "SL", scale = scale, na.rm = na.rm, SL.library = SL.library, ...)
+        est_lst_full <- est_predictiveness(
+            fitted_values = fhat_ful, y = Y_cc[folds_cc == 1, , drop = FALSE], 
+            type = full_type, C = C[folds == 1], 
+            Z = Z_in[folds == 1, , drop = FALSE], 
+            ipc_weights = ipc_weights[folds == 1], 
+            ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+            SL.library = SL.library, arg_lst
+        )
+        est_lst_redu <- est_predictiveness(
+            fitted_values = fhat_red, y = Y_cc[folds_cc == 2, , drop = FALSE], 
+            type = full_type, C = C[folds == 2], 
+            Z = Z_in[folds == 2, , drop = FALSE], 
+            ipc_weights = ipc_weights[folds == 2], 
+            ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+            SL.library = SL.library, arg_lst
+        )
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est
         eif_full <- est_lst_full$eif
@@ -236,18 +307,30 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, type = "r_sq
 
     # compute the confidence intervals
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
-    predictiveness_ci_full <- vimp_ci(predictiveness_full, se = se_full, scale = scale, level = 1 - alpha)
-    predictiveness_ci_redu <- vimp_ci(predictiveness_redu, se = se_redu, scale = scale, level = 1 - alpha)
+    predictiveness_ci_full <- vimp_ci(
+        predictiveness_full, se = se_full, scale = scale, level = 1 - alpha
+    )
+    predictiveness_ci_redu <- vimp_ci(
+        predictiveness_redu, se = se_redu, scale = scale, level = 1 - alpha
+    )
 
     # perform a hypothesis test against the null of zero importance
     if (full_type == "anova" || full_type == "regression") {
         hyp_test <- list(test = NA, p_value = NA, test_statistics = NA)
     } else {
-        hyp_test <- vimp_hypothesis_test(predictiveness_full = predictiveness_full, predictiveness_reduced = predictiveness_redu, se_full = se_full, se_reduced = se_redu, delta = delta, alpha = alpha)
+        hyp_test <- vimp_hypothesis_test(
+            predictiveness_full = predictiveness_full, 
+            predictiveness_reduced = predictiveness_redu, 
+            se_full = se_full, se_reduced = se_redu, 
+            delta = delta, alpha = alpha
+        )
     }
     # create the output and return it (as a tibble)
     chr_indx <- paste(as.character(indx), collapse = ",")
-    mat <- tibble::tibble(s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], test = hyp_test$test, p_value = hyp_test$p_value)
+    mat <- tibble::tibble(
+        s = chr_indx, est = est, se = se[1], cil = ci[1], ciu = ci[2], 
+        test = hyp_test$test, p_value = hyp_test$p_value
+    )
     output <- list(s = chr_indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red,

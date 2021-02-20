@@ -1,3 +1,12 @@
+# vimp 2.1.7
+
+## Major changes
+None
+
+## Minor changes
+
+* Updated internals so that stratified estimation can be performed in outer regression functions for binary outcomes, but that in the case of two-phase samples the stratification won't be used in any internal regressions with continuous outcomes
+
 # vimp 2.1.6
 
 ## Major changes
