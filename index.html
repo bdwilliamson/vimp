@@ -29,6 +29,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -41,7 +43,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.7</span>
       </span>
     </div>
 
@@ -96,30 +98,30 @@
 <a href="#rvimp-inference-on-algorithm-agnostic-variable-importance-" class="anchor"></a>R/<code>vimp</code>: inference on algorithm-agnostic variable importance <img src="reference/figures/logo.png" align="right" width="120px">
 </h1></div>
 
-<p><strong>Software authors:</strong> <a href="https://bdwilliamson.github.io/">Brian Williamson</a> and <a href="https://jeanfeng.com/">Jean Feng</a></p>
-<p><strong>Methodology authors:</strong> <a href="https://bdwilliamson.github.io/">Brian Williamson</a>, <a href="https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html">Peter Gilbert</a>, <a href="http://faculty.washington.edu/nrsimon/">Noah Simon</a>, <a href="http://faculty.washington.edu/mcarone/about.html">Marco Carone</a>, <a href="https://jeanfeng.com/">Jean Feng</a></p>
-<p><strong>Python package:</strong> <a href="https://github.com/bdwilliamson/vimpy" class="uri">https://github.com/bdwilliamson/vimpy</a></p>
+<p><strong>Software authors:</strong> <a href="https://bdwilliamson.github.io/" class="external-link">Brian Williamson</a> and <a href="https://jeanfeng.com/" class="external-link">Jean Feng</a></p>
+<p><strong>Methodology authors:</strong> <a href="https://bdwilliamson.github.io/" class="external-link">Brian Williamson</a>, <a href="https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html" class="external-link">Peter Gilbert</a>, <a href="http://faculty.washington.edu/nrsimon/" class="external-link">Noah Simon</a>, <a href="http://faculty.washington.edu/mcarone/about.html" class="external-link">Marco Carone</a>, <a href="https://jeanfeng.com/" class="external-link">Jean Feng</a></p>
+<p><strong>Python package:</strong> https://github.com/bdwilliamson/vimpy</p>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
 <p>In predictive modeling applications, it is often of interest to determine the relative contribution of subsets of features in explaining an outcome; this is often called variable importance. It is useful to consider variable importance as a function of the unknown, underlying data-generating mechanism rather than the specific predictive algorithm used to fit the data. This package provides functions that, given fitted values from predictive algorithms, compute algorithm-agnostic estimates of population variable importance, along with asymptotically valid confidence intervals for the true importance and hypothesis tests of the null hypothesis of zero importance.</p>
 <p>Specifically, the types of variable importance supported by <code>vimp</code> include: difference in population classification accuracy, difference in population area under the receiver operating characteristic curve, difference in population deviance, difference in population R-squared.</p>
-<p>More detail may be found in our paper on <a href="https://doi.org/10.1111/biom.13392">R-squared-based variable importance</a> and in our tech reports on <a href="https://arxiv.org/abs/2004.03683">general variable importance</a> and <a href="https://arxiv.org/abs/2006.09481">general Shapley-based variable importance</a>.</p>
+<p>More detail may be found in our paper on <a href="https://doi.org/10.1111/biom.13392" class="external-link">R-squared-based variable importance</a> and in our tech reports on <a href="https://arxiv.org/abs/2004.03683" class="external-link">general variable importance</a> and <a href="https://arxiv.org/abs/2006.09481" class="external-link">general Shapley-based variable importance</a>.</p>
 <p>This method works on low-dimensional and high-dimensional data.</p>
 </div>
 <div id="issues" class="section level2">
 <h2 class="hasAnchor">
 <a href="#issues" class="anchor"></a>Issues</h2>
-<p>If you encounter any bugs or have any specific feature requests, please <a href="https://github.com/bdwilliamson/vimp/issues">file an issue</a>.</p>
+<p>If you encounter any bugs or have any specific feature requests, please <a href="https://github.com/bdwilliamson/vimp/issues" class="external-link">file an issue</a>.</p>
 </div>
 <div id="r-installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#r-installation" class="anchor"></a>R installation</h2>
-<p>You may install a stable release of <code>vimp</code> from <a href="https://cran.r-project.org/web/packages/vimp/index.html">CRAN</a> via <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("vimp")</a></code>. You may also install a stable release of <code>vimp</code> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/"><code>devtools</code></a> by running the following code (replace <code>v2.1.0</code> with the tag for the specific release you wish to install):</p>
+<p>You may install a stable release of <code>vimp</code> from <a href="https://cran.r-project.org/web/packages/vimp/index.html" class="external-link">CRAN</a> via <code><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages("vimp")</a></code>. You may also install a stable release of <code>vimp</code> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/" class="external-link"><code>devtools</code></a> by running the following code (replace <code>v2.1.0</code> with the tag for the specific release you wish to install):</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## install.packages("devtools") # only run this line if necessary</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"bdwilliamson/vimp@v2.1.0"</span><span class="op">)</span></code></pre></div>
-<p>You may install a development release of <code>vimp</code> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/"><code>devtools</code></a> by running the following code:</p>
+<p>You may install a development release of <code>vimp</code> from GitHub via <a href="https://www.rstudio.com/products/rpackages/devtools/" class="external-link"><code>devtools</code></a> by running the following code:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## install.packages("devtools") # only run this line if necessary</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span>repo <span class="op">=</span> <span class="st">"bdwilliamson/vimp"</span><span class="op">)</span></code></pre></div>
@@ -130,10 +132,10 @@
 <p>This example shows how to use <code>vimp</code> in a simple setting with simulated data, using <code>SuperLearner</code> to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the <a href="https://bdwilliamson.github.io/vimp/introduction_to_vimp.html">vignette</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## load required functions and libraries</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/">"vimp"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/dmlc/xgboost">"xgboost"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://glmnet.stanford.edu">"glmnet"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/">"vimp"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/dmlc/xgboost" class="external-link">"xgboost"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://glmnet.stanford.edu" class="external-link">"glmnet"</a></span><span class="op">)</span>
 
 <span class="co">## -------------------------------------------------------------</span>
 <span class="co">## problem setup</span>
@@ -142,22 +144,22 @@
 <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span>
 <span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># desire importance for X_1</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="va">p</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="va">y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">+</span><span class="fl">7</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">25</span><span class="op">/</span><span class="fl">9</span><span class="op">)</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="va">p</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">+</span><span class="fl">7</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">25</span><span class="op">/</span><span class="fl">9</span><span class="op">)</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>
 
 <span class="co">## -------------------------------------------------------------</span>
 <span class="co">## preliminary step: estimate the conditional means</span>
 <span class="co">## -------------------------------------------------------------</span>
 <span class="co">## set up the learner library, consisting of the mean, boosted trees,</span>
 <span class="co">## elastic net, and random forest</span>
-<span class="va">learner.lib</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SL.mean"</span>, <span class="st">"SL.xgboost"</span>, <span class="st">"SL.glmnet"</span>, <span class="st">"SL.randomForest"</span><span class="op">)</span>
+<span class="va">learner.lib</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SL.mean"</span>, <span class="st">"SL.xgboost"</span>, <span class="st">"SL.glmnet"</span>, <span class="st">"SL.randomForest"</span><span class="op">)</span>
 
 <span class="co">## the full conditional mean</span>
-<span class="va">full_regression</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">x</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">gaussian</a></span><span class="op">(</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learner.lib</span><span class="op">)</span>
+<span class="va">full_regression</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">x</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">gaussian</a></span><span class="op">(</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learner.lib</span><span class="op">)</span>
 <span class="va">full_fit</span> <span class="op">&lt;-</span> <span class="va">full_regression</span><span class="op">$</span><span class="va">SL.predict</span>
 
 <span class="co">## the reduced conditional mean</span>
-<span class="va">reduced_regression</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">full_fit</span>, X <span class="op">=</span> <span class="va">x</span><span class="op">[</span>, <span class="op">-</span><span class="va">s</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">gaussian</a></span><span class="op">(</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learner.lib</span><span class="op">)</span>
+<span class="va">reduced_regression</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">full_fit</span>, X <span class="op">=</span> <span class="va">x</span><span class="op">[</span>, <span class="op">-</span><span class="va">s</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">gaussian</a></span><span class="op">(</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learner.lib</span><span class="op">)</span>
 <span class="va">reduced_fit</span> <span class="op">&lt;-</span> <span class="va">reduced_regression</span><span class="op">$</span><span class="va">SL.predict</span>
 
 <span class="co">## -------------------------------------------------------------</span>
@@ -226,14 +228,14 @@ SOFTWARE.</code></pre>
 <div id="logo" class="section level2">
 <h2 class="hasAnchor">
 <a href="#logo" class="anchor"></a>Logo</h2>
-<p>The logo was created using <a href="https://github.com/GuangchuangYu/hexSticker">hexSticker</a> and <a href="https://github.com/tyluRp/lisa">lisa</a>. Many thanks to the maintainers of these packages and the <a href="http://colorlisa.com/">Color Lisa</a> team.</p>
+<p>The logo was created using <a href="https://github.com/GuangchuangYu/hexSticker" class="external-link">hexSticker</a> and <a href="https://github.com/tyluRp/lisa" class="external-link">lisa</a>. Many thanks to the maintainers of these packages and the <a href="http://colorlisa.com/" class="external-link">Color Lisa</a> team.</p>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=vimp">https://​cloud.r-project.org/​package=vimp</a>
 </li>
@@ -243,43 +245,49 @@ SOFTWARE.</code></pre>
 </li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
 <li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Brian D. Williamson <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-7024-548X" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://cran.r-project.org/package=vimp"><img src="http://www.r-pkg.org/badges/version/vimp" alt="CRAN_Status_Badge"></a></li>
-<li><a href="https://travis-ci.org/bdwilliamson/vimp"><img src="https://travis-ci.org/bdwilliamson/vimp.svg?branch=master" alt="Travis-CI Build Status"></a></li>
-<li><a href="https://ci.appveyor.com/project/bdwilliamson/vimp"><img src="https://ci.appveyor.com/api/projects/status/github/bdwilliamson/vimp?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
-<li><a href="https://codecov.io/github/bdwilliamson/vimp?branch=master"><img src="https://codecov.io/gh/bdwilliamson/vimp/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
-<li><a href="https://CRAN.R-project.org/package=vimp"><img src="https://cranlogs.r-pkg.org/badges/vimp" alt="CRAN downloads"></a></li>
-<li><a href="http://www.repostatus.org/#active"><img src="http://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed."></a></li>
-<li><a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
+<li><a href="https://cran.r-project.org/package=vimp" class="external-link"><img src="http://www.r-pkg.org/badges/version/vimp" alt="CRAN_Status_Badge"></a></li>
+<li><a href="https://travis-ci.org/bdwilliamson/vimp" class="external-link"><img src="https://travis-ci.org/bdwilliamson/vimp.svg?branch=master" alt="Travis-CI Build Status"></a></li>
+<li><a href="https://ci.appveyor.com/project/bdwilliamson/vimp" class="external-link"><img src="https://ci.appveyor.com/api/projects/status/github/bdwilliamson/vimp?branch=master&amp;svg=true" alt="AppVeyor Build Status"></a></li>
+<li><a href="https://codecov.io/github/bdwilliamson/vimp?branch=master" class="external-link"><img src="https://codecov.io/gh/bdwilliamson/vimp/branch/master/graph/badge.svg" alt="Coverage status"></a></li>
+<li><a href="https://CRAN.R-project.org/package=vimp" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/vimp" alt="CRAN downloads"></a></li>
+<li><a href="http://www.repostatus.org/#active" class="external-link"><img src="http://www.repostatus.org/badges/latest/active.svg" alt="Project Status: Active – The project has reached a stable, usable state and is being actively developed."></a></li>
+<li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Brian D. Williamson.</p>
+  <p></p>
+<p>Developed by Brian D. Williamson.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
@@ -287,6 +295,8 @@ SOFTWARE.</code></pre>
 
   
 
+
+  
 
   </body>
 </html>

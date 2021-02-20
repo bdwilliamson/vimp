@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.7</span>
       </span>
     </div>
 
@@ -71,7 +73,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/bdwilliamson/vimp/">
+  <a href="https://github.com/bdwilliamson/vimp/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -90,11 +92,11 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Types of VIMs</h1>
-                        <h4 class="author">Brian D. Williamson</h4>
+                        <h4 data-toc-skip class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2021-01-08</h4>
+            <h4 data-toc-skip class="date">2021-02-20</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/types-of-vims.Rmd"><code>vignettes/types-of-vims.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/types-of-vims.Rmd" class="external-link"><code>vignettes/types-of-vims.Rmd</code></a></small>
       <div class="hidden name"><code>types-of-vims.Rmd</code></div>
 
     </div>
@@ -102,10 +104,10 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/">"vimp"</a></span><span class="op">)</span>
-<span class="co">#&gt; vimp version 2.1.6: Perform Inference on Algorithm-Agnostic Variable Importance</span>
-<span class="co">#&gt; Package created on 2021-01-08</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/">"vimp"</a></span><span class="op">)</span>
+<span class="co">#&gt; vimp version 2.1.7: Perform Inference on Algorithm-Agnostic Variable Importance</span>
+<span class="co">#&gt; Package created on 2021-02-20</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: nnls</span>
 <span class="co">#&gt; Super Learner</span>
 <span class="co">#&gt; Version: 2.0-26</span>
@@ -115,17 +117,17 @@
 <a href="#introduction" class="anchor"></a>Introduction</h2>
 <p>In the <a href="introduction-to-vimp.html">main vignette</a>, I discussed variable importance defined using R-squared. I also mentioned that all of the analyses were carried out using a <em>condititonal</em> variable importance measure. In this document, I will discuss all three types of variable importance that may be computed using <code>vimp</code>.</p>
 <p>In general, I define variable importance as a function of the true population distribution (denoted by <span class="math inline">\(P_0\)</span>) and a predictiveness measure <span class="math inline">\(V\)</span> – large values of <span class="math inline">\(V\)</span> are assumed to be better. Currently, the measures <span class="math inline">\(V\)</span> implemented in <code>vimp</code> are <span class="math inline">\(R^2\)</span>, classification accuracy, area under the receiver operating characteristic curve (AUC), and deviance. For a fixed function <span class="math inline">\(f\)</span>, the predictiveness is given by <span class="math inline">\(V(f, P)\)</span>, where large values imply that <span class="math inline">\(f\)</span> is a good predictor of the outcome. The best possible prediction function, <span class="math inline">\(f_0\)</span>, is the <em>oracle</em> model – i.e., the prediction function that I would use if I had access to the distribution <span class="math inline">\(P_0\)</span>. Often, <span class="math inline">\(f_0\)</span> is the true conditional mean (e.g., for <span class="math inline">\(R^2\)</span>). Then the <em>total oracle predictiveness</em> can be defined as <span class="math inline">\(V(f_0, P_0)\)</span>. This is the best possible value of predictiveness.</p>
-<p>I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have <span class="math inline">\(p\)</span> variables, and an index set <span class="math inline">\(s\)</span> of interest (containing some subset of the <span class="math inline">\(p\)</span> variables). Throughout this document, I will use the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span> to illustrate how each VIM may be estimated (freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data">Elements of Statistical Learning website</a>; more information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt">here</a>). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the <a href="introduction-to-vimp.html">main vignette</a>).</p>
+<p>I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have <span class="math inline">\(p\)</span> variables, and an index set <span class="math inline">\(s\)</span> of interest (containing some subset of the <span class="math inline">\(p\)</span> variables). Throughout this document, I will use the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span> to illustrate how each VIM may be estimated (freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data" class="external-link">Elements of Statistical Learning website</a>; more information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt" class="external-link">here</a>). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the <a href="introduction-to-vimp.html">main vignette</a>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">## read in the data from the Elements website</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"RCurl"</span><span class="op">)</span>
-<span class="va">heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html">getURL</a></span><span class="op">(</span><span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"RCurl"</span><span class="op">)</span>
+<span class="va">heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html" class="external-link">getURL</a></span><span class="op">(</span><span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="co">## minor data cleaning</span>
-<span class="va">heart</span> <span class="op">&lt;-</span> <span class="va">heart_data</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">heart_data</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
-<span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="va">heart</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">]</span>
-<span class="va">learners.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SL.ranger"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">12345</span><span class="op">)</span></code></pre></div>
+<span class="va">heart</span> <span class="op">&lt;-</span> <span class="va">heart_data</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">heart_data</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
+<span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>
+<span class="va">x</span> <span class="op">&lt;-</span> <span class="va">heart</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">]</span>
+<span class="va">learners.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SL.ranger"</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">12345</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="conditional-vims" class="section level2">
 <h2 class="hasAnchor">
@@ -134,7 +136,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># note the use of a small V and a small number of SL folds, for illustration only</span>
 <span class="va">V</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="va">sl_cvcontrol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">sl_cvcontrol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="va">fam_vim_cond</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">5</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
 <span class="co">#&gt; Loading required namespace: ranger</span>
 <span class="co">#&gt; Warning in cv_vim(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, type =</span>
@@ -153,7 +155,7 @@
 <a href="#shapley-vims" class="anchor"></a>Shapley VIMs</h2>
 <p>The Shapley population VIM (SPVIM) generalizes the marginal and conditional VIMs by averaging over all possible subsets. More specifically, the SPVIM for feature <span class="math inline">\(j\)</span> is given by <span class="math display">\[\sum_{s \subseteq \{1,\ldots,p\} \setminus \{j\}} \binom{p-1}{\lvert s \rvert}^{-1}\{V(f_{0, s \cup \{j\}}, P_0)) - V(f_{0,s}, P_0)\};\]</span> this is the average gain in predictiveness from adding feature <span class="math inline">\(j\)</span> to each possible grouping of the other features. To estimate the SPVIM for family history of heart disease, I can use the following code (note that <code>sp_vim</code> returns VIM estimates for all features):</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">all_vim_spvim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sp_vim.html">sp_vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, type <span class="op">=</span> <span class="st">"r_squared"</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">all_vim_spvim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sp_vim.html">sp_vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">x</span>, type <span class="op">=</span> <span class="st">"r_squared"</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; Warning in sp_vim(Y = heart$chd, X = x, type = "r_squared", SL.library =</span>
 <span class="co">#&gt; learners.2, : One or more original estimates &lt; 0; returning zero for these</span>
 <span class="co">#&gt; indices.</span></code></pre></div>
@@ -219,11 +221,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Brian D. Williamson.</p>
+  <p></p>
+<p>Developed by Brian D. Williamson.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
@@ -231,6 +235,8 @@
 
   
 
+
+  
 
   </body>
 </html>
