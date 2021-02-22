@@ -2,48 +2,48 @@
 #'
 #' Compute nonparametric estimate of AUC.
 #'
-#' @param fitted_values fitted values from a regression function using the 
+#' @param fitted_values fitted values from a regression function using the
 #'   observed data.
 #' @param y the observed outcome.
-#' @param C the indicator of coarsening (1 denotes observed, 0 denotes 
+#' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
-#' @param Z either \code{NULL} (if no coarsening) or a matrix-like object 
+#' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
 #'   containing the fully observed data.
-#' @param ipc_weights weights for inverse probability of coarsening (e.g., 
-#'   inverse weights from a two-phase sample) weighted estimation. 
-#'   Assumed to be already inverted 
+#' @param ipc_weights weights for inverse probability of coarsening (e.g.,
+#'   inverse weights from a two-phase sample) weighted estimation.
+#'   Assumed to be already inverted
 #'   (i.e., ipc_weights = 1 / [estimated probability weights]).
-#' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL", 
-#'   fit a SuperLearner to determine the correction to the efficient 
+#' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL",
+#'   fit a SuperLearner to determine the correction to the efficient
 #'   influence function.
-#' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values 
-#'   from a regression of the full-data EIF on the fully observed 
+#' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values
+#'   from a regression of the full-data EIF on the fully observed
 #'   covariates/outcome; otherwise, not used.
-#' @param ipc_est_type IPC correction, either \code{"ipw"} (for classical 
+#' @param ipc_est_type IPC correction, either \code{"ipw"} (for classical
 #'   inverse probability weighting) or \code{"aipw"} (for augmented inverse
 #'   probability weighting; the default).
-#' @param scale if doing an IPC correction, then the scale that the correction 
-#'   should be computed on (e.g., "identity"; or "logit" to logit-transform, 
+#' @param scale if doing an IPC correction, then the scale that the correction
+#'   should be computed on (e.g., "identity"; or "logit" to logit-transform,
 #'   apply the correction, and back-transform).
-#' @param na.rm logical; should \code{NA}s be removed in computation? 
+#' @param na.rm logical; should \code{NA}s be removed in computation?
 #'   (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
-#' 
-#' @return A named list of: (1) the estimated AUC of the fitted regression 
-#' function; (2) the estimated influence function; and 
+#'
+#' @return A named list of: (1) the estimated AUC of the fitted regression
+#' function; (2) the estimated influence function; and
 #' (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, 
-                        ipc_weights = rep(1, length(y)), 
-                        ipc_fit_type = "external", 
-                        ipc_eif_preds = rep(1, length(y)), 
-                        ipc_est_type = "aipw", scale = "identity", 
+measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
+                        ipc_weights = rep(1, length(y)),
+                        ipc_fit_type = "external",
+                        ipc_eif_preds = rep(1, length(y)),
+                        ipc_est_type = "aipw", scale = "identity",
                         na.rm = FALSE, ...) {
-    # compute the point estimate (on only data with all obs, if IPC 
+    # compute the point estimate (on only data with all obs, if IPC
     # weights are entered)
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
-    est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc", 
+    est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc",
                                     x.measure = "cutoff")@y.values)
     # compute the EIF: if there is coarsening, do a correction
     if (!all(ipc_weights == 1)) {
@@ -53,13 +53,13 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         # sensitivity and specificity
         sens <- unlist(
             lapply(
-                as.list(fitted_values), 
+                as.list(fitted_values),
                 function(x) mean(fitted_values[(y == 0)] < x, na.rm = na.rm)
             )
         )
         spec <- unlist(
             lapply(
-                as.list(fitted_values), 
+                as.list(fitted_values),
                 function(x) mean(fitted_values[(y == 1)] > x, na.rm = na.rm)
             )
         )
@@ -69,12 +69,12 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         contrib_0 <- (y == 0) / p_0 * spec
 
         # gradient
-        obs_grad <- contrib_1 + contrib_0 - 
+        obs_grad <- contrib_1 + contrib_0 -
             ( (y == 0) / p_0 + (y == 1) / p_1 ) * est
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             ipc_eif_mod <- SuperLearner::SuperLearner(
-                Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), 
+                Y = obs_grad, X = subset(Z, C == 1, drop = FALSE),
                 method = "method.CC_LS", ...
             )
             ipc_eif_preds <- SuperLearner::predict.SuperLearner(
@@ -98,9 +98,9 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         denominator <- sum(weights * y_mat)
         obs_est <- numerator / denominator
         if (ipc_est_type == "ipw") {
-            est <- scale_est(obs_est, rep(1, length(grad)), scale = scale)
+            est <- scale_est(obs_est, rep(0, length(grad)), scale = scale)
         } else {
-            est <- scale_est(obs_est, grad, scale = scale)   
+            est <- scale_est(obs_est, grad, scale = scale)
         }
     } else {
         # marginal probabilities
@@ -110,13 +110,13 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         # sensitivity and specificity
         sens <- unlist(
             lapply(
-                as.list(fitted_values), 
+                as.list(fitted_values),
                 function(x) mean(fitted_values[y == 0] < x, na.rm = na.rm)
             )
         )
         spec <- unlist(
             lapply(
-                as.list(fitted_values), 
+                as.list(fitted_values),
                 function(x) mean(fitted_values[y == 1] > x, na.rm = na.rm)
             )
         )
@@ -126,7 +126,7 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         contrib_0 <- (y == 0) / p_0 * spec
 
         # gradient
-        grad <- contrib_1 + contrib_0 - 
+        grad <- contrib_1 + contrib_0 -
             ( (y == 0) / p_0 + (y == 1) / p_1 ) * est
     }
     return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
