@@ -22,7 +22,7 @@ vimp_deviance(
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
-  ipc_est_type = ipc_est_type,
+  ipc_est_type = "aipw",
   ...
 )
 }

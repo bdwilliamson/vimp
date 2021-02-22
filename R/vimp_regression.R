@@ -102,7 +102,7 @@ vimp_regression <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                             SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
                             alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, 
                             stratified = FALSE, C = rep(1, length(Y)), Z = NULL, 
-                            ipc_weights = rep(1, length(Y)), 
+                            ipc_weights = rep(1, length(Y)), scale = "identity",
                             ipc_est_type = "aipw", ...) {
   .Deprecated("vimp_anova", package = "vimp", 
               msg = paste0(
@@ -113,5 +113,5 @@ vimp_regression <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
              run_regression = run_regression, SL.library = SL.library, 
              alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, 
              stratified = stratified, C = C, Z = Z, ipc_weights = ipc_weights, 
-             ipc_est_type = ipc_est_type, ...)
+             ipc_est_type = ipc_est_type, scale = scale, ...)
 }

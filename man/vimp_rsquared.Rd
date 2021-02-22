@@ -21,7 +21,8 @@ vimp_rsquared(
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
-  ipc_est_type = ipc_est_type,
+  scale = "identity",
+  ipc_est_type = "aipw",
   ...
 )
 }
@@ -79,14 +80,14 @@ mechanism.}
 \item{ipc_weights}{weights for the computed influence curve 
 (i.e., inverse probability weights for coarsened-at-random settings).}
 
+\item{scale}{scale should CIs be computed on original ("identity") or 
+logit ("logit") scale? (defaults to "identity")}
+
 \item{ipc_est_type}{IPC correction, either \code{"ipw"} (for classical 
 inverse probability weighting) or \code{"aipw"} (for augmented inverse
 probability weighting; the default).}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
-
-\item{scale}{scale should CIs be computed on original ("identity") or 
-logit ("logit") scale? (defaults to "identity")}
 }
 \value{
 An object of classes \code{vim} and \code{vim_rsquared}. 

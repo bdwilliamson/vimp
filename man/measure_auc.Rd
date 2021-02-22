@@ -19,46 +19,46 @@ measure_auc(
 )
 }
 \arguments{
-\item{fitted_values}{fitted values from a regression function using the 
+\item{fitted_values}{fitted values from a regression function using the
 observed data.}
 
 \item{y}{the observed outcome.}
 
-\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}
 
-\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object 
+\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object
 containing the fully observed data.}
 
-\item{ipc_weights}{weights for inverse probability of coarsening (e.g., 
-inverse weights from a two-phase sample) weighted estimation. 
-Assumed to be already inverted 
+\item{ipc_weights}{weights for inverse probability of coarsening (e.g.,
+inverse weights from a two-phase sample) weighted estimation.
+Assumed to be already inverted
 (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
-\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", 
-fit a SuperLearner to determine the correction to the efficient 
+\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL",
+fit a SuperLearner to determine the correction to the efficient
 influence function.}
 
-\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values 
-from a regression of the full-data EIF on the fully observed 
+\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values
+from a regression of the full-data EIF on the fully observed
 covariates/outcome; otherwise, not used.}
 
-\item{ipc_est_type}{IPC correction, either \code{"ipw"} (for classical 
+\item{ipc_est_type}{IPC correction, either \code{"ipw"} (for classical
 inverse probability weighting) or \code{"aipw"} (for augmented inverse
 probability weighting; the default).}
 
-\item{scale}{if doing an IPC correction, then the scale that the correction 
-should be computed on (e.g., "identity"; or "logit" to logit-transform, 
+\item{scale}{if doing an IPC correction, then the scale that the correction
+should be computed on (e.g., "identity"; or "logit" to logit-transform,
 apply the correction, and back-transform).}
 
-\item{na.rm}{logical; should \code{NA}s be removed in computation? 
+\item{na.rm}{logical; should \code{NA}s be removed in computation?
 (defaults to \code{FALSE})}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }
 \value{
-A named list of: (1) the estimated AUC of the fitted regression 
-function; (2) the estimated influence function; and 
+A named list of: (1) the estimated AUC of the fitted regression
+function; (2) the estimated influence function; and
 (3) the IPC EIF predictions.
 }
 \description{

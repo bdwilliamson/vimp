@@ -20,7 +20,7 @@ sp_vim(
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
-  ipw_type = "aipw",
+  ipc_est_type = "aipw",
   scale = "identity",
   ...
 )
@@ -74,15 +74,15 @@ coarsening mechanism.}
 probability weights for coarsened-at-random settings). Assumed to be 
 already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
-\item{scale}{should CIs be computed on original ("identity") or logit 
-("logit") scale?}
-
-\item{...}{other arguments to the estimation tool, see "See also".}
-
 \item{ipc_est_type}{the type of procedure used for coarsened-at-random 
 settings; options are "ipw" (for inverse probability weighting) or 
 "aipw" (for augmented inverse probability weighting). 
 Only used if \code{C} is not all equal to 1.}
+
+\item{scale}{should CIs be computed on original ("identity") or logit 
+("logit") scale?}
+
+\item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
 An object of class \code{vim}. See Details for more information.
