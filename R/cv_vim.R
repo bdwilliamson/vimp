@@ -1,8 +1,9 @@
-#' Nonparametric Variable Importance Estimates and Inference using Cross-fitting
+#' Nonparametric Intrinsic Variable Importance Estimates and Inference using Cross-fitting
 #'
 #' Compute estimates and confidence intervals using cross-fitting for 
-#' nonparametric variable importance based on the population-level contrast 
-#' between the oracle predictiveness using the feature(s) of interest versus not.
+#' nonparametric intrinsic variable importance based on the 
+#' population-level contrast between the oracle predictiveness using the 
+#' feature(s) of interest versus not.
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
@@ -48,6 +49,10 @@
 #' @param ipc_weights weights for the computed influence curve (i.e., inverse 
 #'   probability weights for coarsened-at-random settings). Assumed to be 
 #'   already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
+#' @param ipc_est_type the type of procedure used for coarsened-at-random 
+#'   settings; options are "ipw" (for inverse probability weighting) or 
+#'   "aipw" (for augmented inverse probability weighting). 
+#'   Only used if \code{C} is not all equal to 1.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -164,7 +169,8 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
                    alpha = 0.05, delta = 0, scale = "identity", 
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL, 
-                   ipc_weights = rep(1, length(Y)), ...) {
+                   ipc_weights = rep(1, length(Y)), 
+                   ipc_est_type = "aipw", ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -339,7 +345,7 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                                                     drop = FALSE], 
                              ipc_weights = ipc_weights[outer_folds == 1][inner_folds_1 == v], 
                              ipc_fit_type = "SL", na.rm = na.rm, 
-                             scale = scale,
+                             ipc_est_type = ipc_est_type, scale = scale,
                              SL.library = SL.library),
                         arg_lst
                     )
@@ -372,7 +378,8 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                      Z = Z_in[outer_folds == 1, , drop = FALSE], 
                      folds_Z = inner_folds_1, 
                      ipc_weights = ipc_weights[outer_folds == 1], 
-                     ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                     ipc_fit_type = "SL", scale = scale, 
+                     ipc_est_type = ipc_est_type, na.rm = na.rm, 
                      SL.library = SL.library),
                 arg_lst
             )
@@ -387,7 +394,8 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                      Z = Z_in[outer_folds == 2, , drop = FALSE], 
                      folds_Z = inner_folds_2, 
                      ipc_weights = ipc_weights[outer_folds == 2], 
-                     ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                     ipc_fit_type = "SL", scale = scale, 
+                     ipc_est_type = ipc_est_type, na.rm = na.rm, 
                      SL.library = SL.library),
                 arg_lst
             )

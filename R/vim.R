@@ -1,7 +1,7 @@
-#' Nonparametric Variable Importance Estimates and Inference
+#' Nonparametric Intrinsic Variable Importance Estimates and Inference
 #'
-#' Compute estimates of and confidence intervals for nonparametric variable 
-#' importance based on the population-level contrast between the oracle 
+#' Compute estimates of and confidence intervals for nonparametric intrinsic 
+#' variable importance based on the population-level contrast between the oracle 
 #' predictiveness using the feature(s) of interest versus not.
 #'
 #' @param Y the outcome.
@@ -48,19 +48,26 @@
 #'   inverse probability weights for coarsened-at-random settings). 
 #'   Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated 
 #'   probability weights]).
+#' @param ipc_est_type the type of procedure used for coarsened-at-random 
+#'   settings; options are "ipw" (for inverse probability weighting) or 
+#'   "aipw" (for augmented inverse probability weighting). 
+#'   Only used if \code{C} is not all equal to 1.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and the type of risk-based measure. 
 #'   See Details for more information.
 #'
-#' @details We define the population variable importance measure (VIM) for the group
-#' of features (or single feature) \eqn{s} with respect to the predictiveness measure
-#' \eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
-#' the population predictiveness maximizing function, \eqn{f_{0,s}} is the population
-#' predictiveness maximizing function that is only allowed to access the features with
-#' index not in \eqn{s}, and \eqn{P_0} is the true data-generating distribution. VIM estimates are
-#' obtained by obtaining estimators \eqn{f_n} and \eqn{f_{n,s}} of \eqn{f_0} and \eqn{f_{0,s}},
-#' respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally, setting \eqn{\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)}.
+#' @details We define the population variable importance measure (VIM) for the 
+#' group of features (or single feature) \eqn{s} with respect to the 
+#' predictiveness measure \eqn{V} by 
+#' \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
+#' the population predictiveness maximizing function, \eqn{f_{0,s}} is the 
+#' population predictiveness maximizing function that is only allowed to access 
+#' the features with index not in \eqn{s}, and \eqn{P_0} is the true 
+#' data-generating distribution. VIM estimates are obtained by obtaining 
+#' estimators \eqn{f_n} and \eqn{f_{n,s}} of \eqn{f_0} and \eqn{f_{0,s}},
+#' respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally, 
+#' setting \eqn{\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)}.
 #'
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list including:
@@ -135,7 +142,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
                 alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE, 
                 folds = NULL, stratified = FALSE, C = rep(1, length(Y)), 
-                Z = NULL, ipc_weights = rep(1, length(Y)), ...) {
+                Z = NULL, ipc_weights = rep(1, length(Y)), 
+                ipc_est_type = "aipw", ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -265,7 +273,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                           type = full_type, C = C[folds == 1], 
                           Z = Z_in[folds == 1, , drop = FALSE], 
                           ipc_weights = ipc_weights[folds == 1], 
-                          ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                          ipc_fit_type = "SL", scale = scale, 
+                          ipc_est_type = ipc_est_type, na.rm = na.rm, 
                           SL.library = SL.library), 
                      arg_lst)
         )
@@ -276,7 +285,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                           type = full_type, C = C[folds == 2], 
                           Z = Z_in[folds == 2, , drop = FALSE], 
                           ipc_weights = ipc_weights[folds == 2], 
-                          ipc_fit_type = "SL", scale = scale, na.rm = na.rm, 
+                          ipc_fit_type = "SL", scale = scale, 
+                          ipc_est_type = ipc_est_type, na.rm = na.rm, 
                           SL.library = SL.library),
                      arg_lst)
         )

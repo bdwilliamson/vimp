@@ -35,6 +35,10 @@
 #' @param ipc_weights weights for the computed influence curve (i.e., inverse 
 #'   probability weights for coarsened-at-random settings). Assumed to be 
 #'   already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
+#' @param ipc_est_type the type of procedure used for coarsened-at-random 
+#'   settings; options are "ipw" (for inverse probability weighting) or 
+#'   "aipw" (for augmented inverse probability weighting). 
+#'   Only used if \code{C} is not all equal to 1.
 #' @param scale should CIs be computed on original ("identity") or logit 
 #'   ("logit") scale?
 #' @param ... other arguments to the estimation tool, see "See also".
@@ -45,11 +49,13 @@
 #' difference in predictiveness over all subsets of features not containing 
 #' feature \eqn{j}.
 #'
-#' This is equivalent to finding the solution to a population weighted least squares problem. This
-#' key fact allows us to estimate the SPVIM using weighted least squares, where we first
-#' sample subsets from the power set of all possible features using the Shapley sampling distribution; then
-#' use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the
-#' least squares problem given in Williamson and Feng (2020).
+#' This is equivalent to finding the solution to a population weighted least 
+#' squares problem. This key fact allows us to estimate the SPVIM using weighted 
+#' least squares, where we first sample subsets from the power set of all 
+#' possible features using the Shapley sampling distribution; then
+#' use cross-fitting to obtain estimators of the predictiveness of each 
+#' sampled subset; and finally, solve the least squares problem given in 
+#' Williamson and Feng (2020).
 #'
 #' See the paper by Williamson and Feng (2020) for more
 #' details on the mathematics behind this function, and the validity
@@ -98,7 +104,8 @@
 #' est <- sp_vim(Y = y, X = x, V = 2, type = "r_squared",
 #' SL.library = learners, alpha = 0.05)
 #'
-#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+#'   \code{SuperLearner} function and package.
 #' @importFrom stats pnorm gaussian
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @importFrom MASS ginv
@@ -108,7 +115,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
                    stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)),
-                   Z = NULL, ipc_weights = rep(1, length(Y)), scale = "identity", 
+                   Z = NULL, ipc_weights = rep(1, length(Y)), 
+                   ipc_est_type = "aipw", scale = "identity", 
                    ...) {
     # if the data is missing, stop and throw an error
     if (is.null(Y)) stop("You must enter an outcome, Y.")
@@ -188,7 +196,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  folds = inner_folds_2_cc, C = C[outer_folds == 2], 
                  Z = Z_in[outer_folds == 2, , drop = FALSE], 
                  folds_Z = inner_folds_2, ipc_weights = ipc_weights[outer_folds == 2], 
-                 ipc_fit_type = "SL", type = full_type, scale = scale, na.rm = na.rm, 
+                 ipc_fit_type = "SL", type = full_type, scale = scale, 
+                 ipc_est_type = ipc_est_type, na.rm = na.rm, 
                  SL.library = SL.library),
             arg_lst
         )
@@ -230,7 +239,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                          folds_Z = inner_folds_2, 
                          ipc_weights = ipc_weights[outer_folds == 2], 
                          type = full_type, ipc_fit_type = "SL", scale = scale, 
-                         na.rm = na.rm, SL.library = SL.library),
+                         ipc_est_type = ipc_est_type, na.rm = na.rm, 
+                         SL.library = SL.library),
                     arg_lst
                 )
             )
@@ -299,7 +309,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  folds_Z = inner_folds_1, 
                  ipc_weights = ipc_weights[outer_folds == 1], 
                  type = full_type, ipc_fit_type = "SL", scale = scale, 
-                 na.rm = na.rm, SL.library = SL.library),
+                 ipc_est_type = ipc_est_type, na.rm = na.rm, 
+                 SL.library = SL.library),
             arg_lst
         )
     )
