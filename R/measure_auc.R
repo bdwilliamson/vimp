@@ -88,7 +88,7 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         cases <- y == 1
         controls <- y == 0
         f_comparison <- apply(
-            matrix(fitted_values), 1, function(x) x >= fitted_values
+            matrix(fitted_values), 1, function(x) x > fitted_values
         )
         weights <- apply(
             matrix(ipc_weights[C == 1]), 1, function(x) x * ipc_weights[C == 1]
