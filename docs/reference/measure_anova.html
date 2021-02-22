@@ -166,12 +166,12 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>full</th>
-      <td><p>fitted values from a regression function of the observed outcome 
+      <td><p>fitted values from a regression function of the observed outcome
 on the full set of covariates.</p></td>
     </tr>
     <tr>
       <th>reduced</th>
-      <td><p>fitted values from a regression on the reduced set of observed 
+      <td><p>fitted values from a regression on the reduced set of observed
 covariates.</p></td>
     </tr>
     <tr>
@@ -180,47 +180,47 @@ covariates.</p></td>
     </tr>
     <tr>
       <th>C</th>
-      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes 
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).</p></td>
     </tr>
     <tr>
       <th>Z</th>
-      <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object 
+      <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object
 containing the fully observed data.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for inverse probability of coarsening (e.g., 
-inverse weights from a two-phase sample) weighted estimation. Assumed to 
+      <td><p>weights for inverse probability of coarsening (e.g.,
+inverse weights from a two-phase sample) weighted estimation. Assumed to
 be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
     </tr>
     <tr>
       <th>ipc_fit_type</th>
-      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL", 
-fit a SuperLearner to determine the correction to the efficient influence 
+      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL",
+fit a SuperLearner to determine the correction to the efficient influence
 function.</p></td>
     </tr>
     <tr>
       <th>ipc_eif_preds</th>
-      <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values 
+      <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values
 from a regression of the full-data EIF on the fully observed covariates
 /outcome; otherwise, not used.</p></td>
     </tr>
     <tr>
       <th>ipc_est_type</th>
-      <td><p>IPC correction, either <code>"ipw"</code> (for classical 
+      <td><p>IPC correction, either <code>"ipw"</code> (for classical
 inverse probability weighting) or <code>"aipw"</code> (for augmented inverse
 probability weighting; the default).</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>if doing an IPC correction, then the scale that the correction 
-should be computed on (e.g., "identity"; or "logit" to logit-transform, 
+      <td><p>if doing an IPC correction, then the scale that the correction
+should be computed on (e.g., "identity"; or "logit" to logit-transform,
 apply the correction, and back-transform)</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>logical; should <code>NA</code>s be removed in computation? 
+      <td><p>logical; should <code>NA</code>s be removed in computation?
 (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
@@ -231,9 +231,9 @@ apply the correction, and back-transform)</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of: (1) the estimated ANOVA (based on a one-step 
-  correction) of the fitted regression functions; (2) the estimated 
-  influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF 
+    <p>A named list of: (1) the estimated ANOVA (based on a one-step
+  correction) of the fitted regression functions; (2) the estimated
+  influence function; (3) the naive ANOVA estimate; and (4) the IPC EIF
   predictions.</p>
 
   </div>
