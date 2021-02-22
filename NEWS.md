@@ -1,3 +1,12 @@
+# vimp 2.1.8
+
+## Major changes 
+None
+
+## Minor changes
+
+* Allow the user to specify either an augmented inverse probability of coarsening (AIPW, the default) estimator in coarsened-at-random settings, or specify an IPW estimator, using new argument `ipc_est_type` (available in `vim`, `cv_vim`, and `sp_vim`; also corresponding wrapper functions for each VIM and corresponding internal estimation functions)
+
 # vimp 2.1.7
 
 ## Major changes
