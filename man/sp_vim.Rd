@@ -20,6 +20,7 @@ sp_vim(
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
+  ipw_type = "aipw",
   scale = "identity",
   ...
 )
@@ -31,33 +32,57 @@ sp_vim(
 
 \item{V}{the number of folds for cross-fitting, defaults to 10.}
 
-\item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}). Note that \code{type = 'anova'} is not allowed for SPVIMs.}
+\item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}). 
+Note that \code{type = 'anova'} is not allowed for SPVIMs.}
 
-\item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
+\item{SL.library}{a character vector of learners to pass to 
+\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. 
+Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 
-\item{univariate_SL.library}{(optional) a character vector of learners to pass to \code{SuperLearner} for estimating univariate regression functions. Defaults to \code{SL.polymars}}
+\item{univariate_SL.library}{(optional) a character vector of learners to 
+pass to \code{SuperLearner} for estimating univariate regression functions. 
+Defaults to \code{SL.polymars}}
 
-\item{gamma}{the fraction of the sample size to use when sampling subsets (e.g., \code{gamma = 1} samples the same number of subsets as the sample size)}
+\item{gamma}{the fraction of the sample size to use when sampling subsets 
+(e.g., \code{gamma = 1} samples the same number of subsets as the sample 
+size)}
 
-\item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
+\item{alpha}{the level to compute the confidence interval at. 
+Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
-\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
+\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if 
+importance < \eqn{\delta}); defaults to 0.}
 
-\item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
+\item{na.rm}{should we remove NA's in the outcome and fitted values in 
+computation? (defaults to \code{FALSE})}
 
-\item{stratified}{should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-fitting folds)?}
+\item{stratified}{should the generated folds be stratified based on the 
+outcome (helps to ensure class balance across cross-fitting folds)?}
 
-\item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out progress? (defaults to \code{FALSE})}
+\item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out 
+progress? (defaults to \code{FALSE})}
 
-\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
+unobserved).}
 
-\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
+\item{Z}{either (i) NULL (the default, in which case the argument 
+\code{C} above must be all ones), or (ii) a character vector specifying 
+the variable(s) among Y and X that are thought to play a role in the 
+coarsening mechanism.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse 
+probability weights for coarsened-at-random settings). Assumed to be 
+already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
-\item{scale}{should CIs be computed on original ("identity") or logit ("logit") scale?}
+\item{scale}{should CIs be computed on original ("identity") or logit 
+("logit") scale?}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
+
+\item{ipc_est_type}{the type of procedure used for coarsened-at-random 
+settings; options are "ipw" (for inverse probability weighting) or 
+"aipw" (for augmented inverse probability weighting). 
+Only used if \code{C} is not all equal to 1.}
 }
 \value{
 An object of class \code{vim}. See Details for more information.
@@ -66,14 +91,17 @@ An object of class \code{vim}. See Details for more information.
 Compute estimates and confidence intervals for the SPVIMs, using cross-fitting.
 }
 \details{
-We define the SPVIM as the weighted average of the population difference in
-predictiveness over all subsets of features not containing feature \eqn{j}.
+We define the SPVIM as the weighted average of the population 
+difference in predictiveness over all subsets of features not containing 
+feature \eqn{j}.
 
-This is equivalent to finding the solution to a population weighted least squares problem. This
-key fact allows us to estimate the SPVIM using weighted least squares, where we first
-sample subsets from the power set of all possible features using the Shapley sampling distribution; then
-use cross-fitting to obtain estimators of the predictiveness of each sampled subset; and finally, solve the
-least squares problem given in Williamson and Feng (2020).
+This is equivalent to finding the solution to a population weighted least 
+squares problem. This key fact allows us to estimate the SPVIM using weighted 
+least squares, where we first sample subsets from the power set of all 
+possible features using the Shapley sampling distribution; then
+use cross-fitting to obtain estimators of the predictiveness of each 
+sampled subset; and finally, solve the least squares problem given in 
+Williamson and Feng (2020).
 
 See the paper by Williamson and Feng (2020) for more
 details on the mathematics behind this function, and the validity
@@ -124,5 +152,6 @@ SL.library = learners, alpha = 0.05)
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+  \code{SuperLearner} function and package.
 }

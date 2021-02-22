@@ -2,7 +2,7 @@
 % Please edit documentation in R/vim.R
 \name{vim}
 \alias{vim}
-\title{Nonparametric Variable Importance Estimates and Inference}
+\title{Nonparametric Intrinsic Variable Importance Estimates and Inference}
 \usage{
 vim(
   Y = NULL,
@@ -22,6 +22,7 @@ vim(
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
+  ipc_est_type = "aipw",
   ...
 )
 }
@@ -30,53 +31,91 @@ vim(
 
 \item{X}{the covariates.}
 
-\item{f1}{the fitted values from a flexible estimation technique regressing Y on X.}
+\item{f1}{the fitted values from a flexible estimation technique 
+regressing Y on X.}
 
-\item{f2}{the fitted values from a flexible estimation technique regressing Y on X withholding the columns in \code{indx}.}
+\item{f2}{the fitted values from a flexible estimation technique 
+regressing Y on X withholding the columns in \code{indx}.}
 
-\item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
+\item{indx}{the indices of the covariate(s) to calculate variable 
+importance for; defaults to 1.}
 
-\item{type}{the type of importance to compute; defaults to \code{r_squared}, but other supported options are \code{auc}, \code{accuracy}, \code{deviance}, and \code{anova}.}
+\item{type}{the type of importance to compute; defaults to 
+\code{r_squared}, but other supported options are \code{auc}, 
+\code{accuracy}, \code{deviance}, and \code{anova}.}
 
-\item{run_regression}{if outcome Y and covariates X are passed to \code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
+\item{run_regression}{if outcome Y and covariates X are passed to 
+\code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, 
+then Super Learner will be used; otherwise, variable importance 
+will be computed using the inputted fitted values.}
 
-\item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
+\item{SL.library}{a character vector of learners to pass to 
+\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, 
+respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, 
+and \code{SL.mean}.}
 
-\item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
+\item{alpha}{the level to compute the confidence interval at. 
+Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
-\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
+\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if 
+importance < \eqn{\delta}); defaults to 0.}
 
-\item{scale}{should CIs be computed on original ("identity") or logit ("logit") scale?}
+\item{scale}{should CIs be computed on original ("identity") or 
+logit ("logit") scale?}
 
-\item{na.rm}{should we remove NAs in the outcome and fitted values in computation? (defaults to \code{FALSE})}
+\item{na.rm}{should we remove NAs in the outcome and fitted values 
+in computation? (defaults to \code{FALSE})}
 
-\item{folds}{the folds used for \code{f1} and \code{f2}; assumed to be 1 for the observations used in \code{f1} and 2 for the observations used in \code{f2}. If there is only a single fold passed in, then hypothesis testing is not done.}
+\item{folds}{the folds used for \code{f1} and \code{f2}; assumed to be 1 
+for the observations used in \code{f1} and 2 for the observations used 
+in \code{f2}. If there is only a single fold passed in, then hypothesis 
+testing is not done.}
 
-\item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
+\item{stratified}{if run_regression = TRUE, then should the generated 
+folds be stratified based on the outcome (helps to ensure class balance 
+across cross-validation folds)}
 
-\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
+unobserved).}
 
-\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character vector specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
+\item{Z}{either (i) NULL (the default, in which case the argument 
+\code{C} above must be all ones), or (ii) a character vector 
+specifying the variable(s) among Y and X that are thought to play a 
+role in the coarsening mechanism.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings). Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+\item{ipc_weights}{weights for the computed influence curve (i.e., 
+inverse probability weights for coarsened-at-random settings). 
+Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated 
+probability weights]).}
+
+\item{ipc_est_type}{the type of procedure used for coarsened-at-random 
+settings; options are "ipw" (for inverse probability weighting) or 
+"aipw" (for augmented inverse probability weighting). 
+Only used if \code{C} is not all equal to 1.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
-An object of classes \code{vim} and the type of risk-based measure. See Details for more information.
+An object of classes \code{vim} and the type of risk-based measure. 
+  See Details for more information.
 }
 \description{
-Compute estimates of and confidence intervals for nonparametric variable importance based on the population-level contrast between the oracle predictiveness using the feature(s) of interest versus not.
+Compute estimates of and confidence intervals for nonparametric intrinsic 
+variable importance based on the population-level contrast between the oracle 
+predictiveness using the feature(s) of interest versus not.
 }
 \details{
-We define the population variable importance measure (VIM) for the group
-of features (or single feature) \eqn{s} with respect to the predictiveness measure
-\eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
-the population predictiveness maximizing function, \eqn{f_{0,s}} is the population
-predictiveness maximizing function that is only allowed to access the features with
-index not in \eqn{s}, and \eqn{P_0} is the true data-generating distribution. VIM estimates are
-obtained by obtaining estimators \eqn{f_n} and \eqn{f_{n,s}} of \eqn{f_0} and \eqn{f_{0,s}},
-respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally, setting \eqn{\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)}.
+We define the population variable importance measure (VIM) for the 
+group of features (or single feature) \eqn{s} with respect to the 
+predictiveness measure \eqn{V} by 
+\deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
+the population predictiveness maximizing function, \eqn{f_{0,s}} is the 
+population predictiveness maximizing function that is only allowed to access 
+the features with index not in \eqn{s}, and \eqn{P_0} is the true 
+data-generating distribution. VIM estimates are obtained by obtaining 
+estimators \eqn{f_n} and \eqn{f_{n,s}} of \eqn{f_0} and \eqn{f_{0,s}},
+respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally, 
+setting \eqn{\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)}.
 
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list including:

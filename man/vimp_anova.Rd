@@ -2,7 +2,7 @@
 % Please edit documentation in R/vimp_anova.R
 \name{vimp_anova}
 \alias{vimp_anova}
-\title{Nonparametric Variable Importance Estimates: ANOVA}
+\title{Nonparametric Intrinsic Variable Importance Estimates: ANOVA}
 \usage{
 vimp_anova(
   Y = NULL,
@@ -22,6 +22,7 @@ vimp_anova(
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
+  ipc_est_type = "aipw",
   ...
 )
 }
@@ -30,43 +31,72 @@ vimp_anova(
 
 \item{X}{the covariates.}
 
-\item{f1}{the predicted values on validation data from a flexible estimation technique regressing Y on X in the training data; a list of length V, where each object is a set of predictions on the validation data.}
+\item{f1}{the predicted values on validation data from a flexible estimation 
+technique regressing Y on X in the training data; a list of length V, 
+where each object is a set of predictions on the validation data.}
 
-\item{f2}{the predicted values on validation data from a flexible estimation technique regressing the fitted values in \code{f1} on X withholding the columns in \code{indx}; a list of length V, where each object is a set of predictions on the validation data.}
+\item{f2}{the predicted values on validation data from a flexible estimation 
+technique regressing the fitted values in \code{f1} on X withholding the 
+columns in \code{indx}; a list of length V, where each object is a set of 
+predictions on the validation data.}
 
-\item{indx}{the indices of the covariate(s) to calculate variable importance for; defaults to 1.}
+\item{indx}{the indices of the covariate(s) to calculate variable importance 
+for; defaults to 1.}
 
 \item{V}{the number of folds for cross-validation, defaults to 10.}
 
-\item{run_regression}{if outcome Y and covariates X are passed to \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner will be used; otherwise, variable importance will be computed using the inputted fitted values.}
+\item{run_regression}{if outcome Y and covariates X are passed to 
+\code{cv_vim}, and \code{run_regression} is \code{TRUE}, then 
+Super Learner will be used; otherwise, variable importance will be 
+computed using the inputted fitted values.}
 
-\item{SL.library}{a character vector of learners to pass to \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
+\item{SL.library}{a character vector of learners to pass to 
+\code{SuperLearner}, if \code{run_regression = TRUE}.
+Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 
-\item{alpha}{the level to compute the confidence interval at. Defaults to 0.05, corresponding to a 95\% confidence interval.}
+\item{alpha}{the level to compute the confidence interval at. Defaults to 
+0.05, corresponding to a 95\% confidence interval.}
 
-\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
+\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if 
+importance < \eqn{\delta}); defaults to 0.}
 
-\item{na.rm}{should we remove NA's in the outcome and fitted values in computation? (defaults to \code{FALSE})}
+\item{na.rm}{should we remove NA's in the outcome and fitted values in 
+computation? (defaults to \code{FALSE})}
 
-\item{scale}{scale should CIs be computed on original ("identity") or logit ("logit") scale? (defaults to "identity")}
+\item{scale}{scale should CIs be computed on original ("identity") or 
+logit ("logit") scale? (defaults to "identity")}
 
 \item{folds}{the folds to use, if f1 and f2 are supplied.}
 
-\item{stratified}{if run_regression = TRUE, then should the generated folds be stratified based on the outcome (helps to ensure class balance across cross-validation folds)}
+\item{stratified}{if run_regression = TRUE, then should the generated folds 
+be stratified based on the outcome? (helps to ensure class balance across 
+cross-validation folds)}
 
-\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes unobserved).}
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
+unobserved).}
 
-\item{Z}{either (i) NULL (the default, in which case the argument \code{C} above must be all ones), or (ii) a character list specifying the variable(s) among Y and X that are thought to play a role in the coarsening mechanism.}
+\item{Z}{either (i) NULL (the default, in which case the argument 
+\code{C} above must be all ones), or (ii) a character list specifying the 
+variable(s) among Y and X that are thought to play a role in the coarsening 
+mechanism.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse probability weights for coarsened-at-random settings)}
+\item{ipc_weights}{weights for the computed influence curve 
+(i.e., inverse probability weights for coarsened-at-random settings).}
+
+\item{ipc_est_type}{IPC correction, either \code{"ipw"} (for classical 
+inverse probability weighting) or \code{"aipw"} (for augmented inverse
+probability weighting; the default).}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
-An object of classes \code{vim} and \code{vim_regression}. See Details for more information.
+An object of classes \code{vim} and \code{vim_regression}. 
+  See Details for more information.
 }
 \description{
-Compute estimates of and confidence intervals for nonparametric difference in classification accuracy-based variable importance. This is a wrapper function for \code{cv_vim}, with \code{type = "anova"}.
+Compute estimates of and confidence intervals for nonparametric ANOVA-based 
+intrinsic variable importance. This is a wrapper function for \code{cv_vim}, 
+with \code{type = "anova"}.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more
@@ -114,5 +144,6 @@ est <- vimp_anova(y, x, indx = 2,
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+  \code{SuperLearner} function and package.
 }
