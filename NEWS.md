@@ -1,3 +1,12 @@
+# vimp 2.1.9
+
+## Major changes
+None
+
+## Minor changes
+
+* Update sensitivity and specificity to use weak inequalities rather than strict inequalities (better aligns with `cvAUC`)
+
 # vimp 2.1.8
 
 ## Major changes 
