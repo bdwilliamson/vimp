@@ -154,6 +154,10 @@
 <a href="#minor-changes" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Update sensitivity and specificity to use weak inequalities rather than strict inequalities (better aligns with <code>cvAUC</code>)</li>
+<li>Add a test of CV-AUC estimation against <code>cvAUC</code>
+</li>
+<li>Borrow information across folds for empirically estimated quantities (e.g., the outcome variance or probability of a certain class); asymptotically equivalent to the prior procedure, but could result in small-sample differences</li>
+<li>Use fold-specific EIFs for cross-validated SE estimation (again, asymptotically equivalent to the prior procedure, but could result in small-sample differences)</li>
 </ul>
 </div>
 </div>

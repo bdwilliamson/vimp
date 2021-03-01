@@ -99,7 +99,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2021-02-28</h4>
+            <h4 class="date">2021-03-01</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -190,15 +190,15 @@
 <span class="no">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 5 0.2658470 0.05060999 [0.1666532, 0.3650408] TRUE     1.565974e-07</span>
-<span class="co">#&gt; s = 9 0.2633891 0.05061696 [0.1641817, 0.3625965] TRUE     2.017575e-07</span>
-<span class="co">#&gt; s = 3 0.2633425 0.05082103 [0.1637351, 0.3629499] TRUE     2.018523e-07</span>
-<span class="co">#&gt; s = 6 0.2621485 0.05080270 [0.1625771, 0.3617200] TRUE     2.280041e-07</span>
-<span class="co">#&gt; s = 7 0.2620675 0.05066697 [0.1627621, 0.3613729] TRUE     2.159339e-07</span>
-<span class="co">#&gt; s = 4 0.2602479 0.05063509 [0.1610049, 0.3594908] TRUE     2.537850e-07</span>
-<span class="co">#&gt; s = 8 0.2594026 0.05067847 [0.1600746, 0.3587306] TRUE     3.037931e-07</span>
-<span class="co">#&gt; s = 2 0.2576796 0.05083316 [0.1580484, 0.3573107] TRUE     3.512599e-07</span>
-<span class="co">#&gt; s = 1 0.2468021 0.04997417 [0.1488545, 0.3447497] TRUE     8.505138e-07</span></pre></body></html></div>
+<span class="co">#&gt; s = 9 0.2782232 0.05073167 [0.1787909, 0.3776554] TRUE     1.936473e-08</span>
+<span class="co">#&gt; s = 2 0.2515571 0.05171081 [0.1502058, 0.3529084] TRUE     3.933316e-07</span>
+<span class="co">#&gt; s = 4 0.2508601 0.05170392 [0.1495223, 0.3521979] TRUE     4.275881e-07</span>
+<span class="co">#&gt; s = 1 0.2506581 0.05169448 [0.1493388, 0.3519774] TRUE     4.378419e-07</span>
+<span class="co">#&gt; s = 7 0.2476299 0.05190261 [0.1459026, 0.3493571] TRUE     5.524801e-07</span>
+<span class="co">#&gt; s = 6 0.2422787 0.05161821 [0.1411089, 0.3434485] TRUE     9.067907e-07</span>
+<span class="co">#&gt; s = 8 0.2401955 0.05112868 [0.1399851, 0.3404059] TRUE     9.470522e-07</span>
+<span class="co">#&gt; s = 3 0.2348220 0.05143580 [0.1340097, 0.3356343] TRUE     1.548808e-06</span>
+<span class="co">#&gt; s = 5 0.2339796 0.05086569 [0.1342847, 0.3336745] TRUE     1.802722e-06</span></pre></body></html></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -241,7 +241,7 @@
 <span class="no">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1150993 [0, 0.2255905] FALSE    0.9984981</span></pre></body></html></div>
+<span class="co">#&gt; s = 6 0        0.1154334 [0, 0.2262453] FALSE    0.9557035</span></pre></body></html></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># set up the data, removing the columns for alcohol use and chd</span>

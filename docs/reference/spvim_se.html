@@ -47,7 +47,8 @@
 
 
 <meta property="og:title" content="Standard error estimate for SPVIM values — spvim_se" />
-<meta property="og:description" content="Compute standard error estimates based on the estimated influence function for a SPVIM value of interest." />
+<meta property="og:description" content="Compute standard error estimates based on the estimated influence function 
+  for a SPVIM value of interest." />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -143,7 +144,8 @@
     </div>
 
     <div class="ref-description">
-    <p>Compute standard error estimates based on the estimated influence function for a SPVIM value of interest.</p>
+    <p>Compute standard error estimates based on the estimated influence function 
+  for a SPVIM value of interest.</p>
     </div>
 
     <pre class="usage"><span class='fu'>spvim_se</span>(<span class='no'>ics</span>, <span class='kw'>idx</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>gamma</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>na_rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
@@ -153,7 +155,9 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>ics</th>
-      <td><p>the influence function estimates based on the contributions from sampling observations and sampling subsets: a list of length two resulting from a call to <code>spvim_ics</code>.</p></td>
+      <td><p>the influence function estimates based on the contributions 
+from sampling observations and sampling subsets: a list of length two 
+resulting from a call to <code>spvim_ics</code>.</p></td>
     </tr>
     <tr>
       <th>idx</th>
@@ -174,7 +178,9 @@
     <p>The standard error estimate for the desired SPVIM value</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Since the processes for sampling observations and subsets are independent, the variance for a given SPVIM estimator is simply the sum of the vairances based on sampling observations and on sampling subsets.</p>
+    <p>Since the processes for sampling observations and subsets are 
+  independent, the variance for a given SPVIM estimator is simply the sum of
+ the vairances based on sampling observations and on sampling subsets.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='spvim_ics.html'>spvim_ics</a></code> for how the influence functions are estimated.</p></div>

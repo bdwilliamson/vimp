@@ -149,6 +149,7 @@
     <pre class="usage"><span class='fu'>est_predictiveness_cv</span>(
   <span class='no'>fitted_values</span>,
   <span class='no'>y</span>,
+  <span class='kw'>full_y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='no'>folds</span>,
   <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>,
   <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>)),
@@ -175,6 +176,11 @@ predictions on the validation data.</p></td>
     <tr>
       <th>y</th>
       <td><p>the observed outcome.</p></td>
+    </tr>
+    <tr>
+      <th>full_y</th>
+      <td><p>the observed outcome (from the entire dataset, for 
+cross-fitted estimates).</p></td>
     </tr>
     <tr>
       <th>folds</th>
