@@ -7,6 +7,7 @@
 measure_deviance(
   fitted_values,
   y,
+  full_y = NULL,
   C = rep(1, length(y)),
   Z = NULL,
   ipc_weights = rep(1, length(y)),
@@ -23,6 +24,10 @@ measure_deviance(
 observed data.}
 
 \item{y}{the observed outcome.}
+
+\item{full_y}{the observed outcome (defaults to \code{NULL}; allows the 
+full-data outcome to be used for empirical estimates that do not rely 
+on covariates).}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}

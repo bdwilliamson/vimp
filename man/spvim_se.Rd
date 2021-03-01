@@ -7,7 +7,9 @@
 spvim_se(ics, idx = 1, gamma = 1, na_rm = FALSE)
 }
 \arguments{
-\item{ics}{the influence function estimates based on the contributions from sampling observations and sampling subsets: a list of length two resulting from a call to \code{spvim_ics}.}
+\item{ics}{the influence function estimates based on the contributions 
+from sampling observations and sampling subsets: a list of length two 
+resulting from a call to \code{spvim_ics}.}
 
 \item{idx}{the index of interest}
 
@@ -19,10 +21,13 @@ spvim_se(ics, idx = 1, gamma = 1, na_rm = FALSE)
 The standard error estimate for the desired SPVIM value
 }
 \description{
-Compute standard error estimates based on the estimated influence function for a SPVIM value of interest.
+Compute standard error estimates based on the estimated influence function 
+  for a SPVIM value of interest.
 }
 \details{
-Since the processes for sampling observations and subsets are independent, the variance for a given SPVIM estimator is simply the sum of the vairances based on sampling observations and on sampling subsets.
+Since the processes for sampling observations and subsets are 
+  independent, the variance for a given SPVIM estimator is simply the sum of
+ the vairances based on sampling observations and on sampling subsets.
 }
 \seealso{
 \code{\link[vimp]{spvim_ics}} for how the influence functions are estimated.

@@ -4,24 +4,27 @@
 \alias{vimp_se}
 \title{Estimate standard errors}
 \usage{
-vimp_se(est, eif, n = length(eif), na.rm = FALSE)
+vimp_se(est, n = length(est$eif), na.rm = FALSE)
 }
 \arguments{
-\item{est}{the estimate of variable importance.}
-
-\item{eif}{the estimated efficient influence curve.}
+\item{est}{a list (e.g., from a call to \code{est_predictiveness}) with 
+the point estimate of variable importance and the estimated efficient 
+influence function.}
 
 \item{n}{the sample size.}
 
-\item{na.rm}{logical; should NA's be removed in computation? (defaults to \code{FALSE}).}
+\item{na.rm}{logical; should NA's be removed in computation? 
+(defaults to \code{FALSE}).}
 }
 \value{
-The standard error for the estimated variable importance for the given group of left-out covariates.
+The standard error for the estimated variable importance for the 
+  given group of left-out covariates.
 }
 \description{
 Compute standard error estimates for estimates of variable importance.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more
-details on the mathematics behind this function and the definition of the parameter of interest.
+  details on the mathematics behind this function and the definition of the 
+  parameter of interest.
 }

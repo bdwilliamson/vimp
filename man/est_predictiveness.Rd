@@ -7,6 +7,7 @@
 est_predictiveness(
   fitted_values,
   y,
+  full_y = NULL,
   type = "r_squared",
   C = rep(1, length(y)),
   Z = NULL,
@@ -24,6 +25,9 @@ est_predictiveness(
 observed data.}
 
 \item{y}{the observed outcome.}
+
+\item{full_y}{the observed outcome (from the entire dataset, for 
+cross-fitted estimates).}
 
 \item{type}{which parameter are you estimating (defaults to \code{r_squared}, 
 for R-squared-based variable importance)?}

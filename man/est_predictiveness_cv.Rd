@@ -7,6 +7,7 @@
 est_predictiveness_cv(
   fitted_values,
   y,
+  full_y = NULL,
   folds,
   type = "r_squared",
   C = rep(1, length(y)),
@@ -27,6 +28,9 @@ observed data; a list of length V, where each object is a set of
 predictions on the validation data.}
 
 \item{y}{the observed outcome.}
+
+\item{full_y}{the observed outcome (from the entire dataset, for 
+cross-fitted estimates).}
 
 \item{folds}{the cross-validation folds for the observed data}
 

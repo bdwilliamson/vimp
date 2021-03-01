@@ -7,6 +7,7 @@
 measure_accuracy(
   fitted_values,
   y,
+  full_y = NULL,
   C = rep(1, length(y)),
   Z = NULL,
   ipc_weights = rep(1, length(y)),
@@ -19,10 +20,13 @@ measure_accuracy(
 )
 }
 \arguments{
-\item{fitted_values}{fitted values from a regression function using the 
-observed data.}
+\item{fitted_values}{fitted values from a regression function using the
+observed data (may be within a specified fold, for cross-fitted estimates).}
 
-\item{y}{the observed outcome.}
+\item{y}{the observed outcome (may be within a specified fold, for 
+cross-fitted estimates).}
+
+\item{full_y}{the observed outcome (not used, defaults to \code{NULL}).}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
 unobserved).}

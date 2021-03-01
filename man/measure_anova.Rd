@@ -8,6 +8,7 @@ measure_anova(
   full,
   reduced,
   y,
+  full_y = NULL,
   C = rep(1, length(y)),
   Z = NULL,
   ipc_weights = rep(1, length(y)),
@@ -27,6 +28,8 @@ on the full set of covariates.}
 covariates.}
 
 \item{y}{the observed outcome.}
+
+\item{full_y}{the observed outcome (not used, defaults to \code{NULL}).}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}
