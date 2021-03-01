@@ -295,9 +295,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         predictiveness_full <- est_lst_full$point_est
         predictiveness_redu <- est_lst_redu$point_est
         eif_full <- est_lst_full$eif
-        se_full <- vimp_se(predictiveness_full, eif_full, na.rm = na.rm)
+        se_full <- vimp_se(list(est = predictiveness_full, 
+                                eif = eif_full), na.rm = na.rm)
         eif_redu <- est_lst_redu$eif
-        se_redu <- vimp_se(predictiveness_redu, eif_redu, na.rm = na.rm)
+        se_redu <- vimp_se(list(est = predictiveness_redu, 
+                                eif = eif_redu), na.rm = na.rm)
         est <- est_lst_full$point_est - est_lst_redu$point_est
         naive <- NA
         len_full <- length(eif_full)

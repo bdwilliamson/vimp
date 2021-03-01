@@ -22,8 +22,13 @@ spvim_ics <- function(Z, z_counts, W, v, psi, G, c_n, ics, measure) {
   Z_W <- t(Z) %*% W
   A_m <- Z_W %*% Z
   A_m_inv <- MASS::ginv(A_m)
-  phi_01 <- A_m_inv %*% Z_W %*% ics
-  
+  prefix <- A_m_inv %*% Z_W
+  V <- length(ics[[1]])
+  phi_01 <- sapply(1:V, function(i) {
+    this_mat <- do.call(rbind, lapply(ics, function(l) l[[i]]))
+    prefix %*% this_mat
+  }, simplify = FALSE)
+
   # compute contribution from sampling S
   qr_decomp <- qr(t(G))
   U_2 <- qr.Q(qr_decomp, complete = TRUE)[, 3:ncol(Z), drop = FALSE]

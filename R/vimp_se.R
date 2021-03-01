@@ -27,7 +27,7 @@ vimp_se <- function(est, n = length(est$eif), na.rm = FALSE) {
         var <- mean(unlist(lapply(est$all_eifs, 
                            function(x) mean(x ^ 2, na.rm = na.rm))))
     } else {
-        ic <- matrix(eif, ncol = 1)
+        ic <- matrix(est$eif, ncol = 1)
         # compute the variance
         var <- (t(ic) %*% ic)/n
     }

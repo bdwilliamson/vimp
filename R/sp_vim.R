@@ -204,6 +204,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     )
     v_none <- v_none_lst$point_est
     ic_none <- v_none_lst$eif
+    ics_none <- v_none_lst$all_eifs
 
     # get v, preds, ic for remaining non-null groups in S
     if (verbose) {
@@ -248,6 +249,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     )
     v_lst <- lapply(v_full_lst, function(l) l$point_est)
     ic_lst <- lapply(v_full_lst, function(l) l$eif)
+    ics_lst <- lapply(v_full_lst, function(l) l$all_eifs)
     v <- matrix(c(v_none, unlist(v_lst)))
     # do constrained wls
     if (verbose) {
@@ -270,8 +272,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     lambdas <- ls_solution[(ncol(X) + 2):nrow(ls_solution), , drop = FALSE]
 
     # compute the SPVIM ICs
-    ic_mat <- do.call(rbind, c(list(ic_none), ic_lst))
-    ics <- spvim_ics(Z, z_counts, W, v, est, G, c_n, ic_mat, full_type)
+    all_ics_lst <- c(list(ics_none), ics_lst)
+    ics <- spvim_ics(Z, z_counts, W, v, est, G, c_n, all_ics_lst, full_type)
 
     # calculate the standard error
     ses <- vector("numeric", ncol(X) + 1)
@@ -337,7 +339,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     mat <- tibble::tibble(
         s = as.character(1:ncol(X)), est = est[-1], se = ses[-1], cil = cis[, 1],
         ciu = cis[, 2], test = hyp_tests, p_value = p_values, 
-        var_v_contribs=var_v_contribs[-1], var_s_contribs=var_s_contribs[-1]
+        var_v_contribs = var_v_contribs[-1], var_s_contribs = var_s_contribs[-1]
     )
     output <- list(s = as.character(1:ncol(X)),
                    SL.library = SL.library,

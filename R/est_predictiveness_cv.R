@@ -107,7 +107,7 @@ est_predictiveness_cv <- function(fitted_values, y, full_y = NULL,
             fitted_values = rep(mn_y, length(y)), y, 
             C = switch(do_ipcw + 1, rep(1, length(C)), C), Z = Z, 
             ipc_weights = ipc_weights, 
-            switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, 
+            ipc_fit_type = switch(do_ipcw + 1, ipc_fit_type, "SL"), ipc_eif_preds, 
             ipc_est_type = ipc_est_type, scale = "identity", na.rm = na.rm, ...
         )
         ic <- (-1) * as.vector(
@@ -132,7 +132,8 @@ est_predictiveness_cv <- function(fitted_values, y, full_y = NULL,
         denom <- measure_cross_entropy(
             fitted_values = rep(mn_y, length(y)), y, 
             C = switch(do_ipcw + 1, rep(1, length(C)), C), Z = Z, 
-            ipc_weights = ipc_weights, switch(do_ipcw + 1, ipc_fit_type, "SL"), 
+            ipc_weights = ipc_weights, 
+            ipc_fit_type = switch(do_ipcw + 1, ipc_fit_type, "SL"), 
             ipc_eif_preds, ipc_est_type = ipc_est_type, 
             scale = "identity", na.rm = na.rm, ...
         )
@@ -143,7 +144,7 @@ est_predictiveness_cv <- function(fitted_values, y, full_y = NULL,
         )
         tmp_ics <- vector("list", length = V)
         for (v in 1:V) {
-            tmp_ics[1:length(C[folds_Z == v]), v] <- (-1) * as.vector(
+            tmp_ics[[v]] <- (-1) * as.vector(
                 matrix(c(1 / denom$point_est, 
                          -point_ests[v] / (denom$point_est ^ 2)), 
                        nrow = 1) %*% t(cbind(ics[[v]], 

@@ -408,8 +408,12 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         eif_full <- est_lst_full$eif
         all_eifs_redu <- est_lst_redu$all_eifs
         eif_redu <- est_lst_redu$eif
-        se_full <- vimp_se(predictiveness_full, eif_full, na.rm = na.rm)
-        se_redu <- vimp_se(predictiveness_redu, eif_redu, na.rm = na.rm)
+        se_full <- vimp_se(list(est = predictiveness_full, 
+                                eif = eif_full,
+                                all_eifs = all_eifs_full), na.rm = na.rm)
+        se_redu <- vimp_se(list(est = predictiveness_redu, 
+                                eif = eif_redu,
+                                all_eifs = all_eifs_redu), na.rm = na.rm)
         est <- est_lst_full$point_est - est_lst_redu$point_est
         naive <- NA
         len_full <- length(eif_full)
@@ -422,26 +426,10 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             tmp_eif_full <- eif_full
             tmp_eif_redu <- eif_redu
         }
-        nrow_full <- nrow(all_eifs_full)
-        nrow_redu <- nrow(all_eifs_redu)
-        if (nrow_full != nrow_redu) {
-            max_nrow <- max(nrow_full, nrow_redu)
-            tmp_eifs_full <- rbind(
-                all_eifs_full, 
-                matrix(NA, nrow = max_nrow - nrow_full, 
-                       ncol = ncol(all_eifs_full))
-            )
-            tmp_eifs_redu <- rbind(
-                all_eifs_redu, 
-                matrix(NA, nrow = max_nrow - nrow_redu, 
-                       ncol = ncol(all_eifs_redu))
-            )
-        } else {
-            tmp_eifs_full <- all_eifs_full
-            tmp_eifs_redu <- all_eifs_redu
-        }
-        eif <- tmp_eif_full - tmp_eif_redu
-        all_eifs <- tmp_eifs_full - tmp_eifs_redu
+        eif <- tmp_eif_full - tmp_eif_redu 
+        all_eifs <- sapply(1:V, function(v) {
+            all_eifs_full[[v]] - all_eifs_redu[[v]]
+        }, simplify = FALSE)
     }
     # compute the standard error
     se <- vimp_se(list(est = est, eif = eif, all_eifs = all_eifs), 
