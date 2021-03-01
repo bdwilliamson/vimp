@@ -94,8 +94,9 @@ test_that("Deviance-based variable importance works", {
 })
 
 test_that("Measures of predictiveness work", {
- full_auc <- est_predictiveness(full_fitted, y[folds == 1], 
-                                type = "auc")$point_est
+ auc_lst <- est_predictiveness(full_fitted, y[folds == 1], 
+                                type = "auc")
+ full_auc <- auc_lst$point_est
  expect_equal(full_auc, 0.96, tolerance = 0.1, scale = 1)
  full_acc <- est_predictiveness(full_fitted, y[folds == 1], 
                                 type = "accuracy")$point_est
@@ -106,4 +107,28 @@ test_that("Measures of predictiveness work", {
  full_ce <- est_predictiveness(full_fitted, y[folds == 1], 
                                type = "cross_entropy")$point_est
  expect_equal(full_ce, -0.24, tolerance = 0.1, scale = 1)
+})
+
+est <- vimp_auc(Y = y, X = x, f1 = est$full_fit, f2 = est$red_fit, 
+                folds = est$folds, run_regression = FALSE, indx = 1, V = V,
+                env = environment())
+test_that("vimp and cvAUC agree", {
+  y_1 <- y[est$folds$outer_folds == 1]
+  auc_lst <- est_predictiveness_cv(fitted_values = est$full_fit,
+                                   y = y_1, full_y = y_1,
+                                   folds = est$folds$inner_folds[[1]], 
+                                   type = "auc")
+  full_auc <- auc_lst$point_est
+  auc_se <- vimp_se(auc_lst)
+  auc_ci <- vimp_ci(full_auc, auc_se)
+  preds_for_cvauc <- vector("numeric", length = length(y_1))
+  preds_for_cvauc[est$folds$inner_folds[[1]] == 1] <- est$full_fit[[1]]
+  preds_for_cvauc[est$folds$inner_folds[[1]] == 2] <- est$full_fit[[2]]
+  cvauc_lst <- cvAUC::ci.cvAUC(predictions = preds_for_cvauc, 
+                               labels = y_1,
+                               folds = est$folds$inner_folds[[1]])
+  expect_equal(full_auc, cvauc_lst$cvAUC, tolerance = 1e-20, scale = 1)
+  expect_equal(auc_se, cvauc_lst$se, tolerance = 1e-10, scale = 1)
+  sprintf("%.20f", auc_se)
+  sprintf("%.20f", cvauc_lst$se)
 })
