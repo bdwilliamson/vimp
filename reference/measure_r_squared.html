@@ -151,6 +151,7 @@
     <pre class="usage"><span class='fu'>measure_r_squared</span><span class='op'>(</span>
   <span class='va'>fitted_values</span>,
   <span class='va'>y</span>,
+  full_y <span class='op'>=</span> <span class='cn'>NULL</span>,
   C <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>,
   Z <span class='op'>=</span> <span class='cn'>NULL</span>,
   ipc_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>y</span><span class='op'>)</span><span class='op'>)</span>,
@@ -173,6 +174,12 @@ observed data.</p></td>
     <tr>
       <th>y</th>
       <td><p>the observed outcome.</p></td>
+    </tr>
+    <tr>
+      <th>full_y</th>
+      <td><p>the observed outcome (defaults to <code>NULL</code>; allows the 
+full-data outcome to be used for empirical estimates that do not rely 
+on covariates).</p></td>
     </tr>
     <tr>
       <th>C</th>

@@ -188,16 +188,16 @@
 <span class="co"># print out the matrix</span>
 <span class="va">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 9 0.2047476 0.04710926 [0.11241513, 0.2970800] TRUE     9.033663e-06</span>
-<span class="co">#&gt; s = 5 0.2007439 0.04674028 [0.10913460, 0.2923531] TRUE     1.422481e-05</span>
-<span class="co">#&gt; s = 4 0.1976777 0.04686061 [0.10583262, 0.2895228] TRUE     1.926834e-05</span>
-<span class="co">#&gt; s = 7 0.1976566 0.04687643 [0.10578047, 0.2895327] TRUE     1.937308e-05</span>
-<span class="co">#&gt; s = 3 0.1962026 0.04694313 [0.10419574, 0.2882094] TRUE     2.195345e-05</span>
-<span class="co">#&gt; s = 8 0.1959475 0.04710754 [0.10361840, 0.2882766] TRUE     2.218272e-05</span>
-<span class="co">#&gt; s = 6 0.1947260 0.04690163 [0.10280046, 0.2866515] TRUE     2.488477e-05</span>
-<span class="co">#&gt; s = 2 0.1922033 0.04679484 [0.10048708, 0.2839195] TRUE     3.072205e-05</span>
-<span class="co">#&gt; s = 1 0.1857135 0.04686261 [0.09386448, 0.2775626] TRUE     4.275496e-05</span></code></pre></div>
+<span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
+<span class="co">#&gt; s = 2 0.2956813 0.04737640 [0.2028253, 0.3885374] TRUE     3.960582e-10</span>
+<span class="co">#&gt; s = 3 0.2927789 0.04750710 [0.1996667, 0.3858911] TRUE     6.595853e-10</span>
+<span class="co">#&gt; s = 7 0.2886492 0.04733519 [0.1958739, 0.3814244] TRUE     1.039017e-09</span>
+<span class="co">#&gt; s = 1 0.2874719 0.04770553 [0.1939708, 0.3809731] TRUE     1.310335e-09</span>
+<span class="co">#&gt; s = 9 0.2871640 0.04765562 [0.1937607, 0.3805673] TRUE     1.360695e-09</span>
+<span class="co">#&gt; s = 6 0.2868187 0.04764476 [0.1934367, 0.3802007] TRUE     1.409103e-09</span>
+<span class="co">#&gt; s = 4 0.2862213 0.04766294 [0.1928037, 0.3796389] TRUE     1.507730e-09</span>
+<span class="co">#&gt; s = 8 0.2859473 0.04760577 [0.1926417, 0.3792529] TRUE     1.381515e-09</span>
+<span class="co">#&gt; s = 5 0.2498826 0.04684111 [0.1580757, 0.3416894] TRUE     4.914318e-08</span></code></pre></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -242,7 +242,7 @@
 <span class="va">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1107869 [0, 0.2171383] FALSE    0.7989008</span></code></pre></div>
+<span class="co">#&gt; s = 6 0        0.1161541 [0, 0.2276579] FALSE    0.5648363</span></code></pre></div>
 <p>This takes approximately 5 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">

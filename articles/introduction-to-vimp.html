@@ -177,12 +177,12 @@ SL.library <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r
 <code class="sourceCode R"><span class="va">est_1</span></code></pre></div>
 <pre><code>## Variable importance estimates:
 ##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
-## s = 1 0.1300958 0.04034518 [0.05102072, 0.2091709] TRUE     0.0005922123</code></pre>
+## s = 1 0.1299873 0.04009589 [0.05140077, 0.2085738] TRUE     0.0008478197</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">est_1</span><span class="op">)</span></code></pre></div>
 <pre><code>## Variable importance estimates:
 ##       Estimate  SE         95% CI                  VIMP &gt; 0 p-value     
-## s = 1 0.1300958 0.04034518 [0.05102072, 0.2091709] TRUE     0.0005922123</code></pre>
+## s = 1 0.1299873 0.04009589 [0.05140077, 0.2085738] TRUE     0.0008478197</code></pre>
 <p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.13, with a 95% confidence interval of [0.051, 0.209].</p>
 </div>
 <div id="detailed-guide" class="section level2">
@@ -247,15 +247,15 @@ SL.library <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r
 <span class="va">lm_mat</span></code></pre></div>
 <pre><code>## Variable importance estimates:
 ##       Estimate     SE         95% CI                  VIMP &gt; 0 p-value     
-## s = 6 0.2306968687 0.07754543 [0.07871062, 0.3826831]  TRUE    0.0008709805
-## s = 2 0.2297583908 0.07408769 [0.08454918, 0.3749676]  TRUE    0.0014740077
-## s = 1 0.1243845280 0.06401668 [0.00000000, 0.2498549]  TRUE    0.0323404939
-## s = 9 0.0931209210 0.06962164 [0.00000000, 0.2295768] FALSE    0.0935529736
-## s = 7 0.0845631815 0.07720069 [0.00000000, 0.2358737] FALSE    0.1308871251
-## s = 4 0.0754359734 0.07307546 [0.00000000, 0.2186612] FALSE    0.1545292248
-## s = 5 0.0393849670 0.06391775 [0.00000000, 0.1646615] FALSE    0.2698421118
-## s = 8 0.0299019189 0.07034801 [0.00000000, 0.1677815] FALSE    0.3314648344
-## s = 3 0.0003397151 0.06646206 [0.00000000, 0.1306030] FALSE    0.4979267053</code></pre>
+## s = 6 0.2306770059 0.07748125 [0.07881654, 0.3825375]  TRUE    0.0008655745
+## s = 2 0.2291866363 0.07297854 [0.08615132, 0.3722220]  TRUE    0.0013260752
+## s = 1 0.1243122222 0.06376809 [0.00000000, 0.2492954]  TRUE    0.0320306085
+## s = 9 0.0931139793 0.06960993 [0.00000000, 0.2295469] FALSE    0.0936743935
+## s = 7 0.0834326317 0.07484857 [0.00000000, 0.2301331] FALSE    0.1259555768
+## s = 4 0.0752877199 0.07240828 [0.00000000, 0.2172053] FALSE    0.1520951529
+## s = 5 0.0393767790 0.06347288 [0.00000000, 0.1637813] FALSE    0.2684451728
+## s = 8 0.0297456450 0.06942128 [0.00000000, 0.1658089] FALSE    0.3311879771
+## s = 3 0.0003335377 0.06636275 [0.00000000, 0.1304021] FALSE    0.4979592436</code></pre>
 </div>
 <div id="building-a-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -366,7 +366,7 @@ SL.library <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r
 <code class="sourceCode R"><span class="va">fam_vim</span></code></pre></div>
 <pre><code>## Variable importance estimates:
 ##       Estimate SE         95% CI         VIMP &gt; 0 p-value  
-## s = 5 0        0.06027933 [0, 0.1181453] FALSE    0.9145452</code></pre>
+## s = 5 0        0.06106161 [0, 0.1196786] FALSE    0.9159228</code></pre>
 <p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fam_vim</span><span class="op">$</span><span class="va">full_fit</span><span class="op">)</span></code></pre></div>
