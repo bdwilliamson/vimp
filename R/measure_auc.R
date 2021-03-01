@@ -54,13 +54,13 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         sens <- unlist(
             lapply(
                 as.list(fitted_values),
-                function(x) mean(fitted_values[(y == 0)] < x, na.rm = na.rm)
+                function(x) mean(fitted_values[(y == 0)] <= x, na.rm = na.rm)
             )
         )
         spec <- unlist(
             lapply(
                 as.list(fitted_values),
-                function(x) mean(fitted_values[(y == 1)] > x, na.rm = na.rm)
+                function(x) mean(fitted_values[(y == 1)] >= x, na.rm = na.rm)
             )
         )
 
@@ -111,13 +111,13 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         sens <- unlist(
             lapply(
                 as.list(fitted_values),
-                function(x) mean(fitted_values[y == 0] < x, na.rm = na.rm)
+                function(x) mean(fitted_values[y == 0] <= x, na.rm = na.rm)
             )
         )
         spec <- unlist(
             lapply(
                 as.list(fitted_values),
-                function(x) mean(fitted_values[y == 1] > x, na.rm = na.rm)
+                function(x) mean(fitted_values[y == 1] >= x, na.rm = na.rm)
             )
         )
 
