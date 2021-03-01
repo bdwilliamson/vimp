@@ -120,7 +120,7 @@ test_that("Measures of predictiveness work", {
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1, scale = 1)
   expect_length(full_rsquared$all_ests, V)
   expect_length(full_rsquared$eif, sum(outer_folds == 1))
-  expect_equal(dim(full_rsquared$all_eifs)[2], V)
+  expect_equal(length(full_rsquared$all_eifs), V)
 })
 
 test_that("Error messages work", {
