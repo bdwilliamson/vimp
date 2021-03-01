@@ -6,6 +6,9 @@ None
 ## Minor changes
 
 * Update sensitivity and specificity to use weak inequalities rather than strict inequalities (better aligns with `cvAUC`)
+* Add a test of CV-AUC estimation against `cvAUC`
+* Borrow information across folds for empirically estimated quantities (e.g., the outcome variance or probability of a certain class); asymptotically equivalent to the prior procedure, but could result in small-sample differences
+* Use fold-specific EIFs for cross-validated SE estimation (again, asymptotically equivalent to the prior procedure, but could result in small-sample differences)
 
 # vimp 2.1.8
 
