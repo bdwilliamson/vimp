@@ -6,6 +6,8 @@
 #'   observed data; a list of length V, where each object is a set of 
 #'   predictions on the validation data.
 #' @param y the observed outcome.
+#' @param full_y the observed outcome (from the entire dataset, for 
+#'   cross-fitted estimates).
 #' @param folds the cross-validation folds for the observed data
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, 
 #'   for R-squared-based variable importance)?
@@ -40,7 +42,8 @@
 #'   details on the mathematics behind this function and the definition of the 
 #'   parameter of interest.
 #' @export
-est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared", 
+est_predictiveness_cv <- function(fitted_values, y, full_y = NULL,
+                                  folds, type = "r_squared", 
                                   C = rep(1, length(y)), Z = NULL, 
                                   folds_Z = folds, 
                                   ipc_weights = rep(1, length(C)), 
@@ -64,19 +67,20 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared",
     if (!is.na(measure_func)) {
         V <- length(unique(folds))
         max_nrow <- max(sapply(1:V, function(v) length(C[folds_Z == v])))
-        ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        ics <- vector("list", length = V)
         ic <- vector("numeric", length = length(C))
         measures <- vector("list", V)
         for (v in 1:V) {
             measures[[v]] <- measure_func[[1]](
-                fitted_values = fitted_values[[v]], y = y[folds == v], 
+                fitted_values = fitted_values[[v]], y = y[folds == v],
+                full_y = full_y,
                 C = C[folds_Z == v], Z = Z[folds_Z == v, , drop = FALSE], 
                 ipc_weights = ipc_weights[folds_Z == v], 
                 ipc_fit_type = ipc_fit_type, 
                 ipc_eif_preds = ipc_eif_preds[folds_Z == v], 
                 ipc_est_type = ipc_est_type, scale = scale, na.rm = na.rm, ...
             )
-            ics[1:length(C[folds_Z == v]), v] <- measures[[v]]$eif
+            ics[[v]] <- measures[[v]]$eif
             ic[folds_Z == v] <- measures[[v]]$eif
         }
         point_ests <- sapply(1:V, function(v) measures[[v]]$point_est)
@@ -91,7 +95,11 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared",
     # check whether or not we need to do ipc weighting -- if y is fully observed, 
     # i.e., is part of Z, then we don't
     do_ipcw <- as.numeric(!all(ipc_weights == 1))
-    mn_y <- mean(y, na.rm = na.rm)
+    if (is.null(full_y)) {
+        mn_y <- mean(y, na.rm = na.rm)    
+    } else {
+        mn_y <- mean(full_y, na.rm = na.rm)
+    }
     # if full_type is "r_squared" or "deviance", post-hoc computing from "mse" 
     # or "cross_entropy"
     if (full_type == "r_squared") {
@@ -107,12 +115,12 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared",
                      -point_est / (var$point_est ^ 2)), 
                    nrow = 1) %*% t(cbind(ic, var$eif))
         )
-        tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        tmp_ics <- vector("list", length = V)
         for (v in 1:V) {
-            tmp_ics[1:length(C[folds_Z == v]), v] <- (-1) * as.vector(
+            tmp_ics[[v]] <- (-1) * as.vector(
                 matrix(c(1 / var$point_est, 
                          -point_ests[v] / (var$point_est ^ 2)), 
-                       nrow = 1) %*% t(cbind(ics[1:length(C[folds_Z == v]), v], 
+                       nrow = 1) %*% t(cbind(ics[[v]], 
                                              var$eif[folds_Z == v]))
             )
         }
@@ -133,12 +141,12 @@ est_predictiveness_cv <- function(fitted_values, y, folds, type = "r_squared",
                      -point_est / (denom$point_est ^ 2)), 
                    nrow = 1) %*% t(cbind(ic, denom$eif))
         )
-        tmp_ics <- matrix(NA, nrow = max_nrow, ncol = V)
+        tmp_ics <- vector("list", length = V)
         for (v in 1:V) {
             tmp_ics[1:length(C[folds_Z == v]), v] <- (-1) * as.vector(
                 matrix(c(1 / denom$point_est, 
                          -point_ests[v] / (denom$point_est ^ 2)), 
-                       nrow = 1) %*% t(cbind(ics[1:length(C[folds_Z == v]), v], 
+                       nrow = 1) %*% t(cbind(ics[[v]], 
                                              denom$eif[folds_Z == v]))
             )
         }

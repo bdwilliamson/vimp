@@ -269,7 +269,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         est_lst_full <- do.call(
             est_predictiveness, 
             args = c(list(fitted_values = fhat_ful, 
-                          y = Y_cc[folds_cc == 1, , drop = FALSE], 
+                          y = Y_cc[folds_cc == 1, , drop = FALSE],
+                          full_y = Y_cc,
                           type = full_type, C = C[folds == 1], 
                           Z = Z_in[folds == 1, , drop = FALSE], 
                           ipc_weights = ipc_weights[folds == 1], 
@@ -282,6 +283,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             est_predictiveness,
             args = c(list(fitted_values = fhat_red, 
                           y = Y_cc[folds_cc == 2, , drop = FALSE], 
+                          full_y = Y_cc,
                           type = full_type, C = C[folds == 2], 
                           Z = Z_in[folds == 2, , drop = FALSE], 
                           ipc_weights = ipc_weights[folds == 2], 
@@ -311,7 +313,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         eif <- tmp_eif_full - tmp_eif_redu
     }
     # compute the standard error
-    se <- vimp_se(est, eif, na.rm = na.rm)
+    se <- vimp_se(list(est = est, eif = eif), na.rm = na.rm)
 
     # if est < 0, set to zero and print warning
     if (est < 0 && !is.na(est)) {

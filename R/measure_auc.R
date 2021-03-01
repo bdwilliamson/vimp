@@ -3,8 +3,11 @@
 #' Compute nonparametric estimate of AUC.
 #'
 #' @param fitted_values fitted values from a regression function using the
-#'   observed data.
-#' @param y the observed outcome.
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#' @param y the observed outcome (may be within a specified fold, for 
+#'   cross-fitted estimates).
+#' @param full_y the observed outcome (from the entire dataset, for 
+#'   cross-fitted estimates).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
@@ -34,7 +37,8 @@
 #' (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
+measure_auc <- function(fitted_values, y, full_y = NULL, 
+                        C = rep(1, length(y)), Z = NULL, 
                         ipc_weights = rep(1, length(y)),
                         ipc_fit_type = "external",
                         ipc_eif_preds = rep(1, length(y)),
@@ -45,29 +49,39 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
     est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc",
                                     x.measure = "cutoff")@y.values)
-    # compute the EIF: if there is coarsening, do a correction
-    if (!all(ipc_weights == 1)) {
-        # marginal probabilities
-        p_0 <- mean(y == 0)
-        p_1 <- mean(y == 1)
-        # sensitivity and specificity
-        sens <- unlist(
+    get_sens <- function(fitted_values, y) {
+        unlist(
             lapply(
                 as.list(fitted_values),
                 function(x) mean(fitted_values[(y == 0)] <= x, na.rm = na.rm)
             )
         )
-        spec <- unlist(
+    }
+    get_spec <- function(fitted_values, y) {
+        unlist(
             lapply(
                 as.list(fitted_values),
                 function(x) mean(fitted_values[(y == 1)] >= x, na.rm = na.rm)
             )
         )
-
-        # contributions from cases and controls
-        contrib_1 <- (y == 1) / p_1 * sens
-        contrib_0 <- (y == 0) / p_0 * spec
-
+    }
+    # marginal probabilities; can use the full data to estimate these
+    if (is.null(full_y)) {
+        p_0 <- mean(y == 0)
+        p_1 <- mean(y == 1)
+    } else {
+        p_0 <- mean(full_y == 0)
+        p_1 <- mean(full_y == 1)
+    }
+    # sensitivity and specificity
+    sens <- get_sens(fitted_values, y)
+    spec <- get_spec(fitted_values, y)
+    
+    # contributions from cases and controls
+    contrib_1 <- (y == 1) / p_1 * sens
+    contrib_0 <- (y == 0) / p_0 * spec
+    # compute the EIF: if there is coarsening, do a correction
+    if (!all(ipc_weights == 1)) {
         # gradient
         obs_grad <- contrib_1 + contrib_0 -
             ( (y == 0) / p_0 + (y == 1) / p_1 ) * est
@@ -103,28 +117,6 @@ measure_auc <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
             est <- scale_est(obs_est, grad, scale = scale)
         }
     } else {
-        # marginal probabilities
-        p_0 <- mean(y == 0)
-        p_1 <- mean(y == 1)
-
-        # sensitivity and specificity
-        sens <- unlist(
-            lapply(
-                as.list(fitted_values),
-                function(x) mean(fitted_values[y == 0] <= x, na.rm = na.rm)
-            )
-        )
-        spec <- unlist(
-            lapply(
-                as.list(fitted_values),
-                function(x) mean(fitted_values[y == 1] >= x, na.rm = na.rm)
-            )
-        )
-
-        # contributions from cases and controls
-        contrib_1 <- (y == 1) / p_1 * sens
-        contrib_0 <- (y == 0) / p_0 * spec
-
         # gradient
         grad <- contrib_1 + contrib_0 -
             ( (y == 0) / p_0 + (y == 1) / p_1 ) * est

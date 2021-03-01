@@ -5,6 +5,7 @@
 #' @param reduced fitted values from a regression on the reduced set of observed
 #'   covariates.
 #' @param y the observed outcome.
+#' @param full_y the observed outcome (not used, defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
@@ -34,7 +35,8 @@
 #'   predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_anova <- function(full, reduced, y, C = rep(1, length(y)), Z = NULL,
+measure_anova <- function(full, reduced, y, full_y = NULL, 
+                          C = rep(1, length(y)), Z = NULL,
                           ipc_weights = rep(1, length(y)),
                           ipc_fit_type = "external",
                           ipc_eif_preds = rep(1, length(y)),

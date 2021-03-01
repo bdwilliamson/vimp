@@ -5,6 +5,9 @@
 #' @param fitted_values fitted values from a regression function using the
 #'   observed data.
 #' @param y the observed outcome.
+#' @param full_y the observed outcome (defaults to \code{NULL}; allows the 
+#'   full-data outcome to be used for empirical estimates that do not rely 
+#'   on covariates).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
@@ -34,7 +37,8 @@
 #'   (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_deviance <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
+measure_deviance <- function(fitted_values, y, full_y = NULL, 
+                             C = rep(1, length(y)), Z = NULL,
                              ipc_weights = rep(1, length(y)),
                              ipc_fit_type = "external",
                              ipc_eif_preds = rep(1, length(y)),
@@ -48,13 +52,18 @@ measure_deviance <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
     } else {
         y_mult <- y
     }
+    # estimate the probability of observing a "case"
+    if (is.null(full_y)) {
+        pi_0 <- mean(y, na.rm = na.rm)
+    } else {
+        pi_0 <- mean(full_y, na.rm = na.rm)
+    }
     # compute the EIF: if there is coarsening, do a correction
     if (!all(ipc_weights == 1)) {
         # get full-data gradient on fully-observed data
         obs_ce <- measure_cross_entropy(fitted_values, y, na.rm = na.rm)
-        obs_pi_0 <- mean(y, na.rm = na.rm)
         obs_denom <- measure_cross_entropy(
-            fitted_values = rep(obs_pi_0, length(y)), y, na.rm = na.rm
+            fitted_values = rep(pi_0, length(y)), y, na.rm = na.rm
         )
         obs_grad <- as.vector(
             matrix(c(1 / obs_denom$point_est,
@@ -89,7 +98,6 @@ measure_deviance <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL,
         cross_entropy_meas <- measure_cross_entropy(
             fitted_values, y, na.rm = na.rm
         )
-        pi_0 <- mean(y, na.rm = na.rm)
         denom <- measure_cross_entropy(
             fitted_values = rep(pi_0, length(y)), y, na.rm = na.rm
         )

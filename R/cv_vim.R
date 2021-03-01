@@ -373,6 +373,7 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             args = c(
                 list(fitted_values = fhat_ful, 
                      y = Y_cc[outer_folds_cc == 1, , drop = FALSE], 
+                     full_y = Y_cc,
                      folds = inner_folds_1_cc, type = full_type, 
                      C = C[outer_folds == 1], 
                      Z = Z_in[outer_folds == 1, , drop = FALSE], 
@@ -389,6 +390,7 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             args = c(
                 list(fitted_values = fhat_red, 
                      y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
+                     full_y = Y_cc,
                      folds = inner_folds_2_cc, type = full_type, 
                      C = C[outer_folds == 2], 
                      Z = Z_in[outer_folds == 2, , drop = FALSE], 
@@ -442,7 +444,8 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         all_eifs <- tmp_eifs_full - tmp_eifs_redu
     }
     # compute the standard error
-    se <- vimp_se(est, eif, na.rm = na.rm)
+    se <- vimp_se(list(est = est, eif = eif, all_eifs = all_eifs), 
+                  na.rm = na.rm)
 
     # if est < 0, set to zero and print warning
     if (est < 0 && !is.na(est)) {

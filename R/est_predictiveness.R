@@ -5,6 +5,8 @@
 #' @param fitted_values fitted values from a regression function using the 
 #'   observed data.
 #' @param y the observed outcome.
+#' @param full_y the observed outcome (from the entire dataset, for 
+#'   cross-fitted estimates).
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, 
 #'   for R-squared-based variable importance)?
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes 
@@ -38,7 +40,8 @@
 #'   details on the mathematics behind this function and the definition of the 
 #'   parameter of interest.
 #' @export
-est_predictiveness <- function(fitted_values, y, type = "r_squared", 
+est_predictiveness <- function(fitted_values, y, full_y = NULL, 
+                               type = "r_squared", 
                                C = rep(1, length(y)), Z = NULL, 
                                ipc_weights = rep(1, length(C)), 
                                ipc_fit_type = "external", 
@@ -62,7 +65,7 @@ est_predictiveness <- function(fitted_values, y, type = "r_squared",
     # compute plug-in point estimate, EIF, inverse-weighted EIF predictions
     if (!is.na(measure_func)) {
         est_lst <- measure_func[[1]](
-            fitted_values = fitted_values, y = y, C = C, Z = Z, 
+            fitted_values = fitted_values, y = y, full_y = full_y, C = C, Z = Z, 
             ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, 
             ipc_eif_preds = ipc_eif_preds, ipc_est_type = ipc_est_type, 
             scale = scale, na.rm = na.rm, ...

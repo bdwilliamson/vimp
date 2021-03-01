@@ -2,9 +2,11 @@
 #'
 #' Compute nonparametric estimate of classification accuracy.
 #'
-#' @param fitted_values fitted values from a regression function using the 
-#'   observed data.
-#' @param y the observed outcome.
+#' @param fitted_values fitted values from a regression function using the
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#' @param y the observed outcome (may be within a specified fold, for 
+#'   cross-fitted estimates).
+#' @param full_y the observed outcome (not used, defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes 
 #'   unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object 
@@ -34,7 +36,8 @@
 #'   (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_accuracy <- function(fitted_values, y, C = rep(1, length(y)), Z = NULL, 
+measure_accuracy <- function(fitted_values, y, full_y = NULL, 
+                             C = rep(1, length(y)), Z = NULL, 
                              ipc_weights = rep(1, length(y)), 
                              ipc_fit_type = "external", 
                              ipc_eif_preds = rep(1, length(y)), 
