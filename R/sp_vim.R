@@ -179,6 +179,12 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
         arg_lst$cvControl$stratifyCV <- FALSE
     }
+    if (is.null(arg_lst$family)) {
+        arg_lst$family <- switch(
+            (length(unique(Y_cc)) == 2) + 1, stats::gaussian(), 
+            stats::binomial()
+        )
+    }
 
     # get v, preds, ic for null set
     preds_none <- list()
@@ -215,14 +221,16 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     }
     preds_lst <- sapply(
         1:length(S[-1]), 
-        function(i) run_sl(
-            Y_cc[(outer_folds_cc == 2), , drop = FALSE], 
-            X_cc[(outer_folds_cc == 2), ], V = V, SL.library = SL.library, 
-            univariate_SL.library = univariate_SL.library, s = S[-1][[i]], 
-            folds = inner_folds_2_cc, verbose = verbose, 
-            progress_bar = progress_bar, indx = i, 
-            weights = weights_cc[(outer_folds_cc == 2)], ...
-        ), simplify = FALSE
+        function(i) {
+            do.call(run_sl, args = c(
+            list(Y_cc[(outer_folds_cc == 2), , drop = FALSE], 
+                 X_cc[(outer_folds_cc == 2), ], V = V, SL.library = SL.library, 
+                 univariate_SL.library = univariate_SL.library, s = S[-1][[i]], 
+                 folds = inner_folds_2_cc, verbose = verbose, 
+                 progress_bar = progress_bar, indx = i, 
+                 weights = weights_cc[(outer_folds_cc == 2)]),
+            arg_lst
+        ))}, simplify = FALSE
     )
     if (verbose) {
         close(progress_bar)

@@ -209,6 +209,13 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
 
     # if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
+        arg_lst <- list(...)
+        if (is.null(arg_lst$family)) {
+            arg_lst$family <- switch(
+                (length(unique(Y_cc)) == 2) + 1, stats::gaussian(), 
+                stats::binomial()
+            )
+        }
         X_cc <- subset(X, C == 1, drop = FALSE)
         # set up the cross-fitting
         outer_folds <- .make_folds(Y, V = 2, C = C, stratified = stratified)
@@ -229,15 +236,18 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         fhat_red <- list()
         for (v in 1:V) {
             # fit super learner
-            fit <- SuperLearner::SuperLearner(
-                Y = Y_cc[(outer_folds_cc == 1), , 
-                         drop = FALSE][inner_folds_1_cc != v, , drop = FALSE], 
-                X = X_cc[(outer_folds_cc == 1), , 
-                         drop = FALSE][inner_folds_1_cc != v, , drop = FALSE], 
-                SL.library = SL.library, 
-                obsWeights = weights_cc[(outer_folds_cc == 1)][inner_folds_1_cc != v], 
-                ...
+            arg_lst_v <- c(
+                arg_lst, 
+                list(Y = Y_cc[(outer_folds_cc == 1), , 
+                              drop = FALSE][inner_folds_1_cc != v, , 
+                                            drop = FALSE], 
+                     X = X_cc[(outer_folds_cc == 1), , 
+                              drop = FALSE][inner_folds_1_cc != v, , 
+                                            drop = FALSE], 
+                     SL.library = SL.library, 
+                     obsWeights = weights_cc[(outer_folds_cc == 1)][inner_folds_1_cc != v])
             )
+            fit <- do.call(SuperLearner::SuperLearner, arg_lst_v)
             fitted_v <- SuperLearner::predict.SuperLearner(
                 fit, onlySL = TRUE
             )$pred
@@ -257,41 +267,46 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                          drop = FALSE][inner_folds_2_cc != v, , drop = FALSE]
                 )
             } else {
-                arg_lst <- list(...)
+                arg_lst_red <- arg_lst
                 if (length(unique(fitted_v)) == 1) {
-                    arg_lst$Y <- Y_cc[(outer_folds_cc == 2), , 
+                    arg_lst_red$Y <- Y_cc[(outer_folds_cc == 2), , 
                                       drop = FALSE][inner_folds_2_cc != v, , 
                                                     drop = FALSE]
                 } else if (type == "r_squared" || type == "anova") {
-                    arg_lst$family <- stats::gaussian()
+                    arg_lst_red$family <- stats::gaussian()
                     if (any(grepl("cvControl", names(arg_lst)))) {
                         arg_lst$cvControl$stratifyCV <- FALSE
                     }
-                    fit_2 <- SuperLearner::SuperLearner(
-                        Y = Y_cc[(outer_folds_cc == 2), , 
-                                 drop = FALSE][inner_folds_2_cc != v, , drop = FALSE], 
-                        X = X_cc[(outer_folds_cc == 2), , 
-                                 drop = FALSE][inner_folds_2_cc != v, , drop = FALSE], 
-                        SL.library = SL.library, ...
+                    arg_lst_v_2 <- c(
+                        arg_lst, 
+                        list(Y = Y_cc[(outer_folds_cc == 2), , 
+                                      drop = FALSE][inner_folds_2_cc != v, , 
+                                                    drop = FALSE], 
+                             X = X_cc[(outer_folds_cc == 2), , 
+                                      drop = FALSE][inner_folds_2_cc != v, , 
+                                                    drop = FALSE], 
+                             SL.library = SL.library, 
+                             obsWeights = weights_cc[(outer_folds_cc == 2)][inner_folds_2_cc != v])
                     )
-                    arg_lst$Y <- SuperLearner::predict.SuperLearner(
+                    fit_2 <- do.call(SuperLearner::SuperLearner, arg_lst_v_2)
+                    arg_lst_red$Y <- SuperLearner::predict.SuperLearner(
                         fit_2, onlySL = TRUE
                     )$pred
                 } else {
-                    arg_lst$Y <- Y_cc[(outer_folds_cc == 2), , 
+                    arg_lst_red$Y <- Y_cc[(outer_folds_cc == 2), , 
                                       drop = FALSE][inner_folds_2_cc != v, , 
                                                     drop = FALSE]
                     # get the family
-                    if (is.character(arg_lst$family))
-                        arg_lst$family <- get(arg_lst$family, mode = "function", 
+                    if (is.character(arg_lst_red$family))
+                        arg_lst_red$family <- get(arg_lst$family, mode = "function", 
                                               envir = parent.frame())
                 }
-                arg_lst$X <- X_cc[(outer_folds_cc == 2), , 
+                arg_lst_red$X <- X_cc[(outer_folds_cc == 2), , 
                                   drop = FALSE][inner_folds_2_cc != v, -indx, 
                                                 drop = FALSE]
-                arg_lst$SL.library <- SL.library
-                arg_lst$obsWeights <- weights_cc[(outer_folds_cc == 2)][inner_folds_2_cc != v]
-                red <- do.call(SuperLearner::SuperLearner, arg_lst)
+                arg_lst_red$SL.library <- SL.library
+                arg_lst_red$obsWeights <- weights_cc[(outer_folds_cc == 2)][inner_folds_2_cc != v]
+                red <- do.call(SuperLearner::SuperLearner, arg_lst_red)
                 # get predictions on the validation fold
                 fhat_red[[v]] <- SuperLearner::predict.SuperLearner(
                     red, 
@@ -427,9 +442,9 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             tmp_eif_redu <- eif_redu
         }
         eif <- tmp_eif_full - tmp_eif_redu 
-        all_eifs <- sapply(1:V, function(v) {
+        all_eifs <- suppressWarnings(sapply(1:V, function(v) {
             all_eifs_full[[v]] - all_eifs_redu[[v]]
-        }, simplify = FALSE)
+        }, simplify = FALSE))
     }
     # compute the standard error
     se <- vimp_se(list(est = est, eif = eif, all_eifs = all_eifs), 

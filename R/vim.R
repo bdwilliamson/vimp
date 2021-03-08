@@ -182,6 +182,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
 
     # if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
+        arg_lst <- list(...)
+        if (is.null(arg_lst$family)) {
+            arg_lst$family <- switch(
+                (length(unique(Y_cc)) == 2) + 1, stats::gaussian(), 
+                stats::binomial()
+            )
+        }
         X_cc <- subset(X, C == 1, drop = FALSE)
         if (is.null(folds)) {
             folds <- .make_folds(Y, V = 2, C = C, stratified = stratified)
@@ -192,12 +199,14 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         X_minus_s <- X_cc[, -indx, drop = FALSE]
 
         # fit the Super Learner given the specified library
-        full <- SuperLearner::SuperLearner(
-            Y = Y_cc[(folds_cc == 1), , drop = FALSE], 
-            X = X_cc[(folds_cc == 1), , drop = FALSE], 
-            SL.library = SL.library, 
-            obsWeights = weights_cc[(folds_cc == 1)], ...
-        )
+        arg_lst_full <- c(arg_lst, 
+                          list(
+                              Y = Y_cc[(folds_cc == 1), , drop = FALSE],
+                              X = X_cc[(folds_cc == 1), , drop = FALSE],
+                              SL.library = SL.library, 
+                              obsWeights = weights_cc[(folds_cc == 1)]
+                          ))
+        full <- do.call(SuperLearner::SuperLearner, arg_lst_full)
 
         # get the fitted values
         fhat_ful <- SuperLearner::predict.SuperLearner(full)$pred
@@ -210,7 +219,6 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             reduced <- NA
             fhat_red <- mean(Y_cc[(folds_cc == 2), , drop = FALSE])
         } else {
-            arg_lst <- list(...)
             if (full_type == "r_squared" || full_type == "anova") {
                 if (length(unique(fhat_ful)) == 1) {
                     arg_lst$Y <- Y_cc[(folds_cc == 2), , drop = FALSE]

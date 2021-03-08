@@ -132,3 +132,24 @@ test_that("vimp and cvAUC agree", {
   sprintf("%.20f", auc_se)
   sprintf("%.20f", cvauc_lst$se)
 })
+
+# set.seed(12345)
+# small_lib_x <- matrix(rnorm(300), nrow = 10)
+# small_lib_y <- ifelse(rbinom(30, size = 1, prob = 0.5) == 1, "YES", "NO")
+# dat <- data.frame(y = small_lib_y, small_lib_x)
+# SL.ranger_bin <- function(Y, X, newX, family = binomial(), obsWeights, ...) {
+#   SL.ranger(Y = Y, X = X, newX = newX, family = family, obsWeights = obsWeights,
+#             ...)
+# }
+# V <- 2
+# sl_cvcontrol <- list(V = 2)
+# set.seed(4747)
+# test_that("small SL library works", {
+#   vim_ranger <- vimp_auc(
+#     Y = ifelse(dat$y == "YES", 1, 0),
+#     X = dat[, -c(1)],
+#     run_regression = TRUE, SL.library = c("SL.ranger_bin"),
+#     V = V, cvControl = sl_cvcontrol, env = environment()
+#   )
+#   expect_length(vim_ranger$est, 1)
+# })

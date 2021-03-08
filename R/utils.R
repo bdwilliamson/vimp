@@ -161,7 +161,7 @@ run_sl <- function(Y, X, V, SL.library, univariate_SL.library, s, folds,
     # message(paste0("Fitting regression for s = ", paste(s, collapse = ",")))
     if (is.null(L$cvControl)) {
       L$cvControl <- list(verbose = TRUE)
-    } else if (grepl("verbose", names(L$cvControl))) {
+    } else if (any(grepl("verbose", names(L$cvControl)))) {
       L$cvControl$verbose <- TRUE
     }
   }

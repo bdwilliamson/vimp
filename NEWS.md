@@ -1,3 +1,12 @@
+# vimp 2.1.10
+
+## Major changes
+None
+
+## Minor changes
+
+* Automatically determine the `family` if it isn't specified; use `stats::binomial()` if there are only two unique outcome values, otherwise use `stats::gaussian()`
+
 # vimp 2.1.9
 
 ## Major changes
