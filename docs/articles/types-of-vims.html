@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.10</span>
       </span>
     </div>
 
@@ -98,7 +98,7 @@
       <h1 data-toc-skip>Types of VIMs</h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2021-03-01</h4>
+            <h4 class="date">2021-03-08</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/types-of-vims.Rmd"><code>vignettes/types-of-vims.Rmd</code></a></small>
       <div class="hidden name"><code>types-of-vims.Rmd</code></div>
@@ -108,8 +108,8 @@
     
     
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"vimp"</span>)
-<span class="co">#&gt; vimp version 2.1.9: Perform Inference on Algorithm-Agnostic Variable Importance</span>
-<span class="co">#&gt; Package created on 2021-03-01</span>
+<span class="co">#&gt; vimp version 2.1.10: Perform Inference on Algorithm-Agnostic Variable Importance</span>
+<span class="co">#&gt; Package created on 2021-03-08</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"SuperLearner"</span>)
 <span class="co">#&gt; Loading required package: nnls</span>
 <span class="co">#&gt; Super Learner</span>
@@ -170,8 +170,8 @@
 <p>The three VIMs defined here may be different for a given feature of interest. Indeed, we can see this for family history of heart disease in the South African heart disease study data:</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="no">fam_vim_cond</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate SE         95% CI         VIMP &gt; 0 p-value </span>
-<span class="co">#&gt; s = 5 0        0.07054001 [0, 0.1382559] FALSE    0.843128</span>
+<span class="co">#&gt;       Estimate SE         95% CI         VIMP &gt; 0 p-value  </span>
+<span class="co">#&gt; s = 5 0        0.07150865 [0, 0.1401544] FALSE    0.8821179</span>
 <span class="no">fam_vim_marg</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate   SE         95% CI        VIMP &gt; 0 p-value   </span>
@@ -179,16 +179,16 @@
 <span class="co"># note: need to look at row for s = 5</span>
 <span class="no">all_vim_spvim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate    SE         95% CI                   VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 1 0.000000000 0.04833387 [0.00000000, 0.09473265] FALSE    0.3961086927</span>
-<span class="co">#&gt; s = 2 0.040450504 0.05043574 [0.00000000, 0.13930273] FALSE    0.1472266751</span>
-<span class="co">#&gt; s = 3 0.037930750 0.04992969 [0.00000000, 0.13579114] FALSE    0.1565363443</span>
-<span class="co">#&gt; s = 4 0.012137175 0.04211513 [0.00000000, 0.09468130] FALSE    0.2787654650</span>
-<span class="co">#&gt; s = 5 0.128559280 0.03345391 [0.06299082, 0.19412774]  TRUE    0.0000164071</span>
-<span class="co">#&gt; s = 6 0.008707699 0.03573791 [0.00000000, 0.07875272] FALSE    0.2763457505</span>
-<span class="co">#&gt; s = 7 0.000000000 0.05207273 [0.00000000, 0.10206067] FALSE    0.4033041778</span>
-<span class="co">#&gt; s = 8 0.000000000 0.03710618 [0.00000000, 0.07272678] FALSE    0.3664978865</span>
-<span class="co">#&gt; s = 9 0.123501110 0.04694141 [0.03149763, 0.21550459]  TRUE    0.0019981167</span></pre></body></html></div>
+<span class="co">#&gt;       Estimate   SE         95% CI                   VIMP &gt; 0 p-value     </span>
+<span class="co">#&gt; s = 1 0.00000000 0.05178098 [0.00000000, 0.10148885] FALSE    4.027781e-01</span>
+<span class="co">#&gt; s = 2 0.04029755 0.05353233 [0.00000000, 0.14521898] FALSE    1.621201e-01</span>
+<span class="co">#&gt; s = 3 0.04318910 0.05897616 [0.00000000, 0.15878026] FALSE    1.724248e-01</span>
+<span class="co">#&gt; s = 4 0.00000000 0.05317785 [0.00000000, 0.10422667] FALSE    4.052472e-01</span>
+<span class="co">#&gt; s = 5 0.14884344 0.03584993 [0.07857888, 0.21910800]  TRUE    4.470662e-06</span>
+<span class="co">#&gt; s = 6 0.01620044 0.03815937 [0.00000000, 0.09099144] FALSE    2.263854e-01</span>
+<span class="co">#&gt; s = 7 0.00000000 0.06389329 [0.00000000, 0.12522854] FALSE    4.207388e-01</span>
+<span class="co">#&gt; s = 8 0.00000000 0.04497930 [0.00000000, 0.08815782] FALSE    3.886994e-01</span>
+<span class="co">#&gt; s = 9 0.13754870 0.04962335 [0.04028872, 0.23480867]  TRUE    1.322414e-03</span></pre></body></html></div>
 <p>This is simply a function of the fact that the VIMs are different population parameters. All three likely provide useful information in practice:</p>
 <ul>
 <li>the marginal VIM provides information about the predictiveness of the covariate in isolation;</li>
