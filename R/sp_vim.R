@@ -63,20 +63,20 @@
 #' The function works by estimating
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
-#' \itemize{
-#'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
-#' \item{v}{- the estimated predictiveness measure for each sampled subset}
-#'  \item{preds_lst}{ - the predicted values from the chosen method for each sampled subset}
-#'  \item{est}{ - the estimated SPVIM value for each feature}
-#'  \item{ic_lst}{ - the influence functions for each sampled subset}
-#'  \item{ic}{- a list of the SPVIM influence function contributions}
-#'  \item{se}{ - the standard errors for the estimated variable importance}
-#'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence intervals based on the variable importance estimates}
-#'  \item{gamma}{- the fraction of the sample size used when sampling subsets}
-#'  \item{alpha}{ - the level, for confidence interval calculation}
-#'  \item{delta}{- the \code{delta} value used for hypothesis testing}
-#'  \item{y}{ - the outcome}
-#'  \item{ipc_weights}{ - the weights}
+#' \describe{
+#'  \item{SL.library}{the library of learners passed to \code{SuperLearner}}
+#'  \item{v}{the estimated predictiveness measure for each sampled subset}
+#'  \item{preds_lst}{the predicted values from the chosen method for each sampled subset}
+#'  \item{est}{the estimated SPVIM value for each feature}
+#'  \item{ic_lst}{the influence functions for each sampled subset}
+#'  \item{ic}{a list of the SPVIM influence function contributions}
+#'  \item{se}{the standard errors for the estimated variable importance}
+#'  \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence intervals based on the variable importance estimates}
+#'  \item{gamma}{the fraction of the sample size used when sampling subsets}
+#'  \item{alpha}{the level, for confidence interval calculation}
+#'  \item{delta}{the \code{delta} value used for hypothesis testing}
+#'  \item{y}{the outcome}
+#'  \item{ipc_weights}{the weights}
 #'  \item{mat}{- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values}
 #' }
 #'

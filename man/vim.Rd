@@ -17,7 +17,7 @@ vim(
   delta = 0,
   scale = "identity",
   na.rm = FALSE,
-  folds = NULL,
+  sample_splitting_folds = NULL,
   stratified = FALSE,
   C = rep(1, length(Y)),
   Z = NULL,
@@ -66,10 +66,10 @@ logit ("logit") scale?}
 \item{na.rm}{should we remove NAs in the outcome and fitted values 
 in computation? (defaults to \code{FALSE})}
 
-\item{folds}{the folds used for \code{f1} and \code{f2}; assumed to be 1 
-for the observations used in \code{f1} and 2 for the observations used 
-in \code{f2}. If there is only a single fold passed in, then hypothesis 
-testing is not done.}
+\item{sample_splitting_folds}{the folds used for sample-splitting; 
+these identify the observations that should be used to evaluate 
+predictiveness based on the full and reduced sets of covariates, respectively.
+Only used if \code{run_regression = FALSE}.}
 
 \item{stratified}{if run_regression = TRUE, then should the generated 
 folds be stratified based on the outcome (helps to ensure class balance 
@@ -119,26 +119,27 @@ setting \eqn{\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)}.
 
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list including:
-\itemize{
- \item{s}{ - the column(s) to calculate variable importance for}
- \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
- \item{type}{ - the type of risk-based variable importance measured}
- \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
- \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
- \item{est}{ - the estimated variable importance}
- \item{naive}{ - the naive estimator of variable importance (only used if \code{type = "anova"})}
- \item{eif}{ - the estimated influence curve}
- \item{se}{ - the standard error for the estimated variable importance}
- \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
- \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
- \item{p_value}{ - a p-value based on the same test as \code{test}}
- \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
- \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
- \item{alpha}{ - the level, for confidence interval calculation}
- \item{folds}{ - the folds used for hypothesis testing}
- \item{y}{ - the outcome}
- \item{ipc_weights}{ - the weights}
- \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
+\describe{
+ \item{s}{the column(s) to calculate variable importance for}
+ \item{SL.library}{the library of learners passed to \code{SuperLearner}}
+ \item{type}{the type of risk-based variable importance measured}
+ \item{full_fit}{the fitted values of the chosen method fit to the full data}
+ \item{red_fit}{the fitted values of the chosen method fit to the reduced data}
+ \item{est}{the estimated variable importance}
+ \item{naive}{the naive estimator of variable importance (only used if \code{type = "anova"})}
+ \item{eif_full}{the estimated efficient influence function for the full regression}
+ \item{eif_reduced}{the estimated efficient influence function for the reduced regression}
+ \item{se}{the standard error for the estimated variable importance}
+ \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
+ \item{test}{a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
+ \item{p_value}{a p-value based on the same test as \code{test}}
+ \item{full_mod}{the object returned by the estimation procedure for the full data regression (if applicable)}
+ \item{red_mod}{the object returned by the estimation procedure for the reduced data regression (if applicable)}
+ \item{alpha}{the level, for confidence interval calculation}
+ \item{sample_splitting_folds}{the folds used for sample-splitting (used for hypothesis testing)}
+ \item{y}{the outcome}
+ \item{ipc_weights}{the weights}
+ \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }
 \examples{
@@ -152,7 +153,7 @@ x <- data.frame(replicate(p, stats::runif(n, -1, 1)))
 f <- function(x) 0.5 + 0.3*x[1] + 0.2*x[2]
 smooth <- apply(x, 1, function(z) f(z))
 
-# generate Y ~ Normal (smooth, 1)
+# generate Y ~ Bernoulli (smooth)
 y <- matrix(rbinom(n, size = 1, prob = smooth))
 
 # set up a library for SuperLearner; note simple library for speed
@@ -168,20 +169,19 @@ folds[y == 0] <- folds_0
 est <- vim(y, x, indx = 2, type = "r_squared",
            alpha = 0.05, run_regression = TRUE,
            SL.library = learners, cvControl = list(V = 2),
-           folds = folds)
+           sample_splitting_folds = folds)
 
 # using pre-computed fitted values
-full <- SuperLearner::SuperLearner(Y = y[folds == 1], X = x[folds == 1, ],
+full <- SuperLearner::SuperLearner(Y = y, X = x,
 SL.library = learners, cvControl = list(V = 2))
 full.fit <- SuperLearner::predict.SuperLearner(full)$pred
-reduced <- SuperLearner::SuperLearner(Y = y[folds == 2], 
-X = x[folds == 2, -2, drop = FALSE],
+reduced <- SuperLearner::SuperLearner(Y = y, X = x,
 SL.library = learners, cvControl = list(V = 2))
 red.fit <- SuperLearner::predict.SuperLearner(reduced)$pred
 
 est <- vim(Y = y, f1 = full.fit, f2 = red.fit,
-            indx = 2, run_regression = FALSE, alpha = 0.05, folds = folds,
-            type = "accuracy")
+            indx = 2, run_regression = FALSE, alpha = 0.05, 
+            sample_splitting_folds = folds, type = "accuracy")
 
 }
 \seealso{

@@ -1,26 +1,57 @@
 # -------------------------------------
 # Checkers
 # -------------------------------------
-check_inputs <- function(Y, X, f1, f2, indx, folds) {
-    if (is.null(f1) && is.null(Y)) stop("You must enter either Y or fitted values for the full regression.")
-    if (is.null(f2) && is.null(X)) stop("You must enter either X or fitted values for the reduced regression.")
+check_inputs <- function(Y, X, f1, f2, indx) {
+    if (is.null(f1) && is.null(Y)) {
+      stop("You must enter either Y or fitted values for the full regression.")
+    }
+    if (is.null(f2) && is.null(X)) {
+      stop("You must enter either X or fitted values for the reduced regression.")
+    }
     # if indx is outside the range of X, stop and throw an error
     if (!is.null(X)) {
-        if (any(indx > dim(X)[2])) stop("One of the feature indices in 'indx' is larger than the total number of features in X. Please specify a new index subgroup in 'indx'.")
+        if (any(indx > dim(X)[2])) {
+          stop(paste0("One of the feature indices in 'indx' is larger than the ", 
+                      "total number of features in X. Please specify a new index ",
+                      "subgroup in 'indx'."))
+        }
     }
 }
-check_fitted_values <- function(Y, f1, f2, folds, V = NULL, cv = FALSE) {
+check_fitted_values <- function(Y, f1, f2, sample_splitting_folds = NULL, 
+                                cross_fitting_folds = NULL, V = NULL, cv = FALSE) {
     if (is.null(Y)) stop("Y must be entered.")
     if (!cv) {
-        if (length(f1) == 0 || length(f2) == 0) stop("Fitted values must be entered if run_regression = FALSE.")
-        if (length(f1) != length(Y[folds == 1])) stop("Fitted values from the full regression must be the same length as the number of observations in the first fold.")
-        if (length(f2) != length(Y[folds == 2])) stop("Fitted values from the reduced regression must be the same length as the number of observations in the second fold.")
+        if (length(f1) == 0 || length(f2) == 0) {
+          stop("Fitted values must be entered if run_regression = FALSE.")
+        }
+        if (length(sample_splitting_folds) != length(Y)) {
+          stop("The entered folds must be the same length as the outcome of interest.")
+        }
     } else {
-        if (is.null(f1)) stop("You must specify a list of predicted values from a regression of Y on X.")
-        if (is.null(f2)) stop("You must specify a list of predicted values from a regression of the fitted values from the Y on X regression on the reduced set of covariates.")
-        if (is.null(folds)) stop("You must specify a list of folds.")
-        if (length(f1) != V) stop("The number of folds from the full regression must be the same length as the number of folds.")
-        if (length(f2) != V) stop("The number of folds from the reduced regression must be the same length as the number of folds.")
+        if (is.null(f1)) {
+          stop(paste0("You must specify a list of predicted values from a ", 
+                      "regression of Y on X."))
+        }
+        if (is.null(f2)) {
+          stop(paste0("You must specify a list of predicted values from either ", 
+                      "(a) a regression of the fitted values from the Y on X ", 
+                      "regression on the reduced set of covariates, or (b)", 
+                      "a regression of Y on the reduced set of covariates."))
+        }
+        if (length(sample_splitting_folds) != length(Y)) {
+          stop("The entered folds must be the same length as the outcome of interest.")
+        }
+        if (is.null(cross_fitting_folds)) {
+          stop("You must specify the folds that were used for cross-fitting.")
+        }
+        if (length(f1) != V) {
+          stop(paste0("The number of folds from the full regression must be the ",
+                      "same length as the number of folds."))
+        }
+        if (length(f2) != V) {
+          stop(paste0("The number of folds from the reduced regression must be ", 
+                      "the same length as the number of folds."))
+        }
     }
 }
 
@@ -30,8 +61,14 @@ check_fitted_values <- function(Y, f1, f2, folds, V = NULL, cv = FALSE) {
 get_full_type <- function(type) {
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
     full_type <- types[pmatch(type, types)]
-    if (is.na(full_type)) stop("We currently do not support the entered variable importance parameter.")
-    if (full_type == "anova" ) warning("Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.")
+    if (is.na(full_type)) {
+      stop("We currently do not support the entered variable importance parameter.")
+    }
+    if (full_type == "anova" ) {
+      warning(paste0("Hypothesis testing is not available for type = 'anova'. ",
+                     "If you want an R-squared-based hypothesis test, please enter ",
+                     "type = 'r_squared'."))
+    }
     full_type
 }
 

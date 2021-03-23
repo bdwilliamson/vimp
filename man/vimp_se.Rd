@@ -4,12 +4,10 @@
 \alias{vimp_se}
 \title{Estimate standard errors}
 \usage{
-vimp_se(est, n = length(est$eif), na.rm = FALSE)
+vimp_se(eif, n = length(eif), na.rm = FALSE)
 }
 \arguments{
-\item{est}{a list (e.g., from a call to \code{est_predictiveness}) with 
-the point estimate of variable importance and the estimated efficient 
-influence function.}
+\item{eif}{the estimated efficient influence function.}
 
 \item{n}{the sample size.}
 

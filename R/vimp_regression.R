@@ -5,73 +5,12 @@
 #' \code{cv_vim}, with \code{type = "anova"}. 
 #' This function is deprecated in \code{vimp} version 2.0.0.
 #'
-#' @param Y the outcome.
-#' @param X the covariates.
-#' @param f1 the predicted values on validation data from a flexible estimation 
-#'   technique regressing Y on X in the training data; a list of length V, 
-#'   where each object is a set of predictions on the validation data.
-#' @param f2 the predicted values on validation data from a flexible estimation 
-#'   technique regressing the fitted values in \code{f1} on X withholding the 
-#'   columns in \code{indx}; a list of length V, where each object is a set of 
-#'   predictions on the validation data.
-#' @param indx the indices of the covariate(s) to calculate variable importance 
-#'   for; defaults to 1.
-#' @param V the number of folds for cross-validation, defaults to 10.
-#' @param folds the folds to use, if f1 and f2 are supplied.
-#' @param stratified if run_regression = TRUE, then should the generated folds 
-#'   be stratified based on the outcome? (helps to ensure class balance across 
-#'   cross-validation folds)
-#' @param run_regression if outcome Y and covariates X are passed to 
-#'   \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then 
-#'   Super Learner will be used; otherwise, variable importance will be 
-#'   computed using the inputted fitted values.
-#' @param SL.library a character vector of learners to pass to 
-#'   \code{SuperLearner}, if \code{run_regression = TRUE}.
-#'   Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
-#' @param alpha the level to compute the confidence interval at. Defaults to 
-#'   0.05, corresponding to a 95\% confidence interval.
-#' @param delta the value of the \eqn{\delta}-null (i.e., testing if 
-#'   importance < \eqn{\delta}); defaults to 0.
-#' @param na.rm should we remove NA's in the outcome and fitted values in 
-#'   computation? (defaults to \code{FALSE})
-#' @param scale scale should CIs be computed on original ("identity") or 
-#'   logit ("logit") scale? (defaults to "identity")
-#' @param C the indicator of coarsening (1 denotes observed, 0 denotes 
-#'   unobserved).
-#' @param Z either (i) NULL (the default, in which case the argument 
-#'   \code{C} above must be all ones), or (ii) a character list specifying the 
-#'   variable(s) among Y and X that are thought to play a role in the coarsening 
-#'   mechanism.
-#' @param ipc_weights weights for the computed influence curve 
-#'   (i.e., inverse probability weights for coarsened-at-random settings).
-#' @param ipc_est_type IPC correction, either \code{"ipw"} (for classical 
-#'   inverse probability weighting) or \code{"aipw"} (for augmented inverse
-#'   probability weighting; the default).
-#' @param ... other arguments to the estimation tool, see "See also".
+#' @inheritParams cv_vim
 #'
 #' @return An object of classes \code{vim} and \code{vim_regression}. 
 #'   See Details for more information.
 #'
-#' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
-#' details on the mathematics behind this function, and the validity
-#' of the confidence intervals.
-#' In the interest of transparency, we return most of the calculations
-#' within the \code{vim} object. This results in a list containing:
-#' \itemize{
-#'  \item{s}{ - the column(s) to calculate variable importance for}
-#'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
-#'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data}
-#'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data}
-#'  \item{est}{ - the estimated variable importance}
-#'  \item{naive}{ - the naive estimator of variable importance}
-#'  \item{update}{ - the influence curve-based update}
-#'  \item{se}{ - the standard error for the estimated variable importance}
-#'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
-#'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
-#'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
-#'  \item{alpha}{ - the level, for confidence interval calculation}
-#'  \item{y}{ - the outcome}
-#' }
+#' @inherit cv_vim details
 #'
 #' @examples
 #' # generate the data
@@ -100,7 +39,8 @@
 vimp_regression <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, 
                             V = 10, run_regression = TRUE, 
                             SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
-                            alpha = 0.05, delta = 0, na.rm = FALSE, folds = NULL, 
+                            alpha = 0.05, delta = 0, na.rm = FALSE, 
+                            cross_fitting_folds = NULL, sample_splitting_folds = NULL,
                             stratified = FALSE, C = rep(1, length(Y)), Z = NULL, 
                             ipc_weights = rep(1, length(Y)), scale = "identity",
                             ipc_est_type = "aipw", ...) {
@@ -111,7 +51,9 @@ vimp_regression <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
               ))
   vimp_anova(Y = Y, X = X, f1 = f1, f2 = f2, indx = indx, V = V, 
              run_regression = run_regression, SL.library = SL.library, 
-             alpha = alpha, delta = delta, na.rm = na.rm, folds = folds, 
+             alpha = alpha, delta = delta, na.rm = na.rm, 
+             cross_fitting_folds = cross_fitting_folds, 
+             sample_splitting_folds = sample_splitting_folds,
              stratified = stratified, C = C, Z = Z, ipc_weights = ipc_weights, 
              ipc_est_type = ipc_est_type, scale = scale, ...)
 }

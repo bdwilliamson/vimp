@@ -17,10 +17,11 @@
 #' @param indx the indices of the covariate(s) to calculate variable importance 
 #'   for; defaults to 1.
 #' @param V the number of folds for cross-fitting, defaults to 10.
-#' @param folds the folds to use, if f1 and f2 are supplied. A list of length 
-#'   two; the first element provides the outer folds (for hypothesis testing), 
-#'   while the second element is a list providing the inner folds 
-#'   (for cross-fitting).
+#' @param sample_splitting_folds the folds to use for sample-splitting; if entered,
+#'   these should result in balance within the cross-fitting folds. Only used
+#'   if \code{run_regression = FALSE}.
+#' @param cross_fitting_folds the folds for cross-fitting. Only used if 
+#'   \code{run_regression = FALSE}.
 #' @param stratified if run_regression = TRUE, then should the generated folds 
 #'   be stratified based on the outcome (helps to ensure class balance across 
 #'   cross-fitting folds)
@@ -73,27 +74,28 @@
 #'
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list including:
-#' \itemize{
-#'  \item{s}{ - the column(s) to calculate variable importance for}
-#'  \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
-#'  \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
-#'  \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
-#'  \item{est}{ - the estimated variable importance}
-#'  \item{naive}{ - the naive estimator of variable importance}
-#'  \item{naives}{ - the naive estimator on each fold}
-#'  \item{eif}{- the estimated influence function}
-#'  \item{all_eifs}{ - the estimated influence curve for each fold}
-#'  \item{se}{ - the standard error for the estimated variable importance}
-#'  \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
-#'  \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
-#'  \item{p_value}{ - a p-value based on the same test as \code{test}}
-#'  \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
-#'  \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
-#'  \item{alpha}{ - the level, for confidence interval calculation}
-#'  \item{folds}{ - the folds used for hypothesis testing and cross-fitting}
-#'  \item{y}{ - the outcome}
-#'  \item{ipc_weights}{ - the weights}
-#'  \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
+#' \describe{
+#'  \item{s}{the column(s) to calculate variable importance for}
+#'  \item{SL.library}{the library of learners passed to \code{SuperLearner}}
+#'  \item{full_fit}{the fitted values of the chosen method fit to the full data (a list, for train and test data)}
+#'  \item{red_fit}{the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
+#'  \item{est}{the estimated variable importance}
+#'  \item{naive}{the naive estimator of variable importance}
+#'  \item{naives}{the naive estimator on each fold}
+#'  \item{eif}{the estimated influence function}
+#'  \item{all_eifs}{the estimated influence curve for each fold}
+#'  \item{se}{the standard error for the estimated variable importance}
+#'  \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
+#'  \item{test}{a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
+#'  \item{p_value}{a p-value based on the same test as \code{test}}
+#'  \item{full_mod}{the object returned by the estimation procedure for the full data regression (if applicable)}
+#'  \item{red_mod}{the object returned by the estimation procedure for the reduced data regression (if applicable)}
+#'  \item{alpha}{the level, for confidence interval calculation}
+#'  \item{sample_splitting_folds}{the folds used for hypothesis testing}
+#'  \item{cross_fitting_folds}{the folds used for cross-fitting}
+#'  \item{y}{the outcome}
+#'  \item{ipc_weights}{the weights}
+#'  \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 #' }
 #'
 #' @examples
@@ -163,7 +165,8 @@
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
 cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, 
-                   V = length(unique(folds)), folds = NULL, 
+                   V = length(unique(cross_fitting_folds)), 
+                   sample_splitting_folds = NULL, cross_fitting_folds = NULL,
                    stratified = FALSE, type = "r_squared", 
                    run_regression = TRUE, 
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
@@ -206,6 +209,27 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
 
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
+    
+    # get sample-splitting folds (if null and/or run_regression = TRUE)
+    if (is.null(sample_splitting_folds) | run_regression) {
+        if (is.null(cross_fitting_folds) & !run_regression) {
+            stop(paste0("You must specify the folds used for cross-fitting if ",
+                        "run_regression = FALSE."))
+        }
+        if (run_regression) {
+            # set up the cross-fitting folds
+            cross_fitting_folds <- .make_folds(
+                Y, V = V, C = C, stratified = stratified
+            )
+        }
+        sample_splitting_folds <- vector("numeric", length = nrow(Y))
+        for (v in 1:V) {
+            sample_splitting_folds[cross_fitting_folds == v] <- .make_folds(
+                Y[cross_fitting_folds == v], V = 2, stratified = stratified,
+                C = C
+            )
+        }
+    }
 
     # if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
@@ -217,61 +241,48 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             )
         }
         X_cc <- subset(X, C == 1, drop = FALSE)
-        # set up the cross-fitting
-        outer_folds <- .make_folds(Y, V = 2, C = C, stratified = stratified)
-        inner_folds_1 <- .make_folds(
-            Y[outer_folds == 1, , drop = FALSE], V = V, 
-            C = C[outer_folds == 1], stratified = stratified
-        )
-        inner_folds_2 <- .make_folds(
-            Y[outer_folds == 2, , drop = FALSE], V = V, 
-            C = C[outer_folds == 2], stratified = stratified
-        )
-        outer_folds_cc <- outer_folds[C == 1]
-        inner_folds_1_cc <- inner_folds_1[C[outer_folds == 1] == 1]
-        inner_folds_2_cc <- inner_folds_2[C[outer_folds == 2] == 1]
+        # set up the reduced X
+        X_minus_s <- X_cc[, -indx, drop = FALSE]
+        sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
+        cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
 
         # fit the super learner on each full/reduced pair
-        fhat_ful <- list()
-        fhat_red <- list()
+        browser()
+        fhat_ful_lst <- list()
+        fhat_red_lst <- list()
         for (v in 1:V) {
+            train_v <- (cross_fitting_folds_cc != v)
+            full_test_v <- (sample_splitting_folds_cc == 1) & 
+                (cross_fitting_folds_cc == v)
+            redu_test_v <- (sample_splitting_folds_cc == 2) & 
+                (cross_fitting_folds_cc == v)
             # fit super learner
             arg_lst_v <- c(
                 arg_lst, 
-                list(Y = Y_cc[(outer_folds_cc == 1), , 
-                              drop = FALSE][inner_folds_1_cc != v, , 
-                                            drop = FALSE], 
-                     X = X_cc[(outer_folds_cc == 1), , 
-                              drop = FALSE][inner_folds_1_cc != v, , 
-                                            drop = FALSE], 
+                list(Y = Y_cc[train_v, , drop = FALSE], 
+                     X = X_cc[train_v, , drop = FALSE], 
                      SL.library = SL.library, 
-                     obsWeights = weights_cc[(outer_folds_cc == 1)][inner_folds_1_cc != v])
+                     obsWeights = weights_cc[train_v])
             )
             fit <- do.call(SuperLearner::SuperLearner, arg_lst_v)
             fitted_v <- SuperLearner::predict.SuperLearner(
                 fit, onlySL = TRUE
             )$pred
             # get predictions on the validation fold
-            fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(
-                fit, 
-                newdata = X_cc[(outer_folds_cc == 1), , 
-                               drop = FALSE][inner_folds_1_cc == v, , drop = FALSE], 
-                onlySL = TRUE
+            fhat_ful_lst[[v]] <- SuperLearner::predict.SuperLearner(
+                fit, newdata = X_cc[full_test_v, , drop = FALSE], onlySL = TRUE
             )$pred
             # fit the super learner on the reduced covariates:
             # if the reduced set of covariates is empty, return the mean
             # otherwise, if type is r_squared or anova, always use gaussian; if first regression was mean, use Y instead
-            if (ncol(X_cc[(outer_folds_cc == 2), , drop = FALSE][, -indx, drop = FALSE]) == 0) {
-                fhat_red[[v]] <- mean(
-                    Y_cc[(outer_folds_cc == 2), , 
-                         drop = FALSE][inner_folds_2_cc != v, , drop = FALSE]
+            if (ncol(X_cc[train_v, -indx, drop = FALSE]) == 0) {
+                fhat_red_lst[[v]] <- mean(
+                    Y_cc[train_v, , drop = FALSE]
                 )
             } else {
                 arg_lst_red <- arg_lst
                 if (length(unique(fitted_v)) == 1) {
-                    arg_lst_red$Y <- Y_cc[(outer_folds_cc == 2), , 
-                                      drop = FALSE][inner_folds_2_cc != v, , 
-                                                    drop = FALSE]
+                    arg_lst_red$Y <- Y_cc[train_v, , drop = FALSE]
                 } else if (type == "r_squared" || type == "anova") {
                     arg_lst_red$family <- stats::gaussian()
                     if (any(grepl("cvControl", names(arg_lst)))) {
@@ -279,62 +290,78 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                     }
                     arg_lst_v_2 <- c(
                         arg_lst, 
-                        list(Y = Y_cc[(outer_folds_cc == 2), , 
-                                      drop = FALSE][inner_folds_2_cc != v, , 
-                                                    drop = FALSE], 
-                             X = X_cc[(outer_folds_cc == 2), , 
-                                      drop = FALSE][inner_folds_2_cc != v, , 
-                                                    drop = FALSE], 
+                        list(Y = Y_cc[train_v, , drop = FALSE], 
+                             X = X_cc[train_v, , drop = FALSE], 
                              SL.library = SL.library, 
-                             obsWeights = weights_cc[(outer_folds_cc == 2)][inner_folds_2_cc != v])
+                             obsWeights = weights_cc[train_v])
                     )
                     fit_2 <- do.call(SuperLearner::SuperLearner, arg_lst_v_2)
                     arg_lst_red$Y <- SuperLearner::predict.SuperLearner(
                         fit_2, onlySL = TRUE
                     )$pred
                 } else {
-                    arg_lst_red$Y <- Y_cc[(outer_folds_cc == 2), , 
-                                      drop = FALSE][inner_folds_2_cc != v, , 
-                                                    drop = FALSE]
+                    arg_lst_red$Y <- Y_cc[train_v, , drop = FALSE]
                     # get the family
                     if (is.character(arg_lst_red$family))
                         arg_lst_red$family <- get(arg_lst$family, mode = "function", 
                                               envir = parent.frame())
                 }
-                arg_lst_red$X <- X_cc[(outer_folds_cc == 2), , 
-                                  drop = FALSE][inner_folds_2_cc != v, -indx, 
-                                                drop = FALSE]
+                arg_lst_red$X <- X_minus_s[train_v, , drop = FALSE]
                 arg_lst_red$SL.library <- SL.library
-                arg_lst_red$obsWeights <- weights_cc[(outer_folds_cc == 2)][inner_folds_2_cc != v]
+                arg_lst_red$obsWeights <- weights_cc[train_v]
                 red <- do.call(SuperLearner::SuperLearner, arg_lst_red)
                 # get predictions on the validation fold
-                fhat_red[[v]] <- SuperLearner::predict.SuperLearner(
-                    red, 
-                    newdata = X_cc[(outer_folds_cc == 2), , 
-                                   drop = FALSE][inner_folds_2_cc == v, -indx, 
-                                                 drop = FALSE], onlySL = TRUE
+                fhat_red_lst[[v]] <- SuperLearner::predict.SuperLearner(
+                    red, newdata = X_minus_s[redu_test_v, , drop = FALSE], 
+                    onlySL = TRUE
                 )$pred
             }
         }
-        full <- reduced <- NA
-        folds <- list(
-            outer_folds = outer_folds, 
-            inner_folds = list(inner_folds_1, inner_folds_2)
-        )
-
+        # fit the full and reduced regressions a final time, for hypothesis testing
+        arg_lst_full <- c(arg_lst, 
+                          list(Y = Y_cc, X = X_cc, SL.library = SL.library, 
+                              obsWeights = weights_cc)
+                          )
+        full <- do.call(SuperLearner::SuperLearner, arg_lst_full)
+        fhat_ful <- SuperLearner::predict.SuperLearner(full, onlySL = TRUE)$pred
+        # fit the super learner on the reduced covariates:
+        # if the reduced set of covariates is empty, return the mean
+        # otherwise, if "r_squared" or "anova", regress the 
+        # fitted values on the remaining covariates
+        if (ncol(X_minus_s) == 0) {
+            reduced <- NA
+            fhat_red <- mean(Y_cc)
+        } else {
+            if (full_type == "r_squared" || full_type == "anova") {
+                if (length(unique(fhat_ful)) == 1) {
+                    arg_lst$Y <- Y_cc
+                } else {
+                    arg_lst$family <- stats::gaussian()
+                    arg_lst$Y <- SuperLearner::predict.SuperLearner(
+                        full, newdata = X_cc, 
+                        onlySL = TRUE
+                    )$pred
+                }
+                arg_lst$X <- X_minus_s
+                arg_lst$SL.library <- SL.library
+                arg_lst$obsWeights <- weights_cc
+            }
+            reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
+            
+            # get the fitted values
+            fhat_red <- SuperLearner::predict.SuperLearner(reduced, 
+                                                           onlySL = TRUE)$pred
+        }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
-        check_fitted_values(Y, f1, f2, folds, V = V, cv = TRUE)
+        check_fitted_values(Y, f1, f2, sample_splitting_folds, 
+                            cross_fitting_folds, V = V, cv = TRUE)
         # set up the fitted value objects (both are lists!)
         fhat_ful <- f1
         fhat_red <- f2
         # set up the folds objects
-        outer_folds <- folds[[1]]
-        outer_folds_cc <- outer_folds[C == 1]
-        inner_folds_1 <- folds[[2]][[1]]
-        inner_folds_2 <- folds[[2]][[2]]
-        inner_folds_1_cc <- inner_folds_1[C[outer_folds == 1] == 1]
-        inner_folds_2_cc <- inner_folds_2[C[outer_folds == 2] == 1]
+        sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
+        cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
 
         full <- reduced <- NA
     }
@@ -350,8 +377,8 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 do.call(
                     measure_anova,
                     args = c(
-                        list(full = fhat_ful[[v]], 
-                             reduced = fhat_red[[v]], 
+                        list(full = fhat_ful_lst[[v]], 
+                             reduced = fhat_red_lst[[v]], 
                              y = Y_cc[outer_folds_cc == 1, , 
                                   drop = FALSE][inner_folds_1_cc == v], 
                              C = C[outer_folds == 1][inner_folds_1 == v], 

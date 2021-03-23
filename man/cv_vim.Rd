@@ -10,8 +10,9 @@ cv_vim(
   f1 = NULL,
   f2 = NULL,
   indx = 1,
-  V = length(unique(folds)),
-  folds = NULL,
+  V = length(unique(cross_fitting_folds)),
+  sample_splitting_folds = NULL,
+  cross_fitting_folds = NULL,
   stratified = FALSE,
   type = "r_squared",
   run_regression = TRUE,
@@ -46,10 +47,12 @@ for; defaults to 1.}
 
 \item{V}{the number of folds for cross-fitting, defaults to 10.}
 
-\item{folds}{the folds to use, if f1 and f2 are supplied. A list of length 
-two; the first element provides the outer folds (for hypothesis testing), 
-while the second element is a list providing the inner folds 
-(for cross-fitting).}
+\item{sample_splitting_folds}{the folds to use for sample-splitting; if entered,
+these should result in balance within the cross-fitting folds. Only used
+if \code{run_regression = FALSE}.}
+
+\item{cross_fitting_folds}{the folds for cross-fitting. Only used if 
+\code{run_regression = FALSE}.}
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds 
 be stratified based on the outcome (helps to ensure class balance across 
@@ -123,27 +126,28 @@ of the confidence intervals.
 
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list including:
-\itemize{
- \item{s}{ - the column(s) to calculate variable importance for}
- \item{SL.library}{ - the library of learners passed to \code{SuperLearner}}
- \item{full_fit}{ - the fitted values of the chosen method fit to the full data (a list, for train and test data)}
- \item{red_fit}{ - the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
- \item{est}{ - the estimated variable importance}
- \item{naive}{ - the naive estimator of variable importance}
- \item{naives}{ - the naive estimator on each fold}
- \item{eif}{- the estimated influence function}
- \item{all_eifs}{ - the estimated influence curve for each fold}
- \item{se}{ - the standard error for the estimated variable importance}
- \item{ci}{ - the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
- \item{test}{ - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
- \item{p_value}{ - a p-value based on the same test as \code{test}}
- \item{full_mod}{ - the object returned by the estimation procedure for the full data regression (if applicable)}
- \item{red_mod}{ - the object returned by the estimation procedure for the reduced data regression (if applicable)}
- \item{alpha}{ - the level, for confidence interval calculation}
- \item{folds}{ - the folds used for hypothesis testing and cross-fitting}
- \item{y}{ - the outcome}
- \item{ipc_weights}{ - the weights}
- \item{mat}{- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
+\describe{
+ \item{s}{the column(s) to calculate variable importance for}
+ \item{SL.library}{the library of learners passed to \code{SuperLearner}}
+ \item{full_fit}{the fitted values of the chosen method fit to the full data (a list, for train and test data)}
+ \item{red_fit}{the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
+ \item{est}{the estimated variable importance}
+ \item{naive}{the naive estimator of variable importance}
+ \item{naives}{the naive estimator on each fold}
+ \item{eif}{the estimated influence function}
+ \item{all_eifs}{the estimated influence curve for each fold}
+ \item{se}{the standard error for the estimated variable importance}
+ \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
+ \item{test}{a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
+ \item{p_value}{a p-value based on the same test as \code{test}}
+ \item{full_mod}{the object returned by the estimation procedure for the full data regression (if applicable)}
+ \item{red_mod}{the object returned by the estimation procedure for the reduced data regression (if applicable)}
+ \item{alpha}{the level, for confidence interval calculation}
+ \item{sample_splitting_folds}{the folds used for hypothesis testing}
+ \item{cross_fitting_folds}{the folds used for cross-fitting}
+ \item{y}{the outcome}
+ \item{ipc_weights}{the weights}
+ \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }
 \examples{
