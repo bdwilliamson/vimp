@@ -410,6 +410,17 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- rep(NA, V)
         se_redu <- rep(NA, V)
     } else {
+        predictiveness_full <- do.call(
+            est_predictiveness_cv,
+            args = c(
+                fitted_values = fhat_ful_lst,
+                y = Y_cc[sample_splitting_folds_cc == 1], full_y = Y_cc, 
+                folds = cross_fitting_folds_cc, type = full_type, 
+                C = C[sample_splitting_folds_cc == 1],
+                Z = Z_in[sample_splitting_folds_cc == 1, , drop = FALSE],
+                
+            )
+        )
         est_lst_full <- do.call(
             est_predictiveness_cv,
             args = c(

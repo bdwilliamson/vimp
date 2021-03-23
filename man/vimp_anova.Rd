@@ -17,7 +17,8 @@ vimp_anova(
   delta = 0,
   na.rm = FALSE,
   scale = "identity",
-  folds,
+  cross_fitting_folds = NULL,
+  sample_splitting_folds = NULL,
   stratified = FALSE,
   C = rep(1, length(Y)),
   Z = NULL,
@@ -65,6 +66,13 @@ computation? (defaults to \code{FALSE})}
 
 \item{scale}{should CIs be computed on original ("identity") or 
 logit ("logit") scale?}
+
+\item{cross_fitting_folds}{the folds for cross-fitting. Only used if 
+\code{run_regression = FALSE}.}
+
+\item{sample_splitting_folds}{the folds to use for sample-splitting; if entered,
+these should result in balance within the cross-fitting folds. Only used
+if \code{run_regression = FALSE}.}
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds 
 be stratified based on the outcome (helps to ensure class balance across 

@@ -16,7 +16,8 @@ vimp_regression(
   alpha = 0.05,
   delta = 0,
   na.rm = FALSE,
-  folds = NULL,
+  cross_fitting_folds = NULL,
+  sample_splitting_folds = NULL,
   stratified = FALSE,
   C = rep(1, length(Y)),
   Z = NULL,
@@ -62,6 +63,13 @@ importance < \eqn{\delta}); defaults to 0.}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in 
 computation? (defaults to \code{FALSE})}
+
+\item{cross_fitting_folds}{the folds for cross-fitting. Only used if 
+\code{run_regression = FALSE}.}
+
+\item{sample_splitting_folds}{the folds to use for sample-splitting; if entered,
+these should result in balance within the cross-fitting folds. Only used
+if \code{run_regression = FALSE}.}
 
 \item{stratified}{if run_regression = TRUE, then should the generated folds 
 be stratified based on the outcome (helps to ensure class balance across 
