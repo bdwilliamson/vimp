@@ -1,3 +1,14 @@
+# vimp 2.2.0
+
+## Major changes
+
+* Updated sample-splitting behavior to match more closely with theoretical results (and improve power!): namely, that since estimation of the nuisance regression functions (i.e., the regression of outcome on all covariates and outcome on the reduced set of covariates) can be treated as fixed in making inference, sample-splitting is only necessary for evaluating predictiveness. Thus, the final regression functions from a call to `vim` are based on the entire dataset, while the full and reduced predictiveness (`predictiveness_full` and `predictiveness_reduced`, along with the corresponding confidence intervals) is evaluated using separate portions of the data for the full and reduced regressions.
+* Updated cross-fitting behavior to match more closely with theoretical results (and improve power!). For $K$-fold cross-fitting, trains the full and reduced regression functions a larger fraction of the data [$(2K - 1)/K$] than before, making sure to evaluate the predictiveness on independent portions of the data for the full and reduced regressions. This affects both `cv_vim` and `sp_vim`.
+
+## Minor changes
+
+* Update `roxygen2` documentation for wrappers (`vimp_*`) to inherit parameters and details from `cv_vim` (reduces potential for documentation mismatches)
+
 # vimp 2.1.10
 
 ## Major changes
