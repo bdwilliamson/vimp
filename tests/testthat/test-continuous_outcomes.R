@@ -7,16 +7,16 @@ set.seed(4747)
 p <- 2
 n <- 5e4
 x <- replicate(p, stats::rnorm(n, 0, 1))
-# apply the function to the x's
+# apply the function to the covariates
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
-true_var <- mean((y - mean(y)) ^ 2)
+true_var <- 1 + .5 ^ 2 + .75 ^ 2
 # note that true difference in R-squareds for variable j, under independence, is 
 # beta_j^2 * var(x_j) / var(y)
 r2_one <- 0.5 ^ 2 * 1 / true_var
 r2_two <- 0.75 ^ 2 * 1 / true_var
 
 # set up a library for SuperLearner
-learners <- c("SL.glm", "SL.mean")
+learners <- c("SL.glm")
 V <- 2
 
 test_that("ANOVA-based R^2 with old function name works", {

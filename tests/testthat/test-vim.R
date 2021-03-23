@@ -7,9 +7,9 @@ set.seed(4747)
 p <- 2
 n <- 5e4
 x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
-# apply the function to the x's
+# apply the function to the covariates
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
-true_var <- mean((y - mean(y)) ^ 2)
+true_var <- 1 + .5 ^ 2 + .75 ^ 2
 # note that true difference in R-squareds for variable j, under independence, is 
 # beta_j^2 * var(x_j) / var(y)
 r2_one <- 0.5 ^ 2 * 1 / true_var
@@ -18,7 +18,7 @@ folds <- sample(rep(seq_len(2), length = length(y)))
 
 # set up a library for SuperLearner
 learners <- c("SL.glm")
-V <- 2
+V <- 5
 
 set.seed(1234)
 test_that("General variable importance estimates using internally-computed fitted values work", {
@@ -37,19 +37,18 @@ test_that("General variable importance estimates using internally-computed fitte
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check that influence curve worked
-  expect_length(est$eif, sum(folds == 1))
+  expect_length(est$eif_full, length(y))
 })
 
 # fit the data with all covariates
 set.seed(4747)
-full_fit <- SuperLearner::SuperLearner(Y = y[folds == 1], 
-                                       X = x[folds == 1, ], 
+full_fit <- SuperLearner::SuperLearner(Y = y, X = x, 
                                        SL.library = learners, 
                                        cvControl = list(V = V))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 # fit the data with only X1
 reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted, 
-                                          X = x[folds == 2, -2, drop = FALSE], 
+                                          X = x[, -2, drop = FALSE], 
                                           SL.library = learners, 
                                           cvControl = list(V = V))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
@@ -63,7 +62,7 @@ test_that("General variable importance estimates using externally-computed fitte
     est <- vim(Y = y, X = x, indx = 2, type = "r_squared", 
                run_regression = FALSE,
                f1 = full_fitted, f2 = reduced_fitted,
-             folds = folds)
+               sample_splitting_folds = folds)
     # check that estimate worked
     expect_equal(est$est, r2_two, tolerance = 0.15, scale = 1)
     # check that p-value exists
@@ -77,7 +76,7 @@ test_that("General variable importance estimates using externally-computed fitte
 
 
 test_that("Measures of predictiveness work", {
-  full_rsquared <- est_predictiveness(full_fitted, y[folds == 1], 
+  full_rsquared <- est_predictiveness(full_fitted[folds == 1], y[folds == 1], 
                                       type = "r_squared")
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
   expect_length(full_rsquared$eif, sum(folds == 1))
@@ -97,7 +96,8 @@ test_that("Error messages work", {
 test_that("ANOVA-based R^2 with pre-computed fitted values works", {
   expect_warning(est <- vim(Y = y, X = x, f1 = full_fitted, 
                             f2 = reduced_fitted, run_regression = FALSE, 
-                            indx = 2, type = "anova", folds = folds))
+                            indx = 2, type = "anova", 
+                            sample_splitting_folds = folds))
   # check that the estimate is nearly correct
-  expect_equal(est$est, r2_two, tolerance = 0.35, scale = 1)
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
 })
