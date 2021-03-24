@@ -9,7 +9,8 @@
 #' @param f1 the fitted values from a flexible estimation technique 
 #'   regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique 
-#'   regressing Y on X withholding the columns in \code{indx}.
+#'   regressing either (a) \code{f1} or (b) Y on X withholding the columns in 
+#'   \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable 
 #'   importance for; defaults to 1.
 #' @param type the type of importance to compute; defaults to 
@@ -382,6 +383,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,
                  naive = naive,
+                 eif = eif_full - eif_redu,
                  eif_full = eif_full,
                  eif_reduced = eif_redu,
                  se = se, ci = ci,
@@ -402,7 +404,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                  scale = scale,
                  mat = mat)
 
-    # make it also an vim and vim_type object
+    # make it also a vim and vim_type object
     tmp.cls <- class(output)
     class(output) <- c("vim", full_type, tmp.cls)
     return(output)
