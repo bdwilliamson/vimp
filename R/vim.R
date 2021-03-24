@@ -228,10 +228,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                     arg_lst$Y <- Y_cc
                 } else {
                     arg_lst$family <- stats::gaussian()
-                    arg_lst$Y <- SuperLearner::predict.SuperLearner(
-                        full, newdata = X_cc, 
-                        onlySL = TRUE
-                    )$pred
+                    arg_lst$Y <- fhat_ful
                 }
                 arg_lst$X <- X_minus_s
                 arg_lst$SL.library <- SL.library
@@ -261,11 +258,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
         arg_lst$cvControl$stratifyCV <- FALSE
     }
-    if (full_type == "anova" || full_type == "regression") {
+    if (full_type == "anova") {
         # no sample-splitting, since no hypothesis testing
         est_lst <- measure_anova(
             full = fhat_ful, reduced = fhat_red, 
-            y = Y_cc, 
+            y = Y_cc, full_y = Y_cc,
             C = C, Z = Z_in, 
             ipc_weights = ipc_weights, 
             ipc_fit_type = "SL", na.rm = na.rm, 
