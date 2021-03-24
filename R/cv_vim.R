@@ -335,18 +335,21 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             reduced <- NA
             fhat_red <- mean(Y_cc)
         } else {
+            arg_lst_red <- arg_lst
             if (full_type == "r_squared" || full_type == "anova") {
                 if (length(unique(fhat_ful)) == 1) {
-                    arg_lst$Y <- Y_cc
+                    arg_lst_red$Y <- Y_cc
                 } else {
-                    arg_lst$family <- stats::gaussian()
-                    arg_lst$Y <- fhat_ful
+                    arg_lst_red$family <- stats::gaussian()
+                    arg_lst_red$Y <- fhat_ful
                 }
-                arg_lst$X <- X_minus_s
-                arg_lst$SL.library <- SL.library
-                arg_lst$obsWeights <- weights_cc
+            } else {
+                arg_lst_red$Y <- Y_cc
             }
-            reduced <- do.call(SuperLearner::SuperLearner, arg_lst)
+            arg_lst_red <- c(arg_lst_red, list(
+                X = X_minus_s, SL.library = SL.library, obsWeights = weights_cc
+            ))
+            reduced <- do.call(SuperLearner::SuperLearner, arg_lst_red)
             
             # get the fitted values
             fhat_red <- SuperLearner::predict.SuperLearner(reduced, 
