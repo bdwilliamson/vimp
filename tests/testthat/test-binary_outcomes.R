@@ -119,34 +119,28 @@ test_that("Measures of predictiveness work", {
 })
 
 set.seed(1234)
-est <- vimp_auc(Y = y, X = x, cross_fitted_f1 = est$full_fit_lst,
-                cross_fitted_f2 = est$red_fit_lst,
-                f1 = est$full_fit, f2 = est$red_fit, 
-                cross_fitting_folds = est$cross_fitting_folds, 
-                sample_splitting_folds = est$sample_splitting_folds, 
-                run_regression = FALSE, indx = 1, V = V,
-                env = environment())
+full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = y, X = x, SL.library = learners, cvControl = list(V = V),
+  innerCvControl = list(list(V = V))
+))
+full_cv_preds <- extract_sampled_split_predictions(
+  full_cv_fit, sample_splitting_folds = rep(1, length(y)), full = TRUE
+)
+cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 test_that("vimp and cvAUC agree", {
-  y_1 <- y[est$sample_splitting_folds == 1]
-  cf_folds_1 <- est$cross_fitting_folds[est$sample_splitting_folds == 1]
-  auc_lst <- est_predictiveness_cv(fitted_values = est$full_fit_lst,
-                                   y = y_1, 
-                                   full_y = y,
-                                   folds = cf_folds_1, 
+  auc_lst <- est_predictiveness_cv(fitted_values = full_cv_preds, y = y, 
+                                   full_y = y, folds = cross_fitting_folds, 
                                    type = "auc")
   full_auc <- auc_lst$point_est
   cvauc_var <- mean(unlist(lapply(auc_lst$all_eifs, 
                                   function(x) mean(x ^ 2))))
-  cvauc_se <- sqrt(cvauc_var / length(y_1))
+  cvauc_se <- sqrt(cvauc_var / length(y))
   auc_ci <- vimp_ci(full_auc, cvauc_se)
-  preds_for_cvauc <- vector("numeric", length = length(y_1))
-  preds_for_cvauc[cf_folds_1 == 1] <- est$full_fit_lst[[1]]
-  preds_for_cvauc[cf_folds_1 == 2] <- est$full_fit_lst[[2]]
-  cvauc_lst <- cvAUC::ci.cvAUC(predictions = preds_for_cvauc, 
-                               labels = y_1,
-                               folds = cf_folds_1)
+  cvauc_lst <- cvAUC::ci.cvAUC(predictions = full_cv_fit$SL.predict, 
+                               labels = y,
+                               folds = full_cv_fit$folds)
   expect_equal(full_auc, cvauc_lst$cvAUC, tolerance = 1e-20, scale = 1)
-  expect_equal(cvauc_se, cvauc_lst$se, tolerance = 1e-7, scale = 1)
+  expect_equal(cvauc_se, cvauc_lst$se, tolerance = 1e-20, scale = 1)
   sprintf("%.20f", cvauc_se)
   sprintf("%.20f", cvauc_lst$se)
 })
