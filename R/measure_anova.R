@@ -42,6 +42,11 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
                           ipc_eif_preds = rep(1, length(y)),
                           ipc_est_type = "aipw", scale = "identity",
                           na.rm = FALSE, ...) {
+    if (is.null(full_y)) {
+        obs_mn_y <- mean(y, na.rm = na.rm)
+    } else {
+        obs_mn_y <- mean(full_y, na.rm = na.rm)
+    }
     # add on if they aren't equal length
     if (length(full) < length(reduced)) {
         full <- c(full, rep(NA, length(reduced) - length(full)))
@@ -53,12 +58,13 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
     if (!all(ipc_weights == 1)) {
         # observed full-data EIF
         obs_num <- mean(((full - reduced) ^ 2), na.rm = na.rm)
-        obs_denom <- mean(((y - mean(y, na.rm = na.rm)) ^ 2), na.rm = na.rm)
+        obs_var <- measure_mse(
+            fitted_values = rep(obs_mn_y, length(y)), y, na.rm = na.rm
+        )
         obs_eif_num <- (2 * (y - full) * (full - reduced) +
                             (full - reduced) ^ 2 - obs_num)[C == 1]
-        obs_eif_denom <- ((y - mean(y, na.rm = TRUE)) ^ 2 - obs_denom)
-        obs_grad <- obs_eif_num / obs_denom -
-            obs_num / (obs_denom ^ 2) * obs_eif_denom
+        obs_grad <- obs_eif_num / obs_var$point_est -
+            obs_num / (obs_var$point_est ^ 2) * obs_var$eif
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             ipc_eif_mod <- SuperLearner::SuperLearner(
@@ -84,11 +90,12 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
         }
     } else {
         num <- mean((full - reduced) ^ 2, na.rm = na.rm)
-        denom <- mean((y - mean(y, na.rm = na.rm)) ^ 2, na.rm = na.rm)
+        var <- measure_mse(fitted_values = rep(obs_mn_y, length(y)), y, 
+                           na.rm = na.rm)
         num_eif <- 2 * (y - full) * (full - reduced) +
             (full - reduced) ^ 2 - num
-        denom_eif <- (y - mean(y, na.rm = TRUE)) ^ 2 - denom
-        grad <- num_eif / denom - num / (denom ^ 2) * denom_eif
+        denom_eif <- (y - mean(y, na.rm = TRUE)) ^ 2 - var$point_est
+        grad <- num_eif / var$point_est - num / (var$point_est ^ 2) * var$eif
         est <- num / denom + mean(grad)
     }
     return(list(point_est = est, eif = grad, naive = num / denom,
