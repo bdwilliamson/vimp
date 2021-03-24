@@ -35,7 +35,8 @@ vim(
 regressing Y on X.}
 
 \item{f2}{the fitted values from a flexible estimation technique 
-regressing Y on X withholding the columns in \code{indx}.}
+regressing either (a) \code{f1} or (b) Y on X withholding the columns in 
+\code{indx}.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable 
 importance for; defaults to 1.}

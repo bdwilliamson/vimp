@@ -7,6 +7,8 @@
 cv_vim(
   Y = NULL,
   X = NULL,
+  cross_fitted_f1 = NULL,
+  cross_fitted_f2 = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,
@@ -33,14 +35,23 @@ cv_vim(
 
 \item{X}{the covariates.}
 
-\item{f1}{the predicted values on validation data from a flexible estimation 
-technique regressing Y on X in the training data; a list of length V, where
-each object is a set of predictions on the validation data.}
+\item{cross_fitted_f1}{the predicted values on validation data from a 
+flexible estimation technique regressing Y on X in the training data; 
+a list of length V, where each object is a set of predictions on the 
+validation data.}
 
-\item{f2}{the predicted values on validation data from a flexible estimation 
-technique regressing the fitted values in \code{f1} on X withholding the 
-columns in \code{indx}; a list of length V, where each object is a set of 
-predictions on the validation data.}
+\item{cross_fitted_f2}{the predicted values on validation data from a 
+flexible estimation technique regressing either (a) the fitted values in 
+\code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}; 
+a list of length V, where each object is a set of predictions on the 
+validation data.}
+
+\item{f1}{the fitted values from a flexible estimation technique 
+regressing Y on X.}
+
+\item{f2}{the fitted values from a flexible estimation technique 
+regressing either (a) \code{f1} or (b) Y on X withholding the columns in 
+\code{indx}.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance 
 for; defaults to 1.}
