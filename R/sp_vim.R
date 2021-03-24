@@ -156,12 +156,12 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     full_type <- get_full_type(type)
 
     # set up the cross-fitting
-    outer_folds <- .make_folds(Y, V = 2, stratified = stratified, 
+    outer_folds <- make_folds(Y, V = 2, stratified = stratified, 
                                C = C, probs = c(0.25, 0.75))
-    inner_folds_1 <- .make_folds(Y[outer_folds == 1, , drop = FALSE], 
+    inner_folds_1 <- make_folds(Y[outer_folds == 1, , drop = FALSE], 
                                  C = C[outer_folds == 1], V = V, 
                                  stratified = stratified)
-    inner_folds_2 <- .make_folds(Y[outer_folds == 2, , drop = FALSE], 
+    inner_folds_2 <- make_folds(Y[outer_folds == 2, , drop = FALSE], 
                                  C = C[outer_folds == 2], V = V, 
                                  stratified = stratified)
     outer_folds_cc <- outer_folds[C == 1]
