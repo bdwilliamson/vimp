@@ -94,10 +94,9 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
                            na.rm = na.rm)
         num_eif <- 2 * (y - full) * (full - reduced) +
             (full - reduced) ^ 2 - num
-        denom_eif <- (y - mean(y, na.rm = TRUE)) ^ 2 - var$point_est
         grad <- num_eif / var$point_est - num / (var$point_est ^ 2) * var$eif
-        est <- num / denom + mean(grad)
+        est <- num / var$point_est + mean(grad)
     }
-    return(list(point_est = est, eif = grad, naive = num / denom,
+    return(list(point_est = est, eif = grad, naive = num / var$point_est,
                 ipc_eif_preds = ipc_eif_preds))
 }
