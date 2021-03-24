@@ -226,13 +226,13 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         }
         if (run_regression) {
             # set up the cross-fitting folds
-            cross_fitting_folds <- .make_folds(
+            cross_fitting_folds <- make_folds(
                 Y, V = V, C = C, stratified = stratified
             )
         }
         sample_splitting_folds <- vector("numeric", length = nrow(Y))
         for (v in 1:V) {
-            sample_splitting_folds[cross_fitting_folds == v] <- .make_folds(
+            sample_splitting_folds[cross_fitting_folds == v] <- make_folds(
                 Y[cross_fitting_folds == v], V = 2, stratified = stratified,
                 C = C
             )
@@ -353,10 +353,16 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                                            onlySL = TRUE)$pred
         }
     } else { # otherwise they are fitted values
+        browser()
         # check to make sure that the fitted values, folds are what we expect
-        check_fitted_values(Y, f1, f2, sample_splitting_folds, 
+        check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1, 
+                            cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, 
+                            sample_splitting_folds = sample_splitting_folds, 
                             cross_fitting_folds, V = V, cv = TRUE)
         # set up the fitted value objects (both are lists!)
+        fhat_ful_lst <- cross_fitted_f1
+        fhat_red_lst <- cross_fitted_f2
+        # the fits to the full dataset (for SEs)
         fhat_ful <- f1
         fhat_red <- f2
         # set up the folds objects
