@@ -7,6 +7,8 @@
 vimp_anova(
   Y = NULL,
   X = NULL,
+  cross_fitted_f1 = NULL,
+  cross_fitted_f2 = NULL,
   f1 = NULL,
   f2 = NULL,
   indx = 1,
@@ -16,13 +18,13 @@ vimp_anova(
   alpha = 0.05,
   delta = 0,
   na.rm = FALSE,
-  scale = "identity",
   cross_fitting_folds = NULL,
   sample_splitting_folds = NULL,
   stratified = FALSE,
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
+  scale = "identity",
   ipc_est_type = "aipw",
   ...
 )
@@ -31,6 +33,17 @@ vimp_anova(
 \item{Y}{the outcome.}
 
 \item{X}{the covariates.}
+
+\item{cross_fitted_f1}{the predicted values on validation data from a 
+flexible estimation technique regressing Y on X in the training data; 
+a list of length V, where each object is a set of predictions on the 
+validation data.}
+
+\item{cross_fitted_f2}{the predicted values on validation data from a 
+flexible estimation technique regressing either (a) the fitted values in 
+\code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}; 
+a list of length V, where each object is a set of predictions on the 
+validation data.}
 
 \item{f1}{the fitted values from a flexible estimation technique 
 regressing Y on X.}
@@ -62,9 +75,6 @@ importance < \eqn{\delta}); defaults to 0.}
 \item{na.rm}{should we remove NA's in the outcome and fitted values in 
 computation? (defaults to \code{FALSE})}
 
-\item{scale}{should CIs be computed on original ("identity") or 
-logit ("logit") scale?}
-
 \item{cross_fitting_folds}{the folds for cross-fitting. Only used if 
 \code{run_regression = FALSE}.}
 
@@ -87,6 +97,9 @@ coarsening mechanism.}
 \item{ipc_weights}{weights for the computed influence curve (i.e., inverse 
 probability weights for coarsened-at-random settings). Assumed to be 
 already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+
+\item{scale}{should CIs be computed on original ("identity") or 
+logit ("logit") scale?}
 
 \item{ipc_est_type}{the type of procedure used for coarsened-at-random 
 settings; options are "ipw" (for inverse probability weighting) or 
