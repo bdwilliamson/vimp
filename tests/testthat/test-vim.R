@@ -24,7 +24,7 @@ set.seed(1234)
 test_that("General variable importance estimates using internally-computed fitted values work", {
   est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
                 SL.library = learners, alpha = 0.05, cvControl = list(V = V),
-             env = environment(), folds = folds)
+             env = environment(), sample_splitting_folds = folds)
   # check that the estimate is approximately correct
   expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
   # check that the SE, CI work
@@ -53,11 +53,6 @@ reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted,
                                           cvControl = list(V = V))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 test_that("General variable importance estimates using externally-computed fitted values work", {
-    # expect a message with no folds
-    expect_error(
-      est <- vim(Y = y, X = x, f1 = full_fitted, 
-                 f2 = reduced_fitted, run_regression = FALSE)
-      )
     # provide folds
     est <- vim(Y = y, X = x, indx = 2, type = "r_squared", 
                run_regression = FALSE,
