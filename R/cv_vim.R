@@ -7,13 +7,20 @@
 #'
 #' @param Y the outcome.
 #' @param X the covariates.
-#' @param f1 the predicted values on validation data from a flexible estimation 
-#'   technique regressing Y on X in the training data; a list of length V, where
-#'   each object is a set of predictions on the validation data.
-#' @param f2 the predicted values on validation data from a flexible estimation 
-#'   technique regressing the fitted values in \code{f1} on X withholding the 
-#'   columns in \code{indx}; a list of length V, where each object is a set of 
-#'   predictions on the validation data.
+#' @param cross_fitted_f1 the predicted values on validation data from a 
+#'   flexible estimation technique regressing Y on X in the training data; 
+#'   a list of length V, where each object is a set of predictions on the 
+#'   validation data.
+#' @param cross_fitted_f2 the predicted values on validation data from a 
+#'   flexible estimation technique regressing either (a) the fitted values in 
+#'   \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}; 
+#'   a list of length V, where each object is a set of predictions on the 
+#'   validation data.
+#' @param f1 the fitted values from a flexible estimation technique 
+#'   regressing Y on X.
+#' @param f2 the fitted values from a flexible estimation technique 
+#'   regressing either (a) \code{f1} or (b) Y on X withholding the columns in 
+#'   \code{indx}.
 #' @param indx the indices of the covariate(s) to calculate variable importance 
 #'   for; defaults to 1.
 #' @param V the number of folds for cross-fitting, defaults to 10.
@@ -164,7 +171,8 @@
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
 #' @export
-cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1, 
+cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL, 
+                   cross_fitted_f2 = NULL, f1 = NULL, f2 = NULL, indx = 1, 
                    V = length(unique(cross_fitting_folds)), 
                    sample_splitting_folds = NULL, cross_fitting_folds = NULL,
                    stratified = FALSE, type = "r_squared", 
@@ -247,15 +255,20 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
 
         # fit the super learner on each full/reduced pair
-        browser()
         fhat_ful_lst <- list()
         fhat_red_lst <- list()
         for (v in 1:V) {
             train_v <- (cross_fitting_folds_cc != v)
-            full_test_v <- (sample_splitting_folds_cc == 1) & 
-                (cross_fitting_folds_cc == v)
-            redu_test_v <- (sample_splitting_folds_cc == 2) & 
-                (cross_fitting_folds_cc == v)
+            if (full_type == "anova") {
+                full_test_v <- (cross_fitting_folds_cc == v)
+                redu_test_v <- (cross_fitting_folds_cc == v)
+            } else {
+                full_test_v <- (sample_splitting_folds_cc == 1) & 
+                    (cross_fitting_folds_cc == v)
+                redu_test_v <- (sample_splitting_folds_cc == 2) & 
+                    (cross_fitting_folds_cc == v)
+            }
+            
             # fit super learner
             arg_lst_v <- c(
                 arg_lst, 
@@ -288,17 +301,7 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                     if (any(grepl("cvControl", names(arg_lst)))) {
                         arg_lst$cvControl$stratifyCV <- FALSE
                     }
-                    arg_lst_v_2 <- c(
-                        arg_lst, 
-                        list(Y = Y_cc[train_v, , drop = FALSE], 
-                             X = X_cc[train_v, , drop = FALSE], 
-                             SL.library = SL.library, 
-                             obsWeights = weights_cc[train_v])
-                    )
-                    fit_2 <- do.call(SuperLearner::SuperLearner, arg_lst_v_2)
-                    arg_lst_red$Y <- SuperLearner::predict.SuperLearner(
-                        fit_2, onlySL = TRUE
-                    )$pred
+                    arg_lst_red$Y <- fitted_v
                 } else {
                     arg_lst_red$Y <- Y_cc[train_v, , drop = FALSE]
                     # get the family
@@ -337,10 +340,7 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                     arg_lst$Y <- Y_cc
                 } else {
                     arg_lst$family <- stats::gaussian()
-                    arg_lst$Y <- SuperLearner::predict.SuperLearner(
-                        full, newdata = X_cc, 
-                        onlySL = TRUE
-                    )$pred
+                    arg_lst$Y <- fhat_ful
                 }
                 arg_lst$X <- X_minus_s
                 arg_lst$SL.library <- SL.library
@@ -370,7 +370,8 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         arg_lst$cvControl$stratifyCV <- FALSE
     }
     # calculate the estimators, EIFs
-    if (full_type == "anova" || full_type == "regression") {
+    if (full_type == "anova") {
+        # no sample-splitting, since no hypothesis testing
         est_lst <- sapply(
             1:V, 
             function(v) 
@@ -379,13 +380,12 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                     args = c(
                         list(full = fhat_ful_lst[[v]], 
                              reduced = fhat_red_lst[[v]], 
-                             y = Y_cc[outer_folds_cc == 1, , 
-                                  drop = FALSE][inner_folds_1_cc == v], 
-                             C = C[outer_folds == 1][inner_folds_1 == v], 
-                             Z = Z_in[outer_folds == 1, , 
-                                      drop = FALSE][inner_folds_1 == v, , 
+                             y = Y_cc[cross_fitting_folds_cc == v],
+                             full_y = Y_cc,
+                             C = C[cross_fitting_folds == v], 
+                             Z = Z_in[cross_fitting_folds == v, , 
                                                     drop = FALSE], 
-                             ipc_weights = ipc_weights[outer_folds == 1][inner_folds_1 == v], 
+                             ipc_weights = ipc_weights[cross_fitting_folds == v], 
                              ipc_fit_type = "SL", na.rm = na.rm, 
                              ipc_est_type = ipc_est_type, scale = scale,
                              SL.library = SL.library),
@@ -398,95 +398,87 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         naives <- unlist(lapply(est_lst, function(x) x$naive))
         est <- mean(point_ests)
         naive <- mean(naives)
-        all_eifs <- lapply(est_lst, function(x) x$eif)
-        eif <- vector("numeric", nrow(Y))
-        for (v in 1:V) {
-            eif[inner_folds_1 == v] <- all_eifs[[v]]
-        }
-        predictiveness_full <- rep(NA, V)
-        predictiveness_redu <- rep(NA, V)
-        eif_full <- rep(list(rep(NA, sum(outer_folds == 1))), V)
-        eif_redu <- rep(list(rep(NA, sum(outer_folds == 2))), V)
-        se_full <- rep(NA, V)
-        se_redu <- rep(NA, V)
+        eif <- measure_anova(
+            full = fhat_ful, reduced = fhat_red, 
+            y = Y_cc, full_y = Y_cc,
+            C = C, Z = Z_in, 
+            ipc_weights = ipc_weights, 
+            ipc_fit_type = "SL", na.rm = na.rm, 
+            SL.library = SL.library, arg_lst
+        )$eif
+        predictiveness_full <- NA
+        predictiveness_redu <- NA
+        eif_full <- rep(NA, sum(cross_fitting_folds_cc == 1))
+        eif_redu <- rep(NA, sum(cross_fitting_folds_cc == 2))
+        se_full <- NA
+        se_redu <- NA
+        se <- vimp_se(eif = eif, na.rm = na.rm)
     } else {
         predictiveness_full <- do.call(
             est_predictiveness_cv,
             args = c(
-                fitted_values = fhat_ful_lst,
+                list(fitted_values = fhat_ful_lst,
                 y = Y_cc[sample_splitting_folds_cc == 1], full_y = Y_cc, 
-                folds = cross_fitting_folds_cc, type = full_type, 
-                C = C[sample_splitting_folds_cc == 1],
-                Z = Z_in[sample_splitting_folds_cc == 1, , drop = FALSE],
-                
-            )
-        )
-        est_lst_full <- do.call(
-            est_predictiveness_cv,
-            args = c(
-                list(fitted_values = fhat_ful, 
-                     y = Y_cc[outer_folds_cc == 1, , drop = FALSE], 
-                     full_y = Y_cc,
-                     folds = inner_folds_1_cc, type = full_type, 
-                     C = C[outer_folds == 1], 
-                     Z = Z_in[outer_folds == 1, , drop = FALSE], 
-                     folds_Z = inner_folds_1, 
-                     ipc_weights = ipc_weights[outer_folds == 1], 
-                     ipc_fit_type = "SL", scale = scale, 
-                     ipc_est_type = ipc_est_type, na.rm = na.rm, 
-                     SL.library = SL.library),
+                folds = cross_fitting_folds_cc[sample_splitting_folds_cc == 1],
+                type = full_type, C = C[sample_splitting_folds == 1],
+                Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
+                folds_Z = cross_fitting_folds[sample_splitting_folds == 1],
+                ipc_weights = ipc_weights[sample_splitting_folds == 1],
+                ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+                na.rm = na.rm, SL.library = SL.library),
                 arg_lst
             )
-        )
-        est_lst_redu <- do.call(
+        )$point_est
+        eif_full <- do.call(
+            est_predictiveness, 
+            args = c(list(fitted_values = fhat_ful, 
+                          y = Y_cc,
+                          full_y = Y_cc,
+                          type = full_type, C = C, 
+                          Z = Z_in, 
+                          ipc_weights = ipc_weights, 
+                          ipc_fit_type = "SL", scale = scale, 
+                          ipc_est_type = ipc_est_type, na.rm = na.rm, 
+                          SL.library = SL.library), 
+                     arg_lst)
+        )$eif
+        predictiveness_redu <- do.call(
             est_predictiveness_cv,
             args = c(
-                list(fitted_values = fhat_red, 
-                     y = Y_cc[outer_folds_cc == 2, , drop = FALSE], 
-                     full_y = Y_cc,
-                     folds = inner_folds_2_cc, type = full_type, 
-                     C = C[outer_folds == 2], 
-                     Z = Z_in[outer_folds == 2, , drop = FALSE], 
-                     folds_Z = inner_folds_2, 
-                     ipc_weights = ipc_weights[outer_folds == 2], 
-                     ipc_fit_type = "SL", scale = scale, 
-                     ipc_est_type = ipc_est_type, na.rm = na.rm, 
-                     SL.library = SL.library),
+                list(fitted_values = fhat_red_lst,
+                     y = Y_cc[sample_splitting_folds_cc == 2], full_y = Y_cc, 
+                     folds = cross_fitting_folds_cc[sample_splitting_folds_cc == 2],
+                     type = full_type, C = C[sample_splitting_folds == 2],
+                     Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
+                     folds_Z = cross_fitting_folds[sample_splitting_folds == 2],
+                     ipc_weights = ipc_weights[sample_splitting_folds == 2],
+                     ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+                     na.rm = na.rm, SL.library = SL.library),
                 arg_lst
             )
-        )
-        predictiveness_full <- est_lst_full$point_est
-        predictiveness_redu <- est_lst_redu$point_est
-        all_eifs_full <- est_lst_full$all_eifs
-        eif_full <- est_lst_full$eif
-        all_eifs_redu <- est_lst_redu$all_eifs
-        eif_redu <- est_lst_redu$eif
-        se_full <- vimp_se(list(est = predictiveness_full, 
-                                eif = eif_full,
-                                all_eifs = all_eifs_full), na.rm = na.rm)
-        se_redu <- vimp_se(list(est = predictiveness_redu, 
-                                eif = eif_redu,
-                                all_eifs = all_eifs_redu), na.rm = na.rm)
-        est <- est_lst_full$point_est - est_lst_redu$point_est
+        )$point_est
+        eif_redu <- do.call(
+            est_predictiveness, 
+            args = c(list(fitted_values = fhat_red, 
+                          y = Y_cc,
+                          full_y = Y_cc,
+                          type = full_type, C = C, 
+                          Z = Z_in, 
+                          ipc_weights = ipc_weights, 
+                          ipc_fit_type = "SL", scale = scale, 
+                          ipc_est_type = ipc_est_type, na.rm = na.rm, 
+                          SL.library = SL.library), 
+                     arg_lst)
+        )$eif
+        se_full <- vimp_se(eif = eif_full, na.rm = na.rm)
+        se_redu <- vimp_se(eif = eif_redu, na.rm = na.rm)
+        est <- predictiveness_full - predictiveness_redu
         naive <- NA
-        len_full <- length(eif_full)
-        len_redu <- length(eif_redu)
-        if (len_full != len_redu) {
-            max_length <- max(len_full, len_redu)
-            tmp_eif_full <- c(eif_full, rep(0, max_length - len_full))
-            tmp_eif_redu <- c(eif_redu, rep(0, max_length - len_redu))
-        } else {
-            tmp_eif_full <- eif_full
-            tmp_eif_redu <- eif_redu
-        }
-        eif <- tmp_eif_full - tmp_eif_redu 
-        all_eifs <- suppressWarnings(sapply(1:V, function(v) {
-            all_eifs_full[[v]] - all_eifs_redu[[v]]
-        }, simplify = FALSE))
+        se <- sqrt(
+            se_full ^ 2 / sum(sample_splitting_folds_cc == 1) + 
+                se_redu ^ 2 / sum(sample_splitting_folds_cc == 2)
+        )
     }
-    # compute the standard error
-    se <- vimp_se(list(est = est, eif = eif, all_eifs = all_eifs), 
-                  na.rm = na.rm)
 
     # if est < 0, set to zero and print warning
     if (est < 0 && !is.na(est)) {
@@ -528,9 +520,9 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                  full_fit = fhat_ful, red_fit = fhat_red,
                  est = est,
                  naive = naive,
-                 eif = eif,
+                 eif = eif_full - eif_redu,
+                 eif_full = eif_full, eif_redu = eif_redu,
                  se = se, ci = ci,
-                 all_eifs = all_eifs,
                  predictiveness_full = predictiveness_full,
                  predictiveness_reduced = predictiveness_redu,
                  predictiveness_ci_full = predictiveness_ci_full,
@@ -542,14 +534,15 @@ cv_vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                  red_mod = reduced,
                  alpha = alpha,
                  delta = delta,
-                 folds = folds,
+                 sample_splitting_folds = sample_splitting_folds,
+                 cross_fitting_folds = cross_fitting_folds,
                  y = Y,
                  ipc_weights = ipc_weights,
                  scale = scale,
                  mat = mat)
 
-    # make it also an vim object
+    # make it also a vim and vim_type object
     tmp.cls <- class(output)
-    class(output) <- c("vim", type, tmp.cls)
+    class(output) <- c("vim", full_type, tmp.cls)
     return(output)
 }
