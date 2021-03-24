@@ -6,19 +6,20 @@ library("SuperLearner")
 set.seed(4747)
 p <- 2
 n <- 5e4
-x <- replicate(p, stats::rnorm(n, 0, 1))
+x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the x's
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
-true_var <- mean((y - mean(y)) ^ 2)
+true_var <- 1 + .5 ^ 2 + .75 ^ 2
 # note that true difference in R-squareds for variable j, under independence, is 
 # beta_j^2 * var(x_j) / var(y)
 r2_one <- 0.5 ^ 2 * 1 / true_var
 r2_two <- 0.75 ^ 2 * 1 / true_var
 
 # set up a library for SuperLearner
-learners <- c("SL.glm", "SL.mean")
+learners <- c("SL.glm")
 V <- 2
 
+set.seed(101112)
 test_that("Cross-validated variable importance using internally-computed regressions works", {
   est <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
                 run_regression = TRUE, SL.library = learners, 
@@ -38,62 +39,58 @@ test_that("Cross-validated variable importance using internally-computed regress
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check that influence curve worked
-  expect_length(est$eif, sum(est$folds[[1]] == 1))
+  expect_length(est$eif, length(y))
 })
 
-# set up the folds
+# cross-fitted estimates of the full and reduced regressions,
+# for point estimate of variable importance.
 indx <- 2
 Y <- matrix(y)
 set.seed(4747)
-outer_folds <- rep_len(seq_len(2), dim(Y)[1])
-outer_folds <- sample(outer_folds)
-inner_folds_1 <- rep_len(seq_len(V), 
-                         dim(Y[outer_folds == 1, , drop = FALSE])[1])
-inner_folds_1 <- sample(inner_folds_1)
-inner_folds_2 <- rep_len(seq_len(V),
-                         dim(Y[outer_folds == 2, , drop = FALSE])[1])
-inner_folds_2 <- sample(inner_folds_2)
-# fit the super learner on each full/reduced pair
-fhat_ful <- list()
-fhat_red <- list()
+full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = Y, X = x, SL.library = learners, cvControl = list(V = V),
+  innerCvControl = list(list(V = V))
+))
+# use the same cross-fitting folds for reduced
+reduced_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners, 
+  cvControl = SuperLearner::SuperLearner.CV.control(
+    V = V, validRows = full_cv_fit$folds
+  ), 
+  innerCvControl = list(list(V = V))
+))
+# extract the predictions on split portions of the data, for hypothesis testing
+cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
+set.seed(1234)
+sample_splitting_folds <- vector("numeric", length = length(y))
 for (v in 1:V) {
-  # fit super learner
-  fit <- SuperLearner::SuperLearner(
-    Y = Y[outer_folds == 1, , drop = FALSE][inner_folds_1 != v, , drop = FALSE], 
-    X = x[outer_folds == 1, , drop = FALSE][inner_folds_1 != v, , drop = FALSE], 
-    SL.library = learners, cvControl = list(V = V)
-    )
-  fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-  # get predictions on the validation fold
-  fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(
-    fit, 
-    newdata = x[outer_folds == 1, , drop = FALSE][inner_folds_1 == v, , 
-                                                  drop = FALSE]
-    )$pred
-  # fit the super learner on the reduced covariates
-  fit_2 <- SuperLearner::SuperLearner(
-    Y = Y[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], 
-    X = x[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, , drop = FALSE], 
-    SL.library = learners, cvControl = list(V = V)
-    )
-  fitted_v_2 <- SuperLearner::predict.SuperLearner(fit_2)$pred
-  red <- SuperLearner::SuperLearner(
-    Y = fitted_v_2, 
-    X = x[outer_folds == 2, , drop = FALSE][inner_folds_2 != v, -indx, drop = FALSE], 
-    SL.library = learners, cvControl = list(V = V)
-    )
-  # get predictions on the validation fold
-  fhat_red[[v]] <- SuperLearner::predict.SuperLearner(
-    red, 
-    newdata = x[outer_folds == 2, , drop = FALSE][inner_folds_2 == v, 
-                                                  -indx, drop = FALSE]
-    )$pred
+  sample_splitting_folds[cross_fitting_folds == v] <- vimp::make_folds(
+    y[cross_fitting_folds == v], V = V
+  )
 }
-folds <- list(outer_folds = outer_folds, 
-              inner_folds = list(inner_folds_1, inner_folds_2))
+full_cv_preds <- extract_sampled_split_predictions(
+  full_cv_fit, sample_splitting_folds, full = TRUE
+)
+reduced_cv_preds <- extract_sampled_split_predictions(
+  reduced_cv_fit, sample_splitting_folds, full = FALSE
+)
+set.seed(5678)
+# refit on the whole dataset (for estimating the efficient influence function)
+full_fit <- SuperLearner::SuperLearner(
+  Y = Y, X = x, SL.library = learners, cvControl = list(V = V)
+)
+fhat_ful <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
+reduced_fit <- SuperLearner::SuperLearner(
+  Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners, 
+  cvControl = list(V = V)
+)
+fhat_red <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 test_that("Cross-validated variable importance using externally-computed regressions works", {
-  est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2, 
-                delta = 0, V = V, folds = folds, type = "r_squared", 
+  est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 
+                cross_fitted_f2 = reduced_cv_preds, f1 = fhat_ful,
+                f2 = fhat_red, indx = 2, delta = 0, V = V, type = "r_squared", 
+                cross_fitting_folds = cross_fitting_folds, 
+                sample_splitting_folds = sample_splitting_folds,
                 run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
   # check variable importance estimate
   expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
@@ -109,17 +106,18 @@ test_that("Cross-validated variable importance using externally-computed regress
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check that influence curve worked
-  expect_length(est$eif, sum(outer_folds == 1))
+  expect_length(est$eif, length(y))
 })
 
 test_that("Measures of predictiveness work", {
-  full_rsquared <- est_predictiveness_cv(fhat_ful, 
-                                         y[outer_folds == 1], 
-                                         folds = inner_folds_1, 
+  full_rsquared <- est_predictiveness_cv(fitted_values = full_cv_preds, 
+                                         y = y[sample_splitting_folds == 1],
+                                         full_y = y,
+                                         folds = cross_fitting_folds[sample_splitting_folds == 1], 
                                          type = "r_squared", na.rm = TRUE)
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1, scale = 1)
   expect_length(full_rsquared$all_ests, V)
-  expect_length(full_rsquared$eif, sum(outer_folds == 1))
+  expect_length(full_rsquared$eif, sum(sample_splitting_folds == 1))
   expect_equal(length(full_rsquared$all_eifs), V)
 })
 

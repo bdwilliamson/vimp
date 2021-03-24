@@ -353,7 +353,6 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                                            onlySL = TRUE)$pred
         }
     } else { # otherwise they are fitted values
-        browser()
         # check to make sure that the fitted values, folds are what we expect
         check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1, 
                             cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, 
@@ -524,6 +523,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     output <- list(s = chr_indx,
                  SL.library = SL.library,
                  full_fit = fhat_ful, red_fit = fhat_red,
+                 full_fit_lst = fhat_ful_lst, red_fit_lst = fhat_red_lst,
                  est = est,
                  naive = naive,
                  eif = eif_full - eif_redu,
