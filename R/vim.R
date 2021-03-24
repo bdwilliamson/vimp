@@ -182,7 +182,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     full_type <- get_full_type(type)
     
     if (is.null(sample_splitting_folds) | run_regression) {
-        sample_splitting_folds <- .make_folds(
+        sample_splitting_folds <- make_folds(
             Y, V = 2, C = C, stratified = stratified
         )
     }
@@ -242,7 +242,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
-        check_fitted_values(Y, f1, f2, 
+        check_fitted_values(Y = Y, f1 = f1, f2 = f2, 
                             sample_splitting_folds = sample_splitting_folds, 
                             cv = FALSE)
         sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
