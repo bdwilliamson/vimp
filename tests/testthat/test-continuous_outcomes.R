@@ -6,7 +6,7 @@ library("SuperLearner")
 set.seed(4747)
 p <- 2
 n <- 5e4
-x <- replicate(p, stats::rnorm(n, 0, 1))
+x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the covariates
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
 true_var <- 1 + .5 ^ 2 + .75 ^ 2
