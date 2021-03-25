@@ -27,7 +27,7 @@ Compute standard error estimates based on the estimated influence function
 \details{
 Since the processes for sampling observations and subsets are 
   independent, the variance for a given SPVIM estimator is simply the sum of
- the vairances based on sampling observations and on sampling subsets.
+ the variances based on sampling observations and on sampling subsets.
 }
 \seealso{
 \code{\link[vimp]{spvim_ics}} for how the influence functions are estimated.

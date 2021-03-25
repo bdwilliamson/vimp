@@ -144,9 +144,9 @@ within the \code{vim} object. This results in a list including:
  \item{red_fit}{the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
  \item{est}{the estimated variable importance}
  \item{naive}{the naive estimator of variable importance}
- \item{naives}{the naive estimator on each fold}
- \item{eif}{the estimated influence function}
- \item{all_eifs}{the estimated influence curve for each fold}
+ \item{eif}{the estimated efficient influence function}
+ \item{eif_full}{the estimated efficient influence function for the full regression}
+ \item{eif_reduced}{the estimated efficient influence function for the reduced regression}
  \item{se}{the standard error for the estimated variable importance}
  \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{test}{a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
@@ -175,7 +175,7 @@ y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
 # set up a library for SuperLearner; note simple library for speed
 library("SuperLearner")
-learners <- c("SL.glm", "SL.mean")
+learners <- c("SL.glm")
 
 # -----------------------------------------
 # using Super Learner (with a small number of folds, for illustration only)
@@ -192,40 +192,55 @@ SL.library = learners, cvControl = list(V = 2), alpha = 0.05)
 # set up the folds
 indx <- 2
 V <- 2
+Y <- matrix(y)
 set.seed(4747)
-outer_folds <- sample(rep(seq_len(2), length = n))
-inner_folds_1 <- sample(rep(seq_len(V), length = sum(outer_folds == 1)))
-inner_folds_2 <- sample(rep(seq_len(V), length = sum(outer_folds == 2)))
-y_1 <- y[outer_folds == 1, , drop = FALSE]
-x_1 <- x[outer_folds == 1, , drop = FALSE]
-y_2 <- y[outer_folds == 2, , drop = FALSE]
-x_2 <- x[outer_folds == 2, , drop = FALSE]
-# get the fitted values by fitting the super learner on each pair
-fhat_ful <- list()
-fhat_red <- list()
+full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+Y = Y, X = x, SL.library = learners, cvControl = list(V = V),
+innerCvControl = list(list(V = V))
+))
+# use the same cross-fitting folds for reduced
+reduced_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+    Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners, 
+    cvControl = SuperLearner::SuperLearner.CV.control(
+        V = V, validRows = full_cv_fit$folds
+    ), 
+    innerCvControl = list(list(V = V))
+))
+# extract the predictions on split portions of the data, for hypothesis testing
+cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
+set.seed(1234)
+sample_splitting_folds <- vector("numeric", length = length(y))
 for (v in 1:V) {
-    # fit super learner
-    fit <- SuperLearner::SuperLearner(Y = y_1[inner_folds_1 != v, , drop = FALSE],
-     X = x_1[inner_folds_1 != v, , drop = FALSE],
-     SL.library = learners, cvControl = list(V = V))
-    fitted_v <- SuperLearner::predict.SuperLearner(fit)$pred
-    # get predictions on the validation fold
-    fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(fit,
-     newdata = x_1[inner_folds_1 == v, , drop = FALSE])$pred
-    # fit the super learner on the reduced covariates
-    red <- SuperLearner::SuperLearner(Y = y_2[inner_folds_2 != v, , drop = FALSE],
-     X = x_2[inner_folds_2 != v, -indx, drop = FALSE],
-     SL.library = learners, cvControl = list(V = V))
-    # get predictions on the validation fold
-    fhat_red[[v]] <- SuperLearner::predict.SuperLearner(red,
-     newdata = x_2[inner_folds_2 == v, -indx, drop = FALSE])$pred
+    sample_splitting_folds[cross_fitting_folds == v] <- vimp::make_folds(
+        y[cross_fitting_folds == v], V = V
+    )
 }
-est <- cv_vim(Y = y, f1 = fhat_ful, f2 = fhat_red, indx = 2,
-V = V, folds = list(outer_folds = outer_folds,
-inner_folds = list(inner_folds_1, inner_folds_2)),
-type = "r_squared", run_regression = FALSE, alpha = 0.05)
+full_cv_preds <- extract_sampled_split_predictions(
+    full_cv_fit, sample_splitting_folds, full = TRUE
+)
+reduced_cv_preds <- extract_sampled_split_predictions(
+    reduced_cv_fit, sample_splitting_folds, full = FALSE
+)
+set.seed(5678)
+# refit on the whole dataset (for estimating the efficient influence function)
+full_fit <- SuperLearner::SuperLearner(
+    Y = Y, X = x, SL.library = learners, cvControl = list(V = V)
+)
+fhat_ful <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
+reduced_fit <- SuperLearner::SuperLearner(
+    Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners, 
+    cvControl = list(V = V)
+)
+fhat_red <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
+est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 
+cross_fitted_f2 = reduced_cv_preds, f1 = fhat_ful,
+f2 = fhat_red, indx = 2, delta = 0, V = V, type = "r_squared", 
+cross_fitting_folds = cross_fitting_folds, 
+sample_splitting_folds = sample_splitting_folds,
+run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+  \code{SuperLearner} function and package.
 }

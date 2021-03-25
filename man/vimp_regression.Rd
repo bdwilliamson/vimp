@@ -142,9 +142,9 @@ within the \code{vim} object. This results in a list including:
  \item{red_fit}{the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
  \item{est}{the estimated variable importance}
  \item{naive}{the naive estimator of variable importance}
- \item{naives}{the naive estimator on each fold}
- \item{eif}{the estimated influence function}
- \item{all_eifs}{the estimated influence curve for each fold}
+ \item{eif}{the estimated efficient influence function}
+ \item{eif_full}{the estimated efficient influence function for the full regression}
+ \item{eif_reduced}{the estimated efficient influence function for the reduced regression}
  \item{se}{the standard error for the estimated variable importance}
  \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
  \item{test}{a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}

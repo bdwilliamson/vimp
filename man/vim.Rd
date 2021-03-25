@@ -128,6 +128,7 @@ within the \code{vim} object. This results in a list including:
  \item{red_fit}{the fitted values of the chosen method fit to the reduced data}
  \item{est}{the estimated variable importance}
  \item{naive}{the naive estimator of variable importance (only used if \code{type = "anova"})}
+ \item{eif}{the estimated efficient influence function}
  \item{eif_full}{the estimated efficient influence function for the full regression}
  \item{eif_reduced}{the estimated efficient influence function for the reduced regression}
  \item{se}{the standard error for the estimated variable importance}
@@ -159,18 +160,13 @@ y <- matrix(rbinom(n, size = 1, prob = smooth))
 
 # set up a library for SuperLearner; note simple library for speed
 library("SuperLearner")
-learners <- c("SL.glm", "SL.mean")
+learners <- c("SL.glm")
 
 # using Y and X; use class-balanced folds
-folds_1 <- sample(rep(seq_len(2), length = sum(y == 1)))
-folds_0 <- sample(rep(seq_len(2), length = sum(y == 0)))
-folds <- vector("numeric", length(y))
-folds[y == 1] <- folds_1
-folds[y == 0] <- folds_0
-est <- vim(y, x, indx = 2, type = "r_squared",
+est_1 <- vim(y, x, indx = 2, type = "accuracy",
            alpha = 0.05, run_regression = TRUE,
            SL.library = learners, cvControl = list(V = 2),
-           sample_splitting_folds = folds)
+           stratified = TRUE)
 
 # using pre-computed fitted values
 full <- SuperLearner::SuperLearner(Y = y, X = x,
@@ -180,11 +176,13 @@ reduced <- SuperLearner::SuperLearner(Y = y, X = x,
 SL.library = learners, cvControl = list(V = 2))
 red.fit <- SuperLearner::predict.SuperLearner(reduced)$pred
 
-est <- vim(Y = y, f1 = full.fit, f2 = red.fit,
+est_2 <- vim(Y = y, f1 = full.fit, f2 = red.fit,
             indx = 2, run_regression = FALSE, alpha = 0.05, 
-            sample_splitting_folds = folds, type = "accuracy")
+            stratified = TRUE, type = "accuracy", 
+            sample_splitting_folds = est_1$sample_splitting_folds)
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the \code{SuperLearner} function and package.
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+  \code{SuperLearner} function and package.
 }

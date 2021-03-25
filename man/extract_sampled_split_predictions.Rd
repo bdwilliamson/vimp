@@ -6,13 +6,17 @@
 \usage{
 extract_sampled_split_predictions(
   cvsl_obj = NULL,
-  sample_splitting_folds = NULL
+  sample_splitting_folds = NULL,
+  full = TRUE
 )
 }
 \arguments{
 \item{cvsl_obj}{An object of class \code{"CV.SuperLearner"}}
 
 \item{sample_splitting_folds}{A vector of folds to use for sample splitting}
+
+\item{full}{logical; is this the fit to all covariates (\code{TRUE}) or not
+(\code{FALSE})?}
 }
 \value{
 The predictions on validation data in each split-sample fold; a 

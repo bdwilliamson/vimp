@@ -5,13 +5,14 @@
 \title{Run a Super Learner for the provided subset of features}
 \usage{
 run_sl(
-  Y,
-  X,
-  V,
-  SL.library,
-  univariate_SL.library,
-  s,
-  folds,
+  Y = NULL,
+  X = NULL,
+  V = 5,
+  SL.library = "SL.glm",
+  univariate_SL.library = "SL.glm",
+  s = 1,
+  cv_folds = NULL,
+  ss_folds = NULL,
   verbose = FALSE,
   progress_bar = NULL,
   indx = 1,
@@ -30,7 +31,9 @@ run_sl(
 
 \item{s}{the subset of interest}
 
-\item{folds}{the CV folds}
+\item{cv_folds}{the CV folds}
+
+\item{ss_folds}{the sample-splitting folds}
 
 \item{verbose}{should we print progress? defaults to FALSE}
 

@@ -112,17 +112,24 @@ within the \code{vim} object. This results in a list containing:
 \describe{
  \item{SL.library}{the library of learners passed to \code{SuperLearner}}
  \item{v}{the estimated predictiveness measure for each sampled subset}
- \item{preds_lst}{the predicted values from the chosen method for each sampled subset}
+ \item{fit_lst}{the fitted values on the entire dataset from the chosen method for each sampled subset}
+ \item{preds_lst}{the cross-fitted predicted values from the chosen method for each sampled subset}
  \item{est}{the estimated SPVIM value for each feature}
- \item{ic_lst}{the influence functions for each sampled subset}
- \item{ic}{a list of the SPVIM influence function contributions}
+ \item{ics}{the influence functions for each sampled subset}
+ \item{var_v_contribs}{the contibutions to the variance from estimating predictiveness}
+ \item{var_s_contribs}{the contributions to the variance from sampling subsets}
+ \item{ic_lst}{a list of the SPVIM influence function contributions}
  \item{se}{the standard errors for the estimated variable importance}
  \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence intervals based on the variable importance estimates}
+ \item{p_value}{p-values for the null hypothesis test of zero importance for each variable}
+ \item{test_statistic}{the test statistic for each null hypothesis test of zero importance}
+ \item{test}{a hypothesis testing decision for each null hypothesis test (for each variable having zero importance)}
  \item{gamma}{the fraction of the sample size used when sampling subsets}
  \item{alpha}{the level, for confidence interval calculation}
  \item{delta}{the \code{delta} value used for hypothesis testing}
  \item{y}{the outcome}
  \item{ipc_weights}{the weights}
+ \item{scale}{the scale on which CIs were computed}
  \item{mat}{- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values}
 }
 }
@@ -140,7 +147,7 @@ y <- as.matrix(smooth + stats::rnorm(n, 0, 1))
 
 # set up a library for SuperLearner; note simple library for speed
 library("SuperLearner")
-learners <- c("SL.glm", "SL.mean")
+learners <- c("SL.glm")
 
 # -----------------------------------------
 # using Super Learner (with a small number of CV folds,

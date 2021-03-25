@@ -21,7 +21,7 @@ spvim_ics(Z, z_counts, W, v, psi, G, c_n, ics, measure)
 
 \item{c_n}{the constraint values}
 
-\item{ics}{a matrix of influence function values for each predictiveness measure}
+\item{ics}{a list of influence function values for each predictiveness measure}
 
 \item{measure}{the type of measure (e.g., "r_squared" or "auc")}
 }
