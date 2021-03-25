@@ -9,7 +9,7 @@
 #' @param psi the estimated SPVIM values
 #' @param G the constraint matrix
 #' @param c_n the constraint values
-#' @param ics a matrix of influence function values for each predictiveness measure
+#' @param ics a list of influence function values for each predictiveness measure
 #' @param measure the type of measure (e.g., "r_squared" or "auc")
 #'
 #' @return a named list of length 2; \code{contrib_v} is the contribution from estimating V, while \code{contrib_s} is the contribution from sampling subsets.
@@ -23,11 +23,8 @@ spvim_ics <- function(Z, z_counts, W, v, psi, G, c_n, ics, measure) {
   A_m <- Z_W %*% Z
   A_m_inv <- MASS::ginv(A_m)
   prefix <- A_m_inv %*% Z_W
-  V <- length(ics[[1]])
-  phi_01 <- sapply(1:V, function(i) {
-    this_mat <- do.call(rbind, lapply(ics, function(l) l[[i]]))
-    prefix %*% this_mat
-  }, simplify = FALSE)
+  ic_mat <- t(as.matrix(data.frame(ics)))
+  phi_01 <- prefix %*% ic_mat 
 
   # compute contribution from sampling S
   qr_decomp <- qr(t(G))
