@@ -6,11 +6,11 @@ library("SuperLearner")
 set.seed(4747)
 p <- 2
 n <- 5e4
-x <- replicate(p, stats::rnorm(n, 0, 1))
+x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the x's
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
 # get the 'true' SPVIMs
-true_var <- mean((y - mean(y)) ^ 2)
+true_var <- 1 + .5 ^ 2 + .75 ^ 2
 mse_one <- mean((y - (1 + 0.5 * x[, 1])) ^ 2)
 mse_two <- mean((y - (1 + 0.75 * x[, 2])) ^ 2)
 mse_full <- mean((y - (1 + 0.5 * x[, 1] + 0.75 * x[, 2])) ^ 2)
@@ -22,7 +22,7 @@ shapley_val_1 <- (1/2) * (r2_one - 0) + (1/2) * (r2_full - r2_two)
 shapley_val_2 <- (1/2) * (r2_two - 0) + (1/2) * (r2_full - r2_one)
 
 # set up a library for SuperLearner
-learners <- c("SL.glm", "SL.mean")
+learners <- c("SL.glm")
 univariate_learners <- "SL.glm"
 V <- 2
 
