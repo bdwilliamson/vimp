@@ -40,6 +40,26 @@ test_that("General variable importance estimates using internally-computed fitte
   expect_length(est$eif_full, length(y))
 })
 
+set.seed(4747)
+test_that("VIM without sample splitting works", {
+  est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
+             SL.library = learners, alpha = 0.05, cvControl = list(V = V),
+             env = environment(), sample_splitting = FALSE)
+  # check that the estimate is approximately correct
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+  # check that the SE, CI work
+  expect_length(est$ci, 2)
+  expect_length(est$se, 1)
+  # check that the p-value worked
+  expect_length(est$p_value, 1)
+  expect_true(est$test)
+  # check that printing, plotting, etc. work
+  expect_silent(format(est)[1])
+  expect_output(print(est), "Estimate", fixed = TRUE)
+  # check that influence curve worked
+  expect_length(est$eif_full, length(y))
+})
+
 # fit the data with all covariates
 set.seed(4747)
 full_fit <- SuperLearner::SuperLearner(Y = y, X = x, 
