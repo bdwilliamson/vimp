@@ -9,8 +9,6 @@ vimp_anova(
   X = NULL,
   cross_fitted_f1 = NULL,
   cross_fitted_f2 = NULL,
-  f1 = NULL,
-  f2 = NULL,
   indx = 1,
   V = 10,
   run_regression = TRUE,
@@ -19,7 +17,6 @@ vimp_anova(
   delta = 0,
   na.rm = FALSE,
   cross_fitting_folds = NULL,
-  sample_splitting_folds = NULL,
   stratified = FALSE,
   C = rep(1, length(Y)),
   Z = NULL,
@@ -37,20 +34,15 @@ vimp_anova(
 \item{cross_fitted_f1}{the predicted values on validation data from a
 flexible estimation technique regressing Y on X in the training data;
 a list of length V, where each object is a set of predictions on the
-validation data.}
+validation data. If sample-splitting is requested, then these must
+be estimated specially; see Details.}
 
 \item{cross_fitted_f2}{the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
 \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx};
 a list of length V, where each object is a set of predictions on the
-validation data.}
-
-\item{f1}{the fitted values from a flexible estimation technique
-regressing Y on X.}
-
-\item{f2}{the fitted values from a flexible estimation technique
-regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-\code{indx}.}
+validation data. If sample-splitting is requested, then these must
+be estimated specially; see Details.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance
 for; defaults to 1.}
@@ -80,11 +72,6 @@ computation? (defaults to \code{FALSE})}
 \item{cross_fitting_folds}{the folds for cross-fitting. Only used if
 \code{run_regression = FALSE}.}
 
-\item{sample_splitting_folds}{the folds to use for sample-splitting; if entered,
-these should result in balance within the cross-fitting folds. Only used
-if \code{run_regression = FALSE} and \code{sample_splitting = TRUE}. A vector
-of length \eqn{2 * V}.}
-
 \item{stratified}{if run_regression = TRUE, then should the generated folds
 be stratified based on the outcome (helps to ensure class balance across
 cross-fitting folds)}
@@ -112,87 +99,38 @@ Only used if \code{C} is not all equal to 1.}
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
-An object of classes \code{vim} and \code{vim_regression}. 
+An object of classes \code{vim} and \code{vim_anova}.
   See Details for more information.
 }
 \description{
-Compute estimates of and confidence intervals for nonparametric ANOVA-based 
-intrinsic variable importance. This is a wrapper function for \code{cv_vim}, 
-with \code{type = "anova"}.
+Compute estimates of and confidence intervals for nonparametric ANOVA-based
+intrinsic variable importance. This is a wrapper function for \code{cv_vim},
+with \code{type = "anova"}. This type
+has limited functionality compared to other
+types; in particular, null hypothesis tests
+are not possible using \code{type = "anova"}.
+If you want to do null hypothesis testing
+on an equivalent population parameter, use
+\code{vimp_rsquared} instead.
 }
 \details{
-We define the population variable importance measure (VIM) for the
-group of features (or single feature) \eqn{s} with respect to the
-predictiveness measure \eqn{V} by
-\deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
-the population predictiveness maximizing function, \eqn{f_{0,s}} is the
-population predictiveness maximizing function that is only allowed to access
-the features with index not in \eqn{s}, and \eqn{P_0} is the true
-data-generating distribution.
+We define the population ANOVA
+parameter for the group of features (or  single feature) \eqn{s} by
+\deqn{\psi_{0,s} := E_0\{f_0(X) - f_{0,s}(X)\}^2/var_0(Y),}
+where \eqn{f_0} is the population conditional mean using all features,
+\eqn{f_{0,s}} is the population conditional mean using the features with
+index not in \eqn{s}, and \eqn{E_0} and \eqn{var_0} denote expectation and
+variance under the true data-generating distribution, respectively.
 
-Cross-fitted VIM estimates are computed differently if sample-splitting
-is requested versus if it is not. We recommend using sample-splitting
-in most cases, since only in this case will inferences be valid if
-the variable(s) of interest have truly zero population importance.
-The purpose of cross-fitting is to estimate \eqn{f_0} and \eqn{f_{0,s}}
-on independent data from estimating \eqn{P_0}; this can result in improved
-performance, especially when using flexible learning algorithms. The purpose
-of sample-splitting is to estimate \eqn{f_0} and \eqn{f_{0,s}} on independent
-data; this allows valid inference under the null hypothesis of zero importance.
-
-Without sample-splitting, cross-fitted VIM estimates are obtained by first
+Cross-fitted ANOVA estimates are computed by first
 splitting the data into \eqn{K} folds; then using each fold in turn as a
 hold-out set, constructing estimators \eqn{f_{n,k}} and \eqn{f_{n,k,s}} of
 \eqn{f_0} and \eqn{f_{0,s}}, respectively on the training data and estimator
-\eqn{P_{n,k}} of \eqn{P_0} using the test data; and finally, computing
-\deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}.}
-
-With sample-splitting, cross-fitted VIM estimates are obtained by first
-splitting the data into \eqn{2K} folds. These folds are further divided
-into 2 groups of folds. Then, for each fold \eqn{k} in the first group,
-estimator \eqn{f_{n,k}} of \eqn{f_0} is constructed using all data besides
-the kth fold in the group (i.e., \eqn{(2K - 1)/(2K)} of the data) and
-estimator \eqn{P_{n,k}} of \eqn{P_0} is constructed using the held-out data
-(i.e., \eqn{1/2K} of the data); then, computing
-\deqn{v_{n,k} = V(f_{n,k},P_{n,k}).}
-Similarly, for each fold \eqn{k} in the second group,
-estimator \eqn{f_{n,k,s}} of \eqn{f_{0,s}} is constructed using all data
-besides the kth fold in the group (i.e., \eqn{(2K - 1)/(2K)} of the data)
-and estimator \eqn{P_{n,k}} of \eqn{P_0} is constructed using the held-out
-data (i.e., \eqn{1/2K} of the data); then, computing
-\deqn{v_{n,k,s} = V(f_{n,k,s},P_{n,k}).}
-Finally,
-\deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{v_{n,k} - v_{n,k,s}\}.}
-
+\eqn{E_{n,k}} of \eqn{E_0} using the test data; and finally, computing
+\deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K E_{n,k}\{f_{n,k}(X) - f_{n,k,s}(X)\}^2/var_n(Y),}
+where \eqn{var_n} is the empirical variance.
 See the paper by Williamson, Gilbert, Simon, and Carone for more
-details on the mathematics behind the \code{cv_vim} function, and the
-validity of the confidence intervals.
-
-In the interest of transparency, we return most of the calculations
-within the \code{vim} object. This results in a list including:
-\describe{
- \item{s}{the column(s) to calculate variable importance for}
- \item{SL.library}{the library of learners passed to \code{SuperLearner}}
- \item{full_fit}{the fitted values of the chosen method fit to the full data (a list, for train and test data)}
- \item{red_fit}{the fitted values of the chosen method fit to the reduced data (a list, for train and test data)}
- \item{est}{the estimated variable importance}
- \item{naive}{the naive estimator of variable importance}
- \item{eif}{the estimated efficient influence function}
- \item{eif_full}{the estimated efficient influence function for the full regression}
- \item{eif_reduced}{the estimated efficient influence function for the reduced regression}
- \item{se}{the standard error for the estimated variable importance}
- \item{ci}{the \eqn{(1-\alpha) \times 100}\% confidence interval for the variable importance estimate}
- \item{test}{a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test}
- \item{p_value}{a p-value based on the same test as \code{test}}
- \item{full_mod}{the object returned by the estimation procedure for the full data regression (if applicable)}
- \item{red_mod}{the object returned by the estimation procedure for the reduced data regression (if applicable)}
- \item{alpha}{the level, for confidence interval calculation}
- \item{sample_splitting_folds}{the folds used for hypothesis testing}
- \item{cross_fitting_folds}{the folds used for cross-fitting}
- \item{y}{the outcome}
- \item{ipc_weights}{the weights}
- \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
-}
+details on the mathematics behind this function.
 }
 \examples{
 # generate the data
@@ -218,6 +156,6 @@ est <- vimp_anova(y, x, indx = 2,
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the
   \code{SuperLearner} function and package.
 }

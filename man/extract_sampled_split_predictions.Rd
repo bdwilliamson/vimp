@@ -6,12 +6,16 @@
 \usage{
 extract_sampled_split_predictions(
   cvsl_obj = NULL,
+  sample_splitting = TRUE,
   sample_splitting_folds = NULL,
   full = TRUE
 )
 }
 \arguments{
 \item{cvsl_obj}{An object of class \code{"CV.SuperLearner"}}
+
+\item{sample_splitting}{logical; should we use sample-splitting or not? 
+Defaults to \code{TRUE}.}
 
 \item{sample_splitting_folds}{A vector of folds to use for sample splitting}
 

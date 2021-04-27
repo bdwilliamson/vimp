@@ -32,96 +32,96 @@ vim(
 
 \item{X}{the covariates.}
 
-\item{f1}{the fitted values from a flexible estimation technique 
+\item{f1}{the fitted values from a flexible estimation technique
 regressing Y on X.}
 
-\item{f2}{the fitted values from a flexible estimation technique 
-regressing either (a) \code{f1} or (b) Y on X withholding the columns in 
+\item{f2}{the fitted values from a flexible estimation technique
+regressing either (a) \code{f1} or (b) Y on X withholding the columns in
 \code{indx}.}
 
-\item{indx}{the indices of the covariate(s) to calculate variable 
+\item{indx}{the indices of the covariate(s) to calculate variable
 importance for; defaults to 1.}
 
-\item{type}{the type of importance to compute; defaults to 
-\code{r_squared}, but other supported options are \code{auc}, 
+\item{type}{the type of importance to compute; defaults to
+\code{r_squared}, but other supported options are \code{auc},
 \code{accuracy}, \code{deviance}, and \code{anova}.}
 
-\item{run_regression}{if outcome Y and covariates X are passed to 
-\code{vimp_accuracy}, and \code{run_regression} is \code{TRUE}, 
-then Super Learner will be used; otherwise, variable importance 
+\item{run_regression}{if outcome Y and covariates X are passed to
+\code{vimp_accuracy}, and \code{run_regression} is \code{TRUE},
+then Super Learner will be used; otherwise, variable importance
 will be computed using the inputted fitted values.}
 
-\item{SL.library}{a character vector of learners to pass to 
-\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, 
-respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost}, 
+\item{SL.library}{a character vector of learners to pass to
+\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X,
+respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost},
 and \code{SL.mean}.}
 
-\item{alpha}{the level to compute the confidence interval at. 
+\item{alpha}{the level to compute the confidence interval at.
 Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
-\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if 
+\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if
 importance < \eqn{\delta}); defaults to 0.}
 
-\item{scale}{should CIs be computed on original ("identity") or 
+\item{scale}{should CIs be computed on original ("identity") or
 logit ("logit") scale?}
 
-\item{na.rm}{should we remove NAs in the outcome and fitted values 
+\item{na.rm}{should we remove NAs in the outcome and fitted values
 in computation? (defaults to \code{FALSE})}
 
 \item{sample_splitting}{should we use sample-splitting to estimate the full and
 reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
-\code{sample_splitting = FALSE} will be invalid for variable with truly zero 
+\code{sample_splitting = FALSE} will be invalid for variable with truly zero
 importance.}
 
-\item{sample_splitting_folds}{the folds used for sample-splitting; 
-these identify the observations that should be used to evaluate 
+\item{sample_splitting_folds}{the folds used for sample-splitting;
+these identify the observations that should be used to evaluate
 predictiveness based on the full and reduced sets of covariates, respectively.
 Only used if \code{run_regression = FALSE}.}
 
-\item{stratified}{if run_regression = TRUE, then should the generated 
-folds be stratified based on the outcome (helps to ensure class balance 
+\item{stratified}{if run_regression = TRUE, then should the generated
+folds be stratified based on the outcome (helps to ensure class balance
 across cross-validation folds)}
 
-\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}
 
-\item{Z}{either (i) NULL (the default, in which case the argument 
-\code{C} above must be all ones), or (ii) a character vector 
-specifying the variable(s) among Y and X that are thought to play a 
+\item{Z}{either (i) NULL (the default, in which case the argument
+\code{C} above must be all ones), or (ii) a character vector
+specifying the variable(s) among Y and X that are thought to play a
 role in the coarsening mechanism.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., 
-inverse probability weights for coarsened-at-random settings). 
-Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated 
+\item{ipc_weights}{weights for the computed influence curve (i.e.,
+inverse probability weights for coarsened-at-random settings).
+Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated
 probability weights]).}
 
-\item{ipc_est_type}{the type of procedure used for coarsened-at-random 
-settings; options are "ipw" (for inverse probability weighting) or 
-"aipw" (for augmented inverse probability weighting). 
+\item{ipc_est_type}{the type of procedure used for coarsened-at-random
+settings; options are "ipw" (for inverse probability weighting) or
+"aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
-An object of classes \code{vim} and the type of risk-based measure. 
+An object of classes \code{vim} and the type of risk-based measure.
   See Details for more information.
 }
 \description{
-Compute estimates of and confidence intervals for nonparametric intrinsic 
-variable importance based on the population-level contrast between the oracle 
+Compute estimates of and confidence intervals for nonparametric intrinsic
+variable importance based on the population-level contrast between the oracle
 predictiveness using the feature(s) of interest versus not.
 }
 \details{
-We define the population variable importance measure (VIM) for the 
-group of features (or single feature) \eqn{s} with respect to the 
-predictiveness measure \eqn{V} by 
+We define the population variable importance measure (VIM) for the
+group of features (or single feature) \eqn{s} with respect to the
+predictiveness measure \eqn{V} by
 \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
-the population predictiveness maximizing function, \eqn{f_{0,s}} is the 
-population predictiveness maximizing function that is only allowed to access 
-the features with index not in \eqn{s}, and \eqn{P_0} is the true 
-data-generating distribution. VIM estimates are obtained by obtaining 
+the population predictiveness maximizing function, \eqn{f_{0,s}} is the
+population predictiveness maximizing function that is only allowed to access
+the features with index not in \eqn{s}, and \eqn{P_0} is the true
+data-generating distribution. VIM estimates are obtained by obtaining
 estimators \eqn{f_n} and \eqn{f_{n,s}} of \eqn{f_0} and \eqn{f_{0,s}},
-respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally, 
+respectively; obtaining an estimator \eqn{P_n} of \eqn{P_0}; and finally,
 setting \eqn{\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)}.
 
 In the interest of transparency, we return most of the calculations
@@ -175,20 +175,25 @@ est_1 <- vim(y, x, indx = 2, type = "accuracy",
            stratified = TRUE)
 
 # using pre-computed fitted values
-full <- SuperLearner::SuperLearner(Y = y, X = x,
-SL.library = learners, cvControl = list(V = 2))
-full.fit <- SuperLearner::predict.SuperLearner(full)$pred
-reduced <- SuperLearner::SuperLearner(Y = y, X = x,
-SL.library = learners, cvControl = list(V = 2))
-red.fit <- SuperLearner::predict.SuperLearner(reduced)$pred
+set.seed(4747)
+full_fit <- SuperLearner::SuperLearner(Y = y, X = x,
+                                       SL.library = learners,
+                                       cvControl = list(V = V))
+full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
+# fit the data with only X1
+reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted,
+                                          X = x[, -2, drop = FALSE],
+                                          SL.library = learners,
+                                          cvControl = list(V = V))
+reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 
-est_2 <- vim(Y = y, f1 = full.fit, f2 = red.fit,
-            indx = 2, run_regression = FALSE, alpha = 0.05, 
-            stratified = TRUE, type = "accuracy", 
+est_2 <- vim(Y = y, f1 = full_fitted, f2 = reduced_fitted,
+            indx = 2, run_regression = FALSE, alpha = 0.05,
+            stratified = TRUE, type = "accuracy",
             sample_splitting_folds = est_1$sample_splitting_folds)
 
 }
 \seealso{
-\code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+\code{\link[SuperLearner]{SuperLearner}} for specific usage of the
   \code{SuperLearner} function and package.
 }
