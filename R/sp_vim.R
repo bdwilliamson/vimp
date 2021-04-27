@@ -223,7 +223,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  ipc_est_type = ipc_est_type, na.rm = na.rm,
                  SL.library = SL.library),
             arg_lst
-        )
+        ), quote = TRUE
     )
     v_none <- v_none_lst$point_est
     full_preds_none <- rep(mean(Y_cc), length(Y_cc))
@@ -233,7 +233,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
             fitted_values = full_preds_none, y = Y_cc, full_y = Y_cc,
             C = C, Z = Z_in, ipc_weights = ipc_weights, ipc_fit_type = "SL",
             na.rm = na.rm, SL.library = SL.library), arg_lst
-        )
+        ), quote = TRUE
     )$eif
 
     # get v, preds, ic for remaining non-null groups in S
@@ -275,7 +275,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                          ipc_est_type = ipc_est_type, na.rm = na.rm,
                          SL.library = SL.library),
                     arg_lst
-                )
+                ), quote = TRUE
             )$point_est
     )
     ic_lst <- lapply(
@@ -291,7 +291,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                          ipc_est_type = ipc_est_type, na.rm = na.rm,
                          SL.library = SL.library),
                     arg_lst
-                )
+                ), quote = TRUE
             )$eif
     )
     v <- matrix(c(v_none, unlist(v_lst)))
@@ -352,17 +352,17 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     v_none_0_lst <- do.call(
         est_predictiveness_cv,
         args = c(
-            list(fitted_values = preds_none,
+            list(fitted_values = preds_none_0,
                  y = Y_cc[redu_test_cc], full_y = Y_cc,
-                 folds = cf_folds_full_cc, C = C[redu_test],
+                 folds = cf_folds_redu_cc, C = C[redu_test],
                  Z = Z_in[redu_test, , drop = FALSE],
-                 folds_Z = cf_folds_full,
+                 folds_Z = cf_folds_redu,
                  ipc_weights = ipc_weights[redu_test],
                  ipc_fit_type = "SL", type = full_type, scale = scale,
                  ipc_est_type = ipc_est_type, na.rm = na.rm,
                  SL.library = SL.library),
             arg_lst
-        )
+        ), quote = TRUE
     )
     v_none_0 <- v_none_0_lst$point_est
     full_preds_none_0 <- rep(mean(Y_cc), length(Y_cc))
@@ -372,7 +372,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
             fitted_values = full_preds_none_0, y = Y_cc, full_y = Y_cc,
             C = C, Z = Z_in, ipc_weights = ipc_weights, ipc_fit_type = "SL",
             na.rm = na.rm, SL.library = SL.library), arg_lst
-        )
+        ), quote = TRUE
     )$eif
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) /
         sqrt(length(cross_fitting_folds) / 2)
