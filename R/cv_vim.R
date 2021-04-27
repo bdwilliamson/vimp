@@ -10,17 +10,19 @@
 #' @param cross_fitted_f1 the predicted values on validation data from a
 #'   flexible estimation technique regressing Y on X in the training data;
 #'   a list of length V, where each object is a set of predictions on the
-#'   validation data.
+#'   validation data. If sample-splitting is requested, then these must
+#'   be estimated specially; see Details.
 #' @param cross_fitted_f2 the predicted values on validation data from a
 #'   flexible estimation technique regressing either (a) the fitted values in
 #'   \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx};
 #'   a list of length V, where each object is a set of predictions on the
-#'   validation data.
+#'   validation data. If sample-splitting is requested, then these must
+#'   be estimated specially; see Details.
 #' @param f1 the fitted values from a flexible estimation technique
-#'   regressing Y on X.
+#'   regressing Y on X. Estimated using the whole dataset.
 #' @param f2 the fitted values from a flexible estimation technique
 #'   regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-#'   \code{indx}.
+#'   \code{indx}. Estimated using the whole dataset.
 #' @param indx the indices of the covariate(s) to calculate variable importance
 #'   for; defaults to 1.
 #' @param V the number of folds for cross-fitting, defaults to 10. If
