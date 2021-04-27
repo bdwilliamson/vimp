@@ -262,7 +262,7 @@ Since there are nine features and two groups, it is of interest to determine var
 Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. Note that because I chose to fit the regression functions first and then plug them into `vimp`, I need to explicitly specify the folds used for hypothesis testing. The analysis is achieved by the following:
 
 ```{r est-heart-regressions-lm}
-X <- heart[, -dim(heart)[2]]
+X <- heart[, -ncol(heart)]
 lm_vim_sbp <- vim(Y = heart$chd, X = X, indx = 1, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
 lm_vim_tob <- vim(Y = heart$chd, X = X, indx = 2, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
 lm_vim_ldl <- vim(Y = heart$chd, X = X, indx = 3, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
@@ -360,10 +360,6 @@ means that:
 
 The call to `vimp_rsquared()` looks like this:
 ```{r vimp-with-sl-1, eval = FALSE}
-# load the library
-library("vimp")
-
-# now estimate variable importance
 vimp_rsquared(Y = heart$chd, X = X,
     indx = 5, run_regression = TRUE, SL.library = learners, V = 5)
 ```
@@ -372,9 +368,6 @@ While this is the preferred method for estimating variable importance, using a l
 
 However, for the sake of illustration, I can estimate varibable importance for family history only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):
 ```{r vimp-with-sl-fam, message = FALSE}
-# load the library
-library("vimp")
-
 # small learners library
 learners.2 <- c("SL.ranger")
 # small number of cross-fitting folds
@@ -383,10 +376,12 @@ V <- 2
 sl_cvcontrol <- list(V = 2)
 
 # now estimate variable importance
-fam_vim <- vimp_rsquared(Y = heart$chd, X = as.data.frame(heart[, -dim(heart)[2]]), indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+start_time <- Sys.time()
+fam_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+end_time <- Sys.time()
 ```
 
-This code takes approximately 5 seconds to run on a (not very fast) PC. I can display these estimates:
+This code takes approximately `r round(as.numeric(end_time - start_time), 3)` seconds to run on a (not very fast) PC. I can display these estimates:
 
 ```{r print-fam-vim}
 fam_vim
@@ -401,18 +396,15 @@ head(fam_vim$red_fit)
 
 I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):
 ```{r heart-sl}
-# set up the data, removing the columns for alcohol use and chd
-x <- as.data.frame(heart[, -dim(heart)[2]])
-
 # estimate variable importance
-tpa_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 6, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-alc_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 8, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-sbp_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-tob_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 2, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-ldl_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 3, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-adi_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 4, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-obe_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 7, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-age_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = 9, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+tpa_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 6, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+alc_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 8, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+sbp_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+tob_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 2, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+ldl_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 3, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+adi_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 4, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+obe_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 7, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+age_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 9, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
@@ -455,8 +447,8 @@ The only difference between estimating variable importance for a group of featur
 
 ```{r heart-group-vim, fig.width = 8.5, fig.height = 8}
 # get the estimates
-behav_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = c(2, 6, 8), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-bios_vim <- vimp_rsquared(Y = heart$chd, X = x, indx = c(1, 3, 4, 5, 7, 9), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+behav_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = c(2, 6, 8), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+bios_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = c(1, 3, 4, 5, 7, 9), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 
 # combine and plot
 groups <- merge_vim(behav_vim, bios_vim)
