@@ -315,7 +315,10 @@ make_kfold <- function(cross_fitting_folds,
 #' @param SL.library the library of candidate learners
 #' @param s the subset of interest
 #' @param cv_folds the CV folds
-#' @param ss_folds the sample-splitting folds
+#' @param sample_splitting logical; should we use sample-splitting for 
+#'   predictiveness estimation?
+#' @param ss_folds the sample-splitting folds; only used if 
+#'   \code{sample_splitting = TRUE}
 #' @param verbose should we print progress? defaults to FALSE
 #' @param progress_bar the progress bar to print to (only if verbose = TRUE)
 #' @param indx the index to pass to progress bar (only if verbose = TRUE)
@@ -324,8 +327,8 @@ make_kfold <- function(cross_fitting_folds,
 #' @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
 run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm", 
                    univariate_SL.library = "SL.glm", s = 1, cv_folds = NULL,
-                   ss_folds = NULL, verbose = FALSE, progress_bar = NULL, 
-                   indx = 1, weights = rep(1, nrow(X)), ...) {
+                   sample_splitting = TRUE, ss_folds = NULL, verbose = FALSE, 
+                   progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)), ...) {
   # if verbose, print what we're doing and make sure that SL is verbose
   L <- list(...)
   if (is.null(L$family)) {
@@ -360,31 +363,34 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       }
     }
   }
-  fhat_ful <- list()
-  fhat_red <- list()
-  for (v in 1:V) {
+  fhat <- list()
+  index_v <- 1
+  for (v in seq_len(V)) {
     train_v <- (cv_folds != v)
-    test_v <- (cv_folds == v) & (ss_folds == 2)
-    # fit super learner
-    this_L <- L
-    this_L$obsWeights <- L$obsWeights[train_v]
-    new_arg_list <- c(list(
-      Y = Y[train_v, , drop = FALSE], X = red_X[train_v, , drop = FALSE],
-      SL.library = this_sl_lib
-    ), this_L)
-    if (!is.character(this_sl_lib)) { # only a single learner, so don't do CV
-      fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE], 
-                         X = red_X[train_v, , drop = FALSE], 
-                         newX = red_X[test_v, , drop = FALSE],
-                         family = new_arg_list$family, 
-                         obsWeights = new_arg_list$obsWeights)
-      fhat_ful[[v]] <- fit$pred
-    } else {
-      fit <- do.call(SuperLearner::SuperLearner, new_arg_list)
-      ## get predictions on the validation fold
-      fhat_ful[[v]] <- SuperLearner::predict.SuperLearner(
-        fit, newdata = red_X[test_v, , drop = FALSE], onlySL = TRUE
-      )$pred
+    test_v <- (cv_folds == v)
+    if (ss_folds[v] == 1 | !sample_splitting) {
+      # fit super learner
+      this_L <- L
+      this_L$obsWeights <- L$obsWeights[train_v]
+      new_arg_list <- c(list(
+        Y = Y[train_v, , drop = FALSE], X = red_X[train_v, , drop = FALSE],
+        SL.library = this_sl_lib
+      ), this_L)
+      if (!is.character(this_sl_lib)) { # only a single learner, so don't do CV
+        fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE], 
+                           X = red_X[train_v, , drop = FALSE], 
+                           newX = red_X[test_v, , drop = FALSE],
+                           family = new_arg_list$family, 
+                           obsWeights = new_arg_list$obsWeights)
+        fhat[[v]] <- fit$pred
+      } else {
+        fit <- do.call(SuperLearner::SuperLearner, new_arg_list)
+        ## get predictions on the validation fold
+        fhat[[v]] <- SuperLearner::predict.SuperLearner(
+          fit, newdata = red_X[test_v, , drop = FALSE], onlySL = TRUE
+        )$pred
+      }
+      index_v <- index_v + 1
     }
   }
   # refit to the entire dataset
@@ -403,7 +409,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   if (verbose) {
     setTxtProgressBar(progress_bar, indx)
   }
-  return(list(cf_preds_lst = fhat_ful, cf_folds = cv_folds, 
+  return(list(cf_preds_lst = fhat, cf_folds = cv_folds, 
               ss_folds = ss_folds, fit = fit, fitted = fitted))
 }
 
