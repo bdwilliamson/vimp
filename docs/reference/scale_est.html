@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a <code>vim</code> object — print.vim • vimp</title>
+<title>Return an estimator on a different scale — scale_est • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Print a <code>vim</code> object — print.vim" />
-<meta property="og:description" content="Prints out the table of estimates, confidence intervals, and standard errors for a vim object." />
+<meta property="og:title" content="Return an estimator on a different scale — scale_est" />
+<meta property="og:description" content="Return an estimator on a different scale" />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -137,31 +137,43 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a <code>vim</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/print.vim.R'><code>R/print.vim.R</code></a></small>
-    <div class="hidden name"><code>print.vim.Rd</code></div>
+    <h1>Return an estimator on a different scale</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>scale_est.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prints out the table of estimates, confidence intervals, and standard errors for a <code>vim</code> object.</p>
+    <p>Return an estimator on a different scale</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vim</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>scale_est</span>(<span class='kw'>obs_est</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>grad</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the <code>vim</code> object of interest.</p></td>
+      <th>obs_est</th>
+      <td><p>the observed VIM estimate</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>other options, see the generic <code>print</code> function.</p></td>
+      <th>grad</th>
+      <td><p>the estimated efficient influence function</p></td>
+    </tr>
+    <tr>
+      <th>scale</th>
+      <td><p>the scale to compute on</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>the scaled estimate</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>It may be of interest to return an estimate (or confidence interval)
+  on a different scale than originally measured. For example, computing a
+  confidence interval (CI) for a VIM value that lies in (0,1) on the logit scale
+  ensures that the CI also lies in (0, 1).</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

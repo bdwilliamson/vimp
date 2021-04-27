@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a <code>vim</code> object — print.vim • vimp</title>
+<title>Check pre-computed fitted values for call to vim, cv_vim, or sp_vim — check_fitted_values • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Print a <code>vim</code> object — print.vim" />
-<meta property="og:description" content="Prints out the table of estimates, confidence intervals, and standard errors for a vim object." />
+<meta property="og:title" content="Check pre-computed fitted values for call to vim, cv_vim, or sp_vim — check_fitted_values" />
+<meta property="og:description" content="Check pre-computed fitted values for call to vim, cv_vim, or sp_vim" />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -137,31 +137,86 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a <code>vim</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/print.vim.R'><code>R/print.vim.R</code></a></small>
-    <div class="hidden name"><code>print.vim.Rd</code></div>
+    <h1>Check pre-computed fitted values for call to vim, cv_vim, or sp_vim</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>check_fitted_values.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prints out the table of estimates, confidence intervals, and standard errors for a <code>vim</code> object.</p>
+    <p>Check pre-computed fitted values for call to vim, cv_vim, or sp_vim</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vim</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>check_fitted_values</span>(
+  <span class='kw'>Y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>f1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>f2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cross_fitted_f1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cross_fitted_f2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cross_fitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cv</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the <code>vim</code> object of interest.</p></td>
+      <th>Y</th>
+      <td><p>the outcome</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>other options, see the generic <code>print</code> function.</p></td>
+      <th>f1</th>
+      <td><p>estimator of the population-optimal prediction function 
+using all covariates</p></td>
+    </tr>
+    <tr>
+      <th>f2</th>
+      <td><p>estimator of the population-optimal prediction function 
+using the reduced set of covariates</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitted_f1</th>
+      <td><p>cross-fitted estimator of the population-optimal 
+prediction function using all covariates</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitted_f2</th>
+      <td><p>cross-fitted estimator of the population-optimal 
+prediction function using the reduced set of covariates</p></td>
+    </tr>
+    <tr>
+      <th>sample_splitting_folds</th>
+      <td><p>the folds for sample-splitting (used for 
+hypothesis testing)</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitting_folds</th>
+      <td><p>the folds for cross-fitting (used for point
+estimates of variable importance in <code>cv_vim</code> and <code>sp_vim</code>)</p></td>
+    </tr>
+    <tr>
+      <th>V</th>
+      <td><p>the number of cross-fitting folds</p></td>
+    </tr>
+    <tr>
+      <th>cv</th>
+      <td><p>a logical flag indicating whether or not to use cross-fitting</p></td>
+    </tr>
+    <tr>
+      <th>X</th>
+      <td><p>the covariates</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>None. Called for the side effect of stopping the algorithm if 
+  any inputs are in an unexpected format.</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Ensure that inputs to <code>vim</code>, <code>cv_vim</code>, and <code>sp_vim</code>
+  follow the correct formats.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

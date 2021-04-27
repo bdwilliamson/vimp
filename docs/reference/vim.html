@@ -47,8 +47,8 @@
 
 
 <meta property="og:title" content="Nonparametric Intrinsic Variable Importance Estimates and Inference — vim" />
-<meta property="og:description" content="Compute estimates of and confidence intervals for nonparametric intrinsic 
-variable importance based on the population-level contrast between the oracle 
+<meta property="og:description" content="Compute estimates of and confidence intervals for nonparametric intrinsic
+variable importance based on the population-level contrast between the oracle
 predictiveness using the feature(s) of interest versus not." />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
@@ -82,7 +82,7 @@ predictiveness using the feature(s) of interest versus not." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.0</span>
       </span>
     </div>
 
@@ -145,8 +145,8 @@ predictiveness using the feature(s) of interest versus not." />
     </div>
 
     <div class="ref-description">
-    <p>Compute estimates of and confidence intervals for nonparametric intrinsic 
-variable importance based on the population-level contrast between the oracle 
+    <p>Compute estimates of and confidence intervals for nonparametric intrinsic
+variable importance based on the population-level contrast between the oracle
 predictiveness using the feature(s) of interest versus not.</p>
     </div>
 
@@ -163,7 +163,8 @@ predictiveness using the feature(s) of interest versus not.</p>
   <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>sample_splitting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -185,96 +186,104 @@ predictiveness using the feature(s) of interest versus not.</p>
     </tr>
     <tr>
       <th>f1</th>
-      <td><p>the fitted values from a flexible estimation technique 
+      <td><p>the fitted values from a flexible estimation technique
 regressing Y on X.</p></td>
     </tr>
     <tr>
       <th>f2</th>
-      <td><p>the fitted values from a flexible estimation technique 
-regressing Y on X withholding the columns in <code>indx</code>.</p></td>
+      <td><p>the fitted values from a flexible estimation technique
+regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
+<code>indx</code>.</p></td>
     </tr>
     <tr>
       <th>indx</th>
-      <td><p>the indices of the covariate(s) to calculate variable 
+      <td><p>the indices of the covariate(s) to calculate variable
 importance for; defaults to 1.</p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>the type of importance to compute; defaults to 
-<code>r_squared</code>, but other supported options are <code>auc</code>, 
+      <td><p>the type of importance to compute; defaults to
+<code>r_squared</code>, but other supported options are <code>auc</code>,
 <code>accuracy</code>, <code>deviance</code>, and <code>anova</code>.</p></td>
     </tr>
     <tr>
       <th>run_regression</th>
-      <td><p>if outcome Y and covariates X are passed to 
-<code>vimp_accuracy</code>, and <code>run_regression</code> is <code>TRUE</code>, 
-then Super Learner will be used; otherwise, variable importance 
+      <td><p>if outcome Y and covariates X are passed to
+<code>vimp_accuracy</code>, and <code>run_regression</code> is <code>TRUE</code>,
+then Super Learner will be used; otherwise, variable importance
 will be computed using the inputted fitted values.</p></td>
     </tr>
     <tr>
       <th>SL.library</th>
-      <td><p>a character vector of learners to pass to 
-<code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X, 
-respectively. Defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>, 
+      <td><p>a character vector of learners to pass to
+<code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X,
+respectively. Defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>,
 and <code>SL.mean</code>.</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>the level to compute the confidence interval at. 
+      <td><p>the level to compute the confidence interval at.
 Defaults to 0.05, corresponding to a 95% confidence interval.</p></td>
     </tr>
     <tr>
       <th>delta</th>
-      <td><p>the value of the \(\delta\)-null (i.e., testing if 
+      <td><p>the value of the \(\delta\)-null (i.e., testing if
 importance &lt; \(\delta\)); defaults to 0.</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>should CIs be computed on original ("identity") or 
+      <td><p>should CIs be computed on original ("identity") or
 logit ("logit") scale?</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>should we remove NAs in the outcome and fitted values 
+      <td><p>should we remove NAs in the outcome and fitted values
 in computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
-      <th>folds</th>
-      <td><p>the folds used for <code>f1</code> and <code>f2</code>; assumed to be 1 
-for the observations used in <code>f1</code> and 2 for the observations used 
-in <code>f2</code>. If there is only a single fold passed in, then hypothesis 
-testing is not done.</p></td>
+      <th>sample_splitting</th>
+      <td><p>should we use sample-splitting to estimate the full and
+reduced predictiveness? Defaults to <code>TRUE</code>, since inferences made using
+<code>sample_splitting = FALSE</code> will be invalid for variable with truly zero
+importance.</p></td>
+    </tr>
+    <tr>
+      <th>sample_splitting_folds</th>
+      <td><p>the folds used for sample-splitting;
+these identify the observations that should be used to evaluate
+predictiveness based on the full and reduced sets of covariates, respectively.
+Only used if <code>run_regression = FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>stratified</th>
-      <td><p>if run_regression = TRUE, then should the generated 
-folds be stratified based on the outcome (helps to ensure class balance 
+      <td><p>if run_regression = TRUE, then should the generated
+folds be stratified based on the outcome (helps to ensure class balance
 across cross-validation folds)</p></td>
     </tr>
     <tr>
       <th>C</th>
-      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes 
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).</p></td>
     </tr>
     <tr>
       <th>Z</th>
-      <td><p>either (i) NULL (the default, in which case the argument 
-<code>C</code> above must be all ones), or (ii) a character vector 
-specifying the variable(s) among Y and X that are thought to play a 
+      <td><p>either (i) NULL (the default, in which case the argument
+<code>C</code> above must be all ones), or (ii) a character vector
+specifying the variable(s) among Y and X that are thought to play a
 role in the coarsening mechanism.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for the computed influence curve (i.e., 
-inverse probability weights for coarsened-at-random settings). 
-Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated 
+      <td><p>weights for the computed influence curve (i.e.,
+inverse probability weights for coarsened-at-random settings).
+Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated
 probability weights]).</p></td>
     </tr>
     <tr>
       <th>ipc_est_type</th>
-      <td><p>the type of procedure used for coarsened-at-random 
-settings; options are "ipw" (for inverse probability weighting) or 
-"aipw" (for augmented inverse probability weighting). 
+      <td><p>the type of procedure used for coarsened-at-random
+settings; options are "ipw" (for inverse probability weighting) or
+"aipw" (for augmented inverse probability weighting).
 Only used if <code>C</code> is not all equal to 1.</p></td>
     </tr>
     <tr>
@@ -285,47 +294,51 @@ Only used if <code>C</code> is not all equal to 1.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of classes <code>vim</code> and the type of risk-based measure. 
+    <p>An object of classes <code>vim</code> and the type of risk-based measure.
   See Details for more information.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>We define the population variable importance measure (VIM) for the 
-group of features (or single feature) \(s\) with respect to the 
-predictiveness measure \(V\) by 
+    <p>We define the population variable importance measure (VIM) for the
+group of features (or single feature) \(s\) with respect to the
+predictiveness measure \(V\) by
 $$\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),$$ where \(f_0\) is
-the population predictiveness maximizing function, \(f_{0,s}\) is the 
-population predictiveness maximizing function that is only allowed to access 
-the features with index not in \(s\), and \(P_0\) is the true 
-data-generating distribution. VIM estimates are obtained by obtaining 
+the population predictiveness maximizing function, \(f_{0,s}\) is the
+population predictiveness maximizing function that is only allowed to access
+the features with index not in \(s\), and \(P_0\) is the true
+data-generating distribution. VIM estimates are obtained by obtaining
 estimators \(f_n\) and \(f_{n,s}\) of \(f_0\) and \(f_{0,s}\),
-respectively; obtaining an estimator \(P_n\) of \(P_0\); and finally, 
+respectively; obtaining an estimator \(P_n\) of \(P_0\); and finally,
 setting \(\psi_{n,s} := V(f_n, P_n) - V(f_{n,s}, P_n)\).</p>
 <p>In the interest of transparency, we return most of the calculations
-within the <code>vim</code> object. This results in a list including:</p><ul>
-<li><p>s - the column(s) to calculate variable importance for</p></li>
-<li><p>SL.library - the library of learners passed to <code>SuperLearner</code></p></li>
-<li><p>type - the type of risk-based variable importance measured</p></li>
-<li><p>full_fit - the fitted values of the chosen method fit to the full data</p></li>
-<li><p>red_fit - the fitted values of the chosen method fit to the reduced data</p></li>
-<li><p>est - the estimated variable importance</p></li>
-<li><p>naive - the naive estimator of variable importance (only used if <code>type = "anova"</code>)</p></li>
-<li><p>eif - the estimated influence curve</p></li>
-<li><p>se - the standard error for the estimated variable importance</p></li>
-<li><p>ci - the \((1-\alpha) \times 100\)% confidence interval for the variable importance estimate</p></li>
-<li><p>test - a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test</p></li>
-<li><p>p_value - a p-value based on the same test as <code>test</code></p></li>
-<li><p>full_mod - the object returned by the estimation procedure for the full data regression (if applicable)</p></li>
-<li><p>red_mod - the object returned by the estimation procedure for the reduced data regression (if applicable)</p></li>
-<li><p>alpha - the level, for confidence interval calculation</p></li>
-<li><p>folds - the folds used for hypothesis testing</p></li>
-<li><p>y - the outcome</p></li>
-<li><p>ipc_weights - the weights</p></li>
-<li><p>mat- a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value</p></li>
-</ul>
+within the <code>vim</code> object. This results in a list including:</p><dl'>
+ <dt>s</dt><dd><p>the column(s) to calculate variable importance for</p></dd>
+ <dt>SL.library</dt><dd><p>the library of learners passed to <code>SuperLearner</code></p></dd>
+ <dt>type</dt><dd><p>the type of risk-based variable importance measured</p></dd>
+ <dt>full_fit</dt><dd><p>the fitted values of the chosen method fit to the full data</p></dd>
+ <dt>red_fit</dt><dd><p>the fitted values of the chosen method fit to the reduced data</p></dd>
+ <dt>est</dt><dd><p>the estimated variable importance</p></dd>
+ <dt>naive</dt><dd><p>the naive estimator of variable importance (only used if <code>type = "anova"</code>)</p></dd>
+ <dt>eif</dt><dd><p>the estimated efficient influence function</p></dd>
+ <dt>eif_full</dt><dd><p>the estimated efficient influence function for the full regression</p></dd>
+ <dt>eif_reduced</dt><dd><p>the estimated efficient influence function for the reduced regression</p></dd>
+ <dt>se</dt><dd><p>the standard error for the estimated variable importance</p></dd>
+ <dt>ci</dt><dd><p>the \((1-\alpha) \times 100\)% confidence interval for the variable importance estimate</p></dd>
+ <dt>test</dt><dd><p>a decision to either reject (TRUE) or not reject (FALSE) the null hypothesis, based on a conservative test</p></dd>
+ <dt>p_value</dt><dd><p>a p-value based on the same test as <code>test</code></p></dd>
+ <dt>full_mod</dt><dd><p>the object returned by the estimation procedure for the full data regression (if applicable)</p></dd>
+ <dt>red_mod</dt><dd><p>the object returned by the estimation procedure for the reduced data regression (if applicable)</p></dd>
+ <dt>alpha</dt><dd><p>the level, for confidence interval calculation</p></dd>
+ <dt>sample_splitting_folds</dt><dd><p>the folds used for sample-splitting (used for hypothesis testing)</p></dd>
+ <dt>y</dt><dd><p>the outcome</p></dd>
+ <dt>ipc_weights</dt><dd><p>the weights</p></dd>
+ <dt>mat</dt><dd><p>a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value</p></dd>
+
+</dl>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the <code>SuperLearner</code> function and package.</p></div>
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the
+  <code>SuperLearner</code> function and package.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># generate the data</span>
@@ -338,36 +351,32 @@ within the <code>vim</code> object. This results in a list including:</p><ul>
 <span class='no'>f</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fl'>0.5</span> + <span class='fl'>0.3</span>*<span class='no'>x</span>[<span class='fl'>1</span>] + <span class='fl'>0.2</span>*<span class='no'>x</span>[<span class='fl'>2</span>]
 <span class='no'>smooth</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/apply.html'>apply</a></span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='kw'>function</span>(<span class='no'>z</span>) <span class='fu'>f</span>(<span class='no'>z</span>))
 
-<span class='co'># generate Y ~ Normal (smooth, 1)</span>
+<span class='co'># generate Y ~ Bernoulli (smooth)</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Binomial.html'>rbinom</a></span>(<span class='no'>n</span>, <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>prob</span> <span class='kw'>=</span> <span class='no'>smooth</span>))
 
 <span class='co'># set up a library for SuperLearner; note simple library for speed</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"SuperLearner"</span>)
-<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.glm"</span>, <span class='st'>"SL.mean"</span>)
+<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.glm"</span>)
 
 <span class='co'># using Y and X; use class-balanced folds</span>
-<span class='no'>folds_1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='fl'>2</span>), <span class='kw'>length</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>y</span> <span class='kw'>==</span> <span class='fl'>1</span>)))
-<span class='no'>folds_0</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq_len</a></span>(<span class='fl'>2</span>), <span class='kw'>length</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>y</span> <span class='kw'>==</span> <span class='fl'>0</span>)))
-<span class='no'>folds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span>(<span class='st'>"numeric"</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>y</span>))
-<span class='no'>folds</span>[<span class='no'>y</span> <span class='kw'>==</span> <span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='no'>folds_1</span>
-<span class='no'>folds</span>[<span class='no'>y</span> <span class='kw'>==</span> <span class='fl'>0</span>] <span class='kw'>&lt;-</span> <span class='no'>folds_0</span>
-<span class='no'>est</span> <span class='kw'>&lt;-</span> <span class='fu'>vim</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>,
+<span class='no'>est_1</span> <span class='kw'>&lt;-</span> <span class='fu'>vim</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"accuracy"</span>,
            <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
            <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>),
-           <span class='kw'>folds</span> <span class='kw'>=</span> <span class='no'>folds</span>)
-
+           <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in .createLibrary(SL.library): argument "SL.library" is missing, with no default</span></div><div class='input'>
 <span class='co'># using pre-computed fitted values</span>
-<span class='no'>full</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>1</span>], <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>1</span>, ],
-<span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))
-<span class='no'>full.fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>full</span>)$<span class='no'>pred</span>
-<span class='no'>reduced</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>2</span>],
-<span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[<span class='no'>folds</span> <span class='kw'>==</span> <span class='fl'>2</span>, -<span class='fl'>2</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
-<span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))
-<span class='no'>red.fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>reduced</span>)$<span class='no'>pred</span>
-
-<span class='no'>est</span> <span class='kw'>&lt;-</span> <span class='fu'>vim</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>f1</span> <span class='kw'>=</span> <span class='no'>full.fit</span>, <span class='kw'>f2</span> <span class='kw'>=</span> <span class='no'>red.fit</span>,
-            <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>folds</span> <span class='kw'>=</span> <span class='no'>folds</span>,
-            <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"accuracy"</span>)</div></pre>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>4747</span>)
+<span class='no'>full_fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>,
+                                       <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>,
+                                       <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))</div><div class='output co'>#&gt; <span class='error'>Error in do.call("SuperLearner.CV.control", cvControl): object 'V' not found</span></div><div class='input'><span class='no'>full_fitted</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>full_fit</span>)$<span class='no'>pred</span></div><div class='output co'>#&gt; <span class='error'>Error in SuperLearner::predict.SuperLearner(full_fit): object 'full_fit' not found</span></div><div class='input'><span class='co'># fit the data with only X1</span>
+<span class='no'>reduced_fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>full_fitted</span>,
+                                          <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[, -<span class='fl'>2</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
+                                          <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>,
+                                          <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))</div><div class='output co'>#&gt; <span class='error'>Error in do.call("SuperLearner.CV.control", cvControl): object 'V' not found</span></div><div class='input'><span class='no'>reduced_fitted</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>reduced_fit</span>)$<span class='no'>pred</span></div><div class='output co'>#&gt; <span class='error'>Error in SuperLearner::predict.SuperLearner(reduced_fit): object 'reduced_fit' not found</span></div><div class='input'>
+<span class='no'>est_2</span> <span class='kw'>&lt;-</span> <span class='fu'>vim</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>f1</span> <span class='kw'>=</span> <span class='no'>full_fitted</span>, <span class='kw'>f2</span> <span class='kw'>=</span> <span class='no'>reduced_fitted</span>,
+            <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
+            <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"accuracy"</span>,
+            <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='no'>est_1</span>$<span class='no'>sample_splitting_folds</span>)</div><div class='output co'>#&gt; <span class='error'>Error in check_inputs(Y, X, f1, f2, indx): object 'full_fitted' not found</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

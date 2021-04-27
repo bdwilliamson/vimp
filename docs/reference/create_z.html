@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a <code>vim</code> object — print.vim • vimp</title>
+<title>Create complete-case outcome, weights, and Z — create_z • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Print a <code>vim</code> object — print.vim" />
-<meta property="og:description" content="Prints out the table of estimates, confidence intervals, and standard errors for a vim object." />
+<meta property="og:title" content="Create complete-case outcome, weights, and Z — create_z" />
+<meta property="og:description" content="Create complete-case outcome, weights, and Z" />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -137,31 +137,45 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a <code>vim</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/print.vim.R'><code>R/print.vim.R</code></a></small>
-    <div class="hidden name"><code>print.vim.Rd</code></div>
+    <h1>Create complete-case outcome, weights, and Z</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>create_z.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prints out the table of estimates, confidence intervals, and standard errors for a <code>vim</code> object.</p>
+    <p>Create complete-case outcome, weights, and Z</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vim</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>create_z</span>(<span class='no'>Y</span>, <span class='no'>C</span>, <span class='no'>Z</span>, <span class='no'>X</span>, <span class='no'>ipc_weights</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the <code>vim</code> object of interest.</p></td>
+      <th>Y</th>
+      <td><p>the outcome</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>other options, see the generic <code>print</code> function.</p></td>
+      <th>C</th>
+      <td><p>indicator of missing or observed</p></td>
+    </tr>
+    <tr>
+      <th>Z</th>
+      <td><p>the covariates observed in phase 1 and 2 data</p></td>
+    </tr>
+    <tr>
+      <th>X</th>
+      <td><p>all covariates</p></td>
+    </tr>
+    <tr>
+      <th>ipc_weights</th>
+      <td><p>the weights</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a list, with the complete-case outcome, weights, and Z matrix</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

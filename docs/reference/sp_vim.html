@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.0</span>
       </span>
     </div>
 
@@ -159,6 +159,7 @@
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>sample_splitting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
@@ -184,80 +185,87 @@
     </tr>
     <tr>
       <th>type</th>
-      <td><p>the type of parameter (e.g., R-squared-based is <code>"r_squared"</code>). 
+      <td><p>the type of parameter (e.g., R-squared-based is <code>"r_squared"</code>).
 Note that <code>type = 'anova'</code> is not allowed for SPVIMs.</p></td>
     </tr>
     <tr>
       <th>SL.library</th>
-      <td><p>a character vector of learners to pass to 
-<code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X, respectively. 
+      <td><p>a character vector of learners to pass to
+<code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X, respectively.
 Defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>, and <code>SL.mean</code>.</p></td>
     </tr>
     <tr>
       <th>univariate_SL.library</th>
-      <td><p>(optional) a character vector of learners to 
-pass to <code>SuperLearner</code> for estimating univariate regression functions. 
+      <td><p>(optional) a character vector of learners to
+pass to <code>SuperLearner</code> for estimating univariate regression functions.
 Defaults to <code>SL.polymars</code></p></td>
     </tr>
     <tr>
       <th>gamma</th>
-      <td><p>the fraction of the sample size to use when sampling subsets 
-(e.g., <code>gamma = 1</code> samples the same number of subsets as the sample 
+      <td><p>the fraction of the sample size to use when sampling subsets
+(e.g., <code>gamma = 1</code> samples the same number of subsets as the sample
 size)</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>the level to compute the confidence interval at. 
+      <td><p>the level to compute the confidence interval at.
 Defaults to 0.05, corresponding to a 95% confidence interval.</p></td>
     </tr>
     <tr>
       <th>delta</th>
-      <td><p>the value of the \(\delta\)-null (i.e., testing if 
+      <td><p>the value of the \(\delta\)-null (i.e., testing if
 importance &lt; \(\delta\)); defaults to 0.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>should we remove NA's in the outcome and fitted values in 
+      <td><p>should we remove NA's in the outcome and fitted values in
 computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
       <th>stratified</th>
-      <td><p>should the generated folds be stratified based on the 
+      <td><p>should the generated folds be stratified based on the
 outcome (helps to ensure class balance across cross-fitting folds)?</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>should <code>sp_vim</code> and <code>SuperLearner</code> print out 
+      <td><p>should <code>sp_vim</code> and <code>SuperLearner</code> print out
 progress? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
+      <th>sample_splitting</th>
+      <td><p>should we use sample-splitting to estimate the full and
+reduced predictiveness? Defaults to <code>TRUE</code>, since inferences made using
+<code>sample_splitting = FALSE</code> will be invalid for variable with truly zero
+importance.</p></td>
+    </tr>
+    <tr>
       <th>C</th>
-      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes 
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).</p></td>
     </tr>
     <tr>
       <th>Z</th>
-      <td><p>either (i) NULL (the default, in which case the argument 
-<code>C</code> above must be all ones), or (ii) a character vector specifying 
-the variable(s) among Y and X that are thought to play a role in the 
+      <td><p>either (i) NULL (the default, in which case the argument
+<code>C</code> above must be all ones), or (ii) a character vector specifying
+the variable(s) among Y and X that are thought to play a role in the
 coarsening mechanism.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for the computed influence curve (i.e., inverse 
-probability weights for coarsened-at-random settings). Assumed to be 
+      <td><p>weights for the computed influence curve (i.e., inverse
+probability weights for coarsened-at-random settings). Assumed to be
 already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
     </tr>
     <tr>
       <th>ipc_est_type</th>
-      <td><p>the type of procedure used for coarsened-at-random 
-settings; options are "ipw" (for inverse probability weighting) or 
-"aipw" (for augmented inverse probability weighting). 
+      <td><p>the type of procedure used for coarsened-at-random
+settings; options are "ipw" (for inverse probability weighting) or
+"aipw" (for augmented inverse probability weighting).
 Only used if <code>C</code> is not all equal to 1.</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>should CIs be computed on original ("identity") or logit 
+      <td><p>should CIs be computed on original ("identity") or logit
 ("logit") scale?</p></td>
     </tr>
     <tr>
@@ -271,41 +279,48 @@ Only used if <code>C</code> is not all equal to 1.</p></td>
     <p>An object of class <code>vim</code>. See Details for more information.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>We define the SPVIM as the weighted average of the population 
-difference in predictiveness over all subsets of features not containing 
+    <p>We define the SPVIM as the weighted average of the population
+difference in predictiveness over all subsets of features not containing
 feature \(j\).</p>
-<p>This is equivalent to finding the solution to a population weighted least 
-squares problem. This key fact allows us to estimate the SPVIM using weighted 
-least squares, where we first sample subsets from the power set of all 
+<p>This is equivalent to finding the solution to a population weighted least
+squares problem. This key fact allows us to estimate the SPVIM using weighted
+least squares, where we first sample subsets from the power set of all
 possible features using the Shapley sampling distribution; then
-use cross-fitting to obtain estimators of the predictiveness of each 
-sampled subset; and finally, solve the least squares problem given in 
+use cross-fitting to obtain estimators of the predictiveness of each
+sampled subset; and finally, solve the least squares problem given in
 Williamson and Feng (2020).</p>
 <p>See the paper by Williamson and Feng (2020) for more
 details on the mathematics behind this function, and the validity
-of the confidence intervals.
-The function works by estimating
-In the interest of transparency, we return most of the calculations
-within the <code>vim</code> object. This results in a list containing:</p><ul>
-<li><p>SL.library - the library of learners passed to <code>SuperLearner</code></p></li>
-<li><p>v- the estimated predictiveness measure for each sampled subset</p></li>
-<li><p>preds_lst - the predicted values from the chosen method for each sampled subset</p></li>
-<li><p>est - the estimated SPVIM value for each feature</p></li>
-<li><p>ic_lst - the influence functions for each sampled subset</p></li>
-<li><p>ic- a list of the SPVIM influence function contributions</p></li>
-<li><p>se - the standard errors for the estimated variable importance</p></li>
-<li><p>ci - the \((1-\alpha) \times 100\)% confidence intervals based on the variable importance estimates</p></li>
-<li><p>gamma- the fraction of the sample size used when sampling subsets</p></li>
-<li><p>alpha - the level, for confidence interval calculation</p></li>
-<li><p>delta- the <code>delta</code> value used for hypothesis testing</p></li>
-<li><p>y - the outcome</p></li>
-<li><p>ipc_weights - the weights</p></li>
-<li><p>mat- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values</p></li>
-</ul>
+of the confidence intervals.</p>
+<p>In the interest of transparency, we return most of the calculations
+within the <code>vim</code> object. This results in a list containing:</p><dl'>
+ <dt>SL.library</dt><dd><p>the library of learners passed to <code>SuperLearner</code></p></dd>
+ <dt>v</dt><dd><p>the estimated predictiveness measure for each sampled subset</p></dd>
+ <dt>fit_lst</dt><dd><p>the fitted values on the entire dataset from the chosen method for each sampled subset</p></dd>
+ <dt>preds_lst</dt><dd><p>the cross-fitted predicted values from the chosen method for each sampled subset</p></dd>
+ <dt>est</dt><dd><p>the estimated SPVIM value for each feature</p></dd>
+ <dt>ics</dt><dd><p>the influence functions for each sampled subset</p></dd>
+ <dt>var_v_contribs</dt><dd><p>the contibutions to the variance from estimating predictiveness</p></dd>
+ <dt>var_s_contribs</dt><dd><p>the contributions to the variance from sampling subsets</p></dd>
+ <dt>ic_lst</dt><dd><p>a list of the SPVIM influence function contributions</p></dd>
+ <dt>se</dt><dd><p>the standard errors for the estimated variable importance</p></dd>
+ <dt>ci</dt><dd><p>the \((1-\alpha) \times 100\)% confidence intervals based on the variable importance estimates</p></dd>
+ <dt>p_value</dt><dd><p>p-values for the null hypothesis test of zero importance for each variable</p></dd>
+ <dt>test_statistic</dt><dd><p>the test statistic for each null hypothesis test of zero importance</p></dd>
+ <dt>test</dt><dd><p>a hypothesis testing decision for each null hypothesis test (for each variable having zero importance)</p></dd>
+ <dt>gamma</dt><dd><p>the fraction of the sample size used when sampling subsets</p></dd>
+ <dt>alpha</dt><dd><p>the level, for confidence interval calculation</p></dd>
+ <dt>delta</dt><dd><p>the <code>delta</code> value used for hypothesis testing</p></dd>
+ <dt>y</dt><dd><p>the outcome</p></dd>
+ <dt>ipc_weights</dt><dd><p>the weights</p></dd>
+ <dt>scale</dt><dd><p>the scale on which CIs were computed</p></dd>
+ <dt>mat</dt><dd><p>- a tibble with the estimates, SEs, CIs, hypothesis testing decisions, and p-values</p></dd>
+
+</dl>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the 
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the
   <code>SuperLearner</code> function and package.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -322,7 +337,7 @@ within the <code>vim</code> object. This results in a list containing:</p><ul>
 
 <span class='co'># set up a library for SuperLearner; note simple library for speed</span>
 <span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"SuperLearner"</span>)
-<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.glm"</span>, <span class='st'>"SL.mean"</span>)
+<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.glm"</span>)
 
 <span class='co'># -----------------------------------------</span>
 <span class='co'># using Super Learner (with a small number of CV folds,</span>

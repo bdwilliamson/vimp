@@ -47,9 +47,15 @@
 
 
 <meta property="og:title" content="Nonparametric Intrinsic Variable Importance Estimates: ANOVA — vimp_anova" />
-<meta property="og:description" content="Compute estimates of and confidence intervals for nonparametric ANOVA-based 
-intrinsic variable importance. This is a wrapper function for cv_vim, 
-with type = &quot;anova&quot;." />
+<meta property="og:description" content="Compute estimates of and confidence intervals for nonparametric ANOVA-based
+intrinsic variable importance. This is a wrapper function for cv_vim,
+with type = &quot;anova&quot;. This type
+has limited functionality compared to other
+types; in particular, null hypothesis tests
+are not possible using type = &quot;anova&quot;.
+If you want to do null hypothesis testing
+on an equivalent population parameter, use
+vimp_rsquared instead." />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -82,7 +88,7 @@ with type = &quot;anova&quot;." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.0</span>
       </span>
     </div>
 
@@ -145,16 +151,22 @@ with type = &quot;anova&quot;." />
     </div>
 
     <div class="ref-description">
-    <p>Compute estimates of and confidence intervals for nonparametric ANOVA-based 
-intrinsic variable importance. This is a wrapper function for <code>cv_vim</code>, 
-with <code>type = "anova"</code>.</p>
+    <p>Compute estimates of and confidence intervals for nonparametric ANOVA-based
+intrinsic variable importance. This is a wrapper function for <code>cv_vim</code>,
+with <code>type = "anova"</code>. This type
+has limited functionality compared to other
+types; in particular, null hypothesis tests
+are not possible using <code>type = "anova"</code>.
+If you want to do null hypothesis testing
+on an equivalent population parameter, use
+<code>vimp_rsquared</code> instead.</p>
     </div>
 
     <pre class="usage"><span class='fu'>vimp_anova</span>(
   <span class='kw'>Y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>X</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>f1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>f2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cross_fitted_f1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cross_fitted_f2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>10</span>,
   <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
@@ -162,12 +174,12 @@ with <code>type = "anova"</code>.</p>
   <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
   <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
-  <span class='no'>folds</span>,
+  <span class='kw'>cross_fitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>C</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
+  <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>ipc_est_type</span> <span class='kw'>=</span> <span class='st'>"aipw"</span>,
   <span class='no'>...</span>
 )</pre>
@@ -184,92 +196,101 @@ with <code>type = "anova"</code>.</p>
       <td><p>the covariates.</p></td>
     </tr>
     <tr>
-      <th>f1</th>
-      <td><p>the predicted values on validation data from a flexible estimation 
-technique regressing Y on X in the training data; a list of length V, 
-where each object is a set of predictions on the validation data.</p></td>
+      <th>cross_fitted_f1</th>
+      <td><p>the predicted values on validation data from a
+flexible estimation technique regressing Y on X in the training data;
+a list of length V, where each object is a set of predictions on the
+validation data. If sample-splitting is requested, then these must
+be estimated specially; see Details.</p></td>
     </tr>
     <tr>
-      <th>f2</th>
-      <td><p>the predicted values on validation data from a flexible estimation 
-technique regressing the fitted values in <code>f1</code> on X withholding the 
-columns in <code>indx</code>; a list of length V, where each object is a set of 
-predictions on the validation data.</p></td>
+      <th>cross_fitted_f2</th>
+      <td><p>the predicted values on validation data from a
+flexible estimation technique regressing either (a) the fitted values in
+<code>cross_fitted_f1</code>, or (b) Y, on X withholding the columns in <code>indx</code>;
+a list of length V, where each object is a set of predictions on the
+validation data. If sample-splitting is requested, then these must
+be estimated specially; see Details.</p></td>
     </tr>
     <tr>
       <th>indx</th>
-      <td><p>the indices of the covariate(s) to calculate variable importance 
+      <td><p>the indices of the covariate(s) to calculate variable importance
 for; defaults to 1.</p></td>
     </tr>
     <tr>
       <th>V</th>
-      <td><p>the number of folds for cross-validation, defaults to 10.</p></td>
+      <td><p>the number of folds for cross-fitting, defaults to 10. If
+<code>sample_splitting = TRUE</code>, then a special type of <code>V</code>-fold cross-fitting
+is done. See Details for a more detailed explanation.</p></td>
     </tr>
     <tr>
       <th>run_regression</th>
-      <td><p>if outcome Y and covariates X are passed to 
-<code>cv_vim</code>, and <code>run_regression</code> is <code>TRUE</code>, then 
-Super Learner will be used; otherwise, variable importance will be 
-computed using the inputted fitted values.</p></td>
+      <td><p>if outcome Y and covariates X are passed to
+<code>cv_vim</code>, and <code>run_regression</code> is <code>TRUE</code>, then Super Learner
+will be used; otherwise, variable importance will be computed using the
+inputted fitted values.</p></td>
     </tr>
     <tr>
       <th>SL.library</th>
-      <td><p>a character vector of learners to pass to 
-<code>SuperLearner</code>, if <code>run_regression = TRUE</code>.
+      <td><p>a character vector of learners to pass to
+<code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X, respectively.
 Defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>, and <code>SL.mean</code>.</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>the level to compute the confidence interval at. Defaults to 
+      <td><p>the level to compute the confidence interval at. Defaults to
 0.05, corresponding to a 95% confidence interval.</p></td>
     </tr>
     <tr>
       <th>delta</th>
-      <td><p>the value of the \(\delta\)-null (i.e., testing if 
+      <td><p>the value of the \(\delta\)-null (i.e., testing if
 importance &lt; \(\delta\)); defaults to 0.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>should we remove NA's in the outcome and fitted values in 
+      <td><p>should we remove NA's in the outcome and fitted values in
 computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
-      <th>scale</th>
-      <td><p>scale should CIs be computed on original ("identity") or 
-logit ("logit") scale? (defaults to "identity")</p></td>
-    </tr>
-    <tr>
-      <th>folds</th>
-      <td><p>the folds to use, if f1 and f2 are supplied.</p></td>
+      <th>cross_fitting_folds</th>
+      <td><p>the folds for cross-fitting. Only used if
+<code>run_regression = FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>stratified</th>
-      <td><p>if run_regression = TRUE, then should the generated folds 
-be stratified based on the outcome? (helps to ensure class balance across 
-cross-validation folds)</p></td>
+      <td><p>if run_regression = TRUE, then should the generated folds
+be stratified based on the outcome (helps to ensure class balance across
+cross-fitting folds)</p></td>
     </tr>
     <tr>
       <th>C</th>
-      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes 
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).</p></td>
     </tr>
     <tr>
       <th>Z</th>
-      <td><p>either (i) NULL (the default, in which case the argument 
-<code>C</code> above must be all ones), or (ii) a character list specifying the 
-variable(s) among Y and X that are thought to play a role in the coarsening 
-mechanism.</p></td>
+      <td><p>either (i) NULL (the default, in which case the argument
+<code>C</code> above must be all ones), or (ii) a character vector specifying
+the variable(s) among Y and X that are thought to play a role in the
+coarsening mechanism.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for the computed influence curve 
-(i.e., inverse probability weights for coarsened-at-random settings).</p></td>
+      <td><p>weights for the computed influence curve (i.e., inverse
+probability weights for coarsened-at-random settings). Assumed to be
+already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
+    </tr>
+    <tr>
+      <th>scale</th>
+      <td><p>should CIs be computed on original ("identity") or
+logit ("logit") scale?</p></td>
     </tr>
     <tr>
       <th>ipc_est_type</th>
-      <td><p>IPC correction, either <code>"ipw"</code> (for classical 
-inverse probability weighting) or <code>"aipw"</code> (for augmented inverse
-probability weighting; the default).</p></td>
+      <td><p>the type of procedure used for coarsened-at-random
+settings; options are "ipw" (for inverse probability weighting) or
+"aipw" (for augmented inverse probability weighting).
+Only used if <code>C</code> is not all equal to 1.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -279,33 +300,29 @@ probability weighting; the default).</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of classes <code>vim</code> and <code>vim_regression</code>. 
+    <p>An object of classes <code>vim</code> and <code>vim_anova</code>.
   See Details for more information.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
-details on the mathematics behind this function, and the validity
-of the confidence intervals.
-In the interest of transparency, we return most of the calculations
-within the <code>vim</code> object. This results in a list containing:</p><ul>
-<li><p>s - the column(s) to calculate variable importance for</p></li>
-<li><p>SL.library - the library of learners passed to <code>SuperLearner</code></p></li>
-<li><p>full_fit - the fitted values of the chosen method fit to the full data</p></li>
-<li><p>red_fit - the fitted values of the chosen method fit to the reduced data</p></li>
-<li><p>est - the estimated variable importance</p></li>
-<li><p>naive - the naive estimator of variable importance</p></li>
-<li><p>update - the influence curve-based update</p></li>
-<li><p>se - the standard error for the estimated variable importance</p></li>
-<li><p>ci - the \((1-\alpha) \times 100\)% confidence interval for the variable importance estimate</p></li>
-<li><p>full_mod - the object returned by the estimation procedure for the full data regression (if applicable)</p></li>
-<li><p>red_mod - the object returned by the estimation procedure for the reduced data regression (if applicable)</p></li>
-<li><p>alpha - the level, for confidence interval calculation</p></li>
-<li><p>y - the outcome</p></li>
-</ul>
-
+    <p>We define the population ANOVA
+parameter for the group of features (or  single feature) \(s\) by
+$$\psi_{0,s} := E_0\{f_0(X) - f_{0,s}(X)\}^2/var_0(Y),$$
+where \(f_0\) is the population conditional mean using all features,
+\(f_{0,s}\) is the population conditional mean using the features with
+index not in \(s\), and \(E_0\) and \(var_0\) denote expectation and
+variance under the true data-generating distribution, respectively.</p>
+<p>Cross-fitted ANOVA estimates are computed by first
+splitting the data into \(K\) folds; then using each fold in turn as a
+hold-out set, constructing estimators \(f_{n,k}\) and \(f_{n,k,s}\) of
+\(f_0\) and \(f_{0,s}\), respectively on the training data and estimator
+\(E_{n,k}\) of \(E_0\) using the test data; and finally, computing
+$$\psi_{n,s} := K^{(-1)}\sum_{k=1}^K E_{n,k}\{f_{n,k}(X) - f_{n,k,s}(X)\}^2/var_n(Y),$$
+where \(var_n\) is the empirical variance.
+See the paper by Williamson, Gilbert, Simon, and Carone for more
+details on the mathematics behind this function.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the 
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></code> for specific usage of the
   <code>SuperLearner</code> function and package.</p></div>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a <code>vim</code> object — print.vim • vimp</title>
+<title>Obtain the type of VIM to estimate using partial matching — get_full_type • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Print a <code>vim</code> object — print.vim" />
-<meta property="og:description" content="Prints out the table of estimates, confidence intervals, and standard errors for a vim object." />
+<meta property="og:title" content="Obtain the type of VIM to estimate using partial matching — get_full_type" />
+<meta property="og:description" content="Obtain the type of VIM to estimate using partial matching" />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -137,31 +137,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a <code>vim</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/print.vim.R'><code>R/print.vim.R</code></a></small>
-    <div class="hidden name"><code>print.vim.Rd</code></div>
+    <h1>Obtain the type of VIM to estimate using partial matching</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>get_full_type.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prints out the table of estimates, confidence intervals, and standard errors for a <code>vim</code> object.</p>
+    <p>Obtain the type of VIM to estimate using partial matching</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vim</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>get_full_type</span>(<span class='no'>type</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the <code>vim</code> object of interest.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>other options, see the generic <code>print</code> function.</p></td>
+      <th>type</th>
+      <td><p>the partial string indicating the type of VIM</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>the full string indicating the type of VIM</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

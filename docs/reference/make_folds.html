@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a <code>vim</code> object — print.vim • vimp</title>
+<title>Create Folds for Cross-Fitting — make_folds • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Print a <code>vim</code> object — print.vim" />
-<meta property="og:description" content="Prints out the table of estimates, confidence intervals, and standard errors for a vim object." />
+<meta property="og:title" content="Create Folds for Cross-Fitting — make_folds" />
+<meta property="og:description" content="Create Folds for Cross-Fitting" />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -137,31 +137,46 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a <code>vim</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/print.vim.R'><code>R/print.vim.R</code></a></small>
-    <div class="hidden name"><code>print.vim.Rd</code></div>
+    <h1>Create Folds for Cross-Fitting</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>make_folds.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prints out the table of estimates, confidence intervals, and standard errors for a <code>vim</code> object.</p>
+    <p>Create Folds for Cross-Fitting</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vim</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>make_folds</span>(<span class='no'>y</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>C</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>/<span class='no'>V</span>, <span class='no'>V</span>))</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the <code>vim</code> object of interest.</p></td>
+      <th>y</th>
+      <td><p>the outcome</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>other options, see the generic <code>print</code> function.</p></td>
+      <th>V</th>
+      <td><p>the number of folds</p></td>
+    </tr>
+    <tr>
+      <th>stratified</th>
+      <td><p>should the folds be stratified based on the outcome?</p></td>
+    </tr>
+    <tr>
+      <th>C</th>
+      <td><p>a vector indicating whether or not the observation is fully observed;
+1 denotes yes, 0 denotes no</p></td>
+    </tr>
+    <tr>
+      <th>probs</th>
+      <td><p>vector of proportions for each fold number</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a vector of folds</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

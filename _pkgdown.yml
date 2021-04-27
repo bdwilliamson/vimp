@@ -45,6 +45,16 @@ reference:
       contents:
       - print.vim
       - format.vim
+      - make_folds
+      - create_z
+      - make_kfold
+      - run_sl
+      - check_fitted_values
+      - check_inputs
+      - extract_sampled_split_predictions
+      - get_cv_sl_folds
+      - get_full_type
+      - scale_est
     - title: "Deprecated functions"
       desc: "Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead."
       contents:

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Print a <code>vim</code> object — print.vim • vimp</title>
+<title>Extract sampled-split predictions from a CV.SuperLearner object — extract_sampled_split_predictions • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,12 @@
 
 
 
-<meta property="og:title" content="Print a <code>vim</code> object — print.vim" />
-<meta property="og:description" content="Prints out the table of estimates, confidence intervals, and standard errors for a vim object." />
+<meta property="og:title" content="Extract sampled-split predictions from a CV.SuperLearner object — extract_sampled_split_predictions" />
+<meta property="og:description" content="Use the cross-validated Super Learner and a set of specified sample-splitting
+folds to extract cross-fitted predictions on separate splits of the data. This
+is primarily for use in cases where you have already fit a CV.SuperLearner
+and want to use the fitted values to compute variable importance without having
+to re-fit. The number of folds used in the CV.SuperLearner must be even." />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -137,31 +141,58 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Print a <code>vim</code> object</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/print.vim.R'><code>R/print.vim.R</code></a></small>
-    <div class="hidden name"><code>print.vim.Rd</code></div>
+    <h1>Extract sampled-split predictions from a CV.SuperLearner object</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/extract_sampled_split_predictions.R'><code>R/extract_sampled_split_predictions.R</code></a></small>
+    <div class="hidden name"><code>extract_sampled_split_predictions.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prints out the table of estimates, confidence intervals, and standard errors for a <code>vim</code> object.</p>
+    <p>Use the cross-validated Super Learner and a set of specified sample-splitting
+folds to extract cross-fitted predictions on separate splits of the data. This
+is primarily for use in cases where you have already fit a CV.SuperLearner
+and want to use the fitted values to compute variable importance without having
+to re-fit. The number of folds used in the CV.SuperLearner must be even.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vim</span>
-<span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>extract_sampled_split_predictions</span>(
+  <span class='kw'>cvsl_obj</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>sample_splitting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the <code>vim</code> object of interest.</p></td>
+      <th>cvsl_obj</th>
+      <td><p>An object of class <code>"CV.SuperLearner"</code></p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>other options, see the generic <code>print</code> function.</p></td>
+      <th>sample_splitting</th>
+      <td><p>logical; should we use sample-splitting or not? 
+Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>sample_splitting_folds</th>
+      <td><p>A vector of folds to use for sample splitting</p></td>
+    </tr>
+    <tr>
+      <th>full</th>
+      <td><p>logical; is this the fit to all covariates (<code>TRUE</code>) or not
+(<code>FALSE</code>)?</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>The predictions on validation data in each split-sample fold; a 
+  list of length two, each element of which is a list with the predictions
+  on the split-sample cross-validation data.</p>
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html'>CV.SuperLearner</a></code> for usage of the 
+  <code>CV.SuperLearner</code> function.</p></div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -8,11 +8,20 @@
 
 <title>Run a Super Learner for the provided subset of features — run_sl • vimp</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
@@ -36,10 +45,10 @@
 
 
 
+
 <meta property="og:title" content="Run a Super Learner for the provided subset of features — run_sl" />
-
-<meta property="og:description" content="Run a Super Learner for the provided subset of features." />
-
+<meta property="og:description" content="Run a Super Learner for the provided subset of features" />
+<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -71,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.0</span>
       </span>
     </div>
 
@@ -94,7 +103,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/introduction_to_vimp.html">Introduction to vimp</a>
+      <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
+    </li>
+    <li>
+      <a href="../articles/types-of-vims.html">Types of VIMs</a>
     </li>
   </ul>
 </li>
@@ -102,7 +117,6 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/bdwilliamson/vimp/">
@@ -124,18 +138,31 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Run a Super Learner for the provided subset of features</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/run_sl.R'><code>R/run_sl.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
     <div class="hidden name"><code>run_sl.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    
-    <p>Run a Super Learner for the provided subset of features.</p>
-    
+    <p>Run a Super Learner for the provided subset of features</p>
     </div>
 
-    <pre class="usage"><span class='fu'>run_sl</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='no'>V</span>, <span class='no'>SL.library</span>, <span class='no'>s</span>, <span class='no'>folds</span>, <span class='no'>...</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>run_sl</span>(
+  <span class='kw'>Y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>X</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>5</span>,
+  <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='st'>"SL.glm"</span>,
+  <span class='kw'>univariate_SL.library</span> <span class='kw'>=</span> <span class='st'>"SL.glm"</span>,
+  <span class='kw'>s</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>sample_splitting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>ss_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>progress_bar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>X</span>)),
+  <span class='no'>...</span>
+)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -160,42 +187,41 @@
       <td><p>the subset of interest</p></td>
     </tr>
     <tr>
-      <th>folds</th>
+      <th>cv_folds</th>
       <td><p>the CV folds</p></td>
+    </tr>
+    <tr>
+      <th>sample_splitting</th>
+      <td><p>logical; should we use sample-splitting for 
+predictiveness estimation?</p></td>
+    </tr>
+    <tr>
+      <th>ss_folds</th>
+      <td><p>the sample-splitting folds; only used if 
+<code>sample_splitting = TRUE</code></p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>should we print progress? defaults to FALSE</p></td>
+    </tr>
+    <tr>
+      <th>progress_bar</th>
+      <td><p>the progress bar to print to (only if verbose = TRUE)</p></td>
+    </tr>
+    <tr>
+      <th>indx</th>
+      <td><p>the index to pass to progress bar (only if verbose = TRUE)</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>other arguments to Super Learner</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a list of length V, with the results of predicting on the hold-out data for each v in 1 through V</p>
-    
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"SuperLearner"</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"gam"</span>)
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
-<span class='co'>## generate the data</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='no'>p</span>, <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='no'>n</span>, -<span class='fl'>5</span>, <span class='fl'>5</span>)))
-
-<span class='co'>## apply the function to the x's</span>
-<span class='no'>smooth</span> <span class='kw'>&lt;-</span> (<span class='no'>x</span>[,<span class='fl'>1</span>]/<span class='fl'>5</span>)^<span class='fl'>2</span>*(<span class='no'>x</span>[,<span class='fl'>1</span>]+<span class='fl'>7</span>)/<span class='fl'>5</span> + (<span class='no'>x</span>[,<span class='fl'>2</span>]/<span class='fl'>3</span>)^<span class='fl'>2</span>
-
-<span class='co'>## generate Y ~ Normal (smooth, 1)</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span>(<span class='no'>smooth</span> + <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>, <span class='fl'>0</span>, <span class='fl'>1</span>))
-
-<span class='co'>## set up a library for SuperLearner</span>
-<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.mean"</span>, <span class='st'>"SL.gam"</span>)
-<span class='co'>## run the Super Learner</span>
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>4747</span>)
-<span class='no'>fitted_lst</span> <span class='kw'>&lt;-</span> <span class='fu'>run_sl</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>s</span> <span class='kw'>=</span> )</div><div class='output co'>#&gt; <span class='error'>Error in `[.data.frame`(X, folds != v, , drop = FALSE): argument "folds" is missing, with no default</span></div><div class='input'># }
-
-</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -207,7 +233,7 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Brian D. Williamson, Noah Simon, Marco Carone.</p>
+  <p>Developed by Brian D. Williamson.</p>
 </div>
 
 <div class="pkgdown">
