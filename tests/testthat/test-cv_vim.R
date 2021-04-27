@@ -116,14 +116,16 @@ test_that("Cross-validated variable importance using externally-computed regress
 })
 
 test_that("Measures of predictiveness work", {
+  k_fold_lst <- make_kfold(cross_fitting_folds, sample_splitting_folds)    
+  full_test <- (k_fold_lst$sample_splitting_folds == 1)
   full_rsquared <- est_predictiveness_cv(fitted_values = full_cv_preds, 
-                                         y = y[sample_splitting_folds == 1],
+                                         y = y[full_test],
                                          full_y = y,
-                                         folds = cross_fitting_folds[sample_splitting_folds == 1], 
+                                         folds = k_fold_lst$full, 
                                          type = "r_squared", na.rm = TRUE)
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1, scale = 1)
   expect_length(full_rsquared$all_ests, V)
-  expect_length(full_rsquared$eif, sum(sample_splitting_folds == 1))
+  expect_length(full_rsquared$eif, length(cross_fitting_folds) / 2)
   expect_equal(length(full_rsquared$all_eifs), V)
 })
 
