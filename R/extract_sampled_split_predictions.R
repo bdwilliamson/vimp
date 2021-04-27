@@ -1,7 +1,10 @@
 #' Extract sampled-split predictions from a CV.SuperLearner object
 #' 
 #' Use the cross-validated Super Learner and a set of specified sample-splitting
-#' folds to extract cross-fitted predictions on separate splits of the data.
+#' folds to extract cross-fitted predictions on separate splits of the data. This
+#' is primarily for use in cases where you have already fit a CV.SuperLearner
+#' and want to use the fitted values to compute variable importance without having
+#' to re-fit. The number of folds used in the CV.SuperLearner must be even.
 #' 
 #' @param cvsl_obj An object of class \code{"CV.SuperLearner"}
 #' @param sample_splitting_folds A vector of folds to use for sample splitting
@@ -24,14 +27,16 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
     stop("Please enter sample-splitting folds.")
   }
   all_preds <- cvsl_obj$SL.predict
-  
+  # extract the folds used for cross-fitting
   cross_fitting_folds <- get_cv_sl_folds(cvsl_obj$folds)
-  V <- length(unique(cross_fitting_folds))
+  unique_cf_folds <- unique(cross_fitting_folds)
+  # use V / 2 for inner cross-fitting within cv_vim
+  V <- length(unique(cross_fitting_folds)) / 2
   lst <- vector("list", length = V)
-  s <- ifelse(full, 1, 2)
+  this_sample_split <- ifelse(full, 1, 2)
+  these_cf_folds <- sort(unique_cf_folds)[sample_splitting_folds == this_sample_split]
   for (v in 1:V) {
-    lst[[v]] <- all_preds[cross_fitting_folds == v & 
-                            sample_splitting_folds == s]
+    lst[[v]] <- all_preds[cross_fitting_folds == these_cf_folds[[v]]]
   }
   lst
 }
