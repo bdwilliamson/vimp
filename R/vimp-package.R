@@ -8,6 +8,7 @@
 #' 
 #' @section Author(s):
 #' \bold{Maintainer}: Brian Williamson \url{https://bdwilliamson.github.io/}
+#' \bold{Contributor}: Jean Feng \url{https://jeanfeng.com}
 #' 
 #' Methodology authors:
 #' \itemize{
