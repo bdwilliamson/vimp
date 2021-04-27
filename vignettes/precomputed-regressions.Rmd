@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE}
 library("vimp")
 library("SuperLearner")
 ```
@@ -188,7 +188,7 @@ age_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_age,
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
-```{r heart-vim, fig.width = 8.5, fig.height = 8}
+```{r heart-vim, fig.width = 8.5, fig.height = 8, message = FALSE}
 library("dplyr")
 library("tibble")
 library("ggplot2")
@@ -201,10 +201,10 @@ all_vars <- c("Sys. blood press.", "Tobacco consump.", "LDL cholesterol",
               "Adiposity", "Family history", "Type A behavior", "Obesity",
               "Alcohol consump.", "Age")
 
-est_plot_tib <- ests$mat %>% 
+est_plot_tib <- ests$mat %>%
   mutate(
     var_fct = rev(factor(s, levels = ests$mat$s,
-                     labels = all_vars[as.numeric(ests$mat$s)], 
+                     labels = all_vars[as.numeric(ests$mat$s)],
                      ordered = TRUE))
   )
 
@@ -237,7 +237,7 @@ bios_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_bios, indx = c(1, 3
 groups <- merge_vim(behav_vim, bios_vim)
 all_grp_nms <- c("Behavioral features", "Biological features")
 
-grp_plot_tib <- groups$mat %>% 
+grp_plot_tib <- groups$mat %>%
   mutate(
     grp_fct = factor(case_when(
       s == "2,6,8" ~ "1",
@@ -261,7 +261,7 @@ In this section, we will use cross-fitting and pre-computed estimates of the reg
 To replicate the Super Learning analysis from above using cross-fitting, we will use `CV.SuperLearner` to fit the individual regression functions, taking care to use the same cross-fitting folds in each regression. We will then create two groups of validation folds for sample-splitting. For this analysis, we will use `V = 5` folds for cross-fitted variable importance estimation (as we did in the [main vignette](introduction-to-vimp.html)). Note that this entails running `CV.SuperLearner` with $2V = 10$ folds.
 
 First, we estimate the regression function based on all variables:
-```{r estimate-full-regression-with-cf}
+```{r estimate-full-regression-with-cf, message = FALSE}
 x <- heart[, -ncol(heart)]
 # estimate the full regression function
 V <- 5
@@ -277,7 +277,7 @@ set.seed(1234)
 sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 # extract the predictions on split portions of the data, for hypothesis testing
 full_cv_preds <- extract_sampled_split_predictions(
-  cvsl_obj = full_cv_fit, sample_splitting = TRUE, 
+  cvsl_obj = full_cv_fit, sample_splitting = TRUE,
   sample_splitting_folds = sample_splitting_folds, full = TRUE
 )
 # refit on the entire dataset; for SEs
@@ -287,19 +287,19 @@ full_fit <- SuperLearner::SuperLearner(
 ```
 
 Next, to estimate the importance of each variable, we need to estimate the reduced regression function for each variable:
-```{r estimate-redu-regressions-with-cf}
+```{r estimate-redu-regressions-with-cf, message = FALSE}
 vars <- c("sbp", "tob", "ldl", "adi", "fam", "tpa", "obe", "alc", "age")
 for (i in seq_len(length(vars))) {
   # use "eval" and "parse" to assign the objects of interest to avoid duplicating code
   eval(parse(text = paste0("reduced_", vars[i], "_cv_fit <- SuperLearner::CV.SuperLearner(
-  Y = heart$chd, X = x[, -i, drop = FALSE], SL.library = learners.2, 
+  Y = heart$chd, X = x[, -i, drop = FALSE], SL.library = learners.2,
   cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),
   innerCvControl = list(list(V = V))
 )")))
   eval(parse(text = paste0("reduced_", vars[i], "_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = reduced_", vars[i], "_cv_fit, sample_splitting = TRUE,
   sample_splitting_folds = sample_splitting_folds, full = FALSE
-)")))  
+)")))
   eval(parse(text = paste0("reduced_", vars[i], "_fit <- SuperLearner::SuperLearner(
   Y = heart$chd, X = x[, -i, drop = FALSE], SL.library = learners.2, cvControl = list(V = V)
 )$SL.predict")))
@@ -359,10 +359,10 @@ cf_ests <- merge_vim(cf_sbp_vim, cf_tob_vim, cf_ldl_vim, cf_adi_vim, cf_fam_vim,
 
 And we can view them all simultaneously by plotting:
 ```{r plot-cf-vim, fig.width = 8.5, fig.height = 8}
-cf_est_plot_tib <- cf_ests$mat %>% 
+cf_est_plot_tib <- cf_ests$mat %>%
   mutate(
     var_fct = rev(factor(s, levels = cf_ests$mat$s,
-                     labels = all_vars[as.numeric(cf_ests$mat$s)], 
+                     labels = all_vars[as.numeric(cf_ests$mat$s)],
                      ordered = TRUE))
   )
 
@@ -380,7 +380,7 @@ cf_est_plot_tib %>%
 Finally, we can estimate and plot group importance:
 ```{r cf-group-vim, fig.width = 8.5, fig.height = 8}
 reduced_behav_cv_fit <- SuperLearner::CV.SuperLearner(
-  Y = heart$chd, X = x[, -c(2, 6, 8), drop = FALSE], SL.library = learners.2, 
+  Y = heart$chd, X = x[, -c(2, 6, 8), drop = FALSE], SL.library = learners.2,
   cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),
   innerCvControl = list(list(V = V))
 )
@@ -389,7 +389,7 @@ reduced_behav_cv_preds <- extract_sampled_split_predictions(
   sample_splitting_folds = sample_splitting_folds, full = FALSE
 )
 reduced_bios_cv_fit <- SuperLearner::CV.SuperLearner(
-  Y = heart$chd, X = x[, -c(1, 3, 4, 5, 7, 9), drop = FALSE], SL.library = learners.2, 
+  Y = heart$chd, X = x[, -c(1, 3, 4, 5, 7, 9), drop = FALSE], SL.library = learners.2,
   cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),
   innerCvControl = list(list(V = V))
 )
@@ -417,7 +417,7 @@ cf_bios_vim <- vimp_rsquared(
 )
 cf_groups <- merge_vim(cf_behav_vim, cf_bios_vim)
 
-cf_grp_plot_tib <- cf_groups$mat %>% 
+cf_grp_plot_tib <- cf_groups$mat %>%
   mutate(
     grp_fct = factor(case_when(
       s == "2,6,8" ~ "1",

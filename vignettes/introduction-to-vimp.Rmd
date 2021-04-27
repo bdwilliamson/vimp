@@ -169,7 +169,7 @@ devtools::install_github("bdwilliamson/vimp")
 This section should serve as a quick guide to using the `vimp` package --- we will cover the main functions for estimating $R^2$-based variable importance using a simulated data example. More details are given in the next section.
 
 First, load the `vimp` package:
-```{r load-vimp}
+```{r load-vimp, message = FALSE}
 library("vimp")
 ```
 
@@ -202,7 +202,7 @@ The workhorse function of `vimp`, for $R^2$-based variable importance, is `vimp_
 
 This second-to-last argument, `SL.library`, determines the estimators you want to use for the conditional mean of Y given X. Estimates of variable importance rely on good estimators of the conditional mean, so we suggest using flexible estimators and model stacking to do so. One option for this is the `SuperLearner` package; load that package using
 
-```{r learner-lib-small}
+```{r learner-lib-small, message = FALSE}
 library("SuperLearner")
 # load specific algorithms
 library("ranger")
@@ -292,9 +292,6 @@ This motivates using `SuperLearner` to allow the data to determine the optimal c
 For instance, my library could include the elastic net, random forests [@breiman2001], and gradient boosted trees [@friedman2001] as follows:
 
 ```{r full-learner-lib}
-# load the library
-library(SuperLearner)
-
 # create a function for boosted stumps
 SL.gbm.1 <- function(..., interaction.depth = 1) SL.gbm(..., interaction.depth = interaction.depth)
 
@@ -408,7 +405,7 @@ age_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 9, SL.library = learners.2
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
-```{r heart-vim, fig.width = 8.5, fig.height = 8}
+```{r heart-vim, fig.width = 8.5, fig.height = 8, message = FALSE}
 library("dplyr")
 library("tibble")
 library("ggplot2")
@@ -421,10 +418,10 @@ all_vars <- c("Sys. blood press.", "Tobacco consump.", "LDL cholesterol",
               "Adiposity", "Family history", "Type A behavior", "Obesity",
               "Alcohol consump.", "Age")
 
-est_plot_tib <- ests$mat %>% 
+est_plot_tib <- ests$mat %>%
   mutate(
     var_fct = rev(factor(s, levels = ests$mat$s,
-                     labels = all_vars[as.numeric(ests$mat$s)], 
+                     labels = all_vars[as.numeric(ests$mat$s)],
                      ordered = TRUE))
   )
 
@@ -454,7 +451,7 @@ bios_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = c(1, 3, 4, 5, 7, 9), SL.l
 groups <- merge_vim(behav_vim, bios_vim)
 all_grp_nms <- c("Behavioral features", "Biological features")
 
-grp_plot_tib <- groups$mat %>% 
+grp_plot_tib <- groups$mat %>%
   mutate(
     grp_fct = factor(case_when(
       s == "2,6,8" ~ "1",

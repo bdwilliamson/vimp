@@ -15,6 +15,7 @@
 #' 
 #' @return None. Called for the side effect of stopping the algorithm if 
 #'   any inputs are in an unexpected format.
+#' @export
 check_inputs <- function(Y, X, f1, f2, indx) {
   if (is.null(f1) && is.null(Y)) {
     stop("You must enter either Y or fitted values for the full regression.")
@@ -55,6 +56,7 @@ check_inputs <- function(Y, X, f1, f2, indx) {
 #' 
 #' @return None. Called for the side effect of stopping the algorithm if 
 #'   any inputs are in an unexpected format.
+#' @export
 check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL, 
                                 cross_fitted_f1 = NULL, cross_fitted_f2 = NULL,
                                 sample_splitting_folds = NULL, 
@@ -112,6 +114,7 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
 #' @param ipc_weights the weights
 #' 
 #' @return a list, with the complete-case outcome, weights, and Z matrix 
+#' @export
 create_z <- function(Y, C, Z, X, ipc_weights) {
   # set up internal data -- based on complete cases only
   Y_cc <- subset(Y, C == 1, drop = FALSE)
@@ -147,6 +150,7 @@ create_z <- function(Y, C, Z, X, ipc_weights) {
 #' @param type the partial string indicating the type of VIM
 #' 
 #' @return the full string indicating the type of VIM
+#' @export
 get_full_type <- function(type) {
   types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
   full_type <- types[pmatch(type, types)]
@@ -173,6 +177,7 @@ get_full_type <- function(type) {
 #' @param scale the scale to compute on
 #' 
 #' @return the scaled estimate
+#' @export
 scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
   if (scale == "logit") {
     this_grad <- 1 / (obs_est - obs_est ^ 2)
@@ -197,6 +202,7 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 #'    1 denotes yes, 0 denotes no
 #' @param probs vector of proportions for each fold number
 #' @return a vector of folds
+#' @export
 make_folds <- function(y, V = 2, stratified = FALSE, 
                        C = NULL,
                        probs = rep(1/V, V)) {
@@ -278,6 +284,7 @@ make_folds <- function(y, V = 2, stratified = FALSE,
 #' @param C vector of whether or not we measured the observation in phase 2
 #' 
 #' @return the two sets of testing folds for K-fold cross-fitting
+#' @export
 make_kfold <- function(cross_fitting_folds, 
                        sample_splitting_folds = rep(1, length(unique(cross_fitting_folds))), 
                        C = rep(1, length(cross_fitting_folds))) {
@@ -325,6 +332,7 @@ make_kfold <- function(cross_fitting_folds,
 #' @param ... other arguments to Super Learner
 #'
 #' @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
+#' @export
 run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm", 
                    univariate_SL.library = "SL.glm", s = 1, cv_folds = NULL,
                    sample_splitting = TRUE, ss_folds = NULL, verbose = FALSE, 
