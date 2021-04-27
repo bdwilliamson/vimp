@@ -32,7 +32,8 @@
 #'   importance.
 #' @param sample_splitting_folds the folds to use for sample-splitting; if entered,
 #'   these should result in balance within the cross-fitting folds. Only used
-#'   if \code{run_regression = FALSE} and \code{sample_splitting = TRUE}.
+#'   if \code{run_regression = FALSE} and \code{sample_splitting = TRUE}. A vector
+#'   of length \eqn{2 * V}. 
 #' @param cross_fitting_folds the folds for cross-fitting. Only used if 
 #'   \code{run_regression = FALSE}.
 #' @param stratified if run_regression = TRUE, then should the generated folds 
@@ -393,9 +394,6 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         # the fits to the full dataset (for SEs)
         fhat_ful <- f1
         fhat_red <- f2
-        # set up the folds objects
-        sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
-        cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
 
         full <- reduced <- NA
     }
