@@ -26,6 +26,10 @@
 #'   outcome (helps to ensure class balance across cross-fitting folds)?
 #' @param verbose should \code{sp_vim} and \code{SuperLearner} print out 
 #'   progress? (defaults to \code{FALSE})
+#' @param sample_splitting should we use sample-splitting to estimate the full and
+#'   reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
+#'   \code{sample_splitting = FALSE} will be invalid for variable with truly zero 
+#'   importance.
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes 
 #'   unobserved).
 #' @param Z either (i) NULL (the default, in which case the argument 
@@ -121,59 +125,61 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    univariate_SL.library = NULL,
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
-                   stratified = FALSE, verbose = FALSE, C = rep(1, length(Y)),
-                   Z = NULL, ipc_weights = rep(1, length(Y)), 
+                   stratified = FALSE, verbose = FALSE, sample_splitting = TRUE,
+                   C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)), 
                    ipc_est_type = "aipw", scale = "identity", 
                    ...) {
     # if the data is missing, stop and throw an error
     if (is.null(Y)) stop("You must enter an outcome, Y.")
     if (is.null(X)) stop("You must enter a matrix of predictors, X.")
+    
+    if (sample_splitting) {
+        ss_V <- 2 * V
+    } else {
+        ss_V <- V
+    }
 
     # check to see if Y is a matrix or data.frame; if not, make it one 
     # (just for ease of reading)
-    if(is.null(dim(Y))) Y <- as.matrix(Y)
+    if (is.null(dim(Y))) {
+        Y <- as.matrix(Y)
+    }
 
     # set up internal data -- based on complete cases only
-    Y_cc <- subset(Y, C == 1, drop = FALSE)
-    X_cc <- subset(X, C == 1, drop = FALSE)
-    weights_cc <- ipc_weights[C == 1]
-    if (!all(C == 1) || !all(ipc_weights == 1)) {
-        if (is.character(Z)) {
-            tmp_Z <- Z[Z != "Y"]
-            minus_X <- as.numeric(gsub("X", "", tmp_Z))
-            # check to see if it is only part of X matrix
-            if (any(sapply(seq_along(minus_X), function(j) length(minus_X[j]) > 0))) {
-                if (any(grepl("Y", Z))) {
-                    Z_in <- as.data.frame(mget("Y"))
-                } else {
-                    Z_in <- NULL
-                }
-                Z_in <- cbind.data.frame(Z_in, X[, minus_X])
-            } else {
-                Z_in <- as.data.frame(mget(Z))
-            }
-        } else {
-            stop("Please enter a character vector corresponding to the names of the fully observed data.")
-        }
-    } else {
-        Z_in <- NULL
-    }
+    cc_lst <- create_z(Y, C, Z, X, ipc_weights)
+    Y_cc <- cc_lst$Y
+    weights_cc <- cc_lst$weights
+    Z_in <- cc_lst$Z
+    X_cc <- subset(X, C == 1)
 
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
 
-    # set up the cross-fitting and sample-splitting folds
-    cross_fitting_folds <- make_folds(Y, V = V, stratified = stratified,
+    # set up the cross-fitting and sample-splitting folds, for fitting
+    cross_fitting_folds <- make_folds(Y, V = ss_V, stratified = stratified,
                                       C = C)
-    sample_splitting_folds <- vector("numeric", length = nrow(Y))
-    for (v in 1:V) {
-        sample_splitting_folds[cross_fitting_folds == v] <- make_folds(
-            Y[cross_fitting_folds == v], V = 2, stratified = stratified,
-            C = C, probs = c(0.25, 0.75)
-        )
-    }
-    sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
+    sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
     cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
+    # set up the cross-fitting folds, for predictiveness estimation
+    if (sample_splitting) {
+        # make new sets of folds, as if we had done V-fold within the two sets
+        k_fold_lst <- make_kfold(cross_fitting_folds, sample_splitting_folds, C)
+        full_test <- (k_fold_lst$sample_splitting_folds == 1)
+        redu_test <- (k_fold_lst$sample_splitting_folds == 2)
+    } else {
+        # no need to do anything
+        k_fold_lst <- list(
+            full = cross_fitting_folds, reduced = cross_fitting_folds
+        )
+        full_test <- rep(TRUE, length(cross_fitting_folds))
+        redu_test <- rep(TRUE, length(cross_fitting_folds))
+    }
+    cf_folds_full <- k_fold_lst$full
+    cf_folds_redu <- k_fold_lst$reduced
+    cf_folds_full_cc <- cf_folds_full[C[full_test] == 1]
+    cf_folds_redu_cc <- cf_folds_redu[C[redu_test] == 1]
+    full_test_cc <- full_test[C == 1]
+    redu_test_cc <- redu_test[C == 1]
 
     # sample subsets, set up Z
     z_w_lst <- sample_subsets(p = ncol(X), n = nrow(X), gamma = gamma)
@@ -195,22 +201,24 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
 
     # get v, preds, ic for null set
     preds_none <- list()
-    for (v in 1:V) {
-        preds_none[[v]] <- rep(
-            mean(Y_cc[sample_splitting_folds_cc == 2 & cross_fitting_folds_cc == v]), 
-            sum(sample_splitting_folds_cc == 2 & cross_fitting_folds_cc == v)
-        )
+    none_index_v <- 1
+    for (v in seq_len(ss_V)) {
+        if (sample_splitting_folds[v] == 1 | !sample_splitting) {
+            preds_none[[none_index_v]] <- rep(
+                mean(Y_cc[cross_fitting_folds_cc == v]), sum(cross_fitting_folds_cc == v)
+            )
+            none_index_v <- none_index_v + 1
+        } 
     }
     v_none_lst <- do.call(
         est_predictiveness_cv,
         args = c(
             list(fitted_values = preds_none, 
-                 y = Y_cc[sample_splitting_folds_cc == 2, , drop = FALSE], full_y = Y_cc,
-                 folds = cross_fitting_folds_cc[sample_splitting_folds_cc == 2], 
-                 C = C[sample_splitting_folds == 2], 
-                 Z = Z_in[sample_splitting_folds == 2, , drop = FALSE], 
-                 folds_Z = cross_fitting_folds[sample_splitting_folds == 2], 
-                 ipc_weights = ipc_weights[sample_splitting_folds == 2], 
+                 y = Y_cc[full_test_cc], full_y = Y_cc,
+                 folds = cf_folds_full_cc, C = C[full_test], 
+                 Z = Z_in[full_test, , drop = FALSE], 
+                 folds_Z = cf_folds_full, 
+                 ipc_weights = ipc_weights[full_test], 
                  ipc_fit_type = "SL", type = full_type, scale = scale, 
                  ipc_est_type = ipc_est_type, na.rm = na.rm, 
                  SL.library = SL.library),
@@ -239,10 +247,10 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         1:length(S[-1]), 
         function(i) {
             do.call(run_sl, args = c(
-            list(Y_cc, X_cc, V = V, SL.library = SL.library, 
+            list(Y_cc, X_cc, V = ss_V, SL.library = SL.library, 
                  univariate_SL.library = univariate_SL.library, s = S[-1][[i]], 
-                 cv_folds = cross_fitting_folds_cc, 
-                 ss_folds = sample_splitting_folds_cc, verbose = verbose, 
+                 cv_folds = cross_fitting_folds_cc, sample_splitting = sample_splitting, 
+                 ss_folds = sample_splitting_folds, verbose = verbose, 
                  progress_bar = progress_bar, indx = i, 
                  weights = weights_cc),
             arg_lst
@@ -258,13 +266,11 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                 est_predictiveness_cv,
                 args = c(
                     list(fitted_values = l$cf_preds_lst, 
-                         y = Y_cc[sample_splitting_folds_cc == 2, , drop = FALSE], 
-                         full_y = Y_cc,
-                         folds = l$cf_folds[l$ss_folds == 2], 
-                         C = C[sample_splitting_folds == 2], 
-                         Z = Z_in[sample_splitting_folds == 2, , drop = FALSE], 
-                         folds_Z = cross_fitting_folds[sample_splitting_folds == 2], 
-                         ipc_weights = ipc_weights[sample_splitting_folds == 2], 
+                         y = Y_cc[full_test_cc], full_y = Y_cc,
+                         folds = cf_folds_full_cc, C = C[full_test], 
+                         Z = Z_in[full_test, , drop = FALSE], 
+                         folds_Z = cf_folds_full, 
+                         ipc_weights = ipc_weights[full_test], 
                          type = full_type, ipc_fit_type = "SL", scale = scale, 
                          ipc_est_type = ipc_est_type, na.rm = na.rm, 
                          SL.library = SL.library),
@@ -334,22 +340,24 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
 
     # compute a hypothesis test against the null of zero importance
     preds_none_0 <- list()
-    for (v in 1:V) {
-        preds_none_0[[v]] <- rep(
-            mean(Y_cc[sample_splitting_folds_cc == 1 & cross_fitting_folds_cc == v]), 
-            sum(sample_splitting_folds_cc == 1 & cross_fitting_folds_cc == v)
-        )
+    none_index_v <- 1
+    for (v in seq_len(ss_V)) {
+        if (sample_splitting_folds[v] == 2 | !sample_splitting) {
+            preds_none_0[[none_index_v]] <- rep(
+                mean(Y_cc[cross_fitting_folds_cc == v]), sum(cross_fitting_folds_cc == v)
+            )
+            none_index_v <- none_index_v + 1
+        } 
     }
     v_none_0_lst <- do.call(
         est_predictiveness_cv,
         args = c(
-            list(fitted_values = preds_none_0, 
-                 y = Y_cc[sample_splitting_folds_cc == 1, , drop = FALSE], full_y = Y_cc,
-                 folds = cross_fitting_folds_cc[sample_splitting_folds_cc == 1], 
-                 C = C[sample_splitting_folds == 1], 
-                 Z = Z_in[sample_splitting_folds == 1, , drop = FALSE], 
-                 folds_Z = cross_fitting_folds[sample_splitting_folds == 1], 
-                 ipc_weights = ipc_weights[sample_splitting_folds == 1], 
+            list(fitted_values = preds_none, 
+                 y = Y_cc[redu_test_cc], full_y = Y_cc,
+                 folds = cf_folds_full_cc, C = C[redu_test], 
+                 Z = Z_in[redu_test, , drop = FALSE], 
+                 folds_Z = cf_folds_full, 
+                 ipc_weights = ipc_weights[redu_test], 
                  ipc_fit_type = "SL", type = full_type, scale = scale, 
                  ipc_est_type = ipc_est_type, na.rm = na.rm, 
                  SL.library = SL.library),
@@ -367,7 +375,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         )
     )$eif
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) / 
-        sqrt(sum(sample_splitting_folds == 1))
+        sqrt(length(cross_fitting_folds) / 2)
     # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
     ses_one <- sqrt(ses ^ 2 + se_none_0 ^ 2)

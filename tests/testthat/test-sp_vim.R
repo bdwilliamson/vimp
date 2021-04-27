@@ -26,6 +26,7 @@ learners <- c("SL.glm")
 univariate_learners <- "SL.glm"
 V <- 2
 
+set.seed(1234)
 test_that("Estimating SPVIMs works", {
   est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
                 SL.library = learners, gamma = .1, alpha = 0.05, delta = 0,
@@ -42,6 +43,7 @@ test_that("Estimating SPVIMs works", {
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
 })
+set.seed(5678)
 test_that("Estimating SPVIMs with special univariate library works", {
   est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
                 SL.library = learners, 
@@ -51,6 +53,7 @@ test_that("Estimating SPVIMs with special univariate library works", {
   # check that the estimate is approximately correct
   expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
 })
+set.seed(91011)
 test_that("Estimating SPVIMs with a single library function works", {
   est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
                 SL.library = "SL.glm", 
@@ -60,6 +63,7 @@ test_that("Estimating SPVIMs with a single library function works", {
   # check that the estimate is approximately correct
   expect_equal(as.numeric(est$est[2]), shapley_val_1, tolerance = 0.2)
 })
+set.seed(121314)
 test_that("Estimating SPVIMs with verbose = TRUE works", {
   expect_message(est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
                               SL.library = "SL.glm", 
