@@ -7,6 +7,7 @@ set.seed(4747)
 p <- 2
 n <- 5e4
 x <- replicate(p, stats::rnorm(n, 0, 1))
+x_df <- as.data.frame(x)
 # apply the function to the x's
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
 true_var <- mean((y - mean(y)) ^ 2)
@@ -22,19 +23,19 @@ learners <- c("SL.glm", "SL.mean")
 V <- 2
 
 # fit the data with all covariates
-full_fit <- SuperLearner::SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], 
+full_fit <- SuperLearner::SuperLearner(Y = y, X = x_df, 
                          SL.library = learners, cvControl = list(V = V))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 
 # fit the data with only X1
 reduced_fit_1 <- SuperLearner::SuperLearner(Y = full_fitted, 
-                              X = x[folds == 2, -2, drop = FALSE], 
+                              X = x_df[, -2, drop = FALSE], 
                               SL.library = learners, cvControl = list(V = V))
 reduced_fitted_1 <- SuperLearner::predict.SuperLearner(reduced_fit_1)$pred
 
 # fit the data with only X2
 reduced_fit_2 <- SuperLearner::SuperLearner(Y = full_fitted, 
-                              X = x[folds == 2, -1, drop = FALSE], 
+                              X = x_df[, -1, drop = FALSE], 
                               SL.library = learners, cvControl = list(V = V))
 reduced_fitted_2 <- SuperLearner::predict.SuperLearner(reduced_fit_2)$pred
 
@@ -53,10 +54,10 @@ test_that("Merging variable importance estimates works", {
 })
 
 test_that("Merging cross-validated variable importance estimates works", {
-  est_1 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 2, 
+  est_1 <- cv_vim(Y = y, X = x_df, run_regression = TRUE, indx = 2, 
                   V = V, cvControl = list(V = V), SL.library = learners,
                   env = environment(), na.rm = TRUE)
-  est_2 <- cv_vim(Y = y, X = x, run_regression = TRUE, indx = 1, 
+  est_2 <- cv_vim(Y = y, X = x_df, run_regression = TRUE, indx = 1, 
                   V = V, cvControl = list(V = V), SL.library = learners,
                   env = environment(), na.rm = TRUE)
 
