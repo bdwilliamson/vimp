@@ -124,7 +124,8 @@ full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
   innerCvControl = list(list(V = V))
 ))
 full_cv_preds <- extract_sampled_split_predictions(
-  full_cv_fit, sample_splitting_folds = rep(1, length(y)), full = TRUE
+  full_cv_fit, sample_splitting_folds = rep(1, V), full = TRUE,
+  sample_splitting = FALSE
 )
 cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 test_that("vimp and cvAUC agree", {
