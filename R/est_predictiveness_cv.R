@@ -1,4 +1,4 @@
-#' Estimate a nonparametric predictiveness functional using cross-validation
+#' Estimate a nonparametric predictiveness functional using cross-fitting
 #'
 #' Compute nonparametric estimates of the chosen measure of predictiveness.
 #'
@@ -8,7 +8,7 @@
 #' @param y the observed outcome.
 #' @param full_y the observed outcome (from the entire dataset, for 
 #'   cross-fitted estimates).
-#' @param folds the cross-validation folds for the observed data
+#' @param folds the cross-validation folds for the observed data.
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, 
 #'   for R-squared-based variable importance)?
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes 
@@ -40,10 +40,16 @@
 #'
 #' @details See the paper by Williamson, Gilbert, Simon, and Carone for more
 #'   details on the mathematics behind this function and the definition of the 
-#'   parameter of interest.
+#'   parameter of interest.  If sample-splitting is also requested
+#'    (recommended, since in this case inferences 
+#'    will be valid even if the variable has zero true importance), then the 
+#'    prediction functions are trained as if \eqn{2K}-fold cross-validation were run, 
+#'    but are evaluated on only \eqn{K} sets (independent between the full and
+#'    reduced nuisance regression).
 #' @export
 est_predictiveness_cv <- function(fitted_values, y, full_y = NULL,
-                                  folds, type = "r_squared", 
+                                  folds,
+                                  type = "r_squared", 
                                   C = rep(1, length(y)), Z = NULL, 
                                   folds_Z = folds, 
                                   ipc_weights = rep(1, length(C)), 
@@ -70,7 +76,7 @@ est_predictiveness_cv <- function(fitted_values, y, full_y = NULL,
         ics <- vector("list", length = V)
         ic <- vector("numeric", length = length(C))
         measures <- vector("list", V)
-        for (v in 1:V) {
+        for (v in seq_len(V)) {
             measures[[v]] <- measure_func[[1]](
                 fitted_values = fitted_values[[v]], y = y[folds == v],
                 full_y = full_y,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/est_predictiveness_cv.R
 \name{est_predictiveness_cv}
 \alias{est_predictiveness_cv}
-\title{Estimate a nonparametric predictiveness functional using cross-validation}
+\title{Estimate a nonparametric predictiveness functional using cross-fitting}
 \usage{
 est_predictiveness_cv(
   fitted_values,
@@ -32,7 +32,7 @@ predictions on the validation data.}
 \item{full_y}{the observed outcome (from the entire dataset, for 
 cross-fitted estimates).}
 
-\item{folds}{the cross-validation folds for the observed data}
+\item{folds}{the cross-validation folds for the observed data.}
 
 \item{type}{which parameter are you estimating (defaults to \code{r_squared}, 
 for R-squared-based variable importance)?}
@@ -80,5 +80,10 @@ Compute nonparametric estimates of the chosen measure of predictiveness.
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more
   details on the mathematics behind this function and the definition of the 
-  parameter of interest.
+  parameter of interest.  If sample-splitting is also requested
+   (recommended, since in this case inferences 
+   will be valid even if the variable has zero true importance), then the 
+   prediction functions are trained as if \eqn{2K}-fold cross-validation were run, 
+   but are evaluated on only \eqn{K} sets (independent between the full and
+   reduced nuisance regression).
 }

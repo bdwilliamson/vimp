@@ -25,7 +25,10 @@ The predictions on validation data in each split-sample fold; a
 }
 \description{
 Use the cross-validated Super Learner and a set of specified sample-splitting
-folds to extract cross-fitted predictions on separate splits of the data.
+folds to extract cross-fitted predictions on separate splits of the data. This
+is primarily for use in cases where you have already fit a CV.SuperLearner
+and want to use the fitted values to compute variable importance without having
+to re-fit. The number of folds used in the CV.SuperLearner must be even.
 }
 \seealso{
 \code{\link[SuperLearner]{CV.SuperLearner}} for usage of the 

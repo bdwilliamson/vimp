@@ -17,6 +17,7 @@ vim(
   delta = 0,
   scale = "identity",
   na.rm = FALSE,
+  sample_splitting = TRUE,
   sample_splitting_folds = NULL,
   stratified = FALSE,
   C = rep(1, length(Y)),
@@ -66,6 +67,11 @@ logit ("logit") scale?}
 
 \item{na.rm}{should we remove NAs in the outcome and fitted values 
 in computation? (defaults to \code{FALSE})}
+
+\item{sample_splitting}{should we use sample-splitting to estimate the full and
+reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
+\code{sample_splitting = FALSE} will be invalid for variable with truly zero 
+importance.}
 
 \item{sample_splitting_folds}{the folds used for sample-splitting; 
 these identify the observations that should be used to evaluate 

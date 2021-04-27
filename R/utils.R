@@ -86,7 +86,7 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
       stop(paste0("You must enter an estimator of the population-optimal predictor",
                   " using the reduced set of covariates."))
     }
-    if (length(sample_splitting_folds) != length(Y)) {
+    if (length(sample_splitting_folds) != (2 * V)) {
       stop("The entered folds must be the same length as the outcome of interest.")
     }
     if (is.null(cross_fitting_folds)) {

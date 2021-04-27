@@ -34,76 +34,79 @@ vimp_auc(
 
 \item{X}{the covariates.}
 
-\item{cross_fitted_f1}{the predicted values on validation data from a 
-flexible estimation technique regressing Y on X in the training data; 
-a list of length V, where each object is a set of predictions on the 
+\item{cross_fitted_f1}{the predicted values on validation data from a
+flexible estimation technique regressing Y on X in the training data;
+a list of length V, where each object is a set of predictions on the
 validation data.}
 
-\item{cross_fitted_f2}{the predicted values on validation data from a 
-flexible estimation technique regressing either (a) the fitted values in 
-\code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}; 
-a list of length V, where each object is a set of predictions on the 
+\item{cross_fitted_f2}{the predicted values on validation data from a
+flexible estimation technique regressing either (a) the fitted values in
+\code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx};
+a list of length V, where each object is a set of predictions on the
 validation data.}
 
-\item{f1}{the fitted values from a flexible estimation technique 
+\item{f1}{the fitted values from a flexible estimation technique
 regressing Y on X.}
 
-\item{f2}{the fitted values from a flexible estimation technique 
-regressing either (a) \code{f1} or (b) Y on X withholding the columns in 
+\item{f2}{the fitted values from a flexible estimation technique
+regressing either (a) \code{f1} or (b) Y on X withholding the columns in
 \code{indx}.}
 
-\item{indx}{the indices of the covariate(s) to calculate variable importance 
+\item{indx}{the indices of the covariate(s) to calculate variable importance
 for; defaults to 1.}
 
-\item{V}{the number of folds for cross-fitting, defaults to 10.}
+\item{V}{the number of folds for cross-fitting, defaults to 10. If
+\code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
+is done. See Details for a more detailed explanation.}
 
-\item{run_regression}{if outcome Y and covariates X are passed to 
-\code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner 
-will be used; otherwise, variable importance will be computed using the 
+\item{run_regression}{if outcome Y and covariates X are passed to
+\code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner
+will be used; otherwise, variable importance will be computed using the
 inputted fitted values.}
 
-\item{SL.library}{a character vector of learners to pass to 
-\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively. 
+\item{SL.library}{a character vector of learners to pass to
+\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively.
 Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 
-\item{alpha}{the level to compute the confidence interval at. Defaults to 
+\item{alpha}{the level to compute the confidence interval at. Defaults to
 0.05, corresponding to a 95\% confidence interval.}
 
-\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if 
+\item{delta}{the value of the \eqn{\delta}-null (i.e., testing if
 importance < \eqn{\delta}); defaults to 0.}
 
-\item{na.rm}{should we remove NA's in the outcome and fitted values in 
+\item{na.rm}{should we remove NA's in the outcome and fitted values in
 computation? (defaults to \code{FALSE})}
 
-\item{cross_fitting_folds}{the folds for cross-fitting. Only used if 
+\item{cross_fitting_folds}{the folds for cross-fitting. Only used if
 \code{run_regression = FALSE}.}
 
 \item{sample_splitting_folds}{the folds to use for sample-splitting; if entered,
 these should result in balance within the cross-fitting folds. Only used
-if \code{run_regression = FALSE}.}
+if \code{run_regression = FALSE} and \code{sample_splitting = TRUE}. A vector
+of length \eqn{2 * V}.}
 
-\item{stratified}{if run_regression = TRUE, then should the generated folds 
-be stratified based on the outcome (helps to ensure class balance across 
+\item{stratified}{if run_regression = TRUE, then should the generated folds
+be stratified based on the outcome (helps to ensure class balance across
 cross-fitting folds)}
 
-\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}
 
-\item{Z}{either (i) NULL (the default, in which case the argument 
-\code{C} above must be all ones), or (ii) a character vector specifying 
-the variable(s) among Y and X that are thought to play a role in the 
+\item{Z}{either (i) NULL (the default, in which case the argument
+\code{C} above must be all ones), or (ii) a character vector specifying
+the variable(s) among Y and X that are thought to play a role in the
 coarsening mechanism.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse 
-probability weights for coarsened-at-random settings). Assumed to be 
+\item{ipc_weights}{weights for the computed influence curve (i.e., inverse
+probability weights for coarsened-at-random settings). Assumed to be
 already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
-\item{scale}{should CIs be computed on original ("identity") or 
+\item{scale}{should CIs be computed on original ("identity") or
 logit ("logit") scale?}
 
-\item{ipc_est_type}{the type of procedure used for coarsened-at-random 
-settings; options are "ipw" (for inverse probability weighting) or 
-"aipw" (for augmented inverse probability weighting). 
+\item{ipc_est_type}{the type of procedure used for coarsened-at-random
+settings; options are "ipw" (for inverse probability weighting) or
+"aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
@@ -118,19 +121,52 @@ in $AUC$-based intrinsic variable importance. This is a wrapper function for
 \code{cv_vim}, with \code{type = "auc"}.
 }
 \details{
-We define the population variable importance measure (VIM) for the group
-of features (or single feature) \eqn{s} with respect to the predictiveness measure
-\eqn{V} by \deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
-the population predictiveness maximizing function, \eqn{f_{0,s}} is the population
-predictiveness maximizing function that is only allowed to access the features with
-index not in \eqn{s}, and \eqn{P_0} is the true data-generating distribution. Cross-fitted
-VIM estimates are obtained by first splitting the data into \eqn{K} folds; then using each
-fold in turn as a hold-out set, constructing estimators \eqn{f_{n,k}} and \eqn{f_{n,k,s}} of
-\eqn{f_0} and \eqn{f_{0,s}}, respectively on the training data and estimator \eqn{P_{n,k}} of
-\eqn{P_0} using the test data; and finally, computing \deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}}
+We define the population variable importance measure (VIM) for the
+group of features (or single feature) \eqn{s} with respect to the
+predictiveness measure \eqn{V} by
+\deqn{\psi_{0,s} := V(f_0, P_0) - V(f_{0,s}, P_0),} where \eqn{f_0} is
+the population predictiveness maximizing function, \eqn{f_{0,s}} is the
+population predictiveness maximizing function that is only allowed to access
+the features with index not in \eqn{s}, and \eqn{P_0} is the true
+data-generating distribution.
+
+Cross-fitted VIM estimates are computed differently if sample-splitting
+is requested versus if it is not. We recommend using sample-splitting
+in most cases, since only in this case will inferences be valid if
+the variable(s) of interest have truly zero population importance.
+The purpose of cross-fitting is to estimate \eqn{f_0} and \eqn{f_{0,s}}
+on independent data from estimating \eqn{P_0}; this can result in improved
+performance, especially when using flexible learning algorithms. The purpose
+of sample-splitting is to estimate \eqn{f_0} and \eqn{f_{0,s}} on independent
+data; this allows valid inference under the null hypothesis of zero importance.
+
+Without sample-splitting, cross-fitted VIM estimates are obtained by first
+splitting the data into \eqn{K} folds; then using each fold in turn as a
+hold-out set, constructing estimators \eqn{f_{n,k}} and \eqn{f_{n,k,s}} of
+\eqn{f_0} and \eqn{f_{0,s}}, respectively on the training data and estimator
+\eqn{P_{n,k}} of \eqn{P_0} using the test data; and finally, computing
+\deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{V(f_{n,k},P_{n,k}) - V(f_{n,k,s}, P_{n,k})\}.}
+
+With sample-splitting, cross-fitted VIM estimates are obtained by first
+splitting the data into \eqn{2K} folds. These folds are further divided
+into 2 groups of folds. Then, for each fold \eqn{k} in the first group,
+estimator \eqn{f_{n,k}} of \eqn{f_0} is constructed using all data besides
+the kth fold in the group (i.e., \eqn{(2K - 1)/(2K)} of the data) and
+estimator \eqn{P_{n,k}} of \eqn{P_0} is constructed using the held-out data
+(i.e., \eqn{1/2K} of the data); then, computing
+\deqn{v_{n,k} = V(f_{n,k},P_{n,k}).}
+Similarly, for each fold \eqn{k} in the second group,
+estimator \eqn{f_{n,k,s}} of \eqn{f_{0,s}} is constructed using all data
+besides the kth fold in the group (i.e., \eqn{(2K - 1)/(2K)} of the data)
+and estimator \eqn{P_{n,k}} of \eqn{P_0} is constructed using the held-out
+data (i.e., \eqn{1/2K} of the data); then, computing
+\deqn{v_{n,k,s} = V(f_{n,k,s},P_{n,k}).}
+Finally,
+\deqn{\psi_{n,s} := K^{(-1)}\sum_{k=1}^K \{v_{n,k} - v_{n,k,s}\}.}
+
 See the paper by Williamson, Gilbert, Simon, and Carone for more
-details on the mathematics behind the \code{cv_vim} function, and the validity
-of the confidence intervals.
+details on the mathematics behind the \code{cv_vim} function, and the
+validity of the confidence intervals.
 
 In the interest of transparency, we return most of the calculations
 within the \code{vim} object. This results in a list including:

@@ -17,6 +17,7 @@ sp_vim(
   na.rm = FALSE,
   stratified = FALSE,
   verbose = FALSE,
+  sample_splitting = TRUE,
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
@@ -61,6 +62,11 @@ outcome (helps to ensure class balance across cross-fitting folds)?}
 
 \item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out 
 progress? (defaults to \code{FALSE})}
+
+\item{sample_splitting}{should we use sample-splitting to estimate the full and
+reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
+\code{sample_splitting = FALSE} will be invalid for variable with truly zero 
+importance.}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
 unobserved).}
