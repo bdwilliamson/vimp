@@ -75,10 +75,12 @@ cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 set.seed(1234)
 sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 full_cv_preds <- extract_sampled_split_predictions(
-  full_cv_fit, sample_splitting_folds, full = TRUE
+  cvsl_obj = full_cv_fit, sample_splitting = TRUE, 
+  sample_splitting_folds = sample_splitting_folds, full = TRUE
 )
 reduced_cv_preds <- extract_sampled_split_predictions(
-  reduced_cv_fit, sample_splitting_folds, full = FALSE
+  cvsl_obj = reduced_cv_fit, sample_splitting = TRUE, 
+  sample_splitting_folds = sample_splitting_folds, full = FALSE
 )
 set.seed(5678)
 # refit on the whole dataset (for estimating the efficient influence function)
