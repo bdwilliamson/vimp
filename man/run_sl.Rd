@@ -12,6 +12,7 @@ run_sl(
   univariate_SL.library = "SL.glm",
   s = 1,
   cv_folds = NULL,
+  sample_splitting = TRUE,
   ss_folds = NULL,
   verbose = FALSE,
   progress_bar = NULL,
@@ -33,7 +34,11 @@ run_sl(
 
 \item{cv_folds}{the CV folds}
 
-\item{ss_folds}{the sample-splitting folds}
+\item{sample_splitting}{logical; should we use sample-splitting for 
+predictiveness estimation?}
+
+\item{ss_folds}{the sample-splitting folds; only used if 
+\code{sample_splitting = TRUE}}
 
 \item{verbose}{should we print progress? defaults to FALSE}
 
