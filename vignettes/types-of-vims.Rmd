@@ -50,7 +50,9 @@ heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLe
 heart <- heart_data[, 2:dim(heart_data)[2]]
 heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
 x <- heart[, -ncol(heart)]
-learners.2 <- c("SL.ranger")
+# a simple library, to speed up the vignette;
+# in general, we recommend fitting a flexible library
+learners.2 <- c("SL.glm")
 set.seed(12345)
 ```
 

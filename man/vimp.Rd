@@ -14,6 +14,7 @@ choose a variable importance measure, and specify variable(s) of interest;
 \section{Author(s)}{
 
 \bold{Maintainer}: Brian Williamson \url{https://bdwilliamson.github.io/}
+\bold{Contributor}: Jean Feng \url{https://jeanfeng.com}
 
 Methodology authors:
 \itemize{
