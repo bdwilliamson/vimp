@@ -103,6 +103,43 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
   }
 }
 
+#' Create complete-case outcome, weights, and Z
+#' 
+#' @param Y the outcome
+#' @param C indicator of missing or observed
+#' @param Z the covariates observed in phase 1 and 2 data
+#' @param X all covariates
+#' @param ipc_weights the weights
+#' 
+#' @return a list, with the complete-case outcome, weights, and Z matrix 
+create_z <- function(Y, C, Z, X, ipc_weights) {
+  # set up internal data -- based on complete cases only
+  Y_cc <- subset(Y, C == 1, drop = FALSE)
+  weights_cc <- ipc_weights[C == 1]
+  if (!all(C == 1) || !all(ipc_weights == 1)) {
+    if (is.character(Z)) {
+      tmp_Z <- Z[Z != "Y"]
+      minus_X <- as.numeric(gsub("X", "", tmp_Z))
+      # check to see if it is only part of X matrix
+      if (any(sapply(seq_along(minus_X), function(j) length(minus_X[j]) > 0))) {
+        if (any(grepl("Y", Z))) {
+          Z_in <- as.data.frame(mget("Y"))
+        } else {
+          Z_in <- NULL
+        }
+        Z_in <- cbind.data.frame(Z_in, X[, minus_X])
+      } else {
+        Z_in <- as.data.frame(mget(Z))
+      }
+    } else {
+      stop("Please enter a character vector corresponding to the names of the fully observed data.")
+    }
+  } else {
+    Z_in <- NULL
+  }
+  list(Y = Y_cc, weights = weights_cc, Z = Z_in)
+}
+
 # ------------------------------------------------------------------------------
 
 #' Obtain the type of VIM to estimate using partial matching
@@ -160,7 +197,6 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 #'    1 denotes yes, 0 denotes no
 #' @param probs vector of proportions for each fold number
 #' @return a vector of folds
-#'
 make_folds <- function(y, V = 2, stratified = FALSE, 
                        C = NULL,
                        probs = rep(1/V, V)) {
@@ -233,6 +269,41 @@ make_folds <- function(y, V = 2, stratified = FALSE,
     }
   }
   return(folds)
+}
+
+#' Turn folds from 2K-fold cross-fitting into individual K-fold folds
+#'
+#' @param cross_fitting_folds the vector of cross-fitting folds
+#' @param sample_splitting_folds the sample splitting folds
+#' @param C vector of whether or not we measured the observation in phase 2
+#' 
+#' @return the two sets of testing folds for K-fold cross-fitting
+make_kfold <- function(cross_fitting_folds, 
+                       sample_splitting_folds = rep(1, length(unique(cross_fitting_folds))), 
+                       C = rep(1, length(cross_fitting_folds))) {
+  # get the folds for the full and reduced nuisance functions
+  full_folds <- which(sample_splitting_folds == 1)
+  redu_folds <- which(sample_splitting_folds == 2)
+  sample_splitting_vec <- vector("numeric", length = length(cross_fitting_folds))
+  sample_splitting_vec[cross_fitting_folds %in% full_folds] <- 1
+  sample_splitting_vec[cross_fitting_folds %in% redu_folds] <- 2
+  # create K-fold folds, i.e., 1:K for each
+  full_cf_folds <- cross_fitting_folds[cross_fitting_folds %in% full_folds]
+  redu_cf_folds <- cross_fitting_folds[cross_fitting_folds %in% redu_folds]
+  unique_full <- sort(unique(full_cf_folds))
+  unique_redu <- sort(unique(redu_cf_folds))
+  K <- length(unique_full)
+  folds_k <- seq_len(K)
+  k_fold_full <- full_cf_folds
+  k_fold_redu <- redu_cf_folds
+  for (v in seq_len(K)) {
+    k_fold_full <- replace(k_fold_full, full_cf_folds == unique_full[v], folds_k[v])
+    k_fold_redu <- replace(k_fold_redu, redu_cf_folds == unique_redu[v], folds_k[v])
+  }
+  # return a list; the first four values are the cross-fitting folds,
+  # while the last two values replicate the sample-splitting folds
+  list(full = k_fold_full, reduced = k_fold_redu, 
+       sample_splitting_folds = sample_splitting_vec)
 }
 
 # For sp_vim -------------------------------------------------------------------

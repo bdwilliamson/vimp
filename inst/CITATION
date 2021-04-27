@@ -1,19 +1,19 @@
 citHeader("To cite vimp in publications use:")
 
 citEntry(entry = "Article",
-  title        = "Dates and Times Made Easy with {lubridate}",
+  title        = "A unified approach for inference on algorithm-agnostic variable importance",
   author       = personList(as.person("Brian D. Williamson"),
-                   as.person("")),
-  journal      = "Journal of Statistical Software",
-  year         = "2011",
-  volume       = "40",
-  number       = "3",
-  pages        = "1--25",
-  url          = "https://www.jstatsoft.org/v40/i03/",
+                   as.person("Peter B. Gilbert"), as.person("Noah R. Simon"), as.person("Marco Carone")),
+  journal      = "arXiv",
+  year         = "2020",
+  volume       = "",
+  number       = "",
+  pages        = "",
+  url          = "https://arxiv.org/abs/2004.03683",
 
   textVersion  =
-  paste("Garrett Grolemund, Hadley Wickham (2011).",
-        "Dates and Times Made Easy with lubridate.",
-        "Journal of Statistical Software, 40(3), 1-25.",
-        "URL https://www.jstatsoft.org/v40/i03/.")
+  paste("Brian D. Williamson, Peter B. Gilbert, Noah R. Simon, and Marco Carone (2020).",
+        "A unified approach for inference on algorithm-agnostic variable importance.",
+        "arXiv.",
+        "URL https://arxiv.org/abs/2004.03683.")
 )

@@ -42,32 +42,38 @@ test_that("Cross-validated variable importance using internally-computed regress
   expect_length(est$eif, length(y))
 })
 
+set.seed(4747)
+test_that("CV-VIM without sample splitting works", {
+  est <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
+                run_regression = TRUE, SL.library = learners, 
+                alpha = 0.05, delta = 0, cvControl = list(V = V),
+                env = environment(), na.rm = TRUE, sample_splitting = FALSE)
+  # check variable importance estimate
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+})
+
+
 # cross-fitted estimates of the full and reduced regressions,
 # for point estimate of variable importance.
 indx <- 2
 Y <- matrix(y)
 set.seed(4747)
 full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
-  Y = Y, X = x, SL.library = learners, cvControl = list(V = V),
+  Y = Y, X = x, SL.library = learners, cvControl = list(V = 2 * V),
   innerCvControl = list(list(V = V))
 ))
 # use the same cross-fitting folds for reduced
 reduced_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
   Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners, 
   cvControl = SuperLearner::SuperLearner.CV.control(
-    V = V, validRows = full_cv_fit$folds
+    V = 2 * V, validRows = full_cv_fit$folds
   ), 
   innerCvControl = list(list(V = V))
 ))
 # extract the predictions on split portions of the data, for hypothesis testing
 cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 set.seed(1234)
-sample_splitting_folds <- vector("numeric", length = length(y))
-for (v in 1:V) {
-  sample_splitting_folds[cross_fitting_folds == v] <- vimp::make_folds(
-    y[cross_fitting_folds == v], V = V
-  )
-}
+sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 full_cv_preds <- extract_sampled_split_predictions(
   full_cv_fit, sample_splitting_folds, full = TRUE
 )
