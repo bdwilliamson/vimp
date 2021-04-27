@@ -382,11 +382,11 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
                            newX = red_X[test_v, , drop = FALSE],
                            family = new_arg_list$family, 
                            obsWeights = new_arg_list$obsWeights)
-        fhat[[v]] <- fit$pred
+        fhat[[index_v]] <- fit$pred
       } else {
         fit <- do.call(SuperLearner::SuperLearner, new_arg_list)
         ## get predictions on the validation fold
-        fhat[[v]] <- SuperLearner::predict.SuperLearner(
+        fhat[[index_v]] <- SuperLearner::predict.SuperLearner(
           fit, newdata = red_X[test_v, , drop = FALSE], onlySL = TRUE
         )$pred
       }

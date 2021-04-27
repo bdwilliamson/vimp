@@ -44,7 +44,7 @@ test_that("VIM with inverse probability of coarsening weights works", {
 })
 set.seed(5678)
 # test that VIM with inverse probability of coarsening weights and cross-fitting works
-test_that("VIM with inverse probability of coarsening weights and cross-fitting works", {
+test_that("CV-VIM with inverse probability of coarsening weights works", {
   est_cv <- cv_vim(Y = y, X = x_df, indx = 1, type = "r_squared", V = 2, 
                    run_regression = TRUE, SL.library = learners,
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
@@ -56,11 +56,11 @@ univariate_learners <- "SL.glm"
 set.seed(91011)
 # test that SPVIM with inverse probability of coarsening weights works
 test_that("SPVIM with inverse probability of coarsening weights works", {
-    est_spvim <- sp_vim(Y = y, X = x_df, type = "r_squared", V = 2, 
+  expect_warning(est_spvim <- sp_vim(Y = y, X = x_df, type = "r_squared", V = 2, 
                       SL.library = learners,
                       univariate_SL.library = univariate_learners, gamma = 0.1,
                       alpha = 0.05, delta = 0, C = C, Z = "Y", 
                       ipc_weights = ipc_weights,
-                      cvControl = list(V = 2), env = environment())
+                      cvControl = list(V = 2), env = environment()))
   expect_equal(est_spvim$est[3], shapley_val_2, tolerance = 0.3, scale = 1)
 })
