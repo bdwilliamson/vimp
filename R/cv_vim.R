@@ -282,7 +282,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 unique(cross_fitting_folds), V = 2
             )
         } else {
-            sample_splitting_folds <- rep(1, length(ss_V))
+            sample_splitting_folds <- rep(1, ss_V)
         }
     }
 

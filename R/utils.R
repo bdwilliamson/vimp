@@ -52,6 +52,7 @@ check_inputs <- function(Y, X, f1, f2, indx) {
 #' @param cross_fitting_folds the folds for cross-fitting (used for point
 #'   estimates of variable importance in \code{cv_vim} and \code{sp_vim})
 #' @param V the number of cross-fitting folds
+#' @param ss_V the number of folds for CV (if sample_splitting is TRUE)
 #' @param cv a logical flag indicating whether or not to use cross-fitting
 #' 
 #' @return None. Called for the side effect of stopping the algorithm if 
@@ -60,7 +61,8 @@ check_inputs <- function(Y, X, f1, f2, indx) {
 check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL, 
                                 cross_fitted_f1 = NULL, cross_fitted_f2 = NULL,
                                 sample_splitting_folds = NULL, 
-                                cross_fitting_folds = NULL, V = NULL, cv = FALSE) {
+                                cross_fitting_folds = NULL, V = NULL, ss_V = NULL,
+                                cv = FALSE) {
   if (is.null(Y)) stop("Y must be entered.")
   if (!cv) {
     if (length(f1) == 0 || length(f2) == 0) {
@@ -88,8 +90,8 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
       stop(paste0("You must enter an estimator of the population-optimal predictor",
                   " using the reduced set of covariates."))
     }
-    if (length(sample_splitting_folds) != (2 * V)) {
-      stop("The entered folds must be the same length as the outcome of interest.")
+    if (length(sample_splitting_folds) != ss_V) {
+      stop("The sample splitting folds must be the same length as the number of cross-fitting folds.")
     }
     if (is.null(cross_fitting_folds)) {
       stop("You must specify the folds that were used for cross-fitting.")
