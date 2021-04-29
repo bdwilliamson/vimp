@@ -338,8 +338,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_redu <- vimp_se(eif = eif_redu, na.rm = na.rm)
         est <- predictiveness_full - predictiveness_redu
         naive <- NA
-        se <- sqrt(se_full ^ 2 / sum(ss_folds_full == 1)
-               + se_redu ^ 2 / sum(ss_folds_redu == 2))
+        se <- sqrt(se_full ^ 2 * length(eif_full) / sum(ss_folds_full == 1)
+               + se_redu ^ 2 * length(eif_redu) / sum(ss_folds_redu == 2))
     }
 
     # if est < 0, set to zero and print warning

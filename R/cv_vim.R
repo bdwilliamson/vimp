@@ -421,7 +421,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,
                             cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2,
                             sample_splitting_folds = sample_splitting_folds,
-                            cross_fitting_folds, V = V, cv = TRUE)
+                            cross_fitting_folds, V = V, ss_V = ss_V, cv = TRUE)
         # set up the fitted value objects (both are lists!)
         fhat_ful_lst <- cross_fitted_f1
         fhat_red_lst <- cross_fitted_f2
@@ -556,8 +556,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         est <- predictiveness_full - predictiveness_redu
         naive <- NA
         se <- sqrt(
-            se_full ^ 2 / sum(full_test) +
-                se_redu ^ 2 / sum(redu_test)
+            se_full ^ 2 * length(eif_full) / sum(full_test) +
+                se_redu ^ 2 * length(eif_redu) / sum(redu_test)
         )
     }
 
