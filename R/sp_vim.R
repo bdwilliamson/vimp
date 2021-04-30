@@ -375,14 +375,18 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         ), quote = TRUE
     )$eif
     se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) /
-        sqrt(length(cross_fitting_folds) / 2)
+        sqrt(length(cross_fitting_folds_cc) / 2)
     # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
-    ses_one <- sqrt(ses ^ 2 + se_none_0 ^ 2)
+    ses_one <- sqrt((var_v_contribs * ncol(ics) + var_s_contribs) / 
+                        (length(cross_fitting_folds_cc) / 2) + 
+                        se_none_0 ^ 2)
     test_statistics <- sapply(
         2:length(est),
         function(j, ests, ses, est_0, se_0, delta) {
-            (ests[j] - est_0 - delta) / sqrt(ses[j] ^ 2 + se_0 ^ 2)
+            var_j <- (var_v_contribs[j] * ncol(ics) + var_s_contribs[j]) / 
+                (length(cross_fitting_folds_cc) / 2)
+            (ests[j] - est_0 - delta) / sqrt(var_j + se_0 ^ 2)
         }, ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0,
         se_0 = se_none_0, delta = delta
     )
