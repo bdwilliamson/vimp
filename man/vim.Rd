@@ -24,6 +24,7 @@ vim(
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
+  scale_est = TRUE,
   ...
 )
 }
@@ -99,6 +100,9 @@ probability weights]).}
 settings; options are "ipw" (for inverse probability weighting) or
 "aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
+
+\item{scale_est}{should the point estimate be scaled to be greater than 0?
+Defaults to \code{TRUE}.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

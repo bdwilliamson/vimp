@@ -46,12 +46,12 @@ vimp_rsquared <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                           cross_fitting_folds = NULL, sample_splitting_folds = NULL,
                           stratified = FALSE, C = rep(1, length(Y)), Z = NULL, 
                           ipc_weights = rep(1, length(Y)), scale = "identity", 
-                          ipc_est_type = "aipw", ...) {
+                          ipc_est_type = "aipw", scale_est = TRUE, ...) {
   cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 = cross_fitted_f1, 
          cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, indx = indx, 
          V = V, run_regression = run_regression, SL.library = SL.library, 
          alpha = alpha, delta = delta, na.rm = na.rm, stratified = stratified,
          cross_fitting_folds = cross_fitting_folds, ipc_weights = ipc_weights, 
          sample_splitting_folds = sample_splitting_folds, C = C, Z = Z, 
-         scale = scale, ipc_est_type = ipc_est_type, ...)
+         scale = scale, ipc_est_type = ipc_est_type, scale_est = scale_est, ...)
 }

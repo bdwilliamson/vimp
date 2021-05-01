@@ -23,6 +23,7 @@ sp_vim(
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
   scale = "identity",
+  scale_est = TRUE,
   ...
 )
 }
@@ -87,6 +88,9 @@ Only used if \code{C} is not all equal to 1.}
 
 \item{scale}{should CIs be computed on original ("identity") or logit
 ("logit") scale?}
+
+\item{scale_est}{should the point estimate be scaled to be greater than 0?
+Defaults to \code{TRUE}.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

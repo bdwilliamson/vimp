@@ -57,6 +57,8 @@
 #'   settings; options are "ipw" (for inverse probability weighting) or
 #'   "aipw" (for augmented inverse probability weighting).
 #'   Only used if \code{C} is not all equal to 1.
+#' @param scale_est should the point estimate be scaled to be greater than 0?
+#'   Defaults to \code{TRUE}.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and the type of risk-based measure.
@@ -151,7 +153,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE,
                 sample_splitting = TRUE, sample_splitting_folds = NULL, stratified = FALSE,
                 C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
-                ipc_est_type = "aipw", ...) {
+                ipc_est_type = "aipw", scale_est = TRUE, ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -341,9 +343,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se <- sqrt(se_full ^ 2 * length(eif_full) / sum(ss_folds_full == 1)
                + se_redu ^ 2 * length(eif_redu) / sum(ss_folds_redu == 2))
     }
+    var_full <- se_full ^ 2 * length(eif_full)
+    var_redu <- se_redu ^ 2 * length(eif_redu)
 
     # if est < 0, set to zero and print warning
-    if (est < 0 && !is.na(est)) {
+    if (est < 0 && !is.na(est) & scale_est) {
         est <- 0
         warning("Original estimate < 0; returning zero.")
     } else if (is.na(est)) {
@@ -366,8 +370,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         hyp_test <- vimp_hypothesis_test(
             predictiveness_full = predictiveness_full,
             predictiveness_reduced = predictiveness_redu,
-            se_full = sqrt(se_full ^ 2 / sum(ss_folds_full == 1)),
-            se_reduced = sqrt(se_redu ^ 2 / sum(ss_folds_redu == 2)),
+            se_full = sqrt(var_full / sum(ss_folds_full == 1)),
+            se_reduced = sqrt(var_redu / sum(ss_folds_redu == 2)),
             delta = delta, alpha = alpha
         )
     }

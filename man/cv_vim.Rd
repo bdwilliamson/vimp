@@ -28,6 +28,7 @@ cv_vim(
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
+  scale_est = TRUE,
   ...
 )
 }
@@ -97,7 +98,7 @@ Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
 \item{delta}{the value of the \eqn{\delta}-null (i.e., testing if
 importance < \eqn{\delta}); defaults to 0.}
 
-\item{scale}{should CIs be computed on original ("identity") or
+\item{scale}{should CIs be computed on original ("identity", default) or
 logit ("logit") scale?}
 
 \item{na.rm}{should we remove NA's in the outcome and fitted values in
@@ -119,6 +120,9 @@ already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 settings; options are "ipw" (for inverse probability weighting) or
 "aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
+
+\item{scale_est}{should the point estimate be scaled to be greater than 0?
+Defaults to \code{TRUE}.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

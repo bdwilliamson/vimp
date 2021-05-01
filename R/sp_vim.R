@@ -45,6 +45,8 @@
 #'   Only used if \code{C} is not all equal to 1.
 #' @param scale should CIs be computed on original ("identity") or logit
 #'   ("logit") scale?
+#' @param scale_est should the point estimate be scaled to be greater than 0?
+#'   Defaults to \code{TRUE}.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -127,7 +129,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
                    stratified = FALSE, verbose = FALSE, sample_splitting = TRUE,
                    C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
-                   ipc_est_type = "aipw", scale = "identity",
+                   ipc_est_type = "aipw", scale = "identity", scale_est = TRUE,
                    ...) {
     # if the data is missing, stop and throw an error
     if (is.null(Y)) stop("You must enter an outcome, Y.")
@@ -330,7 +332,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         var_s_contribs[j] <- ses_res$var_s_contrib
     }
     # if est < 0, set to zero and print warning
-    if (any(est < 0)) {
+    if (any(est < 0) & scale_est) {
         est[est < 0] <- 0
         warning("One or more original estimates < 0; returning zero for these indices.")
     }

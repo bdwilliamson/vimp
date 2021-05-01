@@ -103,7 +103,7 @@ coarsening mechanism.}
 probability weights for coarsened-at-random settings). Assumed to be
 already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
-\item{scale}{should CIs be computed on original ("identity") or
+\item{scale}{should CIs be computed on original ("identity", default) or
 logit ("logit") scale?}
 
 \item{ipc_est_type}{the type of procedure used for coarsened-at-random

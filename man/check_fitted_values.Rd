@@ -13,6 +13,7 @@ check_fitted_values(
   sample_splitting_folds = NULL,
   cross_fitting_folds = NULL,
   V = NULL,
+  ss_V = NULL,
   cv = FALSE
 )
 }
@@ -38,6 +39,8 @@ hypothesis testing)}
 estimates of variable importance in \code{cv_vim} and \code{sp_vim})}
 
 \item{V}{the number of cross-fitting folds}
+
+\item{ss_V}{the number of folds for CV (if sample_splitting is TRUE)}
 
 \item{cv}{a logical flag indicating whether or not to use cross-fitting}
 

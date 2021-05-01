@@ -53,7 +53,7 @@
 #'   0.05, corresponding to a 95\% confidence interval.
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if
 #'   importance < \eqn{\delta}); defaults to 0.
-#' @param scale should CIs be computed on original ("identity") or
+#' @param scale should CIs be computed on original ("identity", default) or
 #'   logit ("logit") scale?
 #' @param na.rm should we remove NA's in the outcome and fitted values in
 #'   computation? (defaults to \code{FALSE})
@@ -70,6 +70,8 @@
 #'   settings; options are "ipw" (for inverse probability weighting) or
 #'   "aipw" (for augmented inverse probability weighting).
 #'   Only used if \code{C} is not all equal to 1.
+#' @param scale_est should the point estimate be scaled to be greater than 0?
+#'   Defaults to \code{TRUE}.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -238,7 +240,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    alpha = 0.05, delta = 0, scale = "identity",
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL,
                    ipc_weights = rep(1, length(Y)),
-                   ipc_est_type = "aipw", ...) {
+                   ipc_est_type = "aipw", scale_est = TRUE, ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -560,9 +562,11 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 se_redu ^ 2 * length(eif_redu) / sum(redu_test)
         )
     }
+    var_full <- se_full ^ 2 * length(eif_full)
+    var_redu <- se_redu ^ 2 * length(eif_redu)
 
     # if est < 0, set to zero and print warning
-    if (est < 0 && !is.na(est)) {
+    if (est < 0 && !is.na(est) & scale_est) {
         est <- 0
         warning("Original estimate < 0; returning zero.")
     } else if (is.na(est)) {
@@ -585,7 +589,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         hyp_test <- vimp_hypothesis_test(
             predictiveness_full = predictiveness_full,
             predictiveness_reduced = predictiveness_redu,
-            se_full = se_full, se_reduced = se_redu,
+            se_full = sqrt(var_full / sum(full_test)), 
+            se_reduced = sqrt(var_redu / sum(redu_test)),
             delta = delta, alpha = alpha
         )
     }
