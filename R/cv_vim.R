@@ -340,7 +340,11 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             }
             arg_lst_redu_cv$Y <- full_cv_sl$SL.predict
         }
-        redu_cv_sl <- do.call(SuperLearner::CV.SuperLearner, arg_lst_redu_cv)
+        if (ncol(X_minus_s) == 0) {
+            redu_cv_sl <- NA
+        } else {
+            redu_cv_sl <- do.call(SuperLearner::CV.SuperLearner, arg_lst_redu_cv)    
+        }
         # get a list of the predictions on the appropriate sampled-split folds,
         # for VIM estimation
         fhat_ful_lst <- extract_sampled_split_predictions(
@@ -349,12 +353,16 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                             rep(1, ss_V),
                                             sample_splitting_folds)
         )
-        fhat_red_lst <- extract_sampled_split_predictions(
-            cvsl_obj = redu_cv_sl, sample_splitting = sample_splitting, full = FALSE,
-            sample_splitting_folds = switch((sample_splitting) + 1, 
-                                            rep(2, ss_V),
-                                            sample_splitting_folds)
-        )
+        if (ncol(X_minus_s) == 0) {
+            fhat_red_lst <- lapply(cf_folds_lst, function(v) mean(Y_cc[v]))[sample_splitting_folds == 2]
+        } else {
+            fhat_red_lst <- extract_sampled_split_predictions(
+                cvsl_obj = redu_cv_sl, sample_splitting = sample_splitting, full = FALSE,
+                sample_splitting_folds = switch((sample_splitting) + 1, 
+                                                rep(2, ss_V),
+                                                sample_splitting_folds)
+            )   
+        }
         # if cross-fitted SEs are requested, get the appropriate list of predictions;
         # otherwise, refit
         if (cross_fitted_se) {
@@ -363,10 +371,14 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 sample_splitting_folds = rep(1, ss_V), full = TRUE
             )
             full <- NA
-            fhat_red <- extract_sampled_split_predictions(
-                cvsl_obj = redu_cv_sl, sample_splitting = FALSE,
-                sample_splitting_folds = rep(2, ss_V), full = FALSE
-            )
+            if (ncol(X_minus_s) == 0) {
+                fhat_red <- lapply(cf_folds_lst, function(v) mean(Y_cc[v]))
+            } else {
+                fhat_red <- extract_sampled_split_predictions(
+                    cvsl_obj = redu_cv_sl, sample_splitting = FALSE,
+                    sample_splitting_folds = rep(2, ss_V), full = FALSE
+                )    
+            }
             reduced <- NA
         } else {
             arg_lst_full <- c(arg_lst, list(
