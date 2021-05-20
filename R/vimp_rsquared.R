@@ -1,12 +1,12 @@
 #' Nonparametric Intrinsic Variable Importance Estimates: R-squared
 #'
-#' Compute estimates of and confidence intervals for nonparametric $R^2$-based 
-#' intrinsic variable importance. This is a wrapper function for \code{cv_vim}, 
+#' Compute estimates of and confidence intervals for nonparametric $R^2$-based
+#' intrinsic variable importance. This is a wrapper function for \code{cv_vim},
 #' with \code{type = "r_squared"}.
 #'
 #' @inheritParams cv_vim
 #'
-#' @return An object of classes \code{vim} and \code{vim_rsquared}. 
+#' @return An object of classes \code{vim} and \code{vim_rsquared}.
 #'   See Details for more information.
 #'
 #' @inherit cv_vim details
@@ -33,25 +33,27 @@
 #'            alpha = 0.05, run_regression = TRUE,
 #'            SL.library = learners, V = 2, cvControl = list(V = 2))
 #'
-#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the 
+#' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the
 #'   \code{SuperLearner} function and package.
 #' @export
 
 
 vimp_rsquared <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
-                          cross_fitted_f2 = NULL, f1 = NULL, f2 = NULL, indx = 1, 
-                          V = 10, run_regression = TRUE, 
-                          SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"), 
-                          alpha = 0.05, delta = 0, na.rm = FALSE, 
+                          cross_fitted_f2 = NULL, f1 = NULL, f2 = NULL, indx = 1,
+                          V = 10, run_regression = TRUE,
+                          SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
+                          alpha = 0.05, delta = 0, na.rm = FALSE,
                           cross_fitting_folds = NULL, sample_splitting_folds = NULL,
-                          stratified = FALSE, C = rep(1, length(Y)), Z = NULL, 
-                          ipc_weights = rep(1, length(Y)), scale = "identity", 
-                          ipc_est_type = "aipw", scale_est = TRUE, ...) {
-  cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 = cross_fitted_f1, 
-         cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, indx = indx, 
-         V = V, run_regression = run_regression, SL.library = SL.library, 
+                          stratified = FALSE, C = rep(1, length(Y)), Z = NULL,
+                          ipc_weights = rep(1, length(Y)), scale = "identity",
+                          ipc_est_type = "aipw", scale_est = TRUE,
+                          cross_fitted_se = TRUE, ...) {
+  cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 = cross_fitted_f1,
+         cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, indx = indx,
+         V = V, run_regression = run_regression, SL.library = SL.library,
          alpha = alpha, delta = delta, na.rm = na.rm, stratified = stratified,
-         cross_fitting_folds = cross_fitting_folds, ipc_weights = ipc_weights, 
-         sample_splitting_folds = sample_splitting_folds, C = C, Z = Z, 
-         scale = scale, ipc_est_type = ipc_est_type, scale_est = scale_est, ...)
+         cross_fitting_folds = cross_fitting_folds, ipc_weights = ipc_weights,
+         sample_splitting_folds = sample_splitting_folds, C = C, Z = Z,
+         scale = scale, ipc_est_type = ipc_est_type, scale_est = scale_est,
+         cross_fitted_se = cross_fitted_se, ...)
 }

@@ -78,7 +78,7 @@
 #'   errors (\code{TRUE}, the default) or not (\code{FALSE})?
 #' @param bootstrap should bootstrap-based standard error estimates be computed?
 #'   Defaults to \code{FALSE} (and currently may only be used if 
-#'   \code{sample_splitting = FALSE}).
+#'   \code{sample_splitting = FALSE} and \code{cross_fitted_se = FALSE}).
 #' @param b the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
 #'   and \code{sample_splitting = FALSE}).
 #' @param ... other arguments to the estimation tool, see "See also".
@@ -378,7 +378,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             # if the reduced set of covariates is empty, return the mean
             # otherwise, if "r_squared" or "anova", regress the
             # fitted values on the remaining covariates
-            args_lst_redu <- c(args_lst, list(
+            arg_lst_redu <- c(arg_lst, list(
                 Y = Y_cc, X = X_minus_s, SL.library = SL.library, obsWeights = weights_cc
             ))
             if (ncol(X_minus_s) == 0) {
@@ -394,7 +394,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 } else {
                     arg_lst_redu$Y <- Y_cc
                 }
-                reduced <- do.call(SuperLearner::SuperLearner, arg_lst_red)
+                reduced <- do.call(SuperLearner::SuperLearner, arg_lst_redu)
                 fhat_red <- SuperLearner::predict.SuperLearner(reduced, onlySL = TRUE)$pred
             }
         }
@@ -450,14 +450,43 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         naives <- unlist(lapply(est_lst, function(x) x$naive))
         est <- mean(point_ests)
         naive <- mean(naives)
-        eif <- measure_anova(
-            full = fhat_ful, reduced = fhat_red,
-            y = Y_cc, full_y = Y_cc,
-            C = C, Z = Z_in, 
-            ipc_weights = ipc_weights,
-            ipc_fit_type = "SL", na.rm = na.rm,
-            SL.library = SL.library, arg_lst
-        )$eif
+        if (cross_fitted_se) {
+            eif_lst <- sapply(
+                1:V,
+                function(v)
+                    do.call(
+                        measure_anova,
+                        args = c(
+                            list(full = fhat_ful[[v]],
+                                 reduced = fhat_red[[v]],
+                                 y = Y_cc[cross_fitting_folds_cc == v],
+                                 full_y = Y_cc,
+                                 C = C[cross_fitting_folds == v],
+                                 Z = Z_in[cross_fitting_folds == v, ,
+                                          drop = FALSE],
+                                 folds_Z = cross_fitting_folds,
+                                 ipc_weights = ipc_weights[cross_fitting_folds == v],
+                                 ipc_fit_type = "SL", na.rm = na.rm,
+                                 ipc_est_type = ipc_est_type, scale = scale,
+                                 SL.library = SL.library),
+                            arg_lst
+                        )
+                    ),
+                simplify = FALSE
+            )
+            eif_lst <- unlist(lapply(est_lst, function(x) x$eif))
+            se <- sqrt(mean(unlist(lapply(eif_lst, function(x) t(x) %*% x / length(x)))))
+        } else {
+            eif <- measure_anova(
+                full = fhat_ful, reduced = fhat_red,
+                y = Y_cc, full_y = Y_cc,
+                C = C, Z = Z_in, 
+                ipc_weights = ipc_weights,
+                ipc_fit_type = "SL", na.rm = na.rm,
+                SL.library = SL.library, arg_lst
+            )$eif
+            se <- vimp_se(eif = eif, na.rm = na.rm)
+        }
         predictiveness_full <- NA
         predictiveness_redu <- NA
         eif_full <- rep(NA, sum(cross_fitting_folds_cc == 1))
@@ -467,9 +496,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         if (bootstrap) {
             se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red, 
                                type = full_type, b = b)$se
-        } else {
-            se <- vimp_se(eif = eif, na.rm = na.rm)
-        }
+        } 
     } else {
         if (sample_splitting) {
             # make new sets of folds, as if we had done V-fold within the two sets
@@ -522,7 +549,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 est_predictiveness_cv,
                 args = c(list(fitted_values = fhat_ful,
                               y = Y_cc, full_y = Y_cc, folds = cross_fitting_folds_cc,
-                              type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_full,
+                              type = full_type, C = C, Z = Z_in, folds_Z = cross_fitting_folds,
                               ipc_weights = ipc_weights,
                               ipc_fit_type = "SL", scale = scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
@@ -535,7 +562,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 est_predictiveness_cv,
                 args = c(list(fitted_values = fhat_red,
                               y = Y_cc, full_y = Y_cc, folds = cross_fitting_folds_cc,
-                              type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_redu,
+                              type = full_type, C = C, Z = Z_in, folds_Z = cross_fitting_folds,
                               ipc_weights = ipc_weights,
                               ipc_fit_type = "SL", scale = scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
@@ -572,7 +599,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         }
         est <- predictiveness_full - predictiveness_redu
         naive <- NA
-        if (bootstrap & !sample_splitting) {
+        if (bootstrap & !sample_splitting & !cross_fitted_se) {
             ses <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red, type = full_type,
                                 b = b)
             se <- ses$se

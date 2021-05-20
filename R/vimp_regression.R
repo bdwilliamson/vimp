@@ -44,7 +44,8 @@ vimp_regression <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                        cross_fitting_folds = NULL,
                        stratified = FALSE, C = rep(1, length(Y)), Z = NULL,
                        ipc_weights = rep(1, length(Y)), scale = "identity",
-                       ipc_est_type = "aipw", scale_est = TRUE, ...) {
+                       ipc_est_type = "aipw", scale_est = TRUE,
+                       cross_fitted_se = TRUE, ...) {
   .Deprecated("vimp_anova", package = "vimp",
               msg = paste0(
                 "vimp_anova now performs all functionality of vimp_regression; "
@@ -56,5 +57,5 @@ vimp_regression <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
              alpha = alpha, delta = delta, na.rm = na.rm,
              cross_fitting_folds = cross_fitting_folds,
              stratified = stratified, C = C, Z = Z, ipc_weights = ipc_weights,
-             ipc_est_type = ipc_est_type, scale = scale, scale_est = scale_est, ...)
+             ipc_est_type = ipc_est_type, scale = scale, scale_est = scale_est, cross_fitted_se = cross_fitted_se, ...)
 }
