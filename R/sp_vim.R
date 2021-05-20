@@ -163,6 +163,9 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
             stats::binomial()
         )
     }
+    if (is.null(arg_lst$innerCvControl)) {
+        arg_lst$innerCvControl <- rep(list(list(V = V)), ss_V)
+    }
 
     # get v, preds, ic for null set
     preds_none <- list()

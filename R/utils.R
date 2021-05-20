@@ -367,12 +367,6 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     arg_lst$obsWeights <- weights
   }
   arg_lst_cv <- arg_lst
-  if (sample_splitting) {
-    inner_V <- V / 2
-  } else {
-    inner_V <- V
-  }
-  arg_lst_cv$innerCvControl <- rep(list(list(V = inner_V)), V)
   # fit the super learner for a given set of variables
   red_X <- as.data.frame(X[, s, drop = FALSE])
   if (is.null(cv_folds)) {
@@ -415,7 +409,11 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
                          obsWeights = full_arg_lst_cv$obsWeights[train_v])
       fitted[[v]] <- fit$pred
     }
-    fhat <- fitted[ss_folds == 1]
+    if (sample_splitting) {
+      fhat <- fitted[ss_folds == 1] 
+    } else {
+      fhat <- fitted
+    }
   } else {
     # fit a cross-validated Super Learner
     cv_fit <- do.call(SuperLearner::CV.SuperLearner, full_arg_lst_cv)
