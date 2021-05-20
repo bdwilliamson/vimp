@@ -75,8 +75,8 @@ test_that("Estimating SPVIMs with a single library function works", {
 set.seed(121314)
 test_that("Estimating SPVIMs with verbose = TRUE works", {
   expect_message(est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
-                              SL.library = "SL.glm", 
-                              univariate_SL.library = univariate_learners,
+                              SL.library = SL.glm, 
+                              univariate_SL.library = SL.glm,
                               gamma = .1, alpha = 0.05, delta = 0,
                               cvControl = list(V = V), env = environment(), 
                               verbose = TRUE),

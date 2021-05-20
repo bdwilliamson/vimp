@@ -48,7 +48,7 @@ be estimated specially; see Details.}
 \item{indx}{the indices of the covariate(s) to calculate variable importance
 for; defaults to 1.}
 
-\item{V}{the number of folds for cross-fitting, defaults to 10. If
+\item{V}{the number of folds for cross-fitting, defaults to 5. If
 \code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
 is done. See Details for a more detailed explanation.}
 

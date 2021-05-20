@@ -331,6 +331,9 @@ make_kfold <- function(cross_fitting_folds,
 #' @param verbose should we print progress? defaults to FALSE
 #' @param progress_bar the progress bar to print to (only if verbose = TRUE)
 #' @param indx the index to pass to progress bar (only if verbose = TRUE)
+#' @param weights weights to pass to estimation procedure
+#' @param cross_fitted_se if \code{TRUE}, uses a cross-fitted estimator of 
+#'   the standard error; otherwise, uses the entire dataset
 #' @param ... other arguments to Super Learner
 #'
 #' @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
@@ -338,27 +341,47 @@ make_kfold <- function(cross_fitting_folds,
 run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm", 
                    univariate_SL.library = "SL.glm", s = 1, cv_folds = NULL,
                    sample_splitting = TRUE, ss_folds = NULL, verbose = FALSE, 
-                   progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)), ...) {
-  # if verbose, print what we're doing and make sure that SL is verbose
-  L <- list(...)
-  if (is.null(L$family)) {
-    L$family <- gaussian()
+                   progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)), 
+                   cross_fitted_se = TRUE, ...) {
+  # if verbose, print what we're doing and make sure that SL is verbose;
+  # set up the argument list for the Super Learner / CV.SuperLearner
+  arg_lst <- list(...)
+  if (is.null(arg_lst$family)) {
+    arg_lst$family <- switch(
+      (length(unique(Y)) == 2) + 1, stats::gaussian(), stats::binomial()
+    )
   }
   if (verbose) {
-    if (is.null(L$cvControl)) {
-      L$cvControl <- list(verbose = TRUE)
-    } else if (any(grepl("verbose", names(L$cvControl)))) {
-      L$cvControl$verbose <- TRUE
+    if (is.null(arg_lst$cvControl)) {
+      arg_lst$cvControl <- list(verbose = TRUE)
+    } else {
+      arg_lst$cvControl$verbose <- TRUE
     }
   }
-  # fit the super learner on each full/reduced pair
-  red_X <- as.data.frame(X[, s, drop = FALSE])
-  if (is.null(L$obsWeights)) {
-    L$obsWeights <- weights
+  if (is.null(arg_lst$cvControl)) {
+    arg_lst$cvControl <- list(V = V)
+  } else {
+    arg_lst$cvControl$V <- V
   }
+  if (is.null(arg_lst$obsWeights)) {
+    arg_lst$obsWeights <- weights
+  }
+  arg_lst_cv <- arg_lst
+  if (sample_splitting) {
+    inner_V <- V / 2
+  } else {
+    inner_V <- V
+  }
+  arg_lst_cv$innerCvControl <- rep(list(list(V = inner_V)), V)
+  # fit the super learner for a given set of variables
+  red_X <- as.data.frame(X[, s, drop = FALSE])
   if (is.null(cv_folds)) {
     cv_folds <- make_folds(Y, V = V, stratified = (length(unique(Y)) == 2))
   }
+  cf_folds_lst <- lapply(as.list(seq_len(V)), function(v) {
+    which(cv_folds == v)
+  })
+  arg_lst_cv$cvControl$validRows <- cf_folds_lst
   this_sl_lib <- SL.library
   # if univariate regression (i.e., length(s) == 1) then check univariate_SL.library
   # if it exists, use it; otherwise, use the normal library
@@ -373,49 +396,59 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       }
     }
   }
-  fhat <- list()
-  index_v <- 1
-  for (v in seq_len(V)) {
-    train_v <- (cv_folds != v)
-    test_v <- (cv_folds == v)
-    if (ss_folds[v] == 1 | !sample_splitting) {
-      # fit super learner
-      this_L <- L
-      this_L$obsWeights <- L$obsWeights[train_v]
-      new_arg_list <- c(list(
-        Y = Y[train_v, , drop = FALSE], X = red_X[train_v, , drop = FALSE],
-        SL.library = this_sl_lib
-      ), this_L)
-      if (!is.character(this_sl_lib)) { # only a single learner, so don't do CV
-        fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE], 
-                           X = red_X[train_v, , drop = FALSE], 
-                           newX = red_X[test_v, , drop = FALSE],
-                           family = new_arg_list$family, 
-                           obsWeights = new_arg_list$obsWeights)
-        fhat[[index_v]] <- fit$pred
-      } else {
-        fit <- do.call(SuperLearner::SuperLearner, new_arg_list)
-        ## get predictions on the validation fold
-        fhat[[index_v]] <- SuperLearner::predict.SuperLearner(
-          fit, newdata = red_X[test_v, , drop = FALSE], onlySL = TRUE
-        )$pred
-      }
-      index_v <- index_v + 1
+  full_arg_lst_cv <- c(arg_lst_cv, list(
+    Y = Y, X = red_X, SL.library = this_sl_lib 
+  ))
+  # if a single learner, don't do inner CV
+  if (!is.character(this_sl_lib) | length(this_sl_lib) == 1) {
+    if (is.character(this_sl_lib)) {
+      this_sl_lib <- eval(parse(text = this_sl_lib))
     }
-  }
-  # refit to the entire dataset
-  if (!is.character(this_sl_lib)) {
-    fit <- this_sl_lib(Y = Y, X = red_X, newX = red_X, family = L$family,
-                       obsWeights = L$obsWeights)
+    fitted <- list()
+    for (v in seq_len(V)) {
+      train_v <- (cv_folds != v)
+      test_v <- (cv_folds == v)
+      fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE], 
+                         X = red_X[train_v, , drop = FALSE], 
+                         newX = red_X[test_v, , drop = FALSE],
+                         family = full_arg_lst_cv$family, 
+                         obsWeights = full_arg_lst_cv$obsWeights[train_v])
+      fitted[[v]] <- fit$pred
+    }
+    fhat <- fitted[ss_folds == 1]
   } else {
-    fit <- do.call(
-      SuperLearner::SuperLearner, 
-      args = c(L, list(
-        Y = Y, X = red_X, SL.library = this_sl_lib
-      ))
+    # fit a cross-validated Super Learner
+    cv_fit <- do.call(SuperLearner::CV.SuperLearner, full_arg_lst_cv)
+    # extract predictions on correct sampled-split folds
+    fhat <- extract_sampled_split_predictions(
+      cvsl_obj = cv_fit, sample_splitting = sample_splitting, full = TRUE, 
+      sample_splitting_folds = switch((sample_splitting) + 1, rep(1, V), ss_folds)
+    )
+    # extract predictions on all validation rows
+    fitted <- extract_sampled_split_predictions(
+      cvsl_obj = cv_fit, sample_splitting = FALSE, full = TRUE, 
+      sample_splitting_folds = rep(1, V)
     )
   }
-  fitted <- fit$SL.predict
+  # if cross_fitted_se, we're done; otherwise, re-fit to the entire dataset
+  if (!cross_fitted_se) {
+    # refit to the entire dataset
+    if (!is.character(this_sl_lib)) {
+      fit <- this_sl_lib(Y = Y, X = red_X, newX = red_X, family = arg_lst$family,
+                         obsWeights = arg_lst$obsWeights)
+      fitted <- fit$pred
+    } else {
+      fit <- do.call(
+        SuperLearner::SuperLearner, 
+        args = c(arg_lst, list(
+          Y = Y, X = red_X, SL.library = this_sl_lib
+        ))
+      )
+      fitted <- fit$SL.predict
+    }
+  } else {
+    fit <- NA
+  }
   if (verbose) {
     setTxtProgressBar(progress_bar, indx)
   }

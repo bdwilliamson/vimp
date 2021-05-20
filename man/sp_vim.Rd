@@ -24,6 +24,7 @@ sp_vim(
   ipc_est_type = "aipw",
   scale = "identity",
   scale_est = TRUE,
+  cross_fitted_se = TRUE,
   ...
 )
 }
@@ -32,10 +33,11 @@ sp_vim(
 
 \item{X}{the covariates.}
 
-\item{V}{the number of folds for cross-fitting, defaults to 10.}
+\item{V}{the number of folds for cross-fitting, defaults to 5. If
+\code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
+is done. See Details for a more detailed explanation.}
 
-\item{type}{the type of parameter (e.g., R-squared-based is \code{"r_squared"}).
-Note that \code{type = 'anova'} is not allowed for SPVIMs.}
+\item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
 
 \item{SL.library}{a character vector of learners to pass to
 \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively.
@@ -49,8 +51,8 @@ Defaults to \code{SL.polymars}}
 (e.g., \code{gamma = 1} samples the same number of subsets as the sample
 size)}
 
-\item{alpha}{the level to compute the confidence interval at.
-Defaults to 0.05, corresponding to a 95\% confidence interval.}
+\item{alpha}{the level to compute the confidence interval at. Defaults to
+0.05, corresponding to a 95\% confidence interval.}
 
 \item{delta}{the value of the \eqn{\delta}-null (i.e., testing if
 importance < \eqn{\delta}); defaults to 0.}
@@ -58,8 +60,9 @@ importance < \eqn{\delta}); defaults to 0.}
 \item{na.rm}{should we remove NA's in the outcome and fitted values in
 computation? (defaults to \code{FALSE})}
 
-\item{stratified}{should the generated folds be stratified based on the
-outcome (helps to ensure class balance across cross-fitting folds)?}
+\item{stratified}{if run_regression = TRUE, then should the generated folds
+be stratified based on the outcome (helps to ensure class balance across
+cross-fitting folds)}
 
 \item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out
 progress? (defaults to \code{FALSE})}
@@ -86,11 +89,14 @@ settings; options are "ipw" (for inverse probability weighting) or
 "aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
 
-\item{scale}{should CIs be computed on original ("identity") or logit
-("logit") scale?}
+\item{scale}{should CIs be computed on original ("identity", default) or
+logit ("logit") scale?}
 
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
+
+\item{cross_fitted_se}{should we use cross-fitting to estimate the standard
+errors (\code{TRUE}, the default) or not (\code{FALSE})?}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

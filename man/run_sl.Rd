@@ -18,6 +18,7 @@ run_sl(
   progress_bar = NULL,
   indx = 1,
   weights = rep(1, nrow(X)),
+  cross_fitted_se = TRUE,
   ...
 )
 }
@@ -45,6 +46,11 @@ predictiveness estimation?}
 \item{progress_bar}{the progress bar to print to (only if verbose = TRUE)}
 
 \item{indx}{the index to pass to progress bar (only if verbose = TRUE)}
+
+\item{weights}{weights to pass to estimation procedure}
+
+\item{cross_fitted_se}{if \code{TRUE}, uses a cross-fitted estimator of 
+the standard error; otherwise, uses the entire dataset}
 
 \item{...}{other arguments to Super Learner}
 }

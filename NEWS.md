@@ -2,6 +2,7 @@
 
 ## Major changes
 
+* Added argument `cross_fitted_se` to `cv_vim` and `sp_vim`; this logical option allows the standard error to be estimated using cross-fitting. This can improve performance in cases where flexible algorithms are used to estimate the full and reduced regressions.
 * Added bootstrap-based standard error estimates as an option to both `vim` and `cv_vim`; currently, this option is only available for non-sampled-split calls (i.e., with `sample_splitting = FALSE`)
 * Updated sample-splitting behavior to match more closely with theoretical results (and improve power!): namely, that since estimation of the nuisance regression functions (i.e., the regression of outcome on all covariates and outcome on the reduced set of covariates) can be treated as fixed in making inference, sample-splitting is only necessary for evaluating predictiveness. Thus, the final regression functions from a call to `vim` are based on the entire dataset, while the full and reduced predictiveness (`predictiveness_full` and `predictiveness_reduced`, along with the corresponding confidence intervals) is evaluated using separate portions of the data for the full and reduced regressions.
 * Added argument `sample_splitting` to `vim`, `cv_vim` and `sp_vim`; if `FALSE`, sample-splitting is not used to estimate predictiveness. Note that we recommend using the default, `TRUE`, in all cases, since inference using `sample_splitting = FALSE` will be invalid for variables with truly null variable importance.

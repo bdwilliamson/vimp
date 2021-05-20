@@ -27,7 +27,7 @@
 #'   then this argument is not used.
 #' @param indx the indices of the covariate(s) to calculate variable importance
 #'   for; defaults to 1.
-#' @param V the number of folds for cross-fitting, defaults to 10. If
+#' @param V the number of folds for cross-fitting, defaults to 5. If
 #'   \code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
 #'   is done. See Details for a more detailed explanation.
 #' @param sample_splitting should we use sample-splitting to estimate the full and
@@ -436,6 +436,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                              C = C[cross_fitting_folds == v],
                              Z = Z_in[cross_fitting_folds == v, ,
                                       drop = FALSE],
+                             folds_Z = cross_fitting_folds,
                              ipc_weights = ipc_weights[cross_fitting_folds == v],
                              ipc_fit_type = "SL", na.rm = na.rm,
                              ipc_est_type = ipc_est_type, scale = scale,
@@ -452,7 +453,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         eif <- measure_anova(
             full = fhat_ful, reduced = fhat_red,
             y = Y_cc, full_y = Y_cc,
-            C = C, Z = Z_in,
+            C = C, Z = Z_in, 
             ipc_weights = ipc_weights,
             ipc_fit_type = "SL", na.rm = na.rm,
             SL.library = SL.library, arg_lst
@@ -521,7 +522,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 est_predictiveness_cv,
                 args = c(list(fitted_values = fhat_ful,
                               y = Y_cc, full_y = Y_cc, folds = cross_fitting_folds_cc,
-                              type = full_type, C = C, Z = Z_in,
+                              type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_full,
                               ipc_weights = ipc_weights,
                               ipc_fit_type = "SL", scale = scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
@@ -534,7 +535,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 est_predictiveness_cv,
                 args = c(list(fitted_values = fhat_red,
                               y = Y_cc, full_y = Y_cc, folds = cross_fitting_folds_cc,
-                              type = full_type, C = C, Z = Z_in,
+                              type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_redu,
                               ipc_weights = ipc_weights,
                               ipc_fit_type = "SL", scale = scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
