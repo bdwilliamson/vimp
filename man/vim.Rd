@@ -107,7 +107,7 @@ Only used if \code{C} is not all equal to 1.}
 Defaults to \code{TRUE}.}
 
 \item{bootstrap}{should bootstrap-based standard error estimates be computed?
-Defaults to \code{FALSE} (and currently may only be used if 
+Defaults to \code{FALSE} (and currently may only be used if
 \code{sample_splitting = FALSE}).}
 
 \item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}

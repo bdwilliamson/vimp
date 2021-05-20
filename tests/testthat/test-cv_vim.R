@@ -82,6 +82,14 @@ reduced_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = reduced_cv_fit, sample_splitting = TRUE, 
   sample_splitting_folds = sample_splitting_folds, full = FALSE
 )
+fhat_ful_lst <- extract_sampled_split_predictions(
+  cvsl_obj = full_cv_fit, sample_splitting = FALSE, 
+  sample_splitting_folds = rep(1, 4), full = TRUE
+)
+fhat_red_lst <- extract_sampled_split_predictions(
+  cvsl_obj = reduced_cv_fit, sample_splitting = FALSE, 
+  sample_splitting_folds = rep(2, 4), full = FALSE
+)
 set.seed(5678)
 # refit on the whole dataset (for estimating the efficient influence function)
 full_fit <- SuperLearner::SuperLearner(
@@ -95,11 +103,34 @@ reduced_fit <- SuperLearner::SuperLearner(
 fhat_red <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 test_that("Cross-validated variable importance using externally-computed regressions works", {
   est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 
+                cross_fitted_f2 = reduced_cv_preds, f1 = fhat_ful_lst,
+                f2 = fhat_red_lst, indx = 2, delta = 0, V = V, type = "r_squared", 
+                cross_fitting_folds = cross_fitting_folds, 
+                sample_splitting_folds = sample_splitting_folds,
+                run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
+  # check variable importance estimate
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+  # check full predictiveness estimate
+  expect_equal(est$predictiveness_full, 0.44, tolerance = 0.1, scale = 1)
+  # check that the SE, CI work
+  expect_length(est$ci, 2)
+  expect_length(est$se, 1)
+  # check that the p-value worked
+  expect_length(est$p_value, 1)
+  expect_true(est$test)
+  # check that printing, plotting, etc. work
+  expect_silent(format(est)[1])
+  expect_output(print(est), "Estimate", fixed = TRUE)
+  # check that influence curve worked
+  expect_length(est$eif, length(y))
+})
+test_that("Cross-validated variable importance using externally-computed regressions and non-cross-fitted SEs works", {
+  est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 
                 cross_fitted_f2 = reduced_cv_preds, f1 = fhat_ful,
                 f2 = fhat_red, indx = 2, delta = 0, V = V, type = "r_squared", 
                 cross_fitting_folds = cross_fitting_folds, 
                 sample_splitting_folds = sample_splitting_folds,
-                run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
+                run_regression = FALSE, alpha = 0.05, na.rm = TRUE, cross_fitted_se = FALSE)
   # check variable importance estimate
   expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
   # check full predictiveness estimate

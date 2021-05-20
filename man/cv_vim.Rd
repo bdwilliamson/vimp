@@ -29,6 +29,7 @@ cv_vim(
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
   scale_est = TRUE,
+  cross_fitted_se = TRUE,
   bootstrap = FALSE,
   b = 1000,
   ...
@@ -53,11 +54,13 @@ validation data. If sample-splitting is requested, then these must
 be estimated specially; see Details.}
 
 \item{f1}{the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset.}
+regressing Y on X. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+then this argument is not used.}
 
 \item{f2}{the fitted values from a flexible estimation technique
 regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-\code{indx}. Estimated using the whole dataset.}
+\code{indx}. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+then this argument is not used.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance
 for; defaults to 1.}
@@ -125,6 +128,9 @@ Only used if \code{C} is not all equal to 1.}
 
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
+
+\item{cross_fitted_se}{should we use cross-fitting to estimate the standard
+errors (\code{TRUE}, the default) or not (\code{FALSE})?}
 
 \item{bootstrap}{should bootstrap-based standard error estimates be computed?
 Defaults to \code{FALSE} (and currently may only be used if 
