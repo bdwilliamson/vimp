@@ -3,6 +3,7 @@
 S3method(format,vim)
 S3method(print,vim)
 export(average_vim)
+export(bootstrap_se)
 export(check_fitted_values)
 export(check_inputs)
 export(create_z)

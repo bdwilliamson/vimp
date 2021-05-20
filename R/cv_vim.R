@@ -72,6 +72,11 @@
 #'   Only used if \code{C} is not all equal to 1.
 #' @param scale_est should the point estimate be scaled to be greater than 0?
 #'   Defaults to \code{TRUE}.
+#' @param bootstrap should bootstrap-based standard error estimates be computed?
+#'   Defaults to \code{FALSE} (and currently may only be used if 
+#'   \code{sample_splitting = FALSE}).
+#' @param b the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
+#'   and \code{sample_splitting = FALSE}).
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
@@ -240,7 +245,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    alpha = 0.05, delta = 0, scale = "identity",
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL,
                    ipc_weights = rep(1, length(Y)),
-                   ipc_est_type = "aipw", scale_est = TRUE, ...) {
+                   ipc_est_type = "aipw", scale_est = TRUE, bootstrap = FALSE,
+                   b = 1000, ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -480,7 +486,12 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         eif_redu <- rep(NA, sum(cross_fitting_folds_cc == 2))
         se_full <- NA
         se_redu <- NA
-        se <- vimp_se(eif = eif, na.rm = na.rm)
+        if (bootstrap) {
+            se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red, 
+                               type = full_type, b = b)$se
+        } else {
+            se <- vimp_se(eif = eif, na.rm = na.rm)
+        }
     } else {
         if (sample_splitting) {
             # make new sets of folds, as if we had done V-fold within the two sets
@@ -557,13 +568,31 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         se_redu <- vimp_se(eif = eif_redu, na.rm = na.rm)
         est <- predictiveness_full - predictiveness_redu
         naive <- NA
-        se <- sqrt(
-            se_full ^ 2 * length(eif_full) / sum(full_test) +
-                se_redu ^ 2 * length(eif_redu) / sum(redu_test)
-        )
+        if (bootstrap & !sample_splitting) {
+            ses <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red, type = full_type,
+                                b = b)
+            se <- ses$se
+            se_full <- ses$se_full
+            se_redu <- ses$se_reduced
+        } else if (bootstrap) {
+            se <- sqrt(
+                se_full ^ 2 * length(eif_full) / sum(full_test) +
+                    se_redu ^ 2 * length(eif_redu) / sum(redu_test)
+            )
+        } else {
+            se <- sqrt(
+                se_full ^ 2 * length(eif_full) / sum(full_test) +
+                    se_redu ^ 2 * length(eif_redu) / sum(redu_test)
+            )
+        }
     }
-    var_full <- se_full ^ 2 * length(eif_full)
-    var_redu <- se_redu ^ 2 * length(eif_redu)
+    if (!bootstrap) {
+        var_full <- se_full ^ 2 * length(eif_full)
+        var_redu <- se_redu ^ 2 * length(eif_redu)    
+    } else {
+        var_full <- se_full ^ 2
+        var_redu <- se_redu ^ 2
+    }
 
     # if est < 0, set to zero and print warning
     if (est < 0 && !is.na(est) & scale_est) {

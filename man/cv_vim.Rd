@@ -29,6 +29,8 @@ cv_vim(
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
   scale_est = TRUE,
+  bootstrap = FALSE,
+  b = 1000,
   ...
 )
 }
@@ -123,6 +125,13 @@ Only used if \code{C} is not all equal to 1.}
 
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
+
+\item{bootstrap}{should bootstrap-based standard error estimates be computed?
+Defaults to \code{FALSE} (and currently may only be used if 
+\code{sample_splitting = FALSE}).}
+
+\item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
+and \code{sample_splitting = FALSE}).}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

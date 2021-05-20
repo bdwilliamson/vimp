@@ -33,7 +33,8 @@ Imports:
     ROCR,
     tibble,
     rlang,
-    MASS
+    MASS,
+    boot
 Suggests:
     knitr,
     rmarkdown,
