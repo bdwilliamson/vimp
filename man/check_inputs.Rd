@@ -11,16 +11,16 @@ check_inputs(Y, X, f1, f2, indx)
 
 \item{X}{the covariates}
 
-\item{f1}{estimator of the population-optimal prediction function 
+\item{f1}{estimator of the population-optimal prediction function
 using all covariates}
 
-\item{f2}{estimator of the population-optimal prediction function 
+\item{f2}{estimator of the population-optimal prediction function
 using the reduced set of covariates}
 
 \item{indx}{the index or indices of the covariate(s) of interest}
 }
 \value{
-None. Called for the side effect of stopping the algorithm if 
+None. Called for the side effect of stopping the algorithm if
   any inputs are in an unexpected format.
 }
 \description{

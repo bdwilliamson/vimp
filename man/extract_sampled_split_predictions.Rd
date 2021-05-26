@@ -14,7 +14,7 @@ extract_sampled_split_predictions(
 \arguments{
 \item{cvsl_obj}{An object of class \code{"CV.SuperLearner"}}
 
-\item{sample_splitting}{logical; should we use sample-splitting or not? 
+\item{sample_splitting}{logical; should we use sample-splitting or not?
 Defaults to \code{TRUE}.}
 
 \item{sample_splitting_folds}{A vector of folds to use for sample splitting}
@@ -23,7 +23,7 @@ Defaults to \code{TRUE}.}
 (\code{FALSE})?}
 }
 \value{
-The predictions on validation data in each split-sample fold; a 
+The predictions on validation data in each split-sample fold; a
   list of length two, each element of which is a list with the predictions
   on the split-sample cross-validation data.
 }
@@ -35,6 +35,6 @@ and want to use the fitted values to compute variable importance without having
 to re-fit. The number of folds used in the CV.SuperLearner must be even.
 }
 \seealso{
-\code{\link[SuperLearner]{CV.SuperLearner}} for usage of the 
+\code{\link[SuperLearner]{CV.SuperLearner}} for usage of the
   \code{CV.SuperLearner} function.
 }

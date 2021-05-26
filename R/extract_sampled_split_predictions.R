@@ -1,25 +1,25 @@
 #' Extract sampled-split predictions from a CV.SuperLearner object
-#' 
+#'
 #' Use the cross-validated Super Learner and a set of specified sample-splitting
 #' folds to extract cross-fitted predictions on separate splits of the data. This
 #' is primarily for use in cases where you have already fit a CV.SuperLearner
 #' and want to use the fitted values to compute variable importance without having
 #' to re-fit. The number of folds used in the CV.SuperLearner must be even.
-#' 
+#'
 #' @param cvsl_obj An object of class \code{"CV.SuperLearner"}
-#' @param sample_splitting logical; should we use sample-splitting or not? 
+#' @param sample_splitting logical; should we use sample-splitting or not?
 #'   Defaults to \code{TRUE}.
 #' @param sample_splitting_folds A vector of folds to use for sample splitting
 #' @param full logical; is this the fit to all covariates (\code{TRUE}) or not
 #'   (\code{FALSE})?
-#' 
-#' @seealso \code{\link[SuperLearner]{CV.SuperLearner}} for usage of the 
+#'
+#' @seealso \code{\link[SuperLearner]{CV.SuperLearner}} for usage of the
 #'   \code{CV.SuperLearner} function.
-#' @return The predictions on validation data in each split-sample fold; a 
+#' @return The predictions on validation data in each split-sample fold; a
 #'   list of length two, each element of which is a list with the predictions
 #'   on the split-sample cross-validation data.
 #' @export
-extract_sampled_split_predictions <- function(cvsl_obj = NULL, 
+extract_sampled_split_predictions <- function(cvsl_obj = NULL,
                                               sample_splitting = TRUE,
                                               sample_splitting_folds = NULL,
                                               full = TRUE) {
@@ -35,7 +35,7 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
   unique_cf_folds <- unique(cross_fitting_folds)
   if (sample_splitting) {
     # use V / 2 for inner cross-fitting within cv_vim
-    V <- length(unique(cross_fitting_folds)) / 2  
+    V <- length(unique(cross_fitting_folds)) / 2
   } else {
     V <- length(unique(cross_fitting_folds))
   }
@@ -49,18 +49,19 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
 }
 
 #' Get a numeric vector with cross-validation fold IDs from CV.SuperLearner
-#' 
+#'
 #' @param cv_sl_folds The folds from a call to \code{CV.SuperLearner}; a list.
-#' 
+#'
+#' @importFrom data.table rbindlist
 #' @return A numeric vector with the fold IDs.
 #' @export
 get_cv_sl_folds <- function(cv_sl_folds) {
-  folds_with_row_nums <- sapply(1:length(cv_sl_folds), 
-                                function(x) 
+  folds_with_row_nums <- sapply(1:length(cv_sl_folds),
+                                function(x)
                                   list(
-                                    row_nums = cv_sl_folds[[x]], 
+                                    row_nums = cv_sl_folds[[x]],
                                     fold = rep(x, length(cv_sl_folds[[x]]))
-                                  ), 
+                                  ),
                                 simplify = FALSE
   )
   folds_df <- data.table::rbindlist(folds_with_row_nums)

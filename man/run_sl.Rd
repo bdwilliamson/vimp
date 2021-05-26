@@ -31,14 +31,17 @@ run_sl(
 
 \item{SL.library}{the library of candidate learners}
 
+\item{univariate_SL.library}{the library of candidate learners for
+single-covariate regressions}
+
 \item{s}{the subset of interest}
 
 \item{cv_folds}{the CV folds}
 
-\item{sample_splitting}{logical; should we use sample-splitting for 
+\item{sample_splitting}{logical; should we use sample-splitting for
 predictiveness estimation?}
 
-\item{ss_folds}{the sample-splitting folds; only used if 
+\item{ss_folds}{the sample-splitting folds; only used if
 \code{sample_splitting = TRUE}}
 
 \item{verbose}{should we print progress? defaults to FALSE}
@@ -49,7 +52,7 @@ predictiveness estimation?}
 
 \item{weights}{weights to pass to estimation procedure}
 
-\item{cross_fitted_se}{if \code{TRUE}, uses a cross-fitted estimator of 
+\item{cross_fitted_se}{if \code{TRUE}, uses a cross-fitted estimator of
 the standard error; otherwise, uses the entire dataset}
 
 \item{...}{other arguments to Super Learner}

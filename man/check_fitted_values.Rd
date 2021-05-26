@@ -20,19 +20,19 @@ check_fitted_values(
 \arguments{
 \item{Y}{the outcome}
 
-\item{f1}{estimator of the population-optimal prediction function 
+\item{f1}{estimator of the population-optimal prediction function
 using all covariates}
 
-\item{f2}{estimator of the population-optimal prediction function 
+\item{f2}{estimator of the population-optimal prediction function
 using the reduced set of covariates}
 
-\item{cross_fitted_f1}{cross-fitted estimator of the population-optimal 
+\item{cross_fitted_f1}{cross-fitted estimator of the population-optimal
 prediction function using all covariates}
 
-\item{cross_fitted_f2}{cross-fitted estimator of the population-optimal 
+\item{cross_fitted_f2}{cross-fitted estimator of the population-optimal
 prediction function using the reduced set of covariates}
 
-\item{sample_splitting_folds}{the folds for sample-splitting (used for 
+\item{sample_splitting_folds}{the folds for sample-splitting (used for
 hypothesis testing)}
 
 \item{cross_fitting_folds}{the folds for cross-fitting (used for point
@@ -43,11 +43,9 @@ estimates of variable importance in \code{cv_vim} and \code{sp_vim})}
 \item{ss_V}{the number of folds for CV (if sample_splitting is TRUE)}
 
 \item{cv}{a logical flag indicating whether or not to use cross-fitting}
-
-\item{X}{the covariates}
 }
 \value{
-None. Called for the side effect of stopping the algorithm if 
+None. Called for the side effect of stopping the algorithm if
   any inputs are in an unexpected format.
 }
 \description{
