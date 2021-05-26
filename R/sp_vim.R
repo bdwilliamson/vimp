@@ -1,7 +1,7 @@
 #' Shapley Population Variable Importance Measure (SPVIM) Estimates and Inference
 #'
 #' Compute estimates and confidence intervals for the SPVIMs, using cross-fitting.
-#' 
+#'
 #' @inheritParams cv_vim
 #' @param univariate_SL.library (optional) a character vector of learners to
 #'   pass to \code{SuperLearner} for estimating univariate regression functions.
@@ -29,7 +29,7 @@
 #' See the paper by Williamson and Feng (2020) for more
 #' details on the mathematics behind this function, and the validity
 #' of the confidence intervals.
-#' 
+#'
 #' In the interest of transparency, we return most of the calculations
 #' within the \code{vim} object. This results in a list containing:
 #' \describe{
@@ -92,7 +92,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    gamma = 1, alpha = 0.05, delta = 0, na.rm = FALSE,
                    stratified = FALSE, verbose = FALSE, sample_splitting = TRUE,
                    C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
-                   ipc_est_type = "aipw", scale = "identity", scale_est = TRUE, 
+                   ipc_est_type = "aipw", scale = "identity", scale_est = TRUE,
                    cross_fitted_se = TRUE, ...) {
     # if the data is missing, stop and throw an error
     if (is.null(Y)) stop("You must enter an outcome, Y.")
@@ -163,8 +163,9 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
             stats::binomial()
         )
     }
-    if (is.null(arg_lst$innerCvControl)) {
-        arg_lst$innerCvControl <- rep(list(list(V = V)), ss_V)
+    arg_lst_cv <- arg_lst
+    if (is.null(arg_lst_cv$innerCvControl)) {
+        arg_lst_cv$innerCvControl <- rep(list(list(V = V)), ss_V)
     }
 
     # get v, preds, ic for null set
@@ -210,9 +211,9 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     ics_none <- do.call(
         est_predictiveness_cv,
         args = c(list(
-            fitted_values = fitted_none, y = Y_cc, full_y = Y_cc, 
+            fitted_values = fitted_none, y = Y_cc, full_y = Y_cc,
             folds = cross_fitting_folds_cc,
-            C = C, Z = Z_in, folds_Z = cross_fitting_folds, 
+            C = C, Z = Z_in, folds_Z = cross_fitting_folds,
             ipc_weights = ipc_weights, ipc_fit_type = "SL",
             na.rm = na.rm, SL.library = SL.library), arg_lst
         ), quote = TRUE
@@ -235,7 +236,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  ss_folds = sample_splitting_folds, verbose = verbose,
                  progress_bar = progress_bar, indx = i,
                  weights = weights_cc),
-            arg_lst
+            arg_lst_cv
         ))}, simplify = FALSE
     )
     if (verbose) {
@@ -269,7 +270,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                     args = c(
                         list(fitted_values = l$fitted,
                              y = Y_cc, full_y = Y_cc, folds = cross_fitting_folds_cc,
-                             C = C, Z = Z_in, folds_Z = cross_fitting_folds, 
+                             C = C, Z = Z_in, folds_Z = cross_fitting_folds,
                              ipc_weights = ipc_weights,
                              type = full_type, ipc_fit_type = "SL", scale = scale,
                              ipc_est_type = ipc_est_type, na.rm = na.rm,
@@ -296,7 +297,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                         arg_lst
                     ), quote = TRUE
                 )$eif
-        )    
+        )
     }
     v <- matrix(c(v_none, unlist(v_lst)))
     # do constrained wls
@@ -326,7 +327,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     if (cross_fitted_se) {
         all_ics_lst <- c(list(ics_none), ics_lst)
         ics <- lapply(as.list(seq_len(ss_V)), function(l) {
-            spvim_ics(Z, z_counts, W, v, est, G, c_n, lapply(all_ics_lst, function(v) v[[l]]), 
+            spvim_ics(Z, z_counts, W, v, est, G, c_n, lapply(all_ics_lst, function(v) v[[l]]),
                       full_type)
         })
         for (j in 1:(ncol(X) + 1)) {
@@ -339,7 +340,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         n_for_v <- min(unlist(lapply(ics, function(l) ncol(l$contrib_v))))
     } else {
         all_ics_lst <- c(list(ic_none), ic_lst)
-        ics <- spvim_ics(Z, z_counts, W, v, est, G, c_n, all_ics_lst, full_type) 
+        ics <- spvim_ics(Z, z_counts, W, v, est, G, c_n, all_ics_lst, full_type)
         for (j in 1:(ncol(X) + 1)) {
             ses_res <- spvim_se(ics, j, gamma = gamma, na_rm = na.rm)
             ses[j] <- ses_res$se
@@ -348,7 +349,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         }
         n_for_v <- ncol(ics)
     }
-    
+
     # if est < 0, set to zero and print warning
     if (any(est < 0) & scale_est) {
         est[est < 0] <- 0
@@ -398,13 +399,13 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         sqrt(length(cross_fitting_folds_cc) / 2)
     # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
-    ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) / 
-                        (length(cross_fitting_folds_cc) / 2) + 
+    ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) /
+                        (length(cross_fitting_folds_cc) / 2) +
                         se_none_0 ^ 2)
     test_statistics <- unlist(lapply(
         as.list(2:length(est)),
         function(j, ests, ses, est_0, se_0, delta) {
-            var_j <- (var_v_contribs[j] * n_for_v + var_s_contribs[j]) / 
+            var_j <- (var_v_contribs[j] * n_for_v + var_s_contribs[j]) /
                 (length(cross_fitting_folds_cc) / 2)
             (ests[j] - est_0 - delta) / sqrt(var_j + se_0 ^ 2)
         }, ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0,
