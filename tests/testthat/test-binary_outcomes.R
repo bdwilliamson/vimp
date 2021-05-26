@@ -44,28 +44,28 @@ V <- 2
 
 # fit the data with all covariates
 set.seed(5678)
-full_fit <- SuperLearner::SuperLearner(Y = y, X = x, 
-                                       SL.library = learners, 
+full_fit <- SuperLearner::SuperLearner(Y = y, X = x,
+                                       SL.library = learners,
                                        family = "binomial",
                                        cvControl = list(V = V))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 
 # fit the data with only X1
-reduced_fit <- SuperLearner::SuperLearner(Y = y, X = x[, -indx, drop = FALSE], 
-                                          SL.library = learners, 
-                                          family = "binomial", 
+reduced_fit <- SuperLearner::SuperLearner(Y = y, X = x[, -indx, drop = FALSE],
+                                          SL.library = learners,
+                                          family = "binomial",
                                           cvControl = list(V = V))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 
 set.seed(1234)
-est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE, 
-                     SL.library = learners, indx = 1, V = V, 
+est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE,
+                     SL.library = learners, indx = 1, V = V,
                      family = "binomial", env = environment())
 test_that("Accuracy-based variable importance works", {
   expect_equal(est$est, t_acc[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, 
-                   f2 = reduced_fitted, run_regression = FALSE, 
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted,
+                   f2 = reduced_fitted, run_regression = FALSE,
                    indx = 1, type = "accuracy", sample_splitting_folds = folds)
   expect_equal(est_noncv$est, t_acc[1], tolerance = 0.1, scale = 1)
 })
@@ -73,15 +73,15 @@ test_that("Accuracy-based variable importance works", {
 test_that("AUC-based variable importance works", {
   est <- vimp_auc(Y = y, X = x, cross_fitted_f1 = est$full_fit_lst,
                   cross_fitted_f2 = est$red_fit_lst,
-                  f1 = est$full_fit, f2 = est$red_fit, 
-                  cross_fitting_folds = est$cross_fitting_folds, 
-                  sample_splitting_folds = est$sample_splitting_folds, 
+                  f1 = est$full_fit, f2 = est$red_fit,
+                  cross_fitting_folds = est$cross_fitting_folds,
+                  sample_splitting_folds = est$sample_splitting_folds,
                   run_regression = FALSE, indx = 1, V = V,
                   env = environment())
   expect_equal(est$est, t_auc[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, 
-                   run_regression = FALSE, indx = 1, type = "auc", 
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted,
+                   run_regression = FALSE, indx = 1, type = "auc",
                    sample_splitting_folds = folds)
   expect_equal(est_noncv$est, t_auc[1], tolerance = 0.1, scale = 1)
 })
@@ -89,31 +89,31 @@ test_that("AUC-based variable importance works", {
 test_that("Deviance-based variable importance works", {
   est <- vimp_deviance(Y = y, X = x, cross_fitted_f1 = est$full_fit_lst,
                        cross_fitted_f2 = est$red_fit_lst,
-                       f1 = est$full_fit, f2 = est$red_fit, 
-                       cross_fitting_folds = est$cross_fitting_folds, 
-                       sample_splitting_folds = est$sample_splitting_folds, 
-                       run_regression = FALSE, indx = 1, 
+                       f1 = est$full_fit, f2 = est$red_fit,
+                       cross_fitting_folds = est$cross_fitting_folds,
+                       sample_splitting_folds = est$sample_splitting_folds,
+                       run_regression = FALSE, indx = 1,
                        V = V, env = environment())
   expect_equal(est$est, t_dev[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted, 
-                   run_regression = FALSE, indx = 1, type = "deviance", 
+  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted,
+                   run_regression = FALSE, indx = 1, type = "deviance",
                    sample_splitting_folds = folds)
   expect_equal(est_noncv$est, t_dev[1], tolerance = 0.1, scale = 1)
 })
 
 test_that("Measures of predictiveness work", {
- auc_lst <- est_predictiveness(full_fitted, y, 
+ auc_lst <- est_predictiveness(full_fitted, y,
                                 type = "auc")
  full_auc <- auc_lst$point_est
  expect_equal(full_auc, 0.96, tolerance = 0.1, scale = 1)
- full_acc <- est_predictiveness(full_fitted, y, 
+ full_acc <- est_predictiveness(full_fitted, y,
                                 type = "accuracy")$point_est
  expect_equal(full_acc, 0.9, tolerance = 0.1, scale = 1)
  full_dev <- est_predictiveness(full_fitted, y,
                                 type = "deviance")$point_est
  expect_equal(full_dev, 0.63, tolerance = 0.1, scale = 1)
- full_ce <- est_predictiveness(full_fitted, y, 
+ full_ce <- est_predictiveness(full_fitted, y,
                                type = "cross_entropy")$point_est
  expect_equal(full_ce, -0.24, tolerance = 0.1, scale = 1)
 })
@@ -129,15 +129,15 @@ full_cv_preds <- extract_sampled_split_predictions(
 )
 cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 test_that("vimp and cvAUC agree", {
-  auc_lst <- est_predictiveness_cv(fitted_values = full_cv_preds, y = y, 
-                                   full_y = y, folds = cross_fitting_folds, 
+  auc_lst <- est_predictiveness_cv(fitted_values = full_cv_preds, y = y,
+                                   full_y = y, folds = cross_fitting_folds,
                                    type = "auc")
   full_auc <- auc_lst$point_est
-  cvauc_var <- mean(unlist(lapply(auc_lst$all_eifs, 
-                                  function(x) mean(x ^ 2))))
+  cvauc_var <- mean(unlist(lapply(auc_lst$all_eifs,
+                                  function(x) mean((x - mean(x)) ^ 2))))
   cvauc_se <- sqrt(cvauc_var / length(y))
   auc_ci <- vimp_ci(full_auc, cvauc_se)
-  cvauc_lst <- cvAUC::ci.cvAUC(predictions = full_cv_fit$SL.predict, 
+  cvauc_lst <- cvAUC::ci.cvAUC(predictions = full_cv_fit$SL.predict,
                                labels = y,
                                folds = full_cv_fit$folds)
   expect_equal(full_auc, cvauc_lst$cvAUC, tolerance = 1e-20, scale = 1)
