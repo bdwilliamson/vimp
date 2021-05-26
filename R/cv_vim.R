@@ -77,7 +77,7 @@
 #' @param cross_fitted_se should we use cross-fitting to estimate the standard
 #'   errors (\code{TRUE}, the default) or not (\code{FALSE})?
 #' @param bootstrap should bootstrap-based standard error estimates be computed?
-#'   Defaults to \code{FALSE} (and currently may only be used if 
+#'   Defaults to \code{FALSE} (and currently may only be used if
 #'   \code{sample_splitting = FALSE} and \code{cross_fitted_se = FALSE}).
 #' @param b the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
 #'   and \code{sample_splitting = FALSE}).
@@ -211,10 +211,10 @@
 #' set.seed(1234)
 #' sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 #' full_cv_preds <- extract_sampled_split_predictions(
-#'     full_cv_fit, sample_splitting_folds, full = TRUE
+#'     full_cv_fit, sample_splitting_folds = sample_splitting_folds, full = TRUE
 #' )
 #' reduced_cv_preds <- extract_sampled_split_predictions(
-#'     reduced_cv_fit, sample_splitting_folds, full = FALSE
+#'     reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE
 #' )
 #' set.seed(5678)
 #' # refit on the whole dataset
@@ -249,33 +249,33 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    alpha = 0.05, delta = 0, scale = "identity",
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL,
                    ipc_weights = rep(1, length(Y)),
-                   ipc_est_type = "aipw", scale_est = TRUE, 
+                   ipc_est_type = "aipw", scale_est = TRUE,
                    cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000, ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
-    
+
     if (sample_splitting) {
         ss_V <- V * 2
     } else {
         ss_V <- V
     }
-    
+
     # check to see if Y is a matrix or data.frame; if not, make it one
     # (just for ease of reading)
     if (is.null(dim(Y))) {
         Y <- as.matrix(Y)
     }
-    
+
     # set up internal data -- based on complete cases only
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
-    
+
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
-    
+
     # get sample-splitting folds (if null and/or run_regression = TRUE)
     if (is.null(sample_splitting_folds) | run_regression) {
         if (is.null(cross_fitting_folds) & !run_regression) {
@@ -297,7 +297,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             sample_splitting_folds <- rep(1, ss_V)
         }
     }
-    
+
     # if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
         arg_lst <- list(...)
@@ -332,7 +332,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         arg_lst_redu_cv <- c(arg_lst_cv, list(
             Y = Y_cc, X = X_minus_s, SL.library = SL.library, obsWeights = weights_cc
         ))
-        # special handling required for r-squared and anova 
+        # special handling required for r-squared and anova
         if (full_type == "r_squared" | full_type == "anova") {
             arg_lst_redu_cv$family <- gaussian()
             if (any(grepl("cvControl", names(arg_lst_redu_cv)))) {
@@ -343,13 +343,13 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         if (ncol(X_minus_s) == 0) {
             redu_cv_sl <- NA
         } else {
-            redu_cv_sl <- do.call(SuperLearner::CV.SuperLearner, arg_lst_redu_cv)    
+            redu_cv_sl <- do.call(SuperLearner::CV.SuperLearner, arg_lst_redu_cv)
         }
         # get a list of the predictions on the appropriate sampled-split folds,
         # for VIM estimation
         fhat_ful_lst <- extract_sampled_split_predictions(
             cvsl_obj = full_cv_sl, sample_splitting = sample_splitting, full = TRUE,
-            sample_splitting_folds = switch((sample_splitting) + 1, 
+            sample_splitting_folds = switch((sample_splitting) + 1,
                                             rep(1, ss_V),
                                             sample_splitting_folds)
         )
@@ -358,10 +358,10 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         } else {
             fhat_red_lst <- extract_sampled_split_predictions(
                 cvsl_obj = redu_cv_sl, sample_splitting = sample_splitting, full = FALSE,
-                sample_splitting_folds = switch((sample_splitting) + 1, 
+                sample_splitting_folds = switch((sample_splitting) + 1,
                                                 rep(2, ss_V),
                                                 sample_splitting_folds)
-            )   
+            )
         }
         # if cross-fitted SEs are requested, get the appropriate list of predictions;
         # otherwise, refit
@@ -377,7 +377,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 fhat_red <- extract_sampled_split_predictions(
                     cvsl_obj = redu_cv_sl, sample_splitting = FALSE,
                     sample_splitting_folds = rep(2, ss_V), full = FALSE
-                )    
+                )
             }
             reduced <- NA
         } else {
@@ -415,16 +415,16 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,
                             cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2,
                             sample_splitting_folds = sample_splitting_folds,
-                            cross_fitting_folds = cross_fitting_folds, V = V, 
+                            cross_fitting_folds = cross_fitting_folds, V = V,
                             ss_V = ss_V, cv = TRUE)
         # set up the fitted value objects (both are lists!)
         fhat_ful_lst <- cross_fitted_f1
         fhat_red_lst <- cross_fitted_f2
-        # the fits to the full dataset (for SEs); 
+        # the fits to the full dataset (for SEs);
         # a list, if cross-fitted SEs are requested
         fhat_ful <- f1
         fhat_red <- f2
-        
+
         full <- reduced <- NA
         cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
     }
@@ -492,7 +492,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             eif <- measure_anova(
                 full = fhat_ful, reduced = fhat_red,
                 y = Y_cc, full_y = Y_cc,
-                C = C, Z = Z_in, 
+                C = C, Z = Z_in,
                 ipc_weights = ipc_weights,
                 ipc_fit_type = "SL", na.rm = na.rm,
                 SL.library = SL.library, arg_lst
@@ -506,9 +506,9 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         se_full <- NA
         se_redu <- NA
         if (bootstrap) {
-            se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red, 
+            se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red,
                                type = full_type, b = b)$se
-        } 
+        }
     } else {
         if (sample_splitting) {
             # make new sets of folds, as if we had done V-fold within the two sets
@@ -599,7 +599,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             eif_redu <- do.call(
                 est_predictiveness,
                 args = c(list(fitted_values = fhat_red,
-                              y = Y_cc, full_y = Y_cc, type = full_type, C = C, 
+                              y = Y_cc, full_y = Y_cc, type = full_type, C = C,
                               Z = Z_in, ipc_weights = ipc_weights,
                               ipc_fit_type = "SL", scale = scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
@@ -632,7 +632,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     } else if (is.na(est)) {
         warning("Original estimate NA; consider using a different library of learners.")
     }
-    
+
     # calculate the confidence interval
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
     predictiveness_ci_full <- vimp_ci(
@@ -641,7 +641,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     predictiveness_ci_redu <- vimp_ci(
         predictiveness_redu, se = se_redu, scale = scale, level = 1 - alpha
     )
-    
+
     # perform a hypothesis test against the null of zero importance
     if (full_type == "anova" || full_type == "regression") {
         hyp_test <- list(test = NA, p_value = NA, test_statistics = NA)
@@ -649,12 +649,12 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         hyp_test <- vimp_hypothesis_test(
             predictiveness_full = predictiveness_full,
             predictiveness_reduced = predictiveness_redu,
-            se_full = sqrt(var_full / sum(full_test)), 
+            se_full = sqrt(var_full / sum(full_test)),
             se_reduced = sqrt(var_redu / sum(redu_test)),
             delta = delta, alpha = alpha
         )
     }
-    
+
     # create the output and return it (as a tibble)
     chr_indx <- paste(as.character(indx), collapse = ",")
     mat <- tibble::tibble(
@@ -687,7 +687,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    ipc_weights = ipc_weights,
                    scale = scale,
                    mat = mat)
-    
+
     # make it also a vim and vim_type object
     tmp.cls <- class(output)
     class(output) <- c("vim", full_type, tmp.cls)
