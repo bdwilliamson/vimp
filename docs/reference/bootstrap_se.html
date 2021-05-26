@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Run a Super Learner for the provided subset of features — run_sl • vimp</title>
+<title>Compute bootstrap-based standard error estimates for variable importance — bootstrap_se • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Run a Super Learner for the provided subset of features — run_sl" />
-<meta property="og:description" content="Run a Super Learner for the provided subset of features" />
+<meta property="og:title" content="Compute bootstrap-based standard error estimates for variable importance — bootstrap_se" />
+<meta property="og:description" content="Compute bootstrap-based standard error estimates for variable importance" />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -137,100 +137,50 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Run a Super Learner for the provided subset of features</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
-    <div class="hidden name"><code>run_sl.Rd</code></div>
+    <h1>Compute bootstrap-based standard error estimates for variable importance</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/bootstrap_se.R'><code>R/bootstrap_se.R</code></a></small>
+    <div class="hidden name"><code>bootstrap_se.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Run a Super Learner for the provided subset of features</p>
+    <p>Compute bootstrap-based standard error estimates for variable importance</p>
     </div>
 
-    <pre class="usage"><span class='fu'>run_sl</span>(
-  <span class='kw'>Y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>X</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='st'>"SL.glm"</span>,
-  <span class='kw'>univariate_SL.library</span> <span class='kw'>=</span> <span class='st'>"SL.glm"</span>,
-  <span class='kw'>s</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>sample_splitting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>ss_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>progress_bar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>X</span>)),
-  <span class='kw'>cross_fitted_se</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>bootstrap_se</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>f1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>f2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>, <span class='kw'>b</span> <span class='kw'>=</span> <span class='fl'>1000</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>Y</th>
-      <td><p>the outcome</p></td>
+      <td><p>the outcome.</p></td>
     </tr>
     <tr>
-      <th>X</th>
-      <td><p>the covariates</p></td>
+      <th>f1</th>
+      <td><p>the fitted values from a flexible estimation technique
+regressing Y on X.</p></td>
     </tr>
     <tr>
-      <th>V</th>
-      <td><p>the number of folds</p></td>
+      <th>f2</th>
+      <td><p>the fitted values from a flexible estimation technique
+regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
+<code>indx</code>.</p></td>
     </tr>
     <tr>
-      <th>SL.library</th>
-      <td><p>the library of candidate learners</p></td>
+      <th>type</th>
+      <td><p>the type of importance to compute; defaults to
+<code>r_squared</code>, but other supported options are <code>auc</code>,
+<code>accuracy</code>, <code>deviance</code>, and <code>anova</code>.</p></td>
     </tr>
     <tr>
-      <th>s</th>
-      <td><p>the subset of interest</p></td>
-    </tr>
-    <tr>
-      <th>cv_folds</th>
-      <td><p>the CV folds</p></td>
-    </tr>
-    <tr>
-      <th>sample_splitting</th>
-      <td><p>logical; should we use sample-splitting for 
-predictiveness estimation?</p></td>
-    </tr>
-    <tr>
-      <th>ss_folds</th>
-      <td><p>the sample-splitting folds; only used if 
-<code>sample_splitting = TRUE</code></p></td>
-    </tr>
-    <tr>
-      <th>verbose</th>
-      <td><p>should we print progress? defaults to FALSE</p></td>
-    </tr>
-    <tr>
-      <th>progress_bar</th>
-      <td><p>the progress bar to print to (only if verbose = TRUE)</p></td>
-    </tr>
-    <tr>
-      <th>indx</th>
-      <td><p>the index to pass to progress bar (only if verbose = TRUE)</p></td>
-    </tr>
-    <tr>
-      <th>weights</th>
-      <td><p>weights to pass to estimation procedure</p></td>
-    </tr>
-    <tr>
-      <th>cross_fitted_se</th>
-      <td><p>if <code>TRUE</code>, uses a cross-fitted estimator of 
-the standard error; otherwise, uses the entire dataset</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>other arguments to Super Learner</p></td>
+      <th>b</th>
+      <td><p>the number of bootstrap replicates (defaults to 1000)</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a list of length V, with the results of predicting on the hold-out data for each v in 1 through V</p>
+    <p>a bootstrap-based standard error estimate</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

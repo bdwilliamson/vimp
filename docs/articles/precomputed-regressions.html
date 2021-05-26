@@ -99,7 +99,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2021-04-27</h4>
+            <h4 class="date">2021-05-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -159,32 +159,14 @@
 
 <span class="co"># plug the regression function estimates into vim</span>
 <span class="no">lm_vim_sbp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_sbp</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_sbp, indx = 1, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_tob</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_tob</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_tob, indx = 2, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_ldl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_ldl</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_ldl, indx = 3, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_adi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_adi</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_adi, indx = 4, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_fam</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_fam</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_fam, indx = 5, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_tpa</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_tpa</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">6</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_tpa, indx = 6, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_obe</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_obe</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_obe, indx = 7, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_alc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_alc</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_alc, indx = 8, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 <span class="no">lm_vim_age</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">f1</span> <span class="kw">=</span> <span class="no">full_fit</span>, <span class="kw">f2</span> <span class="kw">=</span> <span class="no">red_fit_age</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">9</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">FALSE</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>, <span class="kw">sample_splitting_folds</span> <span class="kw">=</span> <span class="no">heart_folds</span>)
-<span class="co">#&gt; Warning in vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_age, indx = 9, :</span>
-<span class="co">#&gt; Original estimate &lt; 0; returning zero.</span>
 
 <span class="co"># make a table with the estimates using the merge_vim() function</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"dplyr"</span>)
@@ -201,16 +183,16 @@
 <span class="co"># print out the matrix</span>
 <span class="no">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate SE          95% CI           VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 1 0        0.003046761 [0, 0.005971542] FALSE    1.0000000</span>
-<span class="co">#&gt; s = 2 0        0.003000301 [0, 0.005880481] FALSE    1.0000000</span>
-<span class="co">#&gt; s = 3 0        0.003007608 [0, 0.005894804] FALSE    0.9477395</span>
-<span class="co">#&gt; s = 4 0        0.003060152 [0, 0.005997787] FALSE    1.0000000</span>
-<span class="co">#&gt; s = 5 0        0.002973609 [0, 0.005828167] FALSE    1.0000000</span>
-<span class="co">#&gt; s = 6 0        0.003082219 [0, 0.006041039] FALSE    1.0000000</span>
-<span class="co">#&gt; s = 7 0        0.003055596 [0, 0.005988859] FALSE    1.0000000</span>
-<span class="co">#&gt; s = 8 0        0.003053605 [0, 0.005984957] FALSE    1.0000000</span>
-<span class="co">#&gt; s = 9 0        0.003073843 [0, 0.006024621] FALSE    0.9999999</span></pre></body></html></div>
+<span class="co">#&gt;       Estimate   SE         95% CI         VIMP &gt; 0 p-value   </span>
+<span class="co">#&gt; s = 3 0.09592518 0.06464609 [0, 0.2226292] FALSE    0.06892420</span>
+<span class="co">#&gt; s = 9 0.09159697 0.06606975 [0, 0.2210913] FALSE    0.08281731</span>
+<span class="co">#&gt; s = 5 0.08695919 0.06391531 [0, 0.2122309] FALSE    0.08682992</span>
+<span class="co">#&gt; s = 2 0.07460595 0.06448902 [0, 0.2010021] FALSE    0.12366102</span>
+<span class="co">#&gt; s = 6 0.06745312 0.06624980 [0, 0.1973003] FALSE    0.15430016</span>
+<span class="co">#&gt; s = 1 0.06468677 0.06548765 [0, 0.1930402] FALSE    0.16163252</span>
+<span class="co">#&gt; s = 8 0.06427420 0.06563476 [0, 0.1929160] FALSE    0.16372313</span>
+<span class="co">#&gt; s = 7 0.06306742 0.06567755 [0, 0.1917931] FALSE    0.16846259</span>
+<span class="co">#&gt; s = 4 0.06046706 0.06577546 [0, 0.1893846] FALSE    0.17897065</span></pre></body></html></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -252,9 +234,9 @@
 
 <span class="no">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate  SE          95% CI                 VIMP &gt; 0 p-value</span>
-<span class="co">#&gt; s = 6 0.2049797 0.001221279 [0.2025861, 0.2073734] TRUE     0</span></pre></body></html></div>
-<p>This takes approximately 0.394 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
+<span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value</span>
+<span class="co">#&gt; s = 6 0.2599005 0.02635693 [0.2082418, 0.3115591] TRUE     0</span></pre></body></html></div>
+<p>This takes approximately 0.383 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># set up the data, removing the columns for alcohol use and chd</span>
 <span class="no">x</span> <span class="kw">&lt;-</span> <span class="no">heart</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">8</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])]

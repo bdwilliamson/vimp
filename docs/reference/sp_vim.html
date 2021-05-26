@@ -165,6 +165,8 @@
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>ipc_est_type</span> <span class='kw'>=</span> <span class='st'>"aipw"</span>,
   <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
+  <span class='kw'>scale_est</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>cross_fitted_se</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='no'>...</span>
 )</pre>
 
@@ -181,12 +183,13 @@
     </tr>
     <tr>
       <th>V</th>
-      <td><p>the number of folds for cross-fitting, defaults to 10.</p></td>
+      <td><p>the number of folds for cross-fitting, defaults to 5. If
+<code>sample_splitting = TRUE</code>, then a special type of <code>V</code>-fold cross-fitting
+is done. See Details for a more detailed explanation.</p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>the type of parameter (e.g., R-squared-based is <code>"r_squared"</code>).
-Note that <code>type = 'anova'</code> is not allowed for SPVIMs.</p></td>
+      <td><p>the type of parameter (e.g., ANOVA-based is <code>"anova"</code>).</p></td>
     </tr>
     <tr>
       <th>SL.library</th>
@@ -208,8 +211,8 @@ size)</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>the level to compute the confidence interval at.
-Defaults to 0.05, corresponding to a 95% confidence interval.</p></td>
+      <td><p>the level to compute the confidence interval at. Defaults to
+0.05, corresponding to a 95% confidence interval.</p></td>
     </tr>
     <tr>
       <th>delta</th>
@@ -223,8 +226,9 @@ computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
       <th>stratified</th>
-      <td><p>should the generated folds be stratified based on the
-outcome (helps to ensure class balance across cross-fitting folds)?</p></td>
+      <td><p>if run_regression = TRUE, then should the generated folds
+be stratified based on the outcome (helps to ensure class balance across
+cross-fitting folds)</p></td>
     </tr>
     <tr>
       <th>verbose</th>
@@ -265,8 +269,18 @@ Only used if <code>C</code> is not all equal to 1.</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>should CIs be computed on original ("identity") or logit
-("logit") scale?</p></td>
+      <td><p>should CIs be computed on original ("identity", default) or
+logit ("logit") scale?</p></td>
+    </tr>
+    <tr>
+      <th>scale_est</th>
+      <td><p>should the point estimate be scaled to be greater than 0?
+Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitted_se</th>
+      <td><p>should we use cross-fitting to estimate the standard
+errors (<code>TRUE</code>, the default) or not (<code>FALSE</code>)?</p></td>
     </tr>
     <tr>
       <th>...</th>

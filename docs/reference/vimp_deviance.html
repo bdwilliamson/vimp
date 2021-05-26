@@ -47,8 +47,8 @@
 
 
 <meta property="og:title" content="Nonparametric Intrinsic Variable Importance Estimates: Deviance — vimp_deviance" />
-<meta property="og:description" content="Compute estimates of and confidence intervals for nonparametric 
-deviance-based intrinsic variable importance. This is a wrapper function for 
+<meta property="og:description" content="Compute estimates of and confidence intervals for nonparametric
+deviance-based intrinsic variable importance. This is a wrapper function for
 cv_vim, with type = &quot;deviance&quot;." />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
@@ -145,8 +145,8 @@ cv_vim, with type = &quot;deviance&quot;." />
     </div>
 
     <div class="ref-description">
-    <p>Compute estimates of and confidence intervals for nonparametric 
-deviance-based intrinsic variable importance. This is a wrapper function for 
+    <p>Compute estimates of and confidence intervals for nonparametric
+deviance-based intrinsic variable importance. This is a wrapper function for
 <code>cv_vim</code>, with <code>type = "deviance"</code>.</p>
     </div>
 
@@ -172,6 +172,8 @@ deviance-based intrinsic variable importance. This is a wrapper function for
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>scale</span> <span class='kw'>=</span> <span class='st'>"identity"</span>,
   <span class='kw'>ipc_est_type</span> <span class='kw'>=</span> <span class='st'>"aipw"</span>,
+  <span class='kw'>scale_est</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>cross_fitted_se</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='no'>...</span>
 )</pre>
 
@@ -206,13 +208,15 @@ be estimated specially; see Details.</p></td>
     <tr>
       <th>f1</th>
       <td><p>the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset.</p></td>
+regressing Y on X. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>f2</th>
       <td><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>. Estimated using the whole dataset.</p></td>
+<code>indx</code>. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>indx</th>
@@ -221,7 +225,7 @@ for; defaults to 1.</p></td>
     </tr>
     <tr>
       <th>V</th>
-      <td><p>the number of folds for cross-fitting, defaults to 10. If
+      <td><p>the number of folds for cross-fitting, defaults to 5. If
 <code>sample_splitting = TRUE</code>, then a special type of <code>V</code>-fold cross-fitting
 is done. See Details for a more detailed explanation.</p></td>
     </tr>
@@ -291,7 +295,7 @@ already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p><
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>should CIs be computed on original ("identity") or
+      <td><p>should CIs be computed on original ("identity", default) or
 logit ("logit") scale?</p></td>
     </tr>
     <tr>
@@ -302,6 +306,16 @@ settings; options are "ipw" (for inverse probability weighting) or
 Only used if <code>C</code> is not all equal to 1.</p></td>
     </tr>
     <tr>
+      <th>scale_est</th>
+      <td><p>should the point estimate be scaled to be greater than 0?
+Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitted_se</th>
+      <td><p>should we use cross-fitting to estimate the standard
+errors (<code>TRUE</code>, the default) or not (<code>FALSE</code>)?</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>other arguments to the estimation tool, see "See also".</p></td>
     </tr>
@@ -309,7 +323,7 @@ Only used if <code>C</code> is not all equal to 1.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>An object of classes <code>vim</code> and <code>vim_deviance</code>. 
+    <p>An object of classes <code>vim</code> and <code>vim_deviance</code>.
   See Details for more information.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 

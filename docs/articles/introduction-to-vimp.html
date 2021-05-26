@@ -99,7 +99,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2021-04-27</h4>
+            <h4 class="date">2021-05-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/introduction-to-vimp.Rmd"><code>vignettes/introduction-to-vimp.Rmd</code></a></small>
       <div class="hidden name"><code>introduction-to-vimp.Rmd</code></div>
@@ -166,13 +166,13 @@
 <p>uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance for the importance of <span class="math inline">\(X_1\)</span>. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:</p>
 <div class="sourceCode" id="cb7"><html><body><pre class="r"><span class="no">est_1</span></pre></body></html></div>
 <pre><code>## Variable importance estimates:
-##       Estimate   SE           95% CI                  VIMP &gt; 0 p-value     
-## s = 1 0.07953073 0.0005570876 [0.07843886, 0.0806226] TRUE     8.598278e-11</code></pre>
+##       Estimate   SE         95% CI         VIMP &gt; 0 p-value  
+## s = 1 0.01985866 0.04777691 [0, 0.1134997] FALSE    0.3388317</code></pre>
 <div class="sourceCode" id="cb9"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span>(<span class="no">est_1</span>)</pre></body></html></div>
 <pre><code>## Variable importance estimates:
-##       Estimate   SE           95% CI                  VIMP &gt; 0 p-value     
-## s = 1 0.07953073 0.0005570876 [0.07843886, 0.0806226] TRUE     8.598278e-11</code></pre>
-<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.08, with a 95% confidence interval of [0.078, 0.081].</p>
+##       Estimate   SE         95% CI         VIMP &gt; 0 p-value  
+## s = 1 0.01985866 0.04777691 [0, 0.1134997] FALSE    0.3388317</code></pre>
+<p>This output shows that we have estimated the importance of <span class="math inline">\(X_1\)</span> to be 0.02, with a 95% confidence interval of [0, 0.113].</p>
 </div>
 <div id="detailed-guide" class="section level2">
 <h2 class="hasAnchor">
@@ -207,19 +207,25 @@
 <a href="#a-first-approach-linear-regression" class="anchor"></a>A first approach: linear regression</h3>
 <p>Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. Note that because I chose to fit the regression functions first and then plug them into <code>vimp</code>, I need to explicitly specify the folds used for hypothesis testing. The analysis is achieved by the following:</p>
 <div class="sourceCode" id="cb12"><html><body><pre class="r"><span class="no">X</span> <span class="kw">&lt;-</span> <span class="no">heart</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span>(<span class="no">heart</span>)]
-<span class="no">lm_vim_sbp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)</pre></body></html></div>
-<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 1, run_regression = TRUE, SL.library
+<span class="no">lm_vim_sbp</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
+<span class="no">lm_vim_tob</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)</pre></body></html></div>
+<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 2, run_regression = TRUE, SL.library
 ## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">lm_vim_tob</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
-<span class="no">lm_vim_ldl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
-<span class="no">lm_vim_adi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
-<span class="no">lm_vim_fam</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
+<div class="sourceCode" id="cb14"><html><body><pre class="r"><span class="no">lm_vim_ldl</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)</pre></body></html></div>
+<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 3, run_regression = TRUE, SL.library
+## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
+<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">lm_vim_adi</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)</pre></body></html></div>
+<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 4, run_regression = TRUE, SL.library
+## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
+<div class="sourceCode" id="cb18"><html><body><pre class="r"><span class="no">lm_vim_fam</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
 <span class="no">lm_vim_tpa</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">6</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
-<span class="no">lm_vim_obe</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
-<span class="no">lm_vim_alc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)</pre></body></html></div>
+<span class="no">lm_vim_obe</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)</pre></body></html></div>
+<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 7, run_regression = TRUE, SL.library
+## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
+<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">lm_vim_alc</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)</pre></body></html></div>
 <pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 8, run_regression = TRUE, SL.library
 ## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb16"><html><body><pre class="r"><span class="no">lm_vim_age</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">9</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
+<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="no">lm_vim_age</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">9</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="st">"SL.lm"</span>, <span class="kw">type</span> <span class="kw">=</span> <span class="st">"r_squared"</span>)
 
 <span class="co"># make a table with the estimates using the merge_vim() function</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"dplyr"</span>)</pre></body></html></div>
@@ -231,21 +237,21 @@
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<div class="sourceCode" id="cb20"><html><body><pre class="r"><span class="no">lm_mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="no">lm_vim_sbp</span>, <span class="no">lm_vim_tob</span>, <span class="no">lm_vim_ldl</span>, <span class="no">lm_vim_adi</span>,
+<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">lm_mat</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="no">lm_vim_sbp</span>, <span class="no">lm_vim_tob</span>, <span class="no">lm_vim_ldl</span>, <span class="no">lm_vim_adi</span>,
                 <span class="no">lm_vim_fam</span>, <span class="no">lm_vim_tpa</span>, <span class="no">lm_vim_obe</span>, <span class="no">lm_vim_alc</span>, <span class="no">lm_vim_age</span>)
 <span class="co"># print out the matrix</span>
 <span class="no">lm_mat</span></pre></body></html></div>
 <pre><code>## Variable importance estimates:
-##       Estimate   SE          95% CI                    VIMP &gt; 0 p-value     
-## s = 6 0.11780780 0.003028285 [0.11187247, 0.123743126]  TRUE    0.000000e+00
-## s = 2 0.07772279 0.002941483 [0.07195759, 0.083487992]  TRUE    0.000000e+00
-## s = 5 0.05111292 0.002920317 [0.04538920, 0.056836633]  TRUE    0.000000e+00
-## s = 7 0.03923922 0.003004624 [0.03335026, 0.045128171]  TRUE    0.000000e+00
-## s = 9 0.03178584 0.003018083 [0.02587050, 0.037701171]  TRUE    0.000000e+00
-## s = 3 0.02328314 0.002956753 [0.01748801, 0.029078267]  TRUE    1.665335e-15
-## s = 4 0.02224403 0.003005838 [0.01635270, 0.028135368]  TRUE    6.794565e-14
-## s = 1 0.00000000 0.002994384 [0.00000000, 0.005868884] FALSE    1.000000e+00
-## s = 8 0.00000000 0.002999838 [0.00000000, 0.005879574] FALSE    1.000000e+00</code></pre>
+##       Estimate   SE         95% CI                   VIMP &gt; 0 p-value   
+## s = 9 0.13103142 0.06487123 [0.003886152, 0.2581767]  TRUE    0.02169846
+## s = 6 0.06811560 0.06509051 [0.000000000, 0.1956907] FALSE    0.14767086
+## s = 1 0.05216276 0.06436184 [0.000000000, 0.1783096] FALSE    0.20883764
+## s = 5 0.04812513 0.06276984 [0.000000000, 0.1711517] FALSE    0.22163233
+## s = 2 0.00000000 0.06322478 [0.000000000, 0.1239183] FALSE    0.58737127
+## s = 3 0.00000000 0.06355300 [0.000000000, 0.1245616] FALSE    0.58097486
+## s = 4 0.00000000 0.06460803 [0.000000000, 0.1266294] FALSE    0.61381924
+## s = 7 0.00000000 0.06458195 [0.000000000, 0.1265783] FALSE    0.60874835
+## s = 8 0.00000000 0.06447907 [0.000000000, 0.1263767] FALSE    0.66773221</code></pre>
 </div>
 <div id="building-a-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -254,7 +260,7 @@
 <p>The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means!</p>
 <p>This motivates using <code>SuperLearner</code> to allow the data to determine the optimal combination of <em>base learners</em> from a <em>library</em> that I define. These base learners are a combination of different methods (e.g., generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g., additive models with 3 and 4 degrees of freedom). The Super Learner is an example of model stacking, or model aggregation — these approaches use a data-adaptive combination of base learners to make predictions.</p>
 <p>For instance, my library could include the elastic net, random forests <span class="citation">(Breiman 2001)</span>, and gradient boosted trees <span class="citation">(Friedman 2001)</span> as follows:</p>
-<div class="sourceCode" id="cb22"><html><body><pre class="r"><span class="co"># create a function for boosted stumps</span>
+<div class="sourceCode" id="cb28"><html><body><pre class="r"><span class="co"># create a function for boosted stumps</span>
 <span class="no">SL.gbm.1</span> <span class="kw">&lt;-</span> <span class="kw">function</span>(<span class="no">...</span>, <span class="no">interaction.depth</span> <span class="kw">=</span> <span class="fl">1</span>) <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html">SL.gbm</a></span>(<span class="no">...</span>, <span class="kw">interaction.depth</span> <span class="kw">=</span> <span class="no">interaction.depth</span>)
 
 <span class="co"># create GAMs with different degrees of freedom</span>
@@ -323,11 +329,11 @@
 <li>I want to use five-fold cross-fitting to estimate importance</li>
 </ul>
 <p>The call to <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> looks like this:</p>
-<div class="sourceCode" id="cb23"><html><body><pre class="r"><span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>,
+<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>,
     <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">run_regression</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners</span>, <span class="kw">V</span> <span class="kw">=</span> <span class="fl">5</span>)</pre></body></html></div>
 <p>While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay — in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.</p>
 <p>However, for the sake of illustration, I can estimate varibable importance for family history only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):</p>
-<div class="sourceCode" id="cb24"><html><body><pre class="r"><span class="co"># small learners library</span>
+<div class="sourceCode" id="cb30"><html><body><pre class="r"><span class="co"># small learners library</span>
 <span class="no">learners.2</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"SL.ranger"</span>)
 <span class="co"># small number of cross-fitting folds</span>
 <span class="no">V</span> <span class="kw">&lt;-</span> <span class="fl">2</span>
@@ -339,53 +345,195 @@
 <span class="no">fam_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb26"><html><body><pre class="r"><span class="no">end_time</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span>()</pre></body></html></div>
-<p>This code takes approximately 3.165 seconds to run on a (not very fast) PC. I can display these estimates:</p>
-<div class="sourceCode" id="cb27"><html><body><pre class="r"><span class="no">fam_vim</span></pre></body></html></div>
+<div class="sourceCode" id="cb32"><html><body><pre class="r"><span class="no">end_time</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span>()</pre></body></html></div>
+<p>This code takes approximately 2.415 seconds to run on a (not very fast) PC. I can display these estimates:</p>
+<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="no">fam_vim</span></pre></body></html></div>
 <pre><code>## Variable importance estimates:
-##       Estimate SE           95% CI           VIMP &gt; 0 p-value  
-## s = 5 0        0.0009691085 [0, 0.001899418] FALSE    0.5286295</code></pre>
+##       Estimate SE         95% CI         VIMP &gt; 0 p-value  
+## s = 5 0        0.05859551 [0, 0.1148451] FALSE    0.9894053</code></pre>
 <p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
-<div class="sourceCode" id="cb29"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">full_fit</span>)</pre></body></html></div>
-<pre><code>##       [,1]
-## [1,] 0.920
-## [2,] 0.726
-## [3,] 0.064
-## [4,] 0.910
-## [5,] 0.760
-## [6,] 0.244</code></pre>
-<div class="sourceCode" id="cb31"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">red_fit</span>)</pre></body></html></div>
-<pre><code>##           [,1]
-## [1,] 0.7728365
-## [2,] 0.5395303
-## [3,] 0.1192914
-## [4,] 0.7451898
-## [5,] 0.5910701
-## [6,] 0.3526229</code></pre>
+<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">full_fit</span>)</pre></body></html></div>
+<pre><code>## [[1]]
+##   [1] 0.6500000 0.4880000 0.2380000 0.6960000 0.4080000 0.7860000 0.3680000
+##   [8] 0.8540000 0.1960000 0.3960000 0.2460000 0.1920000 0.1500000 0.5080000
+##  [15] 0.1120000 0.1220000 0.2160000 0.6080000 0.0460000 0.2600000 0.5780000
+##  [22] 0.2480000 0.0040000 0.5360000 0.4360000 0.5140000 0.0800000 0.2920000
+##  [29] 0.5300000 0.6300000 0.5460000 0.1380000 0.2760000 0.4340000 0.0020000
+##  [36] 0.7120000 0.1180000 0.0060000 0.5780000 0.4920000 0.7980000 0.2140000
+##  [43] 0.2660000 0.1660000 0.4980000 0.1840000 0.3380000 0.0360000 0.6440000
+##  [50] 0.1980000 0.7460000 0.3820000 0.6100000 0.4840000 0.1640000 0.0560000
+##  [57] 0.5220000 0.0380000 0.6200000 0.3820000 0.4400000 0.0100000 0.3960000
+##  [64] 0.3600000 0.2000000 0.2880000 0.1660000 0.6000000 0.0060000 0.0100000
+##  [71] 0.0080000 0.1580000 0.2240000 0.2540000 0.1520000 0.2840000 0.1840000
+##  [78] 0.3900000 0.2280000 0.4060000 0.2580000 0.3100000 0.3300000 0.1840000
+##  [85] 0.3260000 0.2980000 0.3540000 0.4400000 0.5780000 0.2860000 0.2280000
+##  [92] 0.3900000 0.7520000 0.5753333 0.6300000 0.2300000 0.0880000 0.6640000
+##  [99] 0.5940000 0.6740000 0.0700000 0.2220000 0.1660000 0.3840000 0.0600000
+## [106] 0.0920000 0.0460000 0.2240000 0.3260000 0.4380000 0.3140000 0.3260000
+## [113] 0.5640000 0.3800000 0.3160000 0.3160000
+## 
+## [[2]]
+##   [1] 0.2180000 0.6960000 0.0960000 0.4640000 0.2480000 0.3960000 0.2640000
+##   [8] 0.6960000 0.2740000 0.1260000 0.2040000 0.3120000 0.2940000 0.2660000
+##  [15] 0.0160000 0.1880000 0.4280000 0.1300000 0.4760000 0.4400000 0.2840000
+##  [22] 0.2180000 0.0820000 0.3640000 0.3640000 0.0440000 0.3100000 0.1580000
+##  [29] 0.8380000 0.2260000 0.2400000 0.6080000 0.3120000 0.3900000 0.6500000
+##  [36] 0.1700000 0.0120000 0.4460000 0.5220000 0.1200000 0.3260000 0.2560000
+##  [43] 0.0060000 0.6480000 0.6620000 0.4000000 0.0340000 0.0280000 0.4060000
+##  [50] 0.0760000 0.8220000 0.2980000 0.5480000 0.4320000 0.4540000 0.1580000
+##  [57] 0.4120000 0.8100000 0.4720000 0.5440000 0.1340000 0.4660000 0.4540000
+##  [64] 0.0900000 0.2540000 0.4440000 0.7100000 0.2680000 0.3060000 0.3720000
+##  [71] 0.2380000 0.5300000 0.4180000 0.2820000 0.0960000 0.4420000 0.3140000
+##  [78] 0.0860000 0.7680000 0.3840000 0.3740000 0.5460000 0.2800000 0.6320000
+##  [85] 0.3040000 0.3860000 0.6740000 0.5120000 0.0220000 0.3300000 0.5540000
+##  [92] 0.5540000 0.4280000 0.0820000 0.4720000 0.3800000 0.6240000 0.3242857
+##  [99] 0.1980000 0.1200000 0.4160000 0.3600000 0.1060000 0.3100000 0.2680000
+## [106] 0.4020000 0.4140000 0.5300000 0.1200000 0.0940000 0.2220000 0.0780000
+## [113] 0.2440000 0.1360000 0.7020000 0.3540000
+## 
+## [[3]]
+##   [1] 0.6680 0.4520 0.4660 0.4360 0.0600 0.8020 0.2040 0.4640 0.3520 0.3660
+##  [11] 0.1160 0.1840 0.1140 0.6840 0.3860 0.1840 0.2300 0.4860 0.4120 0.6440
+##  [21] 0.2100 0.4800 0.1780 0.3920 0.1000 0.1380 0.3560 0.7040 0.4460 0.1040
+##  [31] 0.6980 0.4680 0.6360 0.4420 0.2640 0.1280 0.5580 0.5680 0.1920 0.7180
+##  [41] 0.1200 0.4520 0.0360 0.7620 0.5500 0.1172 0.7060 0.4440 0.0160 0.2660
+##  [51] 0.2560 0.4960 0.1520 0.6480 0.2280 0.3300 0.1680 0.6960 0.4580 0.4040
+##  [61] 0.4420 0.6840 0.4320 0.5940 0.0140 0.2880 0.4980 0.6440 0.1500 0.1100
+##  [71] 0.6900 0.7340 0.0440 0.2960 0.0100 0.1420 0.0600 0.4700 0.2880 0.5500
+##  [81] 0.4040 0.2600 0.6240 0.5200 0.5300 0.0300 0.2420 0.4840 0.1640 0.4220
+##  [91] 0.1500 0.2140 0.3020 0.0880 0.6500 0.7800 0.2940 0.5520 0.5380 0.5820
+## [101] 0.0720 0.2160 0.4160 0.2620 0.5680 0.6320 0.5480 0.2480 0.1220 0.0620
+## [111] 0.0300 0.1580 0.2040 0.3340 0.5580
+## 
+## [[4]]
+##   [1] 0.1920 0.3040 0.0380 0.5300 0.4340 0.7640 0.5540 0.4420 0.6700 0.2500
+##  [11] 0.3280 0.3020 0.3140 0.3140 0.2340 0.0925 0.0585 0.1980 0.1285 0.6560
+##  [21] 0.3880 0.5700 0.3560 0.4860 0.4280 0.1420 0.1280 0.4960 0.2800 0.4920
+##  [31] 0.7200 0.1980 0.1700 0.1240 0.5200 0.1380 0.2000 0.8740 0.1500 0.3580
+##  [41] 0.0160 0.2260 0.3480 0.4480 0.2180 0.3140 0.0260 0.1135 0.6100 0.1440
+##  [51] 0.2360 0.2500 0.2920 0.2280 0.4720 0.5320 0.6440 0.0640 0.0800 0.2800
+##  [61] 0.4460 0.4480 0.2880 0.0160 0.6780 0.3000 0.5800 0.4340 0.3080 0.3880
+##  [71] 0.6940 0.7080 0.0765 0.2920 0.5200 0.3485 0.2320 0.0280 0.4920 0.0650
+##  [81] 0.1160 0.3880 0.6120 0.5740 0.1340 0.4460 0.6580 0.4560 0.3080 0.5000
+##  [91] 0.2800 0.4320 0.5080 0.4880 0.4580 0.3540 0.3420 0.6060 0.6760 0.5520
+## [101] 0.4620 0.5760 0.4960 0.5360 0.4940 0.5620 0.1900 0.4360 0.2405 0.0340
+## [111] 0.0260 0.0280 0.0260 0.1540 0.1340</code></pre>
+<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="no">fam_vim</span>$<span class="no">red_fit</span>)</pre></body></html></div>
+<pre><code>## [[1]]
+##   [1] 0.60330973 0.43751573 0.27145889 0.45316608 0.48293878 0.54442920
+##   [7] 0.43720725 0.59464975 0.31213881 0.42809690 0.35664473 0.25326986
+##  [13] 0.14032718 0.42222073 0.15371601 0.17191766 0.25320961 0.56254273
+##  [19] 0.13203266 0.22741957 0.58414740 0.35785656 0.04634136 0.50408532
+##  [25] 0.36434641 0.52636593 0.20288595 0.32883113 0.51962167 0.63835113
+##  [31] 0.55999084 0.17067117 0.42430050 0.52292780 0.04509573 0.56713693
+##  [37] 0.18702838 0.05183927 0.42591517 0.46276960 0.48536039 0.36263132
+##  [43] 0.21988527 0.25043230 0.55279700 0.25081339 0.20088510 0.07670994
+##  [49] 0.47575660 0.32232616 0.51383800 0.44866140 0.53789616 0.48331356
+##  [55] 0.16787089 0.15518653 0.36922739 0.12215087 0.41959839 0.42107719
+##  [61] 0.43424455 0.17958293 0.29973146 0.45001751 0.40176863 0.36224273
+##  [67] 0.38606462 0.55365940 0.06525293 0.08536250 0.06263378 0.19904312
+##  [73] 0.29843855 0.31992817 0.13222397 0.25845303 0.21001090 0.51298249
+##  [79] 0.21052614 0.45226727 0.29384499 0.39705597 0.31175077 0.27981094
+##  [85] 0.49830580 0.25001053 0.25431068 0.47720238 0.51069573 0.24152024
+##  [91] 0.17933615 0.36246213 0.55819933 0.50031907 0.58242507 0.27215634
+##  [97] 0.15809045 0.49646500 0.46498158 0.57513913 0.12021481 0.26285500
+## [103] 0.26184816 0.33617577 0.14993953 0.17807090 0.07421892 0.30898874
+## [109] 0.31735051 0.54329600 0.24986394 0.31125044 0.50716727 0.51580536
+## [115] 0.36757592 0.33324880
+## 
+## [[2]]
+##   [1] 0.42437191 0.42166087 0.11034915 0.53628817 0.26664338 0.56019193
+##   [7] 0.47742424 0.57393773 0.14084728 0.14362862 0.31236129 0.31721526
+##  [13] 0.38596440 0.18880493 0.04812138 0.45638473 0.41078058 0.05256078
+##  [19] 0.46492843 0.52171893 0.46108704 0.21290513 0.22310043 0.45409643
+##  [25] 0.45930327 0.18577457 0.36158588 0.24971898 0.58879898 0.41575047
+##  [31] 0.18554941 0.39445373 0.28522318 0.58346389 0.32451036 0.18008878
+##  [37] 0.04132313 0.59830758 0.41320793 0.14514696 0.29721112 0.22637895
+##  [43] 0.04849278 0.40651673 0.40851120 0.66014540 0.13879684 0.06363653
+##  [49] 0.52363313 0.13815280 0.51922242 0.37840873 0.54789402 0.57943600
+##  [55] 0.56132071 0.38889393 0.52519133 0.58779907 0.28938997 0.61631587
+##  [61] 0.13184617 0.34006403 0.57948064 0.14434030 0.25303662 0.45252013
+##  [67] 0.57257067 0.29465880 0.43297707 0.36033907 0.37258560 0.46463744
+##  [73] 0.50987457 0.37172193 0.18361503 0.42113694 0.27689800 0.14365438
+##  [79] 0.55354278 0.54706793 0.42226267 0.47061693 0.36409860 0.48147536
+##  [85] 0.33758893 0.41467864 0.55986707 0.38533223 0.13734775 0.44497587
+##  [91] 0.39932320 0.62210273 0.29616191 0.20060165 0.27928239 0.33310813
+##  [97] 0.32835193 0.33672433 0.25222402 0.24816602 0.44472647 0.47488773
+## [103] 0.22254282 0.31701187 0.29165748 0.40074613 0.58059227 0.30186144
+## [109] 0.15521216 0.25418054 0.20895696 0.05475050 0.28761327 0.24282338
+## [115] 0.44208013 0.43015740
+## 
+## [[3]]
+##   [1] 0.51886213 0.42269027 0.44311863 0.42097641 0.08775118 0.68640580
+##   [7] 0.38567227 0.35998449 0.42384362 0.53274313 0.06131857 0.34763320
+##  [13] 0.13748328 0.54042713 0.33666000 0.25974166 0.08628498 0.41911114
+##  [19] 0.33101043 0.54331782 0.05772015 0.21888174 0.30547037 0.26009764
+##  [25] 0.18179839 0.38878107 0.23727769 0.53649911 0.38548718 0.21766214
+##  [31] 0.60574720 0.46111682 0.44998460 0.33639220 0.33745086 0.19814248
+##  [37] 0.58312175 0.56342873 0.41387230 0.51587540 0.18108673 0.50461171
+##  [43] 0.05742022 0.54832385 0.39993243 0.26222228 0.46996698 0.39748883
+##  [49] 0.05128998 0.32957914 0.28134991 0.38633118 0.17907480 0.48894244
+##  [55] 0.27214778 0.38215857 0.16875248 0.57504793 0.43138046 0.40680677
+##  [61] 0.38195078 0.62946244 0.48569321 0.45541271 0.08121655 0.29280507
+##  [67] 0.48125267 0.50030933 0.11051915 0.13026557 0.59390120 0.49857053
+##  [73] 0.05569837 0.33661873 0.06947750 0.27254522 0.08370582 0.47734205
+##  [79] 0.25854425 0.52549333 0.36830842 0.31619340 0.56383251 0.43537553
+##  [85] 0.54850904 0.09762280 0.39710900 0.54611167 0.19688535 0.38312842
+##  [91] 0.26104218 0.26134510 0.19782715 0.12904413 0.43233847 0.54829153
+##  [97] 0.25843992 0.46684123 0.46931578 0.44456338 0.09883917 0.41934371
+## [103] 0.48932050 0.25744409 0.36440272 0.51494833 0.34001164 0.30144678
+## [109] 0.10116837 0.16362342 0.04455765 0.21164136 0.15217418 0.20862540
+## [115] 0.48968624
+## 
+## [[4]]
+##   [1] 0.24318525 0.27168888 0.06791553 0.41096761 0.41596643 0.58930087
+##   [7] 0.41769771 0.46090447 0.49960951 0.32958534 0.28412914 0.33479565
+##  [13] 0.36729217 0.35418922 0.35689552 0.10278960 0.08794669 0.22925602
+##  [19] 0.14529536 0.34744209 0.24985377 0.41863983 0.58322111 0.62031029
+##  [25] 0.57121680 0.25373312 0.21557363 0.32174822 0.39187201 0.53394426
+##  [31] 0.51542553 0.26847875 0.26356160 0.18582352 0.45294571 0.19105650
+##  [37] 0.43787822 0.62515087 0.31439221 0.22131296 0.08579988 0.31440747
+##  [43] 0.32640030 0.22369113 0.31179650 0.43604764 0.11352461 0.07149760
+##  [49] 0.49464436 0.27355690 0.31410435 0.34157473 0.39964022 0.30217861
+##  [55] 0.39890980 0.63995049 0.50031623 0.14610220 0.14853607 0.26198229
+##  [61] 0.56244909 0.37178915 0.28645553 0.06631427 0.39800367 0.36144240
+##  [67] 0.45469685 0.52593675 0.34153796 0.33798933 0.43995311 0.41494533
+##  [73] 0.09274013 0.47213131 0.38566597 0.07528619 0.19508148 0.04278647
+##  [79] 0.48228020 0.13411580 0.25901665 0.34908591 0.37152620 0.56274387
+##  [85] 0.18740821 0.52141060 0.44128652 0.46919588 0.27361018 0.42742451
+##  [91] 0.38143163 0.29662040 0.48132690 0.33626072 0.51412002 0.45460133
+##  [97] 0.54358228 0.55396576 0.53727964 0.57786145 0.52649933 0.58069430
+## [103] 0.61365660 0.64033193 0.40337173 0.55142553 0.29193827 0.25789120
+## [109] 0.13084704 0.07202955 0.04114760 0.06072500 0.09584507 0.36074252
+## [115] 0.08962574</code></pre>
 <p>I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):</p>
-<div class="sourceCode" id="cb33"><html><body><pre class="r"><span class="co"># estimate variable importance</span>
+<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="co"># estimate variable importance</span>
 <span class="no">tpa_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">6</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb35"><html><body><pre class="r"><span class="no">alc_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="no">alc_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">8</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb37"><html><body><pre class="r"><span class="no">sbp_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)
-<span class="no">tob_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)
-<span class="no">ldl_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="no">sbp_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">1</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb39"><html><body><pre class="r"><span class="no">adi_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="no">tob_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">2</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb41"><html><body><pre class="r"><span class="no">obe_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb47"><html><body><pre class="r"><span class="no">ldl_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">3</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb43"><html><body><pre class="r"><span class="no">age_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">9</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb49"><html><body><pre class="r"><span class="no">adi_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">4</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
+## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
+<div class="sourceCode" id="cb51"><html><body><pre class="r"><span class="no">obe_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">7</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
+<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
+## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
+<div class="sourceCode" id="cb53"><html><body><pre class="r"><span class="no">age_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fl">9</span>, <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
 <p>Now that I have estimates of each of individual feature’s variable importance, I can view them all simultaneously by plotting:</p>
-<div class="sourceCode" id="cb45"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"dplyr"</span>)
+<div class="sourceCode" id="cb55"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"dplyr"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"tibble"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"ggplot2"</span>)
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="st">"cowplot"</span>)
@@ -421,11 +569,11 @@
 <a href="#estimating-variable-importance-for-a-group-of-variables" class="anchor"></a>Estimating variable importance for a group of variables</h2>
 <p>Now that I have estimated variable importance for each of the individual features, I can estimate variable importance for each of the groups that I mentioned above: biological and behavioral features.</p>
 <p>The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for <code>s</code>; I can use any of the options listed in the previous section to compute these estimates.</p>
-<div class="sourceCode" id="cb46"><html><body><pre class="r"><span class="co"># get the estimates</span>
+<div class="sourceCode" id="cb56"><html><body><pre class="r"><span class="co"># get the estimates</span>
 <span class="no">behav_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span>), <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)</pre></body></html></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb48"><html><body><pre class="r"><span class="no">bios_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)
+<div class="sourceCode" id="cb58"><html><body><pre class="r"><span class="no">bios_vim</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span>(<span class="kw">Y</span> <span class="kw">=</span> <span class="no">heart</span>$<span class="no">chd</span>, <span class="kw">X</span> <span class="kw">=</span> <span class="no">X</span>, <span class="kw">indx</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>), <span class="kw">SL.library</span> <span class="kw">=</span> <span class="no">learners.2</span>, <span class="kw">na.rm</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">env</span> <span class="kw">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span>(), <span class="kw">V</span> <span class="kw">=</span> <span class="no">V</span>, <span class="kw">cvControl</span> <span class="kw">=</span> <span class="no">sl_cvcontrol</span>)
 
 <span class="co"># combine and plot</span>
 <span class="no">groups</span> <span class="kw">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span>(<span class="no">behav_vim</span>, <span class="no">bios_vim</span>)

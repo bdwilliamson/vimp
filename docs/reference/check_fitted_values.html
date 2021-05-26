@@ -155,6 +155,7 @@
   <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>cross_fitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>ss_V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>cv</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
 )</pre>
 
@@ -198,6 +199,10 @@ estimates of variable importance in <code>cv_vim</code> and <code>sp_vim</code>)
     <tr>
       <th>V</th>
       <td><p>the number of cross-fitting folds</p></td>
+    </tr>
+    <tr>
+      <th>ss_V</th>
+      <td><p>the number of folds for CV (if sample_splitting is TRUE)</p></td>
     </tr>
     <tr>
       <th>cv</th>

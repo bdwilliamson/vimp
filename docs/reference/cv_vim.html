@@ -176,6 +176,10 @@ feature(s) of interest versus not.</p>
   <span class='kw'>Z</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ipc_weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>Y</span>)),
   <span class='kw'>ipc_est_type</span> <span class='kw'>=</span> <span class='st'>"aipw"</span>,
+  <span class='kw'>scale_est</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>cross_fitted_se</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>bootstrap</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>b</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
   <span class='no'>...</span>
 )</pre>
 
@@ -210,13 +214,15 @@ be estimated specially; see Details.</p></td>
     <tr>
       <th>f1</th>
       <td><p>the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset.</p></td>
+regressing Y on X. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>f2</th>
       <td><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>. Estimated using the whole dataset.</p></td>
+<code>indx</code>. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>indx</th>
@@ -225,7 +231,7 @@ for; defaults to 1.</p></td>
     </tr>
     <tr>
       <th>V</th>
-      <td><p>the number of folds for cross-fitting, defaults to 10. If
+      <td><p>the number of folds for cross-fitting, defaults to 5. If
 <code>sample_splitting = TRUE</code>, then a special type of <code>V</code>-fold cross-fitting
 is done. See Details for a more detailed explanation.</p></td>
     </tr>
@@ -283,7 +289,7 @@ importance &lt; \(\delta\)); defaults to 0.</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>should CIs be computed on original ("identity") or
+      <td><p>should CIs be computed on original ("identity", default) or
 logit ("logit") scale?</p></td>
     </tr>
     <tr>
@@ -315,6 +321,27 @@ already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p><
 settings; options are "ipw" (for inverse probability weighting) or
 "aipw" (for augmented inverse probability weighting).
 Only used if <code>C</code> is not all equal to 1.</p></td>
+    </tr>
+    <tr>
+      <th>scale_est</th>
+      <td><p>should the point estimate be scaled to be greater than 0?
+Defaults to <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitted_se</th>
+      <td><p>should we use cross-fitting to estimate the standard
+errors (<code>TRUE</code>, the default) or not (<code>FALSE</code>)?</p></td>
+    </tr>
+    <tr>
+      <th>bootstrap</th>
+      <td><p>should bootstrap-based standard error estimates be computed?
+Defaults to <code>FALSE</code> (and currently may only be used if 
+<code>sample_splitting = FALSE</code> and <code>cross_fitted_se = FALSE</code>).</p></td>
+    </tr>
+    <tr>
+      <th>b</th>
+      <td><p>the number of bootstrap replicates (only used if <code>bootstrap = TRUE</code>
+and <code>sample_splitting = FALSE</code>).</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -472,7 +499,7 @@ within the <code>vim</code> object. This results in a list including:</p><dl'>
 <span class='kw'>f2</span> <span class='kw'>=</span> <span class='no'>fhat_red</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>,
 <span class='kw'>cross_fitting_folds</span> <span class='kw'>=</span> <span class='no'>cross_fitting_folds</span>,
 <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='no'>sample_splitting_folds</span>,
-<span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,     cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, sample_splitting_folds = sample_splitting_folds,     cross_fitting_folds, V = V, cv = TRUE): object 'full_cv_preds' not found</span></div><div class='input'>
+<span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,     cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, sample_splitting_folds = sample_splitting_folds,     cross_fitting_folds = cross_fitting_folds, V = V, ss_V = ss_V,     cv = TRUE): object 'full_cv_preds' not found</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
