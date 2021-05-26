@@ -385,30 +385,25 @@ within the <code>vim</code> object. This results in a list including:</p><dl>
 <span class='r-in'>           alpha <span class='op'>=</span> <span class='fl'>0.05</span>, run_regression <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
 <span class='r-in'>           SL.library <span class='op'>=</span> <span class='va'>learners</span>, cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>,</span>
 <span class='r-in'>           stratified <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in .createLibrary(SL.library)</span> argument "SL.library" is missing, with no default</span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># using pre-computed fitted values</span></span>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>4747</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>V</span> <span class='op'>&lt;-</span> <span class='fl'>2</span></span>
 <span class='r-in'><span class='va'>full_fit</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span>, X <span class='op'>=</span> <span class='va'>x</span>,</span>
 <span class='r-in'>                                       SL.library <span class='op'>=</span> <span class='va'>learners</span>,</span>
 <span class='r-in'>                                       cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='va'>V</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in do.call("SuperLearner.CV.control", cvControl)</span> object 'V' not found</span>
 <span class='r-in'><span class='va'>full_fitted</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>full_fit</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in SuperLearner::predict.SuperLearner(full_fit)</span> object 'full_fit' not found</span>
 <span class='r-in'><span class='co'># fit the data with only X1</span></span>
 <span class='r-in'><span class='va'>reduced_fit</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>full_fitted</span>,</span>
 <span class='r-in'>                                          X <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span>, <span class='op'>-</span><span class='fl'>2</span>, drop <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>,</span>
 <span class='r-in'>                                          SL.library <span class='op'>=</span> <span class='va'>learners</span>,</span>
 <span class='r-in'>                                          cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='va'>V</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in do.call("SuperLearner.CV.control", cvControl)</span> object 'V' not found</span>
 <span class='r-in'><span class='va'>reduced_fitted</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>reduced_fit</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in SuperLearner::predict.SuperLearner(reduced_fit)</span> object 'reduced_fit' not found</span>
 <span class='r-in'></span>
 <span class='r-in'><span class='va'>est_2</span> <span class='op'>&lt;-</span> <span class='fu'>vim</span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span>, f1 <span class='op'>=</span> <span class='va'>full_fitted</span>, f2 <span class='op'>=</span> <span class='va'>reduced_fitted</span>,</span>
 <span class='r-in'>            indx <span class='op'>=</span> <span class='fl'>2</span>, run_regression <span class='op'>=</span> <span class='cn'>FALSE</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>,</span>
 <span class='r-in'>            stratified <span class='op'>=</span> <span class='cn'>TRUE</span>, type <span class='op'>=</span> <span class='st'>"accuracy"</span>,</span>
 <span class='r-in'>            sample_splitting_folds <span class='op'>=</span> <span class='va'>est_1</span><span class='op'>$</span><span class='va'>sample_splitting_folds</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in check_inputs(Y, X, f1, f2, indx)</span> object 'full_fitted' not found</span>
 <span class='r-in'></span>
 </code></pre></div>
   </div>

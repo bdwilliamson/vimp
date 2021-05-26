@@ -338,7 +338,7 @@ errors (<code>TRUE</code>, the default) or not (<code>FALSE</code>)?</p></td>
     <tr>
       <th>bootstrap</th>
       <td><p>should bootstrap-based standard error estimates be computed?
-Defaults to <code>FALSE</code> (and currently may only be used if 
+Defaults to <code>FALSE</code> (and currently may only be used if
 <code>sample_splitting = FALSE</code> and <code>cross_fitted_se = FALSE</code>).</p></td>
     </tr>
     <tr>
@@ -484,13 +484,11 @@ within the <code>vim</code> object. This results in a list including:</p><dl>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1234</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>sample_splitting_folds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='make_folds.html'>make_folds</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>cross_fitting_folds</span><span class='op'>)</span>, V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>full_cv_preds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='extract_sampled_split_predictions.html'>extract_sampled_split_predictions</a></span><span class='op'>(</span></span>
-<span class='r-in'>    <span class='va'>full_cv_fit</span>, <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>    <span class='va'>full_cv_fit</span>, sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>TRUE</span></span>
 <span class='r-in'><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in extract_sampled_split_predictions(full_cv_fit, sample_splitting_folds,     full = TRUE)</span> Please enter sample-splitting folds.</span>
 <span class='r-in'><span class='va'>reduced_cv_preds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='extract_sampled_split_predictions.html'>extract_sampled_split_predictions</a></span><span class='op'>(</span></span>
-<span class='r-in'>    <span class='va'>reduced_cv_fit</span>, <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>FALSE</span></span>
+<span class='r-in'>    <span class='va'>reduced_cv_fit</span>, sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>FALSE</span></span>
 <span class='r-in'><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in extract_sampled_split_predictions(reduced_cv_fit, sample_splitting_folds,     full = FALSE)</span> Please enter sample-splitting folds.</span>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>5678</span><span class='op'>)</span></span>
 <span class='r-in'><span class='co'># refit on the whole dataset</span></span>
 <span class='r-in'><span class='co'># (for estimating the efficient influence function)</span></span>
@@ -509,7 +507,6 @@ within the <code>vim</code> object. This results in a list including:</p><dl>
 <span class='r-in'>cross_fitting_folds <span class='op'>=</span> <span class='va'>cross_fitting_folds</span>,</span>
 <span class='r-in'>sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>,</span>
 <span class='r-in'>run_regression <span class='op'>=</span> <span class='cn'>FALSE</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,     cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, sample_splitting_folds = sample_splitting_folds,     cross_fitting_folds = cross_fitting_folds, V = V, ss_V = ss_V,     cv = TRUE)</span> object 'full_cv_preds' not found</span>
 <span class='r-in'></span>
 </code></pre></div>
   </div>
