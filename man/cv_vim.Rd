@@ -134,7 +134,7 @@ errors (\code{TRUE}, the default) or not (\code{FALSE})?}
 
 \item{bootstrap}{should bootstrap-based standard error estimates be computed?
 Defaults to \code{FALSE} (and currently may only be used if 
-\code{sample_splitting = FALSE}).}
+\code{sample_splitting = FALSE} and \code{cross_fitted_se = FALSE}).}
 
 \item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
 and \code{sample_splitting = FALSE}).}

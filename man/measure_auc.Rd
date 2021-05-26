@@ -23,10 +23,10 @@ measure_auc(
 \item{fitted_values}{fitted values from a regression function using the
 observed data (may be within a specified fold, for cross-fitted estimates).}
 
-\item{y}{the observed outcome (may be within a specified fold, for 
+\item{y}{the observed outcome (may be within a specified fold, for
 cross-fitted estimates).}
 
-\item{full_y}{the observed outcome (from the entire dataset, for 
+\item{full_y}{the observed outcome (from the entire dataset, for
 cross-fitted estimates).}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes

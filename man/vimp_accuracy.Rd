@@ -27,6 +27,7 @@ vimp_accuracy(
   scale = "identity",
   ipc_est_type = "aipw",
   scale_est = TRUE,
+  cross_fitted_se = TRUE,
   ...
 )
 }
@@ -116,6 +117,9 @@ Only used if \code{C} is not all equal to 1.}
 
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
+
+\item{cross_fitted_se}{should we use cross-fitting to estimate the standard
+errors (\code{TRUE}, the default) or not (\code{FALSE})?}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

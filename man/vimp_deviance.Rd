@@ -27,6 +27,7 @@ vimp_deviance(
   scale = "identity",
   ipc_est_type = "aipw",
   scale_est = TRUE,
+  cross_fitted_se = TRUE,
   ...
 )
 }
@@ -117,15 +118,18 @@ Only used if \code{C} is not all equal to 1.}
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
 
+\item{cross_fitted_se}{should we use cross-fitting to estimate the standard
+errors (\code{TRUE}, the default) or not (\code{FALSE})?}
+
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
-An object of classes \code{vim} and \code{vim_deviance}. 
+An object of classes \code{vim} and \code{vim_deviance}.
   See Details for more information.
 }
 \description{
-Compute estimates of and confidence intervals for nonparametric 
-deviance-based intrinsic variable importance. This is a wrapper function for 
+Compute estimates of and confidence intervals for nonparametric
+deviance-based intrinsic variable importance. This is a wrapper function for
 \code{cv_vim}, with \code{type = "deviance"}.
 }
 \details{
