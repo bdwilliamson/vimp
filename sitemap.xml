@@ -1,10 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://bdwilliamson.github.io/vimp/404.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/articles/introduction-to-vimp.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/articles/precomputed-regressions.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/articles/types-of-vims.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/authors.html</loc>
+  </url>
+  <url>
     <loc>https://bdwilliamson.github.io/vimp/index.html</loc>
   </url>
   <url>
+    <loc>https://bdwilliamson.github.io/vimp/news/index.html</loc>
+  </url>
+  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/average_vim.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/bootstrap_se.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/check_fitted_values.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/check_inputs.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/create_z.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/cv_vim.html</loc>
@@ -16,7 +55,25 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/est_predictiveness_cv.html</loc>
   </url>
   <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/extract_sampled_split_predictions.html</loc>
+  </url>
+  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/format.vim.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/get_cv_sl_folds.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/get_full_type.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/make_folds.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/make_kfold.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/measure_accuracy.html</loc>
@@ -46,7 +103,13 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/print.vim.html</loc>
   </url>
   <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/run_sl.html</loc>
+  </url>
+  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/sample_subsets.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/scale_est.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/sp_vim.html</loc>
@@ -89,14 +152,5 @@
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/vimp_se.html</loc>
-  </url>
-  <url>
-    <loc>https://bdwilliamson.github.io/vimp/articles/introduction-to-vimp.html</loc>
-  </url>
-  <url>
-    <loc>https://bdwilliamson.github.io/vimp/articles/precomputed-regressions.html</loc>
-  </url>
-  <url>
-    <loc>https://bdwilliamson.github.io/vimp/articles/types-of-vims.html</loc>
   </url>
 </urlset>
