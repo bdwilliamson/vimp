@@ -34,7 +34,8 @@ Imports:
     tibble,
     rlang,
     MASS,
-    boot
+    boot,
+    data.table
 Suggests:
     knitr,
     rmarkdown,

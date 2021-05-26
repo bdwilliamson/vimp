@@ -1,15 +1,15 @@
 #' vimp: Perform Inference on Algorithm-Agnostic Intrinsic Variable Importance
 #'
 #' A unified framework for valid statistical inference on algorithm-agnostic
-#' measures of intrinsic variable importance. You provide the data, a method for 
+#' measures of intrinsic variable importance. You provide the data, a method for
 #' estimating the conditional mean of the outcome given the covariates,
 #' choose a variable importance measure, and specify variable(s) of interest;
 #' 'vimp' takes care of the rest.
-#' 
+#'
 #' @section Author(s):
 #' \bold{Maintainer}: Brian Williamson \url{https://bdwilliamson.github.io/}
 #' \bold{Contributor}: Jean Feng \url{https://jeanfeng.com}
-#' 
+#'
 #' Methodology authors:
 #' \itemize{
 #'   \item{Brian D. Williamson}
@@ -18,7 +18,7 @@
 #'   \item{Noah R. Simon}
 #'   \item{Marco Carone}
 #' }
-#' 
+#'
 #' @section See Also:
 #' Manuscripts:
 #' \itemize{
@@ -30,24 +30,24 @@
 #' \itemize{
 #'   \item{\url{https://arxiv.org/abs/2004.03683} (general variable importance)}
 #' }
-#' 
+#'
 #' Other useful links:
 #' \itemize{
 #'   \item{\url{https://bdwilliamson.github.io/vimp/}}
 #'   \item{\url{https://github.com/bdwilliamson/vimp}}
 #'   \item{Report bugs at \url{https://github.com/bdwilliamson/vimp/issues}}
 #' }
-#' 
+#'
 #' @section Imports:
-#' The packages that we import either make the internal code nice 
-#' (dplyr, magrittr, tibble, rlang, MASS), are directly relevant to estimating 
-#' the conditional mean (SuperLearner) or predictiveness measures (ROCR), 
-#' or are necessary for hypothesis testing (stats).
-#' 
-#' We suggest several other packages: xgboost, ranger, gam, glmnet, polspline, 
-#' and quadprog allow a flexible library of candidate learners in the Super 
-#' Learner; ggplot2 and cowplot help with plotting variable 
-#' importance estimates; testthat and covr help with unit tests; and 
+#' The packages that we import either make the internal code nice
+#' (dplyr, magrittr, tibble, rlang, MASS, data.table), are directly relevant to estimating
+#' the conditional mean (SuperLearner) or predictiveness measures (ROCR),
+#' or are necessary for hypothesis testing (stats) or confidence intervals (boot, only for bootstrap intervals).
+#'
+#' We suggest several other packages: xgboost, ranger, gam, glmnet, polspline,
+#' and quadprog allow a flexible library of candidate learners in the Super
+#' Learner; ggplot2 and cowplot help with plotting variable
+#' importance estimates; testthat and covr help with unit tests; and
 #' knitr, rmarkdown,and RCurl help with the vignettes and examples.
 #'
 #' @docType package
