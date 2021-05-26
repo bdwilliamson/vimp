@@ -24,6 +24,7 @@ reference:
       - spvim_se
       - sample_subsets
       - measure_anova
+      - boostrap_se
     - title: "Predictiveness measures"
       desc: "Functions to measure population predictiveness (e.g., R-squared or AUC) and compute point estimates and confidence intervals for predictiveness."
       contents:
