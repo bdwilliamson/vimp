@@ -133,6 +133,7 @@
 #'
 #' # using pre-computed fitted values
 #' set.seed(4747)
+#' V <- 2
 #' full_fit <- SuperLearner::SuperLearner(Y = y, X = x,
 #'                                        SL.library = learners,
 #'                                        cvControl = list(V = V))
