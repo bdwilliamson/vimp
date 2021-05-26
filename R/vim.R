@@ -233,10 +233,12 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                     arg_lst_redu$family <- stats::gaussian()
                     arg_lst_redu$Y <- fhat_ful
                 }
-                arg_lst_redu$X <- X_minus_s
-                arg_lst_redu$SL.library <- SL.library
-                arg_lst_redu$obsWeights <- weights_cc
+            } else {
+                arg_lst_redu$Y <- Y_cc
             }
+            arg_lst_redu$X <- X_minus_s
+            arg_lst_redu$SL.library <- SL.library
+            arg_lst_redu$obsWeights <- weights_cc
             reduced <- do.call(SuperLearner::SuperLearner, arg_lst_redu, quote = TRUE)
 
             # get the fitted values
@@ -281,7 +283,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- NA
         se_redu <- NA
         if (bootstrap) {
-            se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red, 
+            se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red,
                                type = full_type, b = b)$se
         } else {
             se <- vimp_se(eif = eif, na.rm = na.rm)
