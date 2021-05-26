@@ -4,9 +4,9 @@
 #'
 #' @param fitted_values fitted values from a regression function using the
 #'   observed data (may be within a specified fold, for cross-fitted estimates).
-#' @param y the observed outcome (may be within a specified fold, for 
+#' @param y the observed outcome (may be within a specified fold, for
 #'   cross-fitted estimates).
-#' @param full_y the observed outcome (from the entire dataset, for 
+#' @param full_y the observed outcome (from the entire dataset, for
 #'   cross-fitted estimates).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
@@ -37,8 +37,8 @@
 #' (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_auc <- function(fitted_values, y, full_y = NULL, 
-                        C = rep(1, length(y)), Z = NULL, 
+measure_auc <- function(fitted_values, y, full_y = NULL,
+                        C = rep(1, length(y)), Z = NULL,
                         ipc_weights = rep(1, length(y)),
                         ipc_fit_type = "external",
                         ipc_eif_preds = rep(1, length(y)),
@@ -76,7 +76,7 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
     # sensitivity and specificity
     sens <- get_sens(fitted_values, y)
     spec <- get_spec(fitted_values, y)
-    
+
     # contributions from cases and controls
     contrib_1 <- (y == 1) / p_1 * sens
     contrib_0 <- (y == 0) / p_0 * spec
@@ -102,7 +102,7 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
         cases <- y == 1
         controls <- y == 0
         f_comparison <- apply(
-            matrix(fitted_values), 1, function(x) x > fitted_values
+            matrix(fitted_values), 1, function(x) x >= fitted_values
         )
         weights <- apply(
             matrix(ipc_weights[C == 1]), 1, function(x) x * ipc_weights[C == 1]

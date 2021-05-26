@@ -29,6 +29,8 @@ tmp_x[C == 0, ] <- NA
 x <- tmp_x
 x_df <- as.data.frame(x)
 ipc_weights <- 1 / predict(glm(C ~ y, family = "binomial"), type = "response")
+# create a binomial outcome
+y_bin <- as.numeric(y > 0)
 
 learners <- c("SL.glm", "SL.mean")
 V <- 2
@@ -41,6 +43,20 @@ test_that("VIM with inverse probability of coarsening weights works", {
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
              cvControl = list(V = V), env = environment())
   expect_equal(est$est, r2_one, tolerance = 0.2, scale = 1)
+})
+set.seed(121314)
+# test that AUC estimation with the mean works
+test_that("VIM with inverse probability of coarsening weights works", {
+  cc <- complete.cases(x_df)
+  y_cc <- y_bin[cc]
+  x_cc <- x_df[cc, ]
+  weights_cc <- ipc_weights[cc]
+  sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
+                         SL.library = "SL.mean", obsWeights = weights_cc)
+  est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
+                         full_y = y_bin, C = cc, Z = y_bin, ipc_est_type = "ipw",
+                         SL.library = "SL.glm")
+  expect_equal(est_auc$point_est, 0.5, tolerance = 0.001, scale = 1)
 })
 set.seed(5678)
 # test that VIM with inverse probability of coarsening weights and cross-fitting works

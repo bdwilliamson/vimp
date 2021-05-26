@@ -10,6 +10,7 @@
 
 ## Minor changes
 
+* Use `>=` in computing the numerator of AUC with inverse probability weights
 * Update `roxygen2` documentation for wrappers (`vimp_*`) to inherit parameters and details from `cv_vim` (reduces potential for documentation mismatches)
 
 # vimp 2.1.10
