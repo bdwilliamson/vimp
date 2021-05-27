@@ -54,7 +54,9 @@ test_that("VIM with inverse probability of coarsening weights works", {
   sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
                          SL.library = "SL.mean", obsWeights = weights_cc)
   est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                         full_y = y_bin, C = cc, Z = y_bin, ipc_est_type = "ipw",
+                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin), 
+                         ipc_est_type = "ipw",
+                         ipc_weights = ipc_weights, ipc_fit_type = "SL",
                          SL.library = "SL.glm")
   expect_equal(est_auc$point_est, 0.5, tolerance = 0.001, scale = 1)
 })

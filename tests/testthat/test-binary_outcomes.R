@@ -123,8 +123,16 @@ full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
   Y = y, X = x, SL.library = learners, cvControl = list(V = V),
   innerCvControl = list(list(V = V))
 ))
+full_cv_mean_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = y, X = x, SL.library = "SL.mean", cvControl = list(V = V),
+  innerCvControl = list(list(V = V))
+))
 full_cv_preds <- extract_sampled_split_predictions(
   full_cv_fit, sample_splitting_folds = rep(1, V), full = TRUE,
+  sample_splitting = FALSE
+)
+full_cv_mean_preds <- extract_sampled_split_predictions(
+  full_cv_mean_fit, sample_splitting_folds = rep(1, V), full = TRUE,
   sample_splitting = FALSE
 )
 cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
@@ -132,16 +140,29 @@ test_that("vimp and cvAUC agree", {
   auc_lst <- est_predictiveness_cv(fitted_values = full_cv_preds, y = y,
                                    full_y = y, folds = cross_fitting_folds,
                                    type = "auc")
+  auc_lst_mean <- est_predictiveness_cv(fitted_values = full_cv_mean_preds, y = y,
+                                        full_y = y, folds = cross_fitting_folds,
+                                        type = "auc")
   full_auc <- auc_lst$point_est
   cvauc_var <- mean(unlist(lapply(auc_lst$all_eifs,
-                                  function(x) mean((x - mean(x)) ^ 2))))
+                                  function(x) mean(x ^ 2))))
+  cvauc_var_mean <- mean(unlist(lapply(auc_lst_mean$all_eifs,
+                                  function(x) mean(x ^ 2))))
   cvauc_se <- sqrt(cvauc_var / length(y))
+  cvauc_se_mean <- sqrt(cvauc_var_mean / length(y))
   auc_ci <- vimp_ci(full_auc, cvauc_se)
   cvauc_lst <- cvAUC::ci.cvAUC(predictions = full_cv_fit$SL.predict,
                                labels = y,
                                folds = full_cv_fit$folds)
+  cvauc_lst_mean <- cvAUC::ci.cvAUC(predictions = full_cv_mean_fit$SL.predict,
+                                    labels = y,
+                                    folds = full_cv_mean_fit$folds)
   expect_equal(full_auc, cvauc_lst$cvAUC, tolerance = 1e-20, scale = 1)
   expect_equal(cvauc_se, cvauc_lst$se, tolerance = 1e-20, scale = 1)
-  sprintf("%.20f", cvauc_se)
-  sprintf("%.20f", cvauc_lst$se)
+  expect_equal(auc_lst_mean$point_est, cvauc_lst_mean$cvAUC, tolerance = 1e-20, scale = 1)
+  expect_equal(cvauc_se_mean, cvauc_lst_mean$se, tolerance = 1e-20, scale = 1)
+  # sprintf("%.20f", cvauc_se)
+  # sprintf("%.20f", cvauc_lst$se)
+  # sprintf("%.20f", cvauc_se_mean)
+  # sprintf("%.20f", cvauc_lst_mean$se)
 })

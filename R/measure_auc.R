@@ -36,6 +36,7 @@
 #' function; (2) the estimated influence function; and
 #' (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
+#' @importFrom data.table data.table `:=`
 #' @export
 measure_auc <- function(fitted_values, y, full_y = NULL,
                         C = rep(1, length(y)), Z = NULL,
@@ -49,23 +50,11 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
     est <- unlist(ROCR::performance(prediction.obj = preds, measure = "auc",
                                     x.measure = "cutoff")@y.values)
-    get_sens <- function(fitted_values, y) {
-        unlist(
-            lapply(
-                as.list(fitted_values),
-                function(x) mean(fitted_values[(y == 0)] <= x, na.rm = na.rm)
-            )
-        )
-    }
-    get_spec <- function(fitted_values, y) {
-        unlist(
-            lapply(
-                as.list(fitted_values),
-                function(x) mean(fitted_values[(y == 1)] >= x, na.rm = na.rm)
-            )
-        )
-    }
-    # marginal probabilities; can use the full data to estimate these
+    # compute sensitivity and specificity
+    n_0 <- sum(y == 0)    
+    n_1 <- sum(y == 1)
+    n_0_weighted <- sum((y == 0) * ipc_weights[C == 1])
+    n_1_weighted <- sum((y == 1) * ipc_weights[C == 1])
     if (is.null(full_y)) {
         p_0 <- mean(y == 0)
         p_1 <- mean(y == 1)
@@ -73,18 +62,20 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
         p_0 <- mean(full_y == 0)
         p_1 <- mean(full_y == 1)
     }
-    # sensitivity and specificity
-    sens <- get_sens(fitted_values, y)
-    spec <- get_spec(fitted_values, y)
-
-    # contributions from cases and controls
-    contrib_1 <- (y == 1) / p_1 * sens
-    contrib_0 <- (y == 0) / p_0 * spec
+    dt <- data.table::data.table(pred = as.numeric(fitted_values), label = as.numeric(y), 
+                                 initial_rownums = 1:length(as.numeric(y)))
+    # sort by ascending pred within descending label, i.e., all Y = 1 followed by all Y = 0
+    dt <- dt[order(pred, -xtfrm(label))]
+    dt[, sens := cumsum(label == 0) / n_0]
+    # sort by descending pred within ascending label
+    dt <- dt[order(-pred, label)]
+    dt[, spec := cumsum(label == 1) / n_1]
+    dt <- dt[order(initial_rownums)]
     # compute the EIF: if there is coarsening, do a correction
     if (!all(ipc_weights == 1)) {
         # gradient
-        obs_grad <- contrib_1 + contrib_0 -
-            ( (y == 0) / p_0 + (y == 1) / p_1 ) * est
+        obs_grad <- ((y == 0) / p_0) * (dt$spec - est) +
+            ((y == 1) / p_1) * (dt$sens - est)
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
             ipc_eif_mod <- SuperLearner::SuperLearner(
@@ -98,19 +89,21 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
         weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
-        # one-step correction to the estimate
-        cases <- y == 1
-        controls <- y == 0
-        f_comparison <- apply(
-            matrix(fitted_values), 1, function(x) x >= fitted_values
-        )
-        weights <- apply(
-            matrix(ipc_weights[C == 1]), 1, function(x) x * ipc_weights[C == 1]
-        )
-        y_mat <- apply(matrix(y), 1, function(x) x > y)
-        numerator <- sum(weights * f_comparison * y_mat)
-        denominator <- sum(weights * y_mat)
-        obs_est <- numerator / denominator
+        # compute weighted AUC
+        pred_order <- order(as.numeric(fitted_values), decreasing = TRUE)
+        ordered_preds <- as.numeric(fitted_values)[pred_order]
+        tp <- cumsum(ipc_weights[C == 1] * (y[pred_order] == 1))
+        fp <- cumsum(ipc_weights[C == 1] * (y[pred_order] == 0))
+        dups <- rev(duplicated(rev(ordered_preds)))
+        fp <- c(0, fp[!dups])
+        tp <- c(0, tp[!dups])
+        fp_x <- fp / n_0_weighted
+        tp_y <- tp / n_1_weighted
+        obs_est <- 0
+        for (i in 2:length(fp_x)) {
+            obs_est <- obs_est + 0.5 * (fp_x[i] - fp_x[i - 1]) * (tp_y[i] + tp_y[i - 1])
+        }
+        obs_est <- as.numeric(obs_est)
         if (ipc_est_type == "ipw") {
             est <- scale_est(obs_est, rep(0, length(grad)), scale = scale)
         } else {
@@ -118,8 +111,8 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
         }
     } else {
         # gradient
-        grad <- contrib_1 + contrib_0 -
-            ( (y == 0) / p_0 + (y == 1) / p_1 ) * est
+        grad <- ((y == 0) / p_0) * (dt$spec - est) +
+            ((y == 1) / p_1) * (dt$sens - est)
     }
     return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
 }
