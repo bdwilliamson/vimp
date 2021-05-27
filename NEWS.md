@@ -1,3 +1,13 @@
+# vimp 2.2.1
+
+## Major changes
+
+* Updated the internals of `measure_auc` to hew more closely to `ROCR` and `cvAUC`, using computational tricks to speed up weighted AUC and EIF computation.
+
+## Minor changes
+
+* Added tests for IPW AUC
+
 # vimp 2.2.0
 
 ## Major changes
