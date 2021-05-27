@@ -20,7 +20,9 @@ r2_two <- 1 - mse_two / true_var
 r2_full <- 1 - mse_full / true_var
 shapley_val_1 <- (1/2) * (r2_one - 0) + (1/2) * (r2_full - r2_two)
 shapley_val_2 <- (1/2) * (r2_two - 0) + (1/2) * (r2_full - r2_one)
-
+# create a binomial outcome, get true AUC
+y_bin <- as.numeric(y > 0)
+true_auc <- cvAUC::AUC(pnorm(1 + 0.5 * x[, 1] + 0.75 * x[, 2]), y_bin)
 # make this a two-phase study, assume that X is only measured on
 # subjects in the second phase; note C = 1 is inclusion
 C <- rbinom(n, size = 1, prob = exp(y) / (1 + exp(y)))
@@ -29,8 +31,6 @@ tmp_x[C == 0, ] <- NA
 x <- tmp_x
 x_df <- as.data.frame(x)
 ipc_weights <- 1 / predict(glm(C ~ y, family = "binomial"), type = "response")
-# create a binomial outcome
-y_bin <- as.numeric(y > 0)
 
 learners <- c("SL.glm", "SL.mean")
 V <- 2
@@ -44,13 +44,13 @@ test_that("VIM with inverse probability of coarsening weights works", {
              cvControl = list(V = V), env = environment())
   expect_equal(est$est, r2_one, tolerance = 0.2, scale = 1)
 })
+cc <- complete.cases(x_df)
+y_cc <- y_bin[cc]
+x_cc <- x_df[cc, ]
+weights_cc <- ipc_weights[cc]
 set.seed(121314)
 # test that AUC estimation with the mean works
-test_that("VIM with inverse probability of coarsening weights works", {
-  cc <- complete.cases(x_df)
-  y_cc <- y_bin[cc]
-  x_cc <- x_df[cc, ]
-  weights_cc <- ipc_weights[cc]
+test_that("IPW AUC estimation with the mean works", {
   sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
                          SL.library = "SL.mean", obsWeights = weights_cc)
   est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
@@ -59,6 +59,18 @@ test_that("VIM with inverse probability of coarsening weights works", {
                          ipc_weights = ipc_weights, ipc_fit_type = "SL",
                          SL.library = "SL.glm")
   expect_equal(est_auc$point_est, 0.5, tolerance = 0.001, scale = 1)
+})
+set.seed(121314)
+# test that AUC estimation with a better learner works
+test_that("IPW AUC estimation with a better learner works", {
+  sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
+                         SL.library = "SL.glm", obsWeights = weights_cc)
+  est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
+                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin), 
+                         ipc_est_type = "ipw",
+                         ipc_weights = ipc_weights, ipc_fit_type = "SL",
+                         SL.library = "SL.glm")
+  expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
 })
 set.seed(5678)
 # test that VIM with inverse probability of coarsening weights and cross-fitting works

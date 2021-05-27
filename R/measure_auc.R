@@ -92,8 +92,8 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
         # compute weighted AUC
         pred_order <- order(as.numeric(fitted_values), decreasing = TRUE)
         ordered_preds <- as.numeric(fitted_values)[pred_order]
-        tp <- cumsum(ipc_weights[C == 1] * (y[pred_order] == 1))
-        fp <- cumsum(ipc_weights[C == 1] * (y[pred_order] == 0))
+        tp <- cumsum(ipc_weights[C == 1][pred_order] * (y[pred_order] == 1))
+        fp <- cumsum(ipc_weights[C == 1][pred_order] * (y[pred_order] == 0))
         dups <- rev(duplicated(rev(ordered_preds)))
         fp <- c(0, fp[!dups])
         tp <- c(0, tp[!dups])
