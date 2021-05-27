@@ -82,7 +82,7 @@ predictiveness using the feature(s) of interest versus not." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.1</span>
       </span>
     </div>
 
@@ -381,21 +381,26 @@ within the <code>vim</code> object. This results in a list including:</p><dl'>
 <span class='no'>est_1</span> <span class='kw'>&lt;-</span> <span class='fu'>vim</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"accuracy"</span>,
            <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
            <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>),
-           <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in .createLibrary(SL.library): argument "SL.library" is missing, with no default</span></div><div class='input'>
+           <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+
 <span class='co'># using pre-computed fitted values</span>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>4747</span>)
+<span class='no'>V</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
 <span class='no'>full_fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>,
                                        <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>,
-                                       <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))</div><div class='output co'>#&gt; <span class='error'>Error in do.call("SuperLearner.CV.control", cvControl): object 'V' not found</span></div><div class='input'><span class='no'>full_fitted</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>full_fit</span>)$<span class='no'>pred</span></div><div class='output co'>#&gt; <span class='error'>Error in SuperLearner::predict.SuperLearner(full_fit): object 'full_fit' not found</span></div><div class='input'><span class='co'># fit the data with only X1</span>
+                                       <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))
+<span class='no'>full_fitted</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>full_fit</span>)$<span class='no'>pred</span>
+<span class='co'># fit the data with only X1</span>
 <span class='no'>reduced_fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>full_fitted</span>,
                                           <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>[, -<span class='fl'>2</span>, <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>],
                                           <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>,
-                                          <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))</div><div class='output co'>#&gt; <span class='error'>Error in do.call("SuperLearner.CV.control", cvControl): object 'V' not found</span></div><div class='input'><span class='no'>reduced_fitted</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>reduced_fit</span>)$<span class='no'>pred</span></div><div class='output co'>#&gt; <span class='error'>Error in SuperLearner::predict.SuperLearner(reduced_fit): object 'reduced_fit' not found</span></div><div class='input'>
+                                          <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>))
+<span class='no'>reduced_fitted</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span>(<span class='no'>reduced_fit</span>)$<span class='no'>pred</span>
+
 <span class='no'>est_2</span> <span class='kw'>&lt;-</span> <span class='fu'>vim</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>f1</span> <span class='kw'>=</span> <span class='no'>full_fitted</span>, <span class='kw'>f2</span> <span class='kw'>=</span> <span class='no'>reduced_fitted</span>,
             <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
             <span class='kw'>stratified</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"accuracy"</span>,
-            <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='no'>est_1</span>$<span class='no'>sample_splitting_folds</span>)</div><div class='output co'>#&gt; <span class='error'>Error in check_inputs(Y, X, f1, f2, indx): object 'full_fitted' not found</span></div><div class='input'>
-</div></pre>
+            <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='no'>est_1</span>$<span class='no'>sample_splitting_folds</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

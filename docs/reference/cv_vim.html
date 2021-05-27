@@ -83,7 +83,7 @@ feature(s) of interest versus not." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.1</span>
       </span>
     </div>
 
@@ -335,7 +335,7 @@ errors (<code>TRUE</code>, the default) or not (<code>FALSE</code>)?</p></td>
     <tr>
       <th>bootstrap</th>
       <td><p>should bootstrap-based standard error estimates be computed?
-Defaults to <code>FALSE</code> (and currently may only be used if 
+Defaults to <code>FALSE</code> (and currently may only be used if
 <code>sample_splitting = FALSE</code> and <code>cross_fitted_se = FALSE</code>).</p></td>
     </tr>
     <tr>
@@ -479,10 +479,12 @@ within the <code>vim</code> object. This results in a list including:</p><dl'>
 <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>1234</span>)
 <span class='no'>sample_splitting_folds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='make_folds.html'>make_folds</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>cross_fitting_folds</span>), <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 <span class='no'>full_cv_preds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extract_sampled_split_predictions.html'>extract_sampled_split_predictions</a></span>(
-    <span class='no'>full_cv_fit</span>, <span class='no'>sample_splitting_folds</span>, <span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
-)</div><div class='output co'>#&gt; <span class='error'>Error in extract_sampled_split_predictions(full_cv_fit, sample_splitting_folds,     full = TRUE): Please enter sample-splitting folds.</span></div><div class='input'><span class='no'>reduced_cv_preds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extract_sampled_split_predictions.html'>extract_sampled_split_predictions</a></span>(
-    <span class='no'>reduced_cv_fit</span>, <span class='no'>sample_splitting_folds</span>, <span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
-)</div><div class='output co'>#&gt; <span class='error'>Error in extract_sampled_split_predictions(reduced_cv_fit, sample_splitting_folds,     full = FALSE): Please enter sample-splitting folds.</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>5678</span>)
+    <span class='no'>full_cv_fit</span>, <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='no'>sample_splitting_folds</span>, <span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>
+)
+<span class='no'>reduced_cv_preds</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='extract_sampled_split_predictions.html'>extract_sampled_split_predictions</a></span>(
+    <span class='no'>reduced_cv_fit</span>, <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='no'>sample_splitting_folds</span>, <span class='kw'>full</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>5678</span>)
 <span class='co'># refit on the whole dataset</span>
 <span class='co'># (for estimating the efficient influence function)</span>
 <span class='no'>full_fit</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>SuperLearner</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span>(
@@ -499,8 +501,7 @@ within the <code>vim</code> object. This results in a list including:</p><dl'>
 <span class='kw'>f2</span> <span class='kw'>=</span> <span class='no'>fhat_red</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='no'>V</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"r_squared"</span>,
 <span class='kw'>cross_fitting_folds</span> <span class='kw'>=</span> <span class='no'>cross_fitting_folds</span>,
 <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='no'>sample_splitting_folds</span>,
-<span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,     cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2, sample_splitting_folds = sample_splitting_folds,     cross_fitting_folds = cross_fitting_folds, V = V, ss_V = ss_V,     cv = TRUE): object 'full_cv_preds' not found</span></div><div class='input'>
-</div></pre>
+<span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
