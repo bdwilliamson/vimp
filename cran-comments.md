@@ -1,9 +1,9 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Fixed ERRORs in CRAN checks
 * Fixed NOTEs in CRAN checks
-* Compute one-step estimators of variable importance if inverse probability of censoring weights are entered. You input the weights, indicator of coarsening, and observed variables, and `vimp` will handle the rest.
+* Updated sample-splitting performance (internal to vim, cv_vim, sp_vim)
+* Modified inverse probability weighting computation of AUC (measure_auc)
 
 ## Test environments
 * local ubuntu 18.04, R 4.0.2
