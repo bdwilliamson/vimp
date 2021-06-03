@@ -54,6 +54,5 @@ Suggests:
 License: MIT + file LICENSE
 URL: https://bdwilliamson.github.io/vimp/, https://github.com/bdwilliamson/vimp
 BugReports: https://github.com/bdwilliamson/vimp/issues
-LazyData: TRUE
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
