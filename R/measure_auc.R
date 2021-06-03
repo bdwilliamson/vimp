@@ -45,6 +45,8 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
                         ipc_eif_preds = rep(1, length(y)),
                         ipc_est_type = "aipw", scale = "identity",
                         na.rm = FALSE, ...) {
+    # bind "global vars" to pass R CMD check
+    initial_rownums <- label <- pred <- sens <- spec <- NULL
     # compute the point estimate (on only data with all obs, if IPC
     # weights are entered)
     preds <- ROCR::prediction(predictions = fitted_values, labels = y)
