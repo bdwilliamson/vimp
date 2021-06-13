@@ -1,9 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Fixed NOTEs in CRAN checks
-* Updated sample-splitting performance (internal to vim, cv_vim, sp_vim)
-* Modified inverse probability weighting computation of AUC (measure_auc)
+* Verified that LazyData is no longer specified
+* Increased tolerance slightly for several tests in testthat/
 
 ## Test environments
 * local ubuntu 18.04, R 4.0.2

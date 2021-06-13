@@ -1,3 +1,13 @@
+# vimp 2.2.2
+
+## Major changes
+
+None
+
+## Minor changes
+
+* Increased tolerance for AUC vs CV-AUC
+
 # vimp 2.2.1
 
 ## Major changes

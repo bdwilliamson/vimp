@@ -157,10 +157,10 @@ test_that("vimp and cvAUC agree", {
   cvauc_lst_mean <- cvAUC::ci.cvAUC(predictions = full_cv_mean_fit$SL.predict,
                                     labels = y,
                                     folds = full_cv_mean_fit$folds)
-  expect_equal(full_auc, cvauc_lst$cvAUC, tolerance = 1e-20, scale = 1)
-  expect_equal(cvauc_se, cvauc_lst$se, tolerance = 1e-20, scale = 1)
-  expect_equal(auc_lst_mean$point_est, cvauc_lst_mean$cvAUC, tolerance = 1e-20, scale = 1)
-  expect_equal(cvauc_se_mean, cvauc_lst_mean$se, tolerance = 1e-20, scale = 1)
+  expect_equal(full_auc, cvauc_lst$cvAUC, tolerance = 1e-15, scale = 1)
+  expect_equal(cvauc_se, cvauc_lst$se, tolerance = 1e-15, scale = 1)
+  expect_equal(auc_lst_mean$point_est, cvauc_lst_mean$cvAUC, tolerance = 1e-15, scale = 1)
+  expect_equal(cvauc_se_mean, cvauc_lst_mean$se, tolerance = 1e-15, scale = 1)
   # sprintf("%.20f", cvauc_se)
   # sprintf("%.20f", cvauc_lst$se)
   # sprintf("%.20f", cvauc_se_mean)
