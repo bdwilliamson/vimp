@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2021-06-03</h4>
+            <h4 class="date">2021-06-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -183,16 +183,16 @@
 <span class="co"># print out the matrix</span>
 <span class="no">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate   SE         95% CI                   VIMP &gt; 0 p-value   </span>
-<span class="co">#&gt; s = 2 0.12823737 0.06448902 [0.001841212, 0.2546335]  TRUE    0.02337739</span>
-<span class="co">#&gt; s = 3 0.12438453 0.06464609 [0.000000000, 0.2510885]  TRUE    0.02717200</span>
-<span class="co">#&gt; s = 6 0.11433828 0.06624980 [0.000000000, 0.2441855]  TRUE    0.04218574</span>
-<span class="co">#&gt; s = 5 0.11405330 0.06391531 [0.000000000, 0.2393250]  TRUE    0.03717577</span>
-<span class="co">#&gt; s = 1 0.10906452 0.06548765 [0.000000000, 0.2374179]  TRUE    0.04791437</span>
-<span class="co">#&gt; s = 7 0.10841762 0.06567755 [0.000000000, 0.2371433]  TRUE    0.04939420</span>
-<span class="co">#&gt; s = 4 0.10484943 0.06577546 [0.000000000, 0.2337670] FALSE    0.05546232</span>
-<span class="co">#&gt; s = 8 0.10163338 0.06563476 [0.000000000, 0.2302752] FALSE    0.06075473</span>
-<span class="co">#&gt; s = 9 0.09824791 0.06606975 [0.000000000, 0.2277422] FALSE    0.06850303</span></pre></body></html></div>
+<span class="co">#&gt;       Estimate   SE         95% CI         VIMP &gt; 0 p-value  </span>
+<span class="co">#&gt; s = 5 0.06336075 0.06391531 [0, 0.1886325] FALSE    0.1607638</span>
+<span class="co">#&gt; s = 3 0.06179919 0.06464609 [0, 0.1885032] FALSE    0.1695458</span>
+<span class="co">#&gt; s = 9 0.05759764 0.06606975 [0, 0.1870920] FALSE    0.1916668</span>
+<span class="co">#&gt; s = 2 0.04809368 0.06448902 [0, 0.1744898] FALSE    0.2279046</span>
+<span class="co">#&gt; s = 6 0.04394328 0.06624980 [0, 0.1737905] FALSE    0.2535702</span>
+<span class="co">#&gt; s = 1 0.04044132 0.06548765 [0, 0.1687947] FALSE    0.2684389</span>
+<span class="co">#&gt; s = 7 0.03780232 0.06567755 [0, 0.1665280] FALSE    0.2824514</span>
+<span class="co">#&gt; s = 8 0.03691387 0.06563476 [0, 0.1655556] FALSE    0.2869172</span>
+<span class="co">#&gt; s = 4 0.03481193 0.06577546 [0, 0.1637295] FALSE    0.2983146</span></pre></body></html></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -234,9 +234,9 @@
 
 <span class="no">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate  SE         95% CI                VIMP &gt; 0 p-value</span>
-<span class="co">#&gt; s = 6 0.2602956 0.02657007 [0.2082192, 0.312372] TRUE     0</span></pre></body></html></div>
-<p>This takes approximately 0.377 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
+<span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value</span>
+<span class="co">#&gt; s = 6 0.2648657 0.02648875 [0.2129487, 0.3167827] TRUE     0</span></pre></body></html></div>
+<p>This takes approximately 0.384 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><html><body><pre class="r"><span class="co"># set up the data, removing the columns for alcohol use and chd</span>
 <span class="no">x</span> <span class="kw">&lt;-</span> <span class="no">heart</span>[, -<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="fl">8</span>, <span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="no">heart</span>)[<span class="fl">2</span>])]
