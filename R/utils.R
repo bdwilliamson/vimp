@@ -329,6 +329,8 @@ make_kfold <- function(cross_fitting_folds,
 #'   predictiveness estimation?
 #' @param ss_folds the sample-splitting folds; only used if
 #'   \code{sample_splitting = TRUE}
+#' @param split the split to use for sample-splitting; only used if 
+#'   \code{sample_splitting = TRUE}
 #' @param verbose should we print progress? defaults to FALSE
 #' @param progress_bar the progress bar to print to (only if verbose = TRUE)
 #' @param indx the index to pass to progress bar (only if verbose = TRUE)
@@ -340,8 +342,8 @@ make_kfold <- function(cross_fitting_folds,
 #' @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
 #' @export
 run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
-                   univariate_SL.library = "SL.glm", s = 1, cv_folds = NULL,
-                   sample_splitting = TRUE, ss_folds = NULL, verbose = FALSE,
+                   univariate_SL.library = NULL, s = 1, cv_folds = NULL,
+                   sample_splitting = TRUE, ss_folds = NULL, split = 1, verbose = FALSE,
                    progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)),
                    cross_fitted_se = TRUE, ...) {
   # if verbose, print what we're doing and make sure that SL is verbose;
@@ -361,7 +363,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   }
   if (is.null(arg_lst$cvControl)) {
     arg_lst$cvControl <- list(V = V)
-  } else {
+  } else if (V > 1) {
     arg_lst$cvControl$V <- V
   }
   if (is.null(arg_lst$obsWeights)) {
@@ -376,14 +378,16 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   cf_folds_lst <- lapply(as.list(seq_len(V)), function(v) {
     which(cv_folds == v)
   })
-  arg_lst_cv$cvControl$validRows <- cf_folds_lst
+  if (V > 1) {
+    arg_lst_cv$cvControl$validRows <- cf_folds_lst  
+  }
   this_sl_lib <- SL.library
   # if univariate regression (i.e., length(s) == 1) then check univariate_SL.library
   # if it exists, use it; otherwise, use the normal library
   if (length(s) == 1) {
     if (!is.null(univariate_SL.library)) {
       this_sl_lib <- univariate_SL.library
-    }
+    } 
     requires_2d <- c("glmnet", "polymars")
     for (i in 1:length(requires_2d)) {
       if (any(grepl(requires_2d[i], this_sl_lib)) & (ncol(red_X) == 1)) {
@@ -399,22 +403,23 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     if (is.character(this_sl_lib)) {
       this_sl_lib <- eval(parse(text = this_sl_lib))
     }
-    fitted <- list()
-    for (v in seq_len(V)) {
-      train_v <- (cv_folds != v)
-      test_v <- (cv_folds == v)
-      fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE],
-                         X = red_X[train_v, , drop = FALSE],
-                         newX = red_X[test_v, , drop = FALSE],
-                         family = full_arg_lst_cv$family,
-                         obsWeights = full_arg_lst_cv$obsWeights[train_v])
-      fitted[[v]] <- fit$pred
-    }
-    if (sample_splitting) {
-      fhat <- fitted[ss_folds == 1]
+    preds <- list()
+    if (V == 1) {
+      # don't do anything; will fit at the end
     } else {
-      fhat <- fitted
+      for (v in seq_len(V)) {
+        train_v <- (cv_folds != v)
+        test_v <- (cv_folds == v)
+        fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE],
+                           X = red_X[train_v, , drop = FALSE],
+                           newX = red_X[test_v, , drop = FALSE],
+                           family = full_arg_lst_cv$family,
+                           obsWeights = full_arg_lst_cv$obsWeights[train_v])
+        preds[[v]] <- fit$pred
+      }
     }
+  } else if (V == 1) {
+    # once again, don't do anything; will fit at end
   } else {
     # fit a cross-validated Super Learner
     cv_fit <- do.call(SuperLearner::CV.SuperLearner, full_arg_lst_cv)
@@ -424,7 +429,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       sample_splitting_folds = switch((sample_splitting) + 1, rep(1, V), ss_folds)
     )
     # extract predictions on all validation rows
-    fitted <- extract_sampled_split_predictions(
+    preds <- extract_sampled_split_predictions(
       cvsl_obj = cv_fit, sample_splitting = FALSE, full = TRUE,
       sample_splitting_folds = rep(1, V)
     )
@@ -433,17 +438,22 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   if (!cross_fitted_se) {
     # refit to the entire dataset
     if (!is.character(this_sl_lib)) {
-      fit <- this_sl_lib(Y = Y, X = red_X, newX = red_X, family = arg_lst$family,
-                         obsWeights = arg_lst$obsWeights)
-      fitted <- fit$pred
+      fit <- this_sl_lib(Y = Y[ss_folds == split, ], 
+                         X = red_X[ss_folds == split, , drop = FALSE], 
+                         newX = red_X[ss_folds == split, , drop = FALSE], 
+                         family = arg_lst$family, 
+                         obsWeights = arg_lst$obsWeights[ss_folds == split])
+      preds <- fit$pred
     } else {
+      arg_lst$obsWeights <- weights[ss_folds == split]
       fit <- do.call(
         SuperLearner::SuperLearner,
         args = c(arg_lst, list(
-          Y = Y, X = red_X, SL.library = this_sl_lib
+          Y = Y[ss_folds == split, ], X = red_X[ss_folds == split, , drop = FALSE], 
+          SL.library = this_sl_lib
         ))
       )
-      fitted <- fit$SL.predict
+      preds <- fit$SL.predict
     }
   } else {
     fit <- NA
@@ -451,8 +461,8 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   if (verbose) {
     setTxtProgressBar(progress_bar, indx)
   }
-  return(list(cf_preds_lst = fhat, cf_folds = cv_folds,
-              ss_folds = ss_folds, fit = fit, fitted = fitted))
+  return(list(fit = fit, preds = preds, ss_folds = ss_folds,
+              cv_folds = cv_folds))
 }
 
 # -------------------------------------
