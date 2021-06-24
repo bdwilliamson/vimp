@@ -6,8 +6,7 @@
 #'
 #' @param predictiveness_full the estimated predictiveness of the regression including the covariate(s) of interest.
 #' @param predictiveness_reduced the estimated predictiveness of the regression excluding the covariate(s) of interest.
-#' @param se_full the estimated standard error for the predictiveness of the regression including the covariate(s) of interest.
-#' @param se_reduced the estimated standard error for the predictiveness of the regression excluding the covariate(s) of interest.
+#' @param se the estimated standard error of the variable importance estimator
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.
 #' @param alpha the desired type I error rate (defaults to 0.05).
 #'
@@ -19,9 +18,9 @@
 #' @importFrom stats pnorm
 #'
 #' @export
-vimp_hypothesis_test <- function(predictiveness_full, predictiveness_reduced, se_full, se_reduced, delta = 0, alpha = 0.05) {
+vimp_hypothesis_test <- function(predictiveness_full, predictiveness_reduced, se, delta = 0, alpha = 0.05) {
     # hypothesis test, based on t-statistic (requires independent splits to estimate full, reduced predictiveness)
-    test_statistic <- (predictiveness_full - predictiveness_reduced - delta)/(sqrt(se_full^2 + se_reduced^2))
+    test_statistic <- (predictiveness_full - predictiveness_reduced - delta)/(sqrt(se))
     p_value <- 1 - pnorm(test_statistic)
     hyp_test <- p_value < alpha
     return(list(test = hyp_test, p_value = p_value, test_statistic = test_statistic))
