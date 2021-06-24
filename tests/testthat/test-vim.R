@@ -17,8 +17,27 @@ r2_two <- 0.75 ^ 2 * 1 / true_var
 folds <- sample(rep(seq_len(2), length = length(y)))
 
 # set up a library for SuperLearner
-learners <- c("SL.glm")
+learners <- c("SL.glm", "SL.mean")
 V <- 5
+
+set.seed(4747)
+test_that("VIM without sample splitting works", {
+  est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
+               SL.library = learners, alpha = 0.05, cvControl = list(V = V),
+               env = environment(), sample_splitting = FALSE)
+  # check that the estimate is approximately correct
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+})
+set.seed(4747)
+test_that("ANOVA-VIM without sample splitting works", {
+  expect_warning(
+    est <- vim(Y = y, X = x, indx = 2, type = "anova", run_regression = TRUE,
+               SL.library = learners, alpha = 0.05, cvControl = list(V = V),
+               env = environment(), sample_splitting = FALSE)
+  )
+  # check that the estimate is approximately correct
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+})
 
 set.seed(1234)
 test_that("General variable importance estimates using internally-computed fitted values work", {
@@ -37,30 +56,25 @@ test_that("General variable importance estimates using internally-computed fitte
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check that influence curve worked
-  expect_length(est$eif_full, length(y))
+  expect_length(est$eif_full, length(y) / 2)
 })
 
+# fit the data with all covariates and sample-splitting
 set.seed(4747)
-test_that("VIM without sample splitting works", {
-  est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
-             SL.library = learners, alpha = 0.05, cvControl = list(V = V),
-             env = environment(), sample_splitting = FALSE)
-  # check that the estimate is approximately correct
-  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
-})
-
-# fit the data with all covariates
-set.seed(4747)
-full_fit <- SuperLearner::SuperLearner(Y = y, X = x, 
+full_fit <- SuperLearner::SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], 
                                        SL.library = learners, 
                                        cvControl = list(V = V))
-full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
+full_fitted <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
 # fit the data with only X1
-reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted, 
-                                          X = x[, -2, drop = FALSE], 
+full_fit_2 <- SuperLearner::SuperLearner(Y = y[folds == 2], X = x[folds == 2, ], 
+                                         SL.library = learners, 
+                                         cvControl = list(V = V))
+full_fitted_2 <- SuperLearner::predict.SuperLearner(full_fit_2, onlySL = TRUE)$pred
+reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted_2, 
+                                          X = x[folds == 2, -2, drop = FALSE], 
                                           SL.library = learners, 
                                           cvControl = list(V = V))
-reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
+reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 test_that("General variable importance estimates using externally-computed fitted values work", {
     # provide folds
     est <- vim(Y = y, X = x, indx = 2, type = "r_squared", 
@@ -80,7 +94,7 @@ test_that("General variable importance estimates using externally-computed fitte
 
 
 test_that("Measures of predictiveness work", {
-  full_rsquared <- est_predictiveness(full_fitted[folds == 1], y[folds == 1], 
+  full_rsquared <- est_predictiveness(full_fitted, y[folds == 1], 
                                       type = "r_squared")
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
   expect_length(full_rsquared$eif, sum(folds == 1))
@@ -96,12 +110,4 @@ test_that("Error messages work", {
     expect_error(vim(Y = y, X = as.data.frame(x), SL.library = learners,
                      type = "nonsense_type"))
     expect_error(vim(Y = y, X = X, SL.library = learners, indx = ncol(X) + 1))
-})
-test_that("ANOVA-based R^2 with pre-computed fitted values works", {
-  expect_warning(est <- vim(Y = y, X = x, f1 = full_fitted, 
-                            f2 = reduced_fitted, run_regression = FALSE, 
-                            indx = 2, type = "anova", 
-                            sample_splitting_folds = folds))
-  # check that the estimate is nearly correct
-  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
 })

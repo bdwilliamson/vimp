@@ -174,12 +174,15 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     # set up internal data -- based on complete cases only
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
+    X_cc <- subset(X, C == 1)
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
 
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
 
+    # set up folds for sample-splitting; if sample_splitting is FALSE, these 
+    # aren't actually folds
     if (is.null(sample_splitting_folds) | run_regression) {
         if (sample_splitting) {
             sample_splitting_folds <- make_folds(
@@ -189,73 +192,121 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             sample_splitting_folds <- rep(1, length(Y))
         }
     }
+    sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
 
     # if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
-        arg_lst <- list(...)
-        if (is.null(arg_lst$family)) {
-            arg_lst$family <- switch(
-                (length(unique(Y_cc)) == 2) + 1, stats::gaussian(),
-                stats::binomial()
-            )
-        }
-        X_cc <- subset(X, C == 1, drop = FALSE)
-        sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
-
-        # set up the reduced X
-        X_minus_s <- X_cc[, -indx, drop = FALSE]
-
-        # fit the Super Learner given the specified library
-        arg_lst_full <- c(arg_lst,
-                          list(
-                              Y = Y_cc,
-                              X = X_cc,
-                              SL.library = SL.library,
-                              obsWeights = weights_cc
-                          ))
-        full <- do.call(SuperLearner::SuperLearner, arg_lst_full, quote = TRUE)
-
-        # get the fitted values
-        fhat_ful <- SuperLearner::predict.SuperLearner(full, onlySL = TRUE)$pred
-
-        # fit the super learner on the reduced covariates:
-        # if the reduced set of covariates is empty, return the mean
-        # otherwise, if "r_squared" or "anova", regress the
-        # fitted values on the remaining covariates
-        arg_lst_redu <- arg_lst
-        if (ncol(X_minus_s) == 0) {
-            reduced <- NA
-            fhat_red <- mean(Y_cc)
-        } else {
-            if (full_type == "r_squared" || full_type == "anova") {
-                if (length(unique(fhat_ful)) == 1) {
-                    arg_lst_redu$Y <- Y_cc
-                } else {
-                    arg_lst_redu$family <- stats::gaussian()
-                    arg_lst_redu$Y <- fhat_ful
-                }
+        full_feature_vec <- 1:ncol(X_cc)
+        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library, 
+                              s = full_feature_vec, sample_splitting = sample_splitting, 
+                              ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE, 
+                              weights = weights_cc, cross_fitted_se = FALSE, ...)
+        red_split <- switch((sample_splitting) + 1, 1, 2)
+        red_Y <- Y_cc
+        if (full_type == "r_squared" || full_type == "anova") {
+            if (sample_splitting) {
+                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library, 
+                                        s = full_feature_vec, sample_splitting = sample_splitting, 
+                                        ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE, 
+                                        weights = weights_cc, cross_fitted_se = FALSE, ...)
+                red_Y <- matrix(NA, ncol = 1, nrow = nrow(Y_cc))
+                red_Y[sample_splitting_folds_cc == 2, ] <- full_sl_lst_2$preds
             } else {
-                arg_lst_redu$Y <- Y_cc
+                red_Y <- matrix(full_sl_lst$preds, ncol = 1)
             }
-            arg_lst_redu$X <- X_minus_s
-            arg_lst_redu$SL.library <- SL.library
-            arg_lst_redu$obsWeights <- weights_cc
-            reduced <- do.call(SuperLearner::SuperLearner, arg_lst_redu, quote = TRUE)
-
-            # get the fitted values
-            fhat_red <- SuperLearner::predict.SuperLearner(reduced,
-                                                           onlySL = TRUE)$pred
+            if (length(unique(red_Y)) == 1) {
+                red_Y <- Y_cc
+            }
         }
+        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 1, SL.library = SL.library, 
+                              s = full_feature_vec[-indx], sample_splitting = sample_splitting, 
+                              ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE, 
+                              weights = weights_cc, cross_fitted_se = FALSE, ...)
+        full <- full_sl_lst$fit
+        full_preds <- full_sl_lst$preds
+        reduced <- redu_sl_lst$fit
+        redu_preds <- redu_sl_lst$preds
+        # arg_lst <- list(...)
+        # if (is.null(arg_lst$family)) {
+        #     arg_lst$family <- switch(
+        #         (length(unique(Y_cc)) == 2) + 1, stats::gaussian(),
+        #         stats::binomial()
+        #     )
+        # }
+        # X_cc <- subset(X, C == 1, drop = FALSE)
+        # sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
+        # sample_splitting_folds_1 <- sample_splitting_folds_cc == 1
+        # sample_splitting_folds_2 <- switch(
+        #     (sample_splitting) + 1, 
+        #     sample_splitting_folds_cc == 1, sample_splitting_folds_cc == 2
+        # )
+        # 
+        # # set up the reduced X
+        # X_minus_s <- X_cc[, -indx, drop = FALSE]
+        # 
+        # # fit the Super Learner given the specified library
+        # arg_lst_full <- c(arg_lst,
+        #                   list(
+        #                       Y = Y_cc[sample_splitting_folds_1, ],
+        #                       X = X_cc[sample_splitting_folds_1, ],
+        #                       SL.library = SL.library,
+        #                       obsWeights = weights_cc[sample_splitting_folds_1]
+        #                   ))
+        # full <- do.call(SuperLearner::SuperLearner, arg_lst_full, quote = TRUE)
+        # 
+        # # get the fitted values
+        # full_preds <- SuperLearner::predict.SuperLearner(full, onlySL = TRUE)$pred
+        # 
+        # # fit the super learner on the reduced covariates:
+        # # if the reduced set of covariates is empty, return the mean
+        # # otherwise, if "r_squared" or "anova", regress the
+        # # fitted values on the remaining covariates
+        # arg_lst_redu <- arg_lst
+        # if (ncol(X_minus_s) == 0) {
+        #     reduced <- NA
+        #     redu_preds <- mean(Y_cc[sample_splitting_folds_2])
+        # } else {
+        #     if (full_type == "r_squared" || full_type == "anova") {
+        #         if (length(unique(full_preds)) == 1) {
+        #             arg_lst_redu$Y <- Y_cc[sample_splitting_folds_2, ]
+        #         } else {
+        #             arg_lst_redu$family <- stats::gaussian()
+        #             arg_lst_full_2 <- c(arg_lst,
+        #                                 list(
+        #                                     Y = Y_cc[sample_splitting_folds_2, ],
+        #                                     X = X_cc[sample_splitting_folds_2, ],
+        #                                     SL.library = SL.library,
+        #                                     obsWeights = weights_cc[sample_splitting_folds_2]
+        #                                 ))
+        #             full_2 <- do.call(SuperLearner::SuperLearner, arg_lst_full_2, quote = TRUE)
+        #             arg_lst_redu$Y <- SuperLearner::predict.SuperLearner(full_2, onlySL = TRUE)$pred
+        #         }
+        #     } else {
+        #         arg_lst_redu$Y <- Y_cc[sample_splitting_folds_2, ]
+        #     }
+        #     arg_lst_redu$X <- X_minus_s[sample_splitting_folds_2, , drop = FALSE]
+        #     arg_lst_redu$SL.library <- SL.library
+        #     arg_lst_redu$obsWeights <- weights_cc[sample_splitting_folds_2]
+        #     reduced <- do.call(SuperLearner::SuperLearner, arg_lst_redu, quote = TRUE)
+        # 
+        #     # get the fitted values
+        #     redu_preds <- SuperLearner::predict.SuperLearner(reduced, onlySL = TRUE)$pred
+        # }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
         check_fitted_values(Y = Y, f1 = f1, f2 = f2,
                             sample_splitting_folds = sample_splitting_folds,
                             cv = FALSE)
         sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
+        sample_splitting_folds_1 <- sample_splitting_folds_cc == 1
+        sample_splitting_folds_2 <- switch(
+            (sample_splitting) + 1, 
+            sample_splitting_folds_cc == 1, sample_splitting_folds_cc == 2
+        )
 
         # set up the fitted value objects
-        fhat_ful <- switch((length(f1) == nrow(Y)) + 1, f1, subset(f1, C == 1))
-        fhat_red <- switch((length(f2) == nrow(Y)) + 1, f2, subset(f2, C == 1))
+        full_preds <- switch((length(f1) == nrow(Y)) + 1, f1, subset(f1, C == 1))
+        redu_preds <- switch((length(f2) == nrow(Y)) + 1, f2, subset(f2, C == 1))
 
         full <- reduced <- NA
     }
@@ -267,7 +318,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     if (full_type == "anova") {
         # no sample-splitting, since no hypothesis testing
         est_lst <- measure_anova(
-            full = fhat_ful, reduced = fhat_red,
+            full = full_preds, reduced = redu_preds,
             y = Y_cc, full_y = Y_cc,
             C = C, Z = Z_in,
             ipc_weights = ipc_weights,
@@ -284,13 +335,12 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- NA
         se_redu <- NA
         if (bootstrap) {
-            se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red,
+            se <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
                                type = full_type, b = b)$se
         } else {
-            se <- vimp_se(eif = eif, na.rm = na.rm)
+            se <- sqrt(mean(eif ^ 2) / length(eif))
         }
     } else {
-        # only the point estimates need to be estimated on separate data splits
         # if no sample splitting, estimate on the whole data
         ss_folds_full <- switch((sample_splitting) + 1,
                                 rep(1, length(sample_splitting_folds_cc)),
@@ -298,9 +348,9 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         ss_folds_redu <- switch((sample_splitting) + 1,
                                 rep(2, length(sample_splitting_folds_cc)),
                                 sample_splitting_folds_cc)
-        predictiveness_full <- do.call(
+        predictiveness_full_lst <- do.call(
             est_predictiveness,
-            args = c(list(fitted_values = fhat_ful[ss_folds_full == 1],
+            args = c(list(fitted_values = full_preds,
                           y = Y_cc[ss_folds_full == 1, , drop = FALSE],
                           full_y = Y_cc,
                           type = full_type, C = C[sample_splitting_folds == 1],
@@ -310,23 +360,10 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                           ipc_est_type = ipc_est_type, na.rm = na.rm,
                           SL.library = SL.library),
                      arg_lst)
-        )$point_est
-        eif_full <- do.call(
+        )
+        predictiveness_redu_lst <- do.call(
             est_predictiveness,
-            args = c(list(fitted_values = fhat_ful,
-                          y = Y_cc,
-                          full_y = Y_cc,
-                          type = full_type, C = C,
-                          Z = Z_in,
-                          ipc_weights = ipc_weights,
-                          ipc_fit_type = "SL", scale = scale,
-                          ipc_est_type = ipc_est_type, na.rm = na.rm,
-                          SL.library = SL.library),
-                     arg_lst)
-        )$eif
-        predictiveness_redu <- do.call(
-            est_predictiveness,
-            args = c(list(fitted_values = fhat_red[ss_folds_redu == 2],
+            args = c(list(fitted_values = redu_preds,
                           y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
                           full_y = Y_cc,
                           type = full_type, C = C[sample_splitting_folds == 2],
@@ -336,48 +373,34 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                           ipc_est_type = ipc_est_type, na.rm = na.rm,
                           SL.library = SL.library),
                      arg_lst)
-        )$point_est
-        eif_redu <- do.call(
-            est_predictiveness,
-            args = c(list(fitted_values = fhat_red,
-                          y = Y_cc,
-                          full_y = Y_cc,
-                          type = full_type, C = C,
-                          Z = Z_in,
-                          ipc_weights = ipc_weights,
-                          ipc_fit_type = "SL", scale = scale,
-                          ipc_est_type = ipc_est_type, na.rm = na.rm,
-                          SL.library = SL.library),
-                     arg_lst)
-        )$eif
-        se_full <- vimp_se(eif = eif_full, na.rm = na.rm)
-        se_redu <- vimp_se(eif = eif_redu, na.rm = na.rm)
+        )
+        # compute the point estimates of predictiveness and variable importance
+        predictiveness_full <- predictiveness_full_lst$point_est
+        predictiveness_redu <- predictiveness_redu_lst$point_est
         est <- predictiveness_full - predictiveness_redu
         naive <- NA
+        # compute estimates of standard error
+        eif_full <- predictiveness_full_lst$eif
+        eif_redu <- predictiveness_redu_lst$eif
+        se_full <- sqrt(mean(eif_full ^ 2) / length(eif_full))
+        se_redu <- sqrt(mean(eif_redu ^ 2) / length(eif_redu))
         if (bootstrap & !sample_splitting) {
-            ses <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red, type = full_type,
+            ses <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds, type = full_type,
                                 b = b)
             se <- ses$se
             se_full <- ses$se_full
             se_redu <- ses$se_reduced
-        } else if (bootstrap) {
-            warning(paste0("Bootstrap-based standard error estimates are currently",
-                           " only available if sample_splitting = FALSE. Returning",
-                           " standard error estimates based on the efficient",
-                           " influence function instead."))
-            se <- sqrt(se_full ^ 2 * length(eif_full) / sum(ss_folds_full == 1)
-                       + se_redu ^ 2 * length(eif_redu) / sum(ss_folds_redu == 2))
         } else {
-            se <- sqrt(se_full ^ 2 * length(eif_full) / sum(ss_folds_full == 1)
-                       + se_redu ^ 2 * length(eif_redu) / sum(ss_folds_redu == 2))
+            if (bootstrap) {
+                warning(paste0("Bootstrap-based standard error estimates are currently",
+                               " only available if sample_splitting = FALSE. Returning",
+                               " standard error estimates based on the efficient",
+                               " influence function instead."))
+            }
+            se <- vimp_se(eif_full = eif_full, eif_reduced = eif_redu, 
+                          cross_fit = FALSE, sample_split = sample_splitting, 
+                          na.rm = na.rm)
         }
-    }
-    if (!bootstrap) {
-        var_full <- se_full ^ 2 * length(eif_full)
-        var_redu <- se_redu ^ 2 * length(eif_redu)
-    } else {
-        var_full <- se_full ^ 2
-        var_redu <- se_redu ^ 2
     }
 
     # if est < 0, set to zero and print warning
@@ -398,15 +421,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     )
 
     # perform a hypothesis test against the null of zero importance
-    if (full_type == "anova" || full_type == "regression") {
+    if (full_type == "anova" || full_type == "regression" || !sample_splitting) {
         hyp_test <- list(test = NA, p_value = NA, test_statistics = NA)
     } else {
         hyp_test <- vimp_hypothesis_test(
             predictiveness_full = predictiveness_full,
             predictiveness_reduced = predictiveness_redu,
-            se_full = sqrt(var_full / sum(ss_folds_full == 1)),
-            se_reduced = sqrt(var_redu / sum(ss_folds_redu == 2)),
-            delta = delta, alpha = alpha
+            se = se, delta = delta, alpha = alpha
         )
     }
     # create the output and return it (as a tibble)
@@ -417,7 +438,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     )
     output <- list(s = chr_indx,
                  SL.library = SL.library,
-                 full_fit = fhat_ful, red_fit = fhat_red,
+                 full_fit = full_preds, red_fit = redu_preds,
                  est = est,
                  naive = naive,
                  eif = eif_full - eif_redu,
