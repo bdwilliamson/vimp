@@ -219,20 +219,8 @@
 #'     reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE
 #' )
 #' set.seed(5678)
-#' # refit on the whole dataset
-#' # (for estimating the efficient influence function)
-#' full_fit <- SuperLearner::SuperLearner(
-#'     Y = Y, X = x, SL.library = learners, cvControl = list(V = V)
-#' )
-#' fhat_ful <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
-#' reduced_fit <- SuperLearner::SuperLearner(
-#'     Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners,
-#'     cvControl = list(V = V)
-#' )
-#' fhat_red <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 #' est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds,
-#' cross_fitted_f2 = reduced_cv_preds, f1 = fhat_ful,
-#' f2 = fhat_red, indx = 2, delta = 0, V = V, type = "r_squared",
+#' cross_fitted_f2 = reduced_cv_preds, indx = 2, delta = 0, V = V, type = "r_squared",
 #' cross_fitting_folds = cross_fitting_folds,
 #' sample_splitting_folds = sample_splitting_folds,
 #' run_regression = FALSE, alpha = 0.05, na.rm = TRUE)

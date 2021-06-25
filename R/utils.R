@@ -364,7 +364,9 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       arg_lst$cvControl$verbose <- TRUE
     }
   }
-  if (is.null(arg_lst$cvControl) | ((arg_lst$cvControl$V != V) & (cross_fitted_se))) {
+  arg_lst_bool <- is.null(arg_lst$cvControl) | 
+    ifelse(!is.null(arg_lst$cvControl), (arg_lst$cvControl$V != V) & (cross_fitted_se), FALSE)
+  if (arg_lst_bool) {
     arg_lst$cvControl <- list(V = V)
   } 
   if (is.null(arg_lst$obsWeights)) {
@@ -409,15 +411,19 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       fit <- NA
       preds <- NA
     } else {
+      pred_indx <- 1
       for (v in seq_len(V)) {
         train_v <- (cv_folds != v)
         test_v <- (cv_folds == v)
+        if (ss_folds[v] == split) {
         fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE],
                            X = red_X[train_v, , drop = FALSE],
                            newX = red_X[test_v, , drop = FALSE],
                            family = full_arg_lst_cv$family,
                            obsWeights = full_arg_lst_cv$obsWeights[train_v])
-        preds[[v]] <- fit$pred
+          preds[[pred_indx]] <- fit$pred  
+          pred_indx <- pred_indx + 1
+        } 
       }
     }
   } else if (V == 1) {

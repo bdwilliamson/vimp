@@ -44,76 +44,80 @@ V <- 2
 
 # fit the data with all covariates
 set.seed(5678)
-full_fit <- SuperLearner::SuperLearner(Y = y, X = x,
+y_1 <- y[folds == 1]
+x_1 <- subset(x, folds == 1)
+y_2 <- y[folds == 2]
+x_2 <- subset(x, folds == 2)
+full_fit <- SuperLearner::SuperLearner(Y = y_1, X = x_1,
                                        SL.library = learners,
                                        family = "binomial",
                                        cvControl = list(V = V))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 
 # fit the data with only X1
-reduced_fit <- SuperLearner::SuperLearner(Y = y, X = x[, -indx, drop = FALSE],
+reduced_fit <- SuperLearner::SuperLearner(Y = y_2, X = x_2[, -indx, drop = FALSE],
                                           SL.library = learners,
                                           family = "binomial",
                                           cvControl = list(V = V))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 
 set.seed(1234)
-est <- vimp_accuracy(Y = y, X = x, run_regression = TRUE,
-                     SL.library = learners, indx = 1, V = V,
-                     family = "binomial", env = environment())
+est_acc <- vimp_accuracy(Y = y, X = x, run_regression = TRUE,
+                         SL.library = learners, indx = 1, V = V,
+                         family = "binomial", env = environment())
 test_that("Accuracy-based variable importance works", {
-  expect_equal(est$est, t_acc[1], tolerance = 0.1, scale = 1)
+  expect_equal(est_acc$est, t_acc[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted,
-                   f2 = reduced_fitted, run_regression = FALSE,
-                   indx = 1, type = "accuracy", sample_splitting_folds = folds)
-  expect_equal(est_noncv$est, t_acc[1], tolerance = 0.1, scale = 1)
+  est_acc_noncv <- vim(Y = y, X = x, f1 = full_fitted,
+                       f2 = reduced_fitted, run_regression = FALSE,
+                       indx = 1, type = "accuracy", sample_splitting_folds = folds)
+  expect_equal(est_acc_noncv$est, t_acc[1], tolerance = 0.1, scale = 1)
 })
 
+set.seed(5678)
 test_that("AUC-based variable importance works", {
-  est <- vimp_auc(Y = y, X = x, cross_fitted_f1 = est$full_fit_lst,
-                  cross_fitted_f2 = est$red_fit_lst,
-                  f1 = est$full_fit, f2 = est$red_fit,
-                  cross_fitting_folds = est$cross_fitting_folds,
-                  sample_splitting_folds = est$sample_splitting_folds,
-                  run_regression = FALSE, indx = 1, V = V,
-                  env = environment())
-  expect_equal(est$est, t_auc[1], tolerance = 0.1, scale = 1)
+  est_auc <- vimp_auc(Y = y, X = x, cross_fitted_f1 = est_acc$full_fit,
+                      cross_fitted_f2 = est_acc$red_fit,
+                      cross_fitting_folds = est$cross_fitting_folds,
+                      sample_splitting_folds = est$sample_splitting_folds,
+                      run_regression = FALSE, indx = 1, V = V,
+                      env = environment())
+  expect_equal(est_auc$est, t_auc[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted,
-                   run_regression = FALSE, indx = 1, type = "auc",
-                   sample_splitting_folds = folds)
-  expect_equal(est_noncv$est, t_auc[1], tolerance = 0.1, scale = 1)
+  est_auc_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted,
+                       run_regression = FALSE, indx = 1, type = "auc",
+                       sample_splitting_folds = folds)
+  expect_equal(est_auc_noncv$est, t_auc[1], tolerance = 0.1, scale = 1)
 })
 
+set.seed(91011)
 test_that("Deviance-based variable importance works", {
-  est <- vimp_deviance(Y = y, X = x, cross_fitted_f1 = est$full_fit_lst,
-                       cross_fitted_f2 = est$red_fit_lst,
-                       f1 = est$full_fit, f2 = est$red_fit,
-                       cross_fitting_folds = est$cross_fitting_folds,
-                       sample_splitting_folds = est$sample_splitting_folds,
-                       run_regression = FALSE, indx = 1,
-                       V = V, env = environment())
-  expect_equal(est$est, t_dev[1], tolerance = 0.1, scale = 1)
+  est_dev <- vimp_deviance(Y = y, X = x, cross_fitted_f1 = est_acc$full_fit,
+                           cross_fitted_f2 = est_acc$red_fit,
+                           cross_fitting_folds = est$cross_fitting_folds,
+                           sample_splitting_folds = est$sample_splitting_folds,
+                           run_regression = FALSE, indx = 1,
+                           V = V, env = environment())
+  expect_equal(est_dev$est, t_dev[1], tolerance = 0.1, scale = 1)
 
-  est_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted,
-                   run_regression = FALSE, indx = 1, type = "deviance",
-                   sample_splitting_folds = folds)
-  expect_equal(est_noncv$est, t_dev[1], tolerance = 0.1, scale = 1)
+  est_dev_noncv <- vim(Y = y, X = x, f1 = full_fitted, f2 = reduced_fitted,
+                       run_regression = FALSE, indx = 1, type = "deviance",
+                       sample_splitting_folds = folds)
+  expect_equal(est_dev_noncv$est, t_dev[1], tolerance = 0.1, scale = 1)
 })
 
 test_that("Measures of predictiveness work", {
- auc_lst <- est_predictiveness(full_fitted, y,
+ auc_lst <- est_predictiveness(full_fitted, y_1,
                                 type = "auc")
  full_auc <- auc_lst$point_est
  expect_equal(full_auc, 0.96, tolerance = 0.1, scale = 1)
- full_acc <- est_predictiveness(full_fitted, y,
+ full_acc <- est_predictiveness(full_fitted, y_1,
                                 type = "accuracy")$point_est
  expect_equal(full_acc, 0.9, tolerance = 0.1, scale = 1)
- full_dev <- est_predictiveness(full_fitted, y,
+ full_dev <- est_predictiveness(full_fitted, y_1,
                                 type = "deviance")$point_est
  expect_equal(full_dev, 0.63, tolerance = 0.1, scale = 1)
- full_ce <- est_predictiveness(full_fitted, y,
+ full_ce <- est_predictiveness(full_fitted, y_1,
                                type = "cross_entropy")$point_est
  expect_equal(full_ce, -0.24, tolerance = 0.1, scale = 1)
 })
