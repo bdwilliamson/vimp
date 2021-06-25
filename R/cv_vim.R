@@ -19,11 +19,13 @@
 #'   validation data. If sample-splitting is requested, then these must
 #'   be estimated specially; see Details.
 #' @param f1 the fitted values from a flexible estimation technique
-#'   regressing Y on X. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+#'   regressing Y on X. If sample-splitting is requested, then these must be 
+#'   estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 #'   then this argument is not used.
 #' @param f2 the fitted values from a flexible estimation technique
 #'   regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-#'   \code{indx}. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+#'   \code{indx}. If sample-splitting is requested, then these must be 
+#'   estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 #'   then this argument is not used.
 #' @param indx the indices of the covariate(s) to calculate variable importance
 #'   for; defaults to 1.
@@ -253,7 +255,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000, ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
-    check_inputs(Y, X, f1, f2, indx)
+    check_inputs(Y, X, cross_fitted_f1, cross_fitted_f2, indx)
 
     if (sample_splitting) {
         ss_V <- V * 2
@@ -463,15 +465,15 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,
                             cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2,
                             sample_splitting_folds = sample_splitting_folds,
-                            cross_fitting_folds = cross_fitting_folds, V = V,
+                            cross_fitting_folds = cross_fitting_folds, 
+                            cross_fitted_se = cross_fitted_se, V = V,
                             ss_V = ss_V, cv = TRUE)
         # set up the fitted value objects (both are lists!)
-        fhat_ful_lst <- cross_fitted_f1
-        fhat_red_lst <- cross_fitted_f2
-        # the fits to the full dataset (for SEs);
-        # a list, if cross-fitted SEs are requested
-        fhat_ful <- f1
-        fhat_red <- f2
+        full_preds <- cross_fitted_f1
+        redu_preds <- cross_fitted_f2
+        # non-cross-fitted fits (only used if cross_fitted_se = FALSE)
+        non_cf_full_preds <- f1
+        non_cf_redu_preds <- f2
 
         full <- reduced <- NA
         cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
@@ -610,7 +612,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             eif_full_lst <- do.call(
                 est_predictiveness,
                 args = c(list(fitted_values = non_cf_full_preds,
-                              y = Y_cc, full_y = Y_cc, folds = cf_folds_full_cc,
+                              y = Y_cc[full_test_cc], full_y = Y_cc, folds = cf_folds_full_cc,
                               type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_full,
                               ipc_weights = ipc_weights,
                               ipc_fit_type = "SL", scale = scale,
@@ -622,7 +624,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             eif_redu_lst <- do.call(
                 est_predictiveness,
                 args = c(list(fitted_values = non_cf_redu_preds,
-                              y = Y_cc, full_y = Y_cc, folds = cf_folds_redu_cc,
+                              y = Y_cc[redu_test_cc], full_y = Y_cc, folds = cf_folds_redu_cc,
                               type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_redu,
                               ipc_weights = ipc_weights,
                               ipc_fit_type = "SL", scale = scale,
@@ -671,8 +673,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         predictiveness_redu <- predictiveness_redu_lst$point_est
         est <- predictiveness_full - predictiveness_redu
         naive <- NA
-        se_full <- sqrt(var_full / nrow(Y_cc))
-        se_redu <- sqrt(var_redu / nrow(Y_cc))
+        se_full <- sqrt(var_full / sum(full_test_cc))
+        se_redu <- sqrt(var_redu / sum(full_test_cc))
         if (bootstrap & !sample_splitting & !cross_fitted_se) {
             ses <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds, 
                                 f2 = non_cf_redu_preds, type = full_type, b = b)
