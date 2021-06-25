@@ -1,3 +1,13 @@
+# vimp 2.2.3
+
+## Major changes
+
+* Updated computation of standard errors. Some of the changes in v2.2.0 (namely, that the efficient influence function can be estimated on the entire dataset regardless of whether or not sample-splitting was requested) do not match with the form of the standard error estimator that we use. In this update, we ensure that independent data are used to estimate both the predictiveness *and* the efficient influence function; however, the nuisance functions may still be estimated on a larger portion of the data than in versions prior to v2.2.0 when cross-fitting is used.
+
+## Minor changes
+
+None
+
 # vimp 2.2.2
 
 ## Major changes
