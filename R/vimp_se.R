@@ -29,14 +29,20 @@ vimp_se <- function(eif_full, eif_reduced, cross_fit = TRUE, sample_split = TRUE
                 mean( (eif_full[[k]] - eif_reduced[[k]]) ^ 2)
             }
         ))
-        n <- sum(unlist(lapply(as.list(seq_len(length(eif_full))), length)))
-        se <- sqrt(mean(full_vars) / n)
+        n <- sum(unlist(lapply(as.list(seq_len(length(eif_full))), function(k) {
+            length(eif_full[[k]])
+        })))
+        se <- sqrt(mean(fold_vars) / n)
     } else if (!cross_fit & sample_split) {
         se <- sqrt( mean( (eif_full) ^ 2 ) / length(eif_full) + 
                         mean( (eif_reduced) ^ 2 ) / length(eif_reduced) )
     } else {
-        n_1 <- sum(unlist(lapply(as.list(seq_len(length(eif_full))), length)))
-        n_2 <- sum(unlist(lapply(as.list(seq_len(length(eif_reduced))), length)))
+        n_1 <- sum(unlist(lapply(as.list(seq_len(length(eif_full))), function(k) {
+            length(eif_full[[k]])
+        })))
+        n_2 <- sum(unlist(lapply(as.list(seq_len(length(eif_reduced))), function(k) {
+            length(eif_reduced[[k]])
+        })))
         full_indices <- as.list(seq_len(length(eif_full)))
         redu_indices <- as.list(seq_len(length(eif_reduced)))
         full_vars <- unlist(lapply(full_indices, function(k) {

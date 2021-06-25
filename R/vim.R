@@ -181,7 +181,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
 
-    # set up folds for sample-splitting; if sample_splitting is FALSE, these 
+    # set up folds for sample-splitting; if sample_splitting is FALSE, these
     # aren't actually folds
     if (is.null(sample_splitting_folds) | run_regression) {
         if (sample_splitting) {
@@ -197,17 +197,17 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     # if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
         full_feature_vec <- 1:ncol(X_cc)
-        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library, 
-                              s = full_feature_vec, sample_splitting = sample_splitting, 
-                              ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE, 
+        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
+                              s = full_feature_vec, sample_splitting = sample_splitting,
+                              ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE,
                               weights = weights_cc, cross_fitted_se = FALSE, ...)
         red_split <- switch((sample_splitting) + 1, 1, 2)
         red_Y <- Y_cc
         if (full_type == "r_squared" || full_type == "anova") {
             if (sample_splitting) {
-                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library, 
-                                        s = full_feature_vec, sample_splitting = sample_splitting, 
-                                        ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE, 
+                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
+                                        s = full_feature_vec, sample_splitting = sample_splitting,
+                                        ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE,
                                         weights = weights_cc, cross_fitted_se = FALSE, ...)
                 red_Y <- matrix(NA, ncol = 1, nrow = nrow(Y_cc))
                 red_Y[sample_splitting_folds_cc == 2, ] <- full_sl_lst_2$preds
@@ -218,13 +218,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 red_Y <- Y_cc
             }
         }
-        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 1, SL.library = SL.library, 
-                              s = full_feature_vec[-indx], sample_splitting = sample_splitting, 
-                              ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE, 
+        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 1, SL.library = SL.library,
+                              s = full_feature_vec[-indx], sample_splitting = sample_splitting,
+                              ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE,
                               weights = weights_cc, cross_fitted_se = FALSE, ...)
         full <- full_sl_lst$fit
-        full_preds <- full_sl_lst$preds
         reduced <- redu_sl_lst$fit
+        full_preds <- full_sl_lst$preds
         redu_preds <- redu_sl_lst$preds
         # arg_lst <- list(...)
         # if (is.null(arg_lst$family)) {
@@ -237,13 +237,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         # sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
         # sample_splitting_folds_1 <- sample_splitting_folds_cc == 1
         # sample_splitting_folds_2 <- switch(
-        #     (sample_splitting) + 1, 
+        #     (sample_splitting) + 1,
         #     sample_splitting_folds_cc == 1, sample_splitting_folds_cc == 2
         # )
-        # 
+        #
         # # set up the reduced X
         # X_minus_s <- X_cc[, -indx, drop = FALSE]
-        # 
+        #
         # # fit the Super Learner given the specified library
         # arg_lst_full <- c(arg_lst,
         #                   list(
@@ -253,10 +253,10 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         #                       obsWeights = weights_cc[sample_splitting_folds_1]
         #                   ))
         # full <- do.call(SuperLearner::SuperLearner, arg_lst_full, quote = TRUE)
-        # 
+        #
         # # get the fitted values
         # full_preds <- SuperLearner::predict.SuperLearner(full, onlySL = TRUE)$pred
-        # 
+        #
         # # fit the super learner on the reduced covariates:
         # # if the reduced set of covariates is empty, return the mean
         # # otherwise, if "r_squared" or "anova", regress the
@@ -288,7 +288,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         #     arg_lst_redu$SL.library <- SL.library
         #     arg_lst_redu$obsWeights <- weights_cc[sample_splitting_folds_2]
         #     reduced <- do.call(SuperLearner::SuperLearner, arg_lst_redu, quote = TRUE)
-        # 
+        #
         #     # get the fitted values
         #     redu_preds <- SuperLearner::predict.SuperLearner(reduced, onlySL = TRUE)$pred
         # }
@@ -300,7 +300,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         sample_splitting_folds_cc <- sample_splitting_folds[C == 1]
         sample_splitting_folds_1 <- sample_splitting_folds_cc == 1
         sample_splitting_folds_2 <- switch(
-            (sample_splitting) + 1, 
+            (sample_splitting) + 1,
             sample_splitting_folds_cc == 1, sample_splitting_folds_cc == 2
         )
 
@@ -397,8 +397,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                                " standard error estimates based on the efficient",
                                " influence function instead."))
             }
-            se <- vimp_se(eif_full = eif_full, eif_reduced = eif_redu, 
-                          cross_fit = FALSE, sample_split = sample_splitting, 
+            se <- vimp_se(eif_full = eif_full, eif_reduced = eif_redu,
+                          cross_fit = FALSE, sample_split = sample_splitting,
                           na.rm = na.rm)
         }
     }

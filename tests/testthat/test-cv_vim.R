@@ -16,8 +16,56 @@ r2_one <- 0.5 ^ 2 * 1 / true_var
 r2_two <- 0.75 ^ 2 * 1 / true_var
 
 # set up a library for SuperLearner
-learners <- c("SL.glm")
+learners <- c("SL.glm", "SL.mean")
 V <- 2
+
+set.seed(4747)
+test_that("CV-VIM without sample splitting works", {
+  est_no_ss <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
+                      run_regression = TRUE, SL.library = learners, 
+                      alpha = 0.05, delta = 0, cvControl = list(V = V),
+                      env = environment(), na.rm = TRUE, sample_splitting = FALSE)
+  # check variable importance estimate
+  expect_equal(est_no_ss$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(sprintf("%.20f", est_no_ss$est), "0.30520182351412900035")
+})
+
+set.seed(1234)
+test_that("CV-VIM with no SS and a single algorithm", {
+  est_no_ss_single_alg <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
+                                 run_regression = TRUE, SL.library = "SL.glm", 
+                                 alpha = 0.05, delta = 0, cvControl = list(V = V),
+                                 env = environment(), na.rm = TRUE, sample_splitting = FALSE)
+  # check variable importance estimate
+  expect_equal(est_no_ss_single_alg$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(sprintf("%.20f", est_no_ss_single_alg$est), "0.30507365177030854042")
+})
+
+set.seed(4747)
+test_that("CV-VIM with no SS, non-cross-fitted SE, multiple algorithms works", {
+  est_no_ss_non_cf_se <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
+                                           run_regression = TRUE, SL.library = learners, 
+                                           alpha = 0.05, delta = 0, cvControl = list(V = V),
+                                           env = environment(), na.rm = TRUE, 
+                                           sample_splitting = FALSE, cross_fitted_se = FALSE)
+  # check variable importance estimate
+  expect_equal(est_no_ss_non_cf_se$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(sprintf("%.20f", est_no_ss_non_cf_se$est), 
+               "0.30520253332832769644")
+})
+
+set.seed(5678)
+test_that("CV-VIM with no SS, non-cross-fitted SE, single algorithm works", {
+  est_no_ss_single_alg_non_cf_se <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
+                                           run_regression = TRUE, SL.library = "SL.glm", 
+                                           alpha = 0.05, delta = 0, cvControl = list(V = V),
+                                           env = environment(), na.rm = TRUE, 
+                                           sample_splitting = FALSE, cross_fitted_se = FALSE)
+  # check variable importance estimate
+  expect_equal(est_no_ss_single_alg_non_cf_se$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(sprintf("%.20f", est_no_ss_single_alg_non_cf_se$est), 
+               "0.30528802574381624924")
+})
 
 set.seed(101112)
 test_that("Cross-validated variable importance using internally-computed regressions works", {
@@ -41,17 +89,6 @@ test_that("Cross-validated variable importance using internally-computed regress
   # check that influence curve worked
   expect_length(est$eif, length(y))
 })
-
-set.seed(4747)
-test_that("CV-VIM without sample splitting works", {
-  est <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
-                run_regression = TRUE, SL.library = learners, 
-                alpha = 0.05, delta = 0, cvControl = list(V = V),
-                env = environment(), na.rm = TRUE, sample_splitting = FALSE)
-  # check variable importance estimate
-  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
-})
-
 
 # cross-fitted estimates of the full and reduced regressions,
 # for point estimate of variable importance.
