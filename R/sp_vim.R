@@ -199,25 +199,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         ), quote = TRUE
     )
     v_none <- v_none_lst$point_est
-    full_preds_none <- rep(mean(Y_cc), length(Y_cc))
-    ic_none <- do.call(
-        est_predictiveness,
-        args = c(list(
-            fitted_values = full_preds_none, y = Y_cc, full_y = Y_cc,
-            C = C, Z = Z_in, ipc_weights = ipc_weights, ipc_fit_type = "SL",
-            na.rm = na.rm, SL.library = SL.library), arg_lst
-        ), quote = TRUE
-    )$eif
-    ics_none <- do.call(
-        est_predictiveness_cv,
-        args = c(list(
-            fitted_values = fitted_none, y = Y_cc, full_y = Y_cc,
-            folds = cross_fitting_folds_cc,
-            C = C, Z = Z_in, folds_Z = cross_fitting_folds,
-            ipc_weights = ipc_weights, ipc_fit_type = "SL",
-            na.rm = na.rm, SL.library = SL.library), arg_lst
-        ), quote = TRUE
-    )$all_eifs
+    ic_none <- v_none_lst$eif
+    ics_none <- v_none_lst$all_eifs
 
     # get v, preds, ic for remaining non-null groups in S
     if (verbose) {
@@ -242,13 +225,13 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     if (verbose) {
         close(progress_bar)
     }
-    v_lst <- lapply(
+    v_eif_lst <- lapply(
         preds_lst,
         function(l)
             do.call(
                 est_predictiveness_cv,
                 args = c(
-                    list(fitted_values = l$cf_preds_lst,
+                    list(fitted_values = l$preds,
                          y = Y_cc[full_test_cc], full_y = Y_cc,
                          folds = cf_folds_full_cc, C = C[full_test],
                          Z = Z_in[full_test, , drop = FALSE],
@@ -259,16 +242,19 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                          SL.library = SL.library),
                     arg_lst
                 ), quote = TRUE
-            )$point_est
+            )
     )
-    if (cross_fitted_se) {
+    v_lst <- lapply(v_eif_lst, function(lst) lst$point_est)
+    ics_lst <- lapply(v_eif_lst, function(lst) lst$all_eifs)
+    ic_lst <- lapply(v_eif_lst, function(lst) lst$eif)
+    if (!cross_fitted_se) {
         ic_all_lst <- lapply(
             preds_lst,
             function(l)
                 do.call(
                     est_predictiveness_cv,
                     args = c(
-                        list(fitted_values = l$fitted,
+                        list(fitted_values = l$preds_non_cf_se,
                              y = Y_cc, full_y = Y_cc, folds = cross_fitting_folds_cc,
                              C = C, Z = Z_in, folds_Z = cross_fitting_folds,
                              ipc_weights = ipc_weights,
@@ -281,24 +267,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         )
         ics_lst <- lapply(ic_all_lst, function(l) l$all_eifs)
         ic_lst <- lapply(ic_all_lst, function(l) l$eif)
-    } else {
-        ic_lst <- lapply(
-            preds_lst,
-            function(l)
-                do.call(
-                    est_predictiveness,
-                    args = c(
-                        list(fitted_values = l$fitted,
-                             y = Y_cc, full_y = Y_cc,
-                             C = C, Z = Z_in, ipc_weights = ipc_weights,
-                             type = full_type, ipc_fit_type = "SL", scale = scale,
-                             ipc_est_type = ipc_est_type, na.rm = na.rm,
-                             SL.library = SL.library),
-                        arg_lst
-                    ), quote = TRUE
-                )$eif
-        )
-    }
+    } 
     v <- matrix(c(v_none, unlist(v_lst)))
     # do constrained wls
     if (verbose) {
@@ -326,8 +295,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     var_s_contribs <- vector("numeric", ncol(X) + 1)
     if (cross_fitted_se) {
         all_ics_lst <- c(list(ics_none), ics_lst)
-        ics <- lapply(as.list(seq_len(ss_V)), function(l) {
-            spvim_ics(Z, z_counts, W, v, est, G, c_n, lapply(all_ics_lst, function(v) v[[l]]),
+        ics <- lapply(as.list(seq_len(V)), function(l) {
+            spvim_ics(Z, z_counts, W, v, est, G, c_n, lapply(all_ics_lst, function(k) k[[l]]),
                       full_type)
         })
         for (j in 1:(ncol(X) + 1)) {
@@ -386,16 +355,15 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         ), quote = TRUE
     )
     v_none_0 <- v_none_0_lst$point_est
-    full_preds_none_0 <- rep(mean(Y_cc), length(Y_cc))
-    ic_none_0 <- do.call(
-        est_predictiveness,
-        args = c(list(
-            fitted_values = full_preds_none_0, y = Y_cc, full_y = Y_cc,
-            C = C, Z = Z_in, ipc_weights = ipc_weights, ipc_fit_type = "SL",
-            na.rm = na.rm, SL.library = SL.library), arg_lst
-        ), quote = TRUE
-    )$eif
-    se_none_0 <- sqrt(mean(ic_none_0 ^ 2, na.rm = na.rm)) /
+    ics_none_0 <- v_none_0_lst$all_eifs
+    ic_none_0 <- v_none_0_lst$eif
+    if (cross_fitted_se) {
+        var_none_0 <- mean(unlist(lapply(ics_none_0, 
+                                         function(ic) mean(ic ^ 2, na.rm = na.rm))))
+    } else {
+        var_none_0 <- mean(ic_none_0 ^ 2, na.rm = na.rm)
+    }
+    se_none_0 <- sqrt(var_none_0) /
         sqrt(length(cross_fitting_folds_cc) / 2)
     # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
@@ -423,11 +391,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     output <- list(s = as.character(1:ncol(X)),
                    SL.library = SL.library,
                    v = v,
-                   fit_lst = c(list(full_preds_none), lapply(preds_lst,
-                      function(l) l$fitted
-                   )),
                    preds_lst = c(list(preds_none), lapply(preds_lst,
-                       function(l) l$cf_preds_lst
+                       function(l) l$preds
                    )),
                    est = est,
                    ic_lst = all_ics_lst,
