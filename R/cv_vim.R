@@ -350,116 +350,6 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         redu_preds <- redu_sl_lst$preds
         non_cf_full_preds <- full_sl_lst$preds_non_cf_se
         non_cf_redu_preds <- redu_sl_lst$preds_non_cf_se
-        # arg_lst <- list(...)
-        # if (is.null(arg_lst$family)) {
-        #     arg_lst$family <- switch(
-        #         (length(unique(Y_cc)) == 2) + 1, stats::gaussian(),
-        #         stats::binomial()
-        #     )
-        # }
-        # if (is.null(arg_lst$cvControl)) {
-        #     arg_lst$cvControl <- list(V = V)
-        # }
-        # arg_lst_cv <- arg_lst
-        # arg_lst_cv$cvControl$V <- ss_V
-        # arg_lst_cv$innerCvControl <- rep(list(list(V = V)), ss_V)
-        # X_cc <- subset(X, C == 1, drop = FALSE)
-        # # set up the reduced X
-        # X_minus_s <- X_cc[, -indx, drop = FALSE]
-        # cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
-        # cf_folds_lst <- lapply(
-        #     as.list(seq_len(ss_V)), function(v) {
-        #         which(cross_fitting_folds_cc == v)
-        #     }
-        # )
-        # arg_lst_cv$cvControl$validRows <- cf_folds_lst
-        # # fit a cross-validated super learner to estimate the full and reduced
-        # # regression functions
-        # arg_lst_full_cv <- c(arg_lst_cv, list(
-        #     Y = Y_cc, X = X_cc, SL.library = SL.library, obsWeights = weights_cc
-        # ))
-        # full_cv_sl <- do.call(SuperLearner::CV.SuperLearner, arg_lst_full_cv)
-        # arg_lst_redu_cv <- c(arg_lst_cv, list(
-        #     Y = Y_cc, X = X_minus_s, SL.library = SL.library, obsWeights = weights_cc
-        # ))
-        # # special handling required for r-squared and anova
-        # if (full_type == "r_squared" | full_type == "anova") {
-        #     arg_lst_redu_cv$family <- gaussian()
-        #     if (any(grepl("cvControl", names(arg_lst_redu_cv)))) {
-        #         arg_lst_redu_cv$cvControl$stratifyCV <- FALSE
-        #     }
-        #     arg_lst_redu_cv$Y <- full_cv_sl$SL.predict
-        # }
-        # if (ncol(X_minus_s) == 0) {
-        #     redu_cv_sl <- NA
-        # } else {
-        #     redu_cv_sl <- do.call(SuperLearner::CV.SuperLearner, arg_lst_redu_cv)
-        # }
-        # # get a list of the predictions on the appropriate sampled-split folds,
-        # # for VIM estimation
-        # fhat_ful_lst <- extract_sampled_split_predictions(
-        #     cvsl_obj = full_cv_sl, sample_splitting = sample_splitting, full = TRUE,
-        #     sample_splitting_folds = switch((sample_splitting) + 1,
-        #                                     rep(1, ss_V),
-        #                                     sample_splitting_folds)
-        # )
-        # if (ncol(X_minus_s) == 0) {
-        #     fhat_red_lst <- lapply(cf_folds_lst, function(v) mean(Y_cc[v]))[sample_splitting_folds == 2]
-        # } else {
-        #     fhat_red_lst <- extract_sampled_split_predictions(
-        #         cvsl_obj = redu_cv_sl, sample_splitting = sample_splitting, full = FALSE,
-        #         sample_splitting_folds = switch((sample_splitting) + 1,
-        #                                         rep(2, ss_V),
-        #                                         sample_splitting_folds)
-        #     )
-        # }
-        # # if cross-fitted SEs are requested, get the appropriate list of predictions;
-        # # otherwise, refit
-        # if (cross_fitted_se) {
-        #     fhat_ful <- extract_sampled_split_predictions(
-        #         cvsl_obj = full_cv_sl, sample_splitting = FALSE,
-        #         sample_splitting_folds = rep(1, ss_V), full = TRUE
-        #     )
-        #     full <- NA
-        #     if (ncol(X_minus_s) == 0) {
-        #         fhat_red <- lapply(cf_folds_lst, function(v) mean(Y_cc[v]))
-        #     } else {
-        #         fhat_red <- extract_sampled_split_predictions(
-        #             cvsl_obj = redu_cv_sl, sample_splitting = FALSE,
-        #             sample_splitting_folds = rep(2, ss_V), full = FALSE
-        #         )
-        #     }
-        #     reduced <- NA
-        # } else {
-        #     arg_lst_full <- c(arg_lst, list(
-        #         Y = Y_cc, X = X_cc, SL.library = SL.library, obsWeights = weights_cc
-        #     ))
-        #     full <- do.call(SuperLearner::SuperLearner, arg_lst_full)
-        #     fhat_ful <- SuperLearner::predict.SuperLearner(full, onlySL = TRUE)$pred
-        #     # fit the super learner on the reduced covariates:
-        #     # if the reduced set of covariates is empty, return the mean
-        #     # otherwise, if "r_squared" or "anova", regress the
-        #     # fitted values on the remaining covariates
-        #     arg_lst_redu <- c(arg_lst, list(
-        #         Y = Y_cc, X = X_minus_s, SL.library = SL.library, obsWeights = weights_cc
-        #     ))
-        #     if (ncol(X_minus_s) == 0) {
-        #         reduced <- NA
-        #         fhat_red <- mean(Y_cc)
-        #     } else {
-        #         if (full_type == "r_squared" || full_type == "anova") {
-        #             if (length(unique(fhat_ful)) == 1) {
-        #                 arg_lst_redu$Y <- Y_cc
-        #             } else {
-        #                 arg_lst_redu$Y <- fhat_ful
-        #             }
-        #         } else {
-        #             arg_lst_redu$Y <- Y_cc
-        #         }
-        #         reduced <- do.call(SuperLearner::SuperLearner, arg_lst_redu)
-        #         fhat_red <- SuperLearner::predict.SuperLearner(reduced, onlySL = TRUE)$pred
-        #     }
-        # }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
         check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,
@@ -635,8 +525,6 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             eif_redu <- eif_redu_lst$eif
             var_full <- mean(eif_full ^ 2)
             var_redu <- mean(eif_redu ^ 2)
-            # var_full <- mean(unlist(lapply(eifs_full, function(x) as.numeric(t(x) %*% x / length(x)))))
-            # var_redu <- mean(unlist(lapply(eifs_redu, function(x) as.numeric(t(x) %*% x / length(x)))))
         } else {
             eif_full <- predictiveness_full_lst$eif
             eif_redu <- predictiveness_redu_lst$eif
@@ -646,28 +534,6 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             var_redu <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
                 mean(eifs_redu[[k]] ^ 2)
             })))
-            # eif_full <- do.call(
-            #     est_predictiveness,
-            #     args = c(list(fitted_values = fhat_ful, y = Y_cc,
-            #                   full_y = Y_cc, type = full_type, C = C,
-            #                   Z = Z_in, ipc_weights = ipc_weights,
-            #                   ipc_fit_type = "SL", scale = scale,
-            #                   ipc_est_type = ipc_est_type, na.rm = na.rm,
-            #                   SL.library = SL.library),
-            #              arg_lst), quote = TRUE
-            # )$eif
-            # eif_redu <- do.call(
-            #     est_predictiveness,
-            #     args = c(list(fitted_values = fhat_red,
-            #                   y = Y_cc, full_y = Y_cc, type = full_type, C = C,
-            #                   Z = Z_in, ipc_weights = ipc_weights,
-            #                   ipc_fit_type = "SL", scale = scale,
-            #                   ipc_est_type = ipc_est_type, na.rm = na.rm,
-            #                   SL.library = SL.library),
-            #              arg_lst), quote = TRUE
-            # )$eif
-            # var_full <- as.numeric(t(eif_full) %*% eif_full / length(eif_full))
-            # var_redu <- as.numeric(t(eif_redu) %*% eif_redu / length(eif_redu))
         }
         predictiveness_full <- predictiveness_full_lst$point_est
         predictiveness_redu <- predictiveness_redu_lst$point_est
