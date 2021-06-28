@@ -78,8 +78,8 @@ set.seed(5678)
 test_that("AUC-based variable importance works", {
   est_auc <- vimp_auc(Y = y, X = x, cross_fitted_f1 = est_acc$full_fit,
                       cross_fitted_f2 = est_acc$red_fit,
-                      cross_fitting_folds = est$cross_fitting_folds,
-                      sample_splitting_folds = est$sample_splitting_folds,
+                      cross_fitting_folds = est_acc$cross_fitting_folds,
+                      sample_splitting_folds = est_acc$sample_splitting_folds,
                       run_regression = FALSE, indx = 1, V = V,
                       env = environment())
   expect_equal(est_auc$est, t_auc[1], tolerance = 0.1, scale = 1)
@@ -94,8 +94,8 @@ set.seed(91011)
 test_that("Deviance-based variable importance works", {
   est_dev <- vimp_deviance(Y = y, X = x, cross_fitted_f1 = est_acc$full_fit,
                            cross_fitted_f2 = est_acc$red_fit,
-                           cross_fitting_folds = est$cross_fitting_folds,
-                           sample_splitting_folds = est$sample_splitting_folds,
+                           cross_fitting_folds = est_acc$cross_fitting_folds,
+                           sample_splitting_folds = est_acc$sample_splitting_folds,
                            run_regression = FALSE, indx = 1,
                            V = V, env = environment())
   expect_equal(est_dev$est, t_dev[1], tolerance = 0.1, scale = 1)
