@@ -415,7 +415,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       for (v in seq_len(V)) {
         train_v <- (cv_folds != v)
         test_v <- (cv_folds == v)
-        if (ss_folds[v] == split) {
+        if (ss_folds[v] == split | !sample_splitting) {
         fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE],
                            X = red_X[train_v, , drop = FALSE],
                            newX = red_X[test_v, , drop = FALSE],
