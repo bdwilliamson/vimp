@@ -29,35 +29,36 @@ learners <- c("SL.glm", "SL.mean")
 V <- 2
 
 # fit the data with all covariates
+set.seed(1234)
 full_fit_1 <- SuperLearner::SuperLearner(Y = y_samp, 
-                                         X = x_samp,
+                                         X = as.data.frame(x_samp),
                            SL.library = learners, cvControl = list(V = V))
 full_fitted_1 <- SuperLearner::predict.SuperLearner(full_fit_1)$pred
 
 full_fit_2 <- SuperLearner::SuperLearner(Y = y_nsamp,
-                                         X = x_nsamp, 
+                                         X = as.data.frame(x_nsamp), 
                            SL.library = learners, cvControl = list(V = V))
 full_fitted_2 <- SuperLearner::predict.SuperLearner(full_fit_2)$pred
 
 # fit the first split; importance for X2
 reduced_fit_1 <- SuperLearner::SuperLearner(Y = full_fitted_1, 
-                              X = x_samp[, -2, drop = FALSE], 
+                              X = as.data.frame(x_samp[, -2, drop = FALSE]), 
                               SL.library = learners, cvControl = list(V = V))
 reduced_fitted_1 <- SuperLearner::predict.SuperLearner(reduced_fit_1)$pred
 
 # fit the second split; importance for X2
 reduced_fit_2 <- SuperLearner::SuperLearner(Y = full_fitted_2, 
-                              X = x_nsamp[, -2, drop = FALSE], 
+                              X = as.data.frame(x_nsamp[, -2, drop = FALSE]), 
                               SL.library = learners, cvControl = list(V = V))
 reduced_fitted_2 <- SuperLearner::predict.SuperLearner(reduced_fit_2)$pred
 
 test_that("Averaging variable importance estimates works", {
   est_1 <- vim(Y = y_samp, f1 = full_fitted_1, f2 = reduced_fitted_1, 
                run_regression = FALSE, indx = 2, type = "r_squared", 
-               sample_splitting_folds = folds)
+               sample_splitting = FALSE)
   est_2 <- vim(Y = y_nsamp, f1 = full_fitted_2, f2 = reduced_fitted_2, 
                run_regression = FALSE, indx = 2, type = "r_squared", 
-               sample_splitting_folds = folds)
+               sample_splitting = FALSE)
 
   est <- average_vim(est_1, est_2)
   expect_equal(est$est, r2_two, 
