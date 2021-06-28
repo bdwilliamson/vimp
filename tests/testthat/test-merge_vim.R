@@ -49,13 +49,14 @@ reduced_fit_2 <- SuperLearner::SuperLearner(Y = full_fitted_1,
                               SL.library = learners, cvControl = list(V = V))
 reduced_fitted_2 <- SuperLearner::predict.SuperLearner(reduced_fit_2)$pred
 
+set.seed(4747)
 test_that("Merging variable importance estimates works", {
   est_1 <- vim(Y = y, f1 = full_fitted_1, f2 = reduced_fitted_1, 
                run_regression = FALSE, indx = 2, type = "r_squared", 
                sample_splitting_folds = folds)
-  est_2 <- vim(Y = y, f1 = full_fitted_2, f2 = reduced_fitted_2, 
-               run_regression = FALSE, indx = 1, type = "r_squared", 
-               sample_splitting_folds = folds)
+  expect_warning(est_2 <- vim(Y = y, f1 = full_fitted_2, f2 = reduced_fitted_2, 
+                              run_regression = FALSE, indx = 1, type = "r_squared", 
+                              sample_splitting_folds = folds))
 
   merged_ests <- merge_vim(est_1, est_2)
   expect_equal(merged_ests$est[1], r2_two, tolerance = 0.2, scale = 1)

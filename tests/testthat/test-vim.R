@@ -30,7 +30,7 @@ test_that("VIM without sample splitting works", {
 })
 set.seed(4747)
 test_that("ANOVA-VIM without sample splitting works", {
-  expect_warning(
+  expect_message(
     est <- vim(Y = y, X = x, indx = 2, type = "anova", run_regression = TRUE,
                SL.library = learners, alpha = 0.05, cvControl = list(V = V),
                env = environment(), sample_splitting = FALSE)
