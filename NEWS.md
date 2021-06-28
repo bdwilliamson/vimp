@@ -6,7 +6,7 @@
 
 ## Minor changes
 
-None
+* Added explicit-value tests for point estimates throughout testthat/
 
 # vimp 2.2.2
 
