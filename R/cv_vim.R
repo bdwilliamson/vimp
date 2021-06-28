@@ -288,6 +288,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             sample_splitting_folds <- rep(1, ss_V)
         }
     }
+    cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
 
     # if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
@@ -295,7 +296,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = ss_V, 
                               SL.library = SL.library, s = full_feature_vec,
                               sample_splitting = sample_splitting, 
-                              cv_folds = cross_fitting_folds,
+                              cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = 1,
                               verbose = FALSE, weights = weights_cc, 
                               cross_fitted_se = cross_fitted_se, ...)
@@ -316,7 +317,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                         SL.library = SL.library, s = full_feature_vec,
                                         sample_splitting = FALSE, 
                                         ss_folds = rep(2, nrow(Y_cc)), split = 2,
-                                        cv_folds = cross_fitting_folds,
+                                        cv_folds = cross_fitting_folds_cc,
                                         verbose = FALSE, weights = weights_cc, 
                                         cross_fitted_se = FALSE, ...)
                 red_Y <- matrix(full_sl_lst_2$preds, ncol = 1)
@@ -328,7 +329,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = ss_V, 
                               SL.library = SL.library, s = full_feature_vec[-indx],
                               sample_splitting = sample_splitting, 
-                              cv_folds = cross_fitting_folds,
+                              cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = red_split,
                               verbose = FALSE, weights = weights_cc, 
                               cross_fitted_se = cross_fitted_se, ...)
@@ -363,14 +364,13 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     # calculate the estimators, EIFs
     if (full_type == "anova") {
         # no sample-splitting, since no hypothesis testing
-        est_lst <- sapply(
-            1:V,
+        est_lst <- lapply(as.list(seq_len(V)),
             function(v)
                 do.call(
                     measure_anova,
                     args = c(
-                        list(full = fhat_ful_lst[[v]],
-                             reduced = fhat_red_lst[[v]],
+                        list(full = full_preds[[v]],
+                             reduced = redu_preds[[v]],
                              y = Y_cc[cross_fitting_folds_cc == v],
                              full_y = Y_cc,
                              C = C[cross_fitting_folds == v],
@@ -383,49 +383,27 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                              SL.library = SL.library),
                         arg_lst
                     )
-                ),
-            simplify = FALSE
+                )
         )
         point_ests <- unlist(lapply(est_lst, function(x) x$point_est))
         naives <- unlist(lapply(est_lst, function(x) x$naive))
         est <- mean(point_ests)
         naive <- mean(naives)
         if (cross_fitted_se) {
-            eif_lst <- sapply(
-                1:V,
-                function(v)
-                    do.call(
-                        measure_anova,
-                        args = c(
-                            list(full = fhat_ful[[v]],
-                                 reduced = fhat_red[[v]],
-                                 y = Y_cc[cross_fitting_folds_cc == v],
-                                 full_y = Y_cc,
-                                 C = C[cross_fitting_folds == v],
-                                 Z = Z_in[cross_fitting_folds == v, ,
-                                          drop = FALSE],
-                                 folds_Z = cross_fitting_folds,
-                                 ipc_weights = ipc_weights[cross_fitting_folds == v],
-                                 ipc_fit_type = "SL", na.rm = na.rm,
-                                 ipc_est_type = ipc_est_type, scale = scale,
-                                 SL.library = SL.library),
-                            arg_lst
-                        )
-                    ),
-                simplify = FALSE
-            )
+            eifs_full <- NA
+            eifs_redu <- NA
             eif_lst <- unlist(lapply(est_lst, function(x) x$eif))
-            se <- sqrt(mean(unlist(lapply(eif_lst, function(x) t(x) %*% x / length(x)))))
+            se <- sqrt(mean(unlist(lapply(eif_lst, function(x) t(x) %*% x / length(x)))) / nrow(Y_cc))
         } else {
             eif <- measure_anova(
-                full = fhat_ful, reduced = fhat_red,
+                full = non_cf_full_preds, reduced = non_cf_redu_preds,
                 y = Y_cc, full_y = Y_cc,
                 C = C, Z = Z_in,
                 ipc_weights = ipc_weights,
                 ipc_fit_type = "SL", na.rm = na.rm,
                 SL.library = SL.library, arg_lst
             )$eif
-            se <- vimp_se(eif = eif, na.rm = na.rm)
+            se <- sqrt(mean(eif^2) / nrow(Y_cc))
         }
         predictiveness_full <- NA
         predictiveness_redu <- NA

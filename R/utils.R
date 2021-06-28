@@ -162,7 +162,7 @@ get_full_type <- function(type) {
     stop("We currently do not support the entered variable importance parameter.")
   }
   if (full_type == "anova" ) {
-    warning(paste0("Hypothesis testing is not available for type = 'anova'. ",
+    message(paste0("Hypothesis testing is not available for type = 'anova'. ",
                    "If you want an R-squared-based hypothesis test, please enter ",
                    "type = 'r_squared'."))
   }
@@ -435,7 +435,8 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     fit <- do.call(SuperLearner::CV.SuperLearner, full_arg_lst_cv)
     # extract predictions on correct sampled-split folds
     preds <- extract_sampled_split_predictions(
-      cvsl_obj = fit, sample_splitting = sample_splitting, full = all(s == 1:ncol(X)),
+      cvsl_obj = fit, sample_splitting = sample_splitting, 
+      full = switch((sample_splitting) + 1, TRUE, all(s == 1:ncol(X))),
       sample_splitting_folds = switch((sample_splitting) + 1, rep(1, V), ss_folds)
     )
   }
