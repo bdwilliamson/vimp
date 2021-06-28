@@ -216,14 +216,16 @@ be estimated specially; see Details.</p></td>
     <tr>
       <th>f1</th>
       <td><p>the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+regressing Y on X. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>f2</th>
       <td><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+<code>indx</code>. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
@@ -488,20 +490,8 @@ within the <code>vim</code> object. This results in a list including:</p><dl>
 <span class='r-in'>    <span class='va'>reduced_cv_fit</span>, sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>FALSE</span></span>
 <span class='r-in'><span class='op'>)</span></span>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>5678</span><span class='op'>)</span></span>
-<span class='r-in'><span class='co'># refit on the whole dataset</span></span>
-<span class='r-in'><span class='co'># (for estimating the efficient influence function)</span></span>
-<span class='r-in'><span class='va'>full_fit</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span></span>
-<span class='r-in'>    Y <span class='op'>=</span> <span class='va'>Y</span>, X <span class='op'>=</span> <span class='va'>x</span>, SL.library <span class='op'>=</span> <span class='va'>learners</span>, cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='va'>V</span><span class='op'>)</span></span>
-<span class='r-in'><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>fhat_ful</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>full_fit</span>, onlySL <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span></span>
-<span class='r-in'><span class='va'>reduced_fit</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span></span>
-<span class='r-in'>    Y <span class='op'>=</span> <span class='va'>Y</span>, X <span class='op'>=</span> <span class='va'>x</span><span class='op'>[</span>, <span class='op'>-</span><span class='va'>indx</span>, drop <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>]</span>, SL.library <span class='op'>=</span> <span class='va'>learners</span>,</span>
-<span class='r-in'>    cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='va'>V</span><span class='op'>)</span></span>
-<span class='r-in'><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>fhat_red</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>reduced_fit</span>, onlySL <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span></span>
 <span class='r-in'><span class='va'>est</span> <span class='op'>&lt;-</span> <span class='fu'>cv_vim</span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span>, cross_fitted_f1 <span class='op'>=</span> <span class='va'>full_cv_preds</span>,</span>
-<span class='r-in'>cross_fitted_f2 <span class='op'>=</span> <span class='va'>reduced_cv_preds</span>, f1 <span class='op'>=</span> <span class='va'>fhat_ful</span>,</span>
-<span class='r-in'>f2 <span class='op'>=</span> <span class='va'>fhat_red</span>, indx <span class='op'>=</span> <span class='fl'>2</span>, delta <span class='op'>=</span> <span class='fl'>0</span>, V <span class='op'>=</span> <span class='va'>V</span>, type <span class='op'>=</span> <span class='st'>"r_squared"</span>,</span>
+<span class='r-in'>cross_fitted_f2 <span class='op'>=</span> <span class='va'>reduced_cv_preds</span>, indx <span class='op'>=</span> <span class='fl'>2</span>, delta <span class='op'>=</span> <span class='fl'>0</span>, V <span class='op'>=</span> <span class='va'>V</span>, type <span class='op'>=</span> <span class='st'>"r_squared"</span>,</span>
 <span class='r-in'>cross_fitting_folds <span class='op'>=</span> <span class='va'>cross_fitting_folds</span>,</span>
 <span class='r-in'>sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>,</span>
 <span class='r-in'>run_regression <span class='op'>=</span> <span class='cn'>FALSE</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>

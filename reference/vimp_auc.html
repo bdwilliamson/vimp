@@ -210,14 +210,16 @@ be estimated specially; see Details.</p></td>
     <tr>
       <th>f1</th>
       <td><p>the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+regressing Y on X. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>f2</th>
       <td><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+<code>indx</code>. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
@@ -423,7 +425,6 @@ within the <code>vim</code> object. This results in a list including:</p><dl>
 <span class='r-in'><span class='va'>est</span> <span class='op'>&lt;-</span> <span class='fu'>vimp_auc</span><span class='op'>(</span><span class='va'>y</span>, <span class='va'>x</span>, indx <span class='op'>=</span> <span class='fl'>2</span>,</span>
 <span class='r-in'>           alpha <span class='op'>=</span> <span class='fl'>0.05</span>, run_regression <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
 <span class='r-in'>           SL.library <span class='op'>=</span> <span class='va'>learners</span>, V <span class='op'>=</span> <span class='fl'>2</span>, cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Original estimate &lt; 0; returning zero.</span>
 <span class='r-in'></span>
 </code></pre></div>
   </div>

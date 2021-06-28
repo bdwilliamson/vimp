@@ -155,8 +155,7 @@
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>vimp_hypothesis_test</span><span class='op'>(</span>
   <span class='va'>predictiveness_full</span>,
   <span class='va'>predictiveness_reduced</span>,
-  <span class='va'>se_full</span>,
-  <span class='va'>se_reduced</span>,
+  <span class='va'>se</span>,
   delta <span class='op'>=</span> <span class='fl'>0</span>,
   alpha <span class='op'>=</span> <span class='fl'>0.05</span>
 <span class='op'>)</span></code></pre></div>
@@ -173,12 +172,8 @@
       <td><p>the estimated predictiveness of the regression excluding the covariate(s) of interest.</p></td>
     </tr>
     <tr>
-      <th>se_full</th>
-      <td><p>the estimated standard error for the predictiveness of the regression including the covariate(s) of interest.</p></td>
-    </tr>
-    <tr>
-      <th>se_reduced</th>
-      <td><p>the estimated standard error for the predictiveness of the regression excluding the covariate(s) of interest.</p></td>
+      <th>se</th>
+      <td><p>the estimated standard error of the variable importance estimator</p></td>
     </tr>
     <tr>
       <th>delta</th>

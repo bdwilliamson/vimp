@@ -153,11 +153,12 @@
   X <span class='op'>=</span> <span class='cn'>NULL</span>,
   V <span class='op'>=</span> <span class='fl'>5</span>,
   SL.library <span class='op'>=</span> <span class='st'>"SL.glm"</span>,
-  univariate_SL.library <span class='op'>=</span> <span class='st'>"SL.glm"</span>,
+  univariate_SL.library <span class='op'>=</span> <span class='cn'>NULL</span>,
   s <span class='op'>=</span> <span class='fl'>1</span>,
   cv_folds <span class='op'>=</span> <span class='cn'>NULL</span>,
   sample_splitting <span class='op'>=</span> <span class='cn'>TRUE</span>,
   ss_folds <span class='op'>=</span> <span class='cn'>NULL</span>,
+  split <span class='op'>=</span> <span class='fl'>1</span>,
   verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
   progress_bar <span class='op'>=</span> <span class='cn'>NULL</span>,
   indx <span class='op'>=</span> <span class='fl'>1</span>,
@@ -206,6 +207,11 @@ predictiveness estimation?</p></td>
     <tr>
       <th>ss_folds</th>
       <td><p>the sample-splitting folds; only used if
+<code>sample_splitting = TRUE</code></p></td>
+    </tr>
+    <tr>
+      <th>split</th>
+      <td><p>the split to use for sample-splitting; only used if 
 <code>sample_splitting = TRUE</code></p></td>
     </tr>
     <tr>

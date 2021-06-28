@@ -156,6 +156,7 @@
   cross_fitted_f2 <span class='op'>=</span> <span class='cn'>NULL</span>,
   sample_splitting_folds <span class='op'>=</span> <span class='cn'>NULL</span>,
   cross_fitting_folds <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cross_fitted_se <span class='op'>=</span> <span class='cn'>TRUE</span>,
   V <span class='op'>=</span> <span class='cn'>NULL</span>,
   ss_V <span class='op'>=</span> <span class='cn'>NULL</span>,
   cv <span class='op'>=</span> <span class='cn'>FALSE</span>
@@ -197,6 +198,11 @@ hypothesis testing)</p></td>
       <th>cross_fitting_folds</th>
       <td><p>the folds for cross-fitting (used for point
 estimates of variable importance in <code>cv_vim</code> and <code>sp_vim</code>)</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitted_se</th>
+      <td><p>logical; should cross-fitting be used to estimate
+standard errors?</p></td>
     </tr>
     <tr>
       <th>V</th>
