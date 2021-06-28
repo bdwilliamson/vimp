@@ -43,7 +43,7 @@ test_that("Estimating SPVIMs works", {
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check the actual point estimates
-  expect_equal(sprintf("%.20f", as.numeric(est$est[2])), 
+  expect_equal(sprintf("%.16f", as.numeric(est$est[2])), 
                "0.13566505869429415498")
 })
 set.seed(1234)

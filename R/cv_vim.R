@@ -361,6 +361,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
         arg_lst$cvControl$stratifyCV <- FALSE
     }
+    eifs_lst <- NA
     # calculate the estimators, EIFs
     if (full_type == "anova") {
         # no sample-splitting, since no hypothesis testing
@@ -392,8 +393,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         if (cross_fitted_se) {
             eifs_full <- NA
             eifs_redu <- NA
-            eif_lst <- unlist(lapply(est_lst, function(x) x$eif))
-            se <- sqrt(mean(unlist(lapply(eif_lst, function(x) t(x) %*% x / length(x)))) / nrow(Y_cc))
+            eifs_lst <- unlist(lapply(est_lst, function(x) x$eif))
+            se <- sqrt(mean(unlist(lapply(eifs_lst, function(x) t(x) %*% x / length(x)))) / nrow(Y_cc))
         } else {
             eif <- measure_anova(
                 full = non_cf_full_preds, reduced = non_cf_redu_preds,
@@ -412,8 +413,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         se_full <- NA
         se_redu <- NA
         if (bootstrap) {
-            se <- bootstrap_se(Y = Y_cc, f1 = fhat_ful, f2 = fhat_red,
-                               type = full_type, b = b)$se
+            se <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds, 
+                               f2 = non_cf_redu_preds, type = full_type, b = b)$se
         }
     } else {
         if (sample_splitting) {
@@ -567,7 +568,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     )
     if (full_type == "anova") {
         if (cross_fitted_se) {
-            final_eif <- eif_lst
+            final_eif <- eifs_lst
         } else {
             final_eif <- eif
         }
