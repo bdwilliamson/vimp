@@ -1,7 +1,7 @@
 # R/`vimp`: inference on algorithm-agnostic variable importance <img src="man/figures/logo.png" align="right" width="120px"/>
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/vimp)](https://cran.r-project.org/package=vimp)
-[![Travis-CI Build Status](https://travis-ci.org/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.org/bdwilliamson/vimp)
+[![Travis-CI Build Status](https://travis-ci.com/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.com/bdwilliamson/vimp)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bdwilliamson/vimp?branch=master&svg=true)](https://ci.appveyor.com/project/bdwilliamson/vimp)
 [![Coverage status](https://codecov.io/gh/bdwilliamson/vimp/branch/master/graph/badge.svg)](https://codecov.io/github/bdwilliamson/vimp?branch=master)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/vimp)](https://CRAN.R-project.org/package=vimp)
