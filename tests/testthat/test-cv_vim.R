@@ -27,7 +27,7 @@ test_that("CV-VIM without sample splitting works", {
                       env = environment(), na.rm = TRUE, sample_splitting = FALSE)
   # check variable importance estimate
   expect_equal(est_no_ss$est, r2_two, tolerance = 0.1, scale = 1)
-  expect_equal(sprintf("%.16f", est_no_ss$est), "0.30520182351412900035")
+  expect_equal(sprintf("%.16f", est_no_ss$est), "0.3052018235141290")
 })
 
 set.seed(1234)
@@ -38,7 +38,7 @@ test_that("CV-VIM with no SS and a single algorithm", {
                                  env = environment(), na.rm = TRUE, sample_splitting = FALSE)
   # check variable importance estimate
   expect_equal(est_no_ss_single_alg$est, r2_two, tolerance = 0.1, scale = 1)
-  expect_equal(sprintf("%.16f", est_no_ss_single_alg$est), "0.30507365177030854042")
+  expect_equal(sprintf("%.16f", est_no_ss_single_alg$est), "0.3050736517703085")
 })
 
 set.seed(4747)
@@ -51,7 +51,7 @@ test_that("CV-VIM with no SS, non-cross-fitted SE, multiple algorithms works", {
   # check variable importance estimate
   expect_equal(est_no_ss_non_cf_se$est, r2_two, tolerance = 0.1, scale = 1)
   expect_equal(sprintf("%.16f", est_no_ss_non_cf_se$est), 
-               "0.30520253332832769644")
+               "0.3052025333283277")
 })
 
 set.seed(5678)
@@ -64,7 +64,7 @@ test_that("CV-VIM with no SS, non-cross-fitted SE, single algorithm works", {
   # check variable importance estimate
   expect_equal(est_no_ss_single_alg_non_cf_se$est, r2_two, tolerance = 0.1, scale = 1)
   expect_equal(sprintf("%.16f", est_no_ss_single_alg_non_cf_se$est), 
-               "0.30528802574381624924")
+               "0.3052880257438162")
 })
 
 set.seed(101112)
@@ -89,7 +89,7 @@ test_that("Cross-validated variable importance using internally-computed regress
   # check that influence curve worked
   expect_length(est$eif, length(y) / 2)
   # check that the point estimate is what it is supposed to be
-  expect_equal(sprintf("%.16f", est$est), "0.30741861044699603234")
+  expect_equal(sprintf("%.16f", est$est), "0.3074186104469960")
 })
 
 # cross-fitted estimates of the full and reduced regressions,
@@ -157,7 +157,7 @@ test_that("Cross-validated variable importance using externally-computed regress
   # check that influence curve worked
   expect_length(est_prefit$eif, length(y) / 2)
   # check the actual value of the point estimate
-  expect_equal(sprintf("%.16f", est_prefit$est), "0.31107957788628110007")
+  expect_equal(sprintf("%.16f", est_prefit$est), "0.3110795778862811")
 })
 test_that("Cross-validated variable importance using externally-computed regressions and non-cross-fitted SEs works", {
   est_prefit_no_cf_se <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 
@@ -183,7 +183,7 @@ test_that("Cross-validated variable importance using externally-computed regress
   # check that influence curve worked
   expect_length(est_prefit_no_cf_se$eif, length(y) / 2)
   # check the actual value of the point estimate
-  expect_equal(sprintf("%.16f", est_prefit_no_cf_se$est), "0.31107957788628110007")
+  expect_equal(sprintf("%.16f", est_prefit_no_cf_se$est), "0.3110795778862811")
 })
 
 test_that("Measures of predictiveness work", {
