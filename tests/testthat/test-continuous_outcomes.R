@@ -19,6 +19,7 @@ r2_two <- 0.75 ^ 2 * 1 / true_var
 learners <- c("SL.glm")
 V <- 2
 
+set.seed(1234)
 test_that("ANOVA-based R^2 with old function name works", {
   # check deprecated message
   expect_warning(vimp_regression(Y = y, X = x, run_regression = TRUE, 
@@ -26,15 +27,23 @@ test_that("ANOVA-based R^2 with old function name works", {
                                  cvControl = list(V = V), indx = 1, V = V, 
                                  env = environment()))
 })
+set.seed(5678)
 test_that("ANOVA-based R^2 with new function name works", {
-  expect_warning(est <- vimp_anova(Y = y, X = x, run_regression = TRUE, 
+  expect_message(est <- vimp_anova(Y = y, X = x, run_regression = TRUE, 
                                    SL.library = learners, 
                                    cvControl = list(V = V), indx = 2, V = V, 
                                    env = environment()))
   # check that the estimate is nearly correct
   expect_equal(est$est, r2_two, tolerance = 0.4, scale = 1)
 })
-
+set.seed(91011)
+test_that("ANOVA-based R^2 without cross-fitting works", {
+  est <- vim(Y = y, X = x, run_regression = TRUE, SL.library = learners,
+             cvControl = list(V = V), indx = 2, type = "anova",
+             sample_splitting = FALSE)
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+})
+set.seed(121314)
 test_that("R^2-based variable importance works", {
   est <- vimp_rsquared(Y = y, X = x, run_regression = TRUE, 
                        SL.library = learners, cvControl = list(V = V), 

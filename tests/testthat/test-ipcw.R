@@ -63,8 +63,8 @@ test_that("IPW AUC estimation with the mean works", {
 set.seed(121314)
 # test that AUC estimation with a better learner works
 test_that("IPW AUC estimation with a better learner works", {
-  sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
-                         SL.library = "SL.glm", obsWeights = weights_cc)
+  expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
+                                        SL.library = "SL.glm", obsWeights = weights_cc))
   est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
                          full_y = y_bin, C = cc, Z = data.frame(Y = y_bin), 
                          ipc_est_type = "ipw",
