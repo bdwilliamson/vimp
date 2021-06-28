@@ -43,8 +43,8 @@ test_that("Estimating SPVIMs works", {
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check the actual point estimates
-  expect_equal(sprintf("%.16f", as.numeric(est$est[2])), 
-               "0.1356650586942942")
+  expect_equal(sprintf("%.15f", as.numeric(est$est[2])), 
+               "0.135665058694294")
 })
 set.seed(1234)
 test_that("Estimating SPVIMs without sample-splitting works", {
