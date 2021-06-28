@@ -56,31 +56,36 @@ heart_folds <- sample(rep(seq_len(2), length = dim(heart)[1]))
 As in the [main vignette](introduction-to-vimp.html), we first start by fitting only linear regression models. In this section, we use the function `vim()`; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.
 
 ```{r est-heart-regressions-lm}
-full_mod <- lm(chd ~ ., data = heart)
+heart_1 <- subset(heart, heart_folds == 1)
+full_mod <- lm(chd ~ ., data = heart_1)
 full_fit <- predict(full_mod)
 
 # estimate the reduced conditional means for each of the individual variables
 # remove the outcome for the predictor matrix
-X <- as.matrix(heart[, -dim(heart)[2]])
+X <- heart[, -dim(heart)[2]]
+X_1 <- subset(X, heart_folds == 1)
+X_2 <- subset(X, heart_folds == 2)
+x_2_mat <- as.matrix(X_2)
 # get the full regression fit and use as outcome for reduced regressions; this may provide some stability in this analysis
-full_fit_2 <- predict(lm(chd ~ ., data = heart))
-red_mod_sbp <- lm(full_fit ~ X[,-1])
+heart_2 <- subset(heart, heart_folds == 2)
+full_fit_2 <- predict(lm(chd ~ ., data = heart_2))
+red_mod_sbp <- lm(full_fit ~ x_2_mat[,-1])
 red_fit_sbp <- predict(red_mod_sbp)
-red_mod_tob <- lm(full_fit ~ X[,-2])
+red_mod_tob <- lm(full_fit ~ x_2_mat[,-2])
 red_fit_tob <- predict(red_mod_tob)
-red_mod_ldl <- lm(full_fit ~ X[,-3])
+red_mod_ldl <- lm(full_fit ~ x_2_mat[,-3])
 red_fit_ldl <- predict(red_mod_ldl)
-red_mod_adi <- lm(full_fit ~ X[,-4])
+red_mod_adi <- lm(full_fit ~ x_2_mat[,-4])
 red_fit_adi <- predict(red_mod_adi)
-red_mod_fam <- lm(full_fit ~ X[,-5])
+red_mod_fam <- lm(full_fit ~ x_2_mat[,-5])
 red_fit_fam <- predict(red_mod_fam)
-red_mod_tpa <- lm(full_fit ~ X[, -6])
+red_mod_tpa <- lm(full_fit ~ x_2_mat[, -6])
 red_fit_tpa <- predict(red_mod_tpa)
-red_mod_obe <- lm(full_fit ~ X[,-7])
+red_mod_obe <- lm(full_fit ~ x_2_mat[,-7])
 red_fit_obe <- predict(red_mod_obe)
-red_mod_alc <- lm(full_fit ~ X[, -8])
+red_mod_alc <- lm(full_fit ~ x_2_mat[, -8])
 red_fit_alc <- predict(red_mod_alc)
-red_mod_age <- lm(full_fit ~ X[,-9])
+red_mod_age <- lm(full_fit ~ x_2_mat[,-9])
 red_fit_age <- predict(red_mod_age)
 
 # plug the regression function estimates into vim
@@ -122,7 +127,7 @@ V <- 2
 sl_cvcontrol <- list(V = 2)
 
 # now estimate variable importance
-fam_vim <- vim(Y = heart$chd, X = heart[, -dim(heart)[2]], indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), cvControl = sl_cvcontrol)
+fam_vim <- vim(Y = heart$chd, X = X, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), cvControl = sl_cvcontrol, sample_splitting_folds = heart_folds)
 ```
 
 I said earlier that I want to obtain estimates of all individual features in these data, so let's choose type A behavior (`tpa`) next. Now that I have estimated variable importance for family history, the `full_fit` object contains our estimate of $\mu_{P_0}$. Since I have spent the time to estimate this using `SuperLearner()`, there is no reason to estimate this function again. This leads me to choose (2) above for estimating the importance of type A behavior, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields
@@ -131,14 +136,14 @@ I said earlier that I want to obtain estimates of all individual features in the
 # specify that full_fit doesn't change; but note that this was fit on the first half of the data
 full_fit <- fam_vim$full_fit
 # get the full fit on the second half of the data; for stability later
-full_fit_2 <- predict(SuperLearner::SuperLearner(Y = heart$chd, X = heart[, -dim(heart)[2]], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+full_fit_2 <- predict(SuperLearner::SuperLearner(Y = heart_2$chd, X = X_2, SL.library = learners.2, cvControl = sl_cvcontrol))$pred
 
 # estimate variable importance for the average number of rooms
 start_time <- Sys.time()
-reduced_fit <- SuperLearner::SuperLearner(Y = full_fit_2, X = heart[, -c(6, dim(heart)[2]), drop = FALSE], SL.library = learners.2, cvControl = sl_cvcontrol)
+reduced_fit <- SuperLearner::SuperLearner(Y = full_fit_2, X = X_2[, -6, drop = FALSE], SL.library = learners.2, cvControl = sl_cvcontrol)
 end_time <- Sys.time()
 red_fit <- predict(reduced_fit)$pred
-tpa_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = red_fit, indx = 6, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
+tpa_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = red_fit, indx = 6, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
 tpa_vim
 ```
@@ -149,7 +154,7 @@ I can achieve the same results by also estimating the regression function based 
 
 ```{r alc-vim}
 # set up the data, removing the columns for alcohol use and chd
-x <- heart[, -c(8, dim(heart)[2])]
+x <- heart_2[, -c(8, dim(heart)[2])]
 
 # fit an RF model using SuperLearner
 reduced_mod <- SuperLearner(Y = full_fit_2, X = x, SL.library = learners.2, cvControl = sl_cvcontrol)
@@ -157,34 +162,34 @@ reduced_fit <- predict(reduced_mod)$pred
 # this takes 2 seconds
 
 # estimate variable importance
-alc_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_fit, indx = 8, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+alc_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_fit, indx = 8, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 ```
 
 I can obtain estimates for the remaining individual features in the same way (again using a small library for illustration):
 ```{r heart-sl}
-reduced_sbp <- predict(SuperLearner(Y = full_fit_2, X = heart[, -c(1, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+reduced_sbp <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -1], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
 sbp_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_sbp,
-                indx = 1, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+                indx = 1, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
-reduced_tob <- predict(SuperLearner(Y = full_fit_2, X = heart[, -c(2, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+reduced_tob <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -2], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
 tob_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_tob,
-                indx = 2, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+                indx = 2, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
-reduced_ldl <- predict(SuperLearner(Y = full_fit_2, X = heart[, -c(3, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+reduced_ldl <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -3], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
 ldl_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_ldl,
-                indx = 3, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+                indx = 3, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
-reduced_adi <- predict(SuperLearner(Y = full_fit_2, X = heart[, -c(4, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+reduced_adi <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -4], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
 adi_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_adi,
-                indx = 4, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+                indx = 4, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
-reduced_obe <- predict(SuperLearner(Y = full_fit_2, X = heart[, -c(7, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+reduced_obe <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -7], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
 obe_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_obe,
-                indx = 7, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+                indx = 7, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
-reduced_age <- predict(SuperLearner(Y = full_fit_2, X = heart[, -c(9, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+reduced_age <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -9], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
 age_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_age,
-                indx = 9, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+                indx = 9, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
@@ -227,11 +232,11 @@ The only difference between estimating variable importance for a group of featur
 
 ```{r heart-group-vim, fig.width = 8.5, fig.height = 8}
 # get the estimates
-reduced_behav <- predict(SuperLearner(Y = heart$chd, X = heart[, -c(2, 6, 8, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-behav_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_behav, indx = c(2, 6, 8), run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+reduced_behav <- predict(SuperLearner(Y = full_fit_2, X = heart_2[, -c(2, 6, 8, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+behav_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_behav, indx = c(2, 6, 8), run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
-reduced_bios <- predict(SuperLearner(Y = heart$chd, X = heart[, -c(1, 3, 4, 5, 7, 9, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-bios_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_bios, indx = c(1, 3, 4, 5, 7, 9), run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$folds)
+reduced_bios <- predict(SuperLearner(Y = full_fit_2, X = heart_2[, -c(1, 3, 4, 5, 7, 9, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
+bios_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_bios, indx = c(1, 3, 4, 5, 7, 9), run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
 
 # combine and plot
 groups <- merge_vim(behav_vim, bios_vim)
@@ -280,10 +285,6 @@ full_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = full_cv_fit, sample_splitting = TRUE,
   sample_splitting_folds = sample_splitting_folds, full = TRUE
 )
-# refit on the entire dataset; for SEs
-full_fit <- SuperLearner::SuperLearner(
-  Y = heart$chd, X = x, SL.library = learners.2, cvControl = list(V = V)
-)$SL.predict
 ```
 
 Next, to estimate the importance of each variable, we need to estimate the reduced regression function for each variable:
@@ -300,9 +301,6 @@ for (i in seq_len(length(vars))) {
   cvsl_obj = reduced_", vars[i], "_cv_fit, sample_splitting = TRUE,
   sample_splitting_folds = sample_splitting_folds, full = FALSE
 )")))
-  eval(parse(text = paste0("reduced_", vars[i], "_fit <- SuperLearner::SuperLearner(
-  Y = heart$chd, X = x[, -i, drop = FALSE], SL.library = learners.2, cvControl = list(V = V)
-)$SL.predict")))
 }
 ```
 
@@ -310,47 +308,47 @@ Then we can plug these values into `vimp_rsquared()` (or equivalently, `cv_vim()
 ```{r cf-vims}
 cf_sbp_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_sbp_cv_preds,
-  f1 = full_fit, f2 = reduced_sbp_fit, indx = 1, run_regression = FALSE, V = V,
+  indx = 1, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_tob_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_tob_cv_preds,
-  f1 = full_fit, f2 = reduced_tob_fit, indx = 2, run_regression = FALSE, V = V,
+  indx = 2, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_ldl_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_ldl_cv_preds,
-  f1 = full_fit, f2 = reduced_ldl_fit, indx = 3, run_regression = FALSE, V = V,
+  indx = 3, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_adi_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_adi_cv_preds,
-  f1 = full_fit, f2 = reduced_adi_fit, indx = 4, run_regression = FALSE, V = V,
+  indx = 4, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_fam_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_fam_cv_preds,
-  f1 = full_fit, f2 = reduced_fam_fit, indx = 5, run_regression = FALSE, V = V,
+  indx = 5, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_tpa_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_tpa_cv_preds,
-  f1 = full_fit, f2 = reduced_tpa_fit, indx = 6, run_regression = FALSE, V = V,
+  indx = 6, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_obe_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_obe_cv_preds,
-  f1 = full_fit, f2 = reduced_obe_fit, indx = 7, run_regression = FALSE, V = V,
+  indx = 7, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_alc_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_alc_cv_preds,
-  f1 = full_fit, f2 = reduced_alc_fit, indx = 8, run_regression = FALSE, V = V,
+  indx = 8, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_age_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_age_cv_preds,
-  f1 = full_fit, f2 = reduced_age_fit, indx = 9, run_regression = FALSE, V = V,
+  indx = 9, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 
@@ -397,22 +395,14 @@ reduced_bios_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = reduced_bios_cv_fit, sample_splitting = TRUE,
   sample_splitting_folds = sample_splitting_folds, full = FALSE
 )
-reduced_behav_fit <- SuperLearner::SuperLearner(
-  Y = heart$chd, X = x[, -c(2, 6, 8), drop = FALSE], SL.library = learners.2,
-  cvControl = list(V = V)
-)$SL.predict
-reduced_bios_fit <- SuperLearner::SuperLearner(
-  Y = heart$chd, X = x[, -c(1, 3, 4, 5, 7, 9), drop = FALSE], SL.library = learners.2,
-  cvControl = list(V = V)
-)$SL.predict
 cf_behav_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_behav_cv_preds,
-  f1 = full_fit, f2 = reduced_behav_fit, indx = c(2, 6, 8), run_regression = FALSE, V = V,
+  indx = c(2, 6, 8), run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_bios_vim <- vimp_rsquared(
   Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_bios_cv_preds,
-  f1 = full_fit, f2 = reduced_bios_fit, indx = c(1, 3, 4, 5, 7, 9), run_regression = FALSE, V = V,
+  indx = c(1, 3, 4, 5, 7, 9), run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
 cf_groups <- merge_vim(cf_behav_vim, cf_bios_vim)

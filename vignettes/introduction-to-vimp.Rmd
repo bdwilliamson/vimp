@@ -210,8 +210,9 @@ library("ranger")
 
 The code
 ```{r est-1}
-est_1 <- vimp_rsquared(Y = y, X = x, indx = 1, run_regression = TRUE,
-SL.library = c("SL.ranger", "SL.mean"), V = 2, env = environment())
+est_1 <- vimp_rsquared(Y = y, X = x, indx = 1, run_regression = TRUE, 
+                       SL.library = c("SL.ranger", "SL.mean"), V = 2,
+                       env = environment())
 ```
 
 uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance for the importance of $X_1$. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:

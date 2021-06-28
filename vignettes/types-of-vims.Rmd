@@ -40,7 +40,7 @@ In the [main vignette](introduction-to-vimp.html), I discussed variable importan
 
 In general, I define variable importance as a function of the true population distribution (denoted by $P_0$) and a predictiveness measure $V$ -- large values of $V$ are assumed to be better. Currently, the measures $V$ implemented in `vimp` are $R^2$, classification accuracy, area under the receiver operating characteristic curve (AUC), and deviance. For a fixed function $f$, the predictiveness is given by $V(f, P)$, where large values imply that $f$ is a good predictor of the outcome. The best possible prediction function, $f_0$, is the *oracle* model -- i.e., the prediction function that I would use if I had access to the distribution $P_0$. Often, $f_0$ is the true conditional mean (e.g., for $R^2$). Then the *total oracle predictiveness* can be defined as $V(f_0, P_0)$. This is the best possible value of predictiveness.
 
-I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have $p$ variables, and an index set $s$ of interest (containing some subset of the $p$ variables). Throughout this document, I will use the South African heart disease study data [@hastie2009] to illustrate how each VIM may be estimated (freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data); more information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt)). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the [main vignette](introduction-to-vimp.html)).
+I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have $p$ variables, and an index set $s$ of interest (containing some subset of the $p$ variables). Throughout this document, I will use the South African heart disease study data [@hastie2009] to illustrate how each VIM may be estimated (freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data); more information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt)). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the [main vignette](introduction-to-vimp.html)). Finally, I will use the area under the receiver operating characteristic curve (AUC) to measure importance.
 
 ```{r load-heart-data}
 ## read in the data from the Elements website
@@ -62,9 +62,10 @@ The *reduced oracle predictiveness* is defined as $V(f_{0,-s}, P_0)$, where $f_{
 
 ```{r est-famhist-cond}
 # note the use of a small V and a small number of SL folds, for illustration only
+set.seed(1234)
 V <- 2
 sl_cvcontrol <- list(V = 2)
-fam_vim_cond <- vimp_rsquared(Y = heart$chd, X = x, indx = 5, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
+fam_vim_cond <- vimp_auc(Y = heart$chd, X = x, indx = 5, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
 ```
 
 ## Marginal VIMs
@@ -73,7 +74,8 @@ The *marginal oracle predictiveness* is defined as $V(f_{0,s}, P_0)$, where $f_{
 
 ```{r est-famhist-marg}
 # note the use of a small V and a small number of SL folds, for illustration only
-fam_vim_marg <- vimp_rsquared(Y = heart$chd, X = x[, 5, drop = FALSE], indx = 1, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
+set.seed(5678)
+fam_vim_marg <- vimp_auc(Y = heart$chd, X = x[, 5, drop = FALSE], indx = 1, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
 ```
 
 ## Shapley VIMs
@@ -81,6 +83,7 @@ fam_vim_marg <- vimp_rsquared(Y = heart$chd, X = x[, 5, drop = FALSE], indx = 1,
 The Shapley population VIM (SPVIM) generalizes the marginal and conditional VIMs by averaging over all possible subsets. More specifically, the SPVIM for feature $j$ is given by $$\sum_{s \subseteq \{1,\ldots,p\} \setminus \{j\}} \binom{p-1}{\lvert s \rvert}^{-1}\{V(f_{0, s \cup \{j\}}, P_0)) - V(f_{0,s}, P_0)\};$$ this is the average gain in predictiveness from adding feature $j$ to each possible grouping of the other features. To estimate the SPVIM for family history of heart disease, I can use the following code (note that `sp_vim` returns VIM estimates for all features):
 
 ```{r est-famhist-spvim}
+set.seed(91011)
 all_vim_spvim <- sp_vim(Y = heart$chd, X = x, type = "r_squared", SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol, env = environment())
 ```
 

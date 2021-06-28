@@ -7,6 +7,7 @@
 ## Minor changes
 
 * Added explicit-value tests for point estimates throughout testthat/
+* Harmonized vignettes with new SE computation
 
 # vimp 2.2.2
 

@@ -367,7 +367,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   arg_lst_bool <- is.null(arg_lst$cvControl) | 
     ifelse(!is.null(arg_lst$cvControl), (arg_lst$cvControl$V != V) & (cross_fitted_se), FALSE)
   if (arg_lst_bool) {
-    arg_lst$cvControl <- list(V = V)
+    arg_lst$cvControl <- list(V = ifelse(V == 1, 5, V))
   } 
   if (is.null(arg_lst$obsWeights)) {
     arg_lst$obsWeights <- weights
@@ -401,6 +401,10 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   full_arg_lst_cv <- c(arg_lst_cv, list(
     Y = Y, X = red_X, SL.library = this_sl_lib
   ))
+  # if dim(red_X) == 0, then return the mean
+  if (ncol(red_X) == 0) {
+    this_sl_lib <- eval(parse(text = "SL.mean"))
+  } 
   # if a single learner, don't do inner CV
   if (!is.character(this_sl_lib) | length(this_sl_lib) == 1) {
     if (is.character(this_sl_lib)) {
