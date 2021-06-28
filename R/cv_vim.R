@@ -567,7 +567,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     )
     if (full_type == "anova") {
         if (cross_fitted_se) {
-            final_eif <- eifs_lst
+            final_eif <- eif_lst
         } else {
             final_eif <- eif
         }
