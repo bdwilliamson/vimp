@@ -9,11 +9,12 @@ run_sl(
   X = NULL,
   V = 5,
   SL.library = "SL.glm",
-  univariate_SL.library = "SL.glm",
+  univariate_SL.library = NULL,
   s = 1,
   cv_folds = NULL,
   sample_splitting = TRUE,
   ss_folds = NULL,
+  split = 1,
   verbose = FALSE,
   progress_bar = NULL,
   indx = 1,
@@ -42,6 +43,9 @@ single-covariate regressions}
 predictiveness estimation?}
 
 \item{ss_folds}{the sample-splitting folds; only used if
+\code{sample_splitting = TRUE}}
+
+\item{split}{the split to use for sample-splitting; only used if 
 \code{sample_splitting = TRUE}}
 
 \item{verbose}{should we print progress? defaults to FALSE}

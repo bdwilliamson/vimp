@@ -2,20 +2,32 @@
 % Please edit documentation in R/vimp_se.R
 \name{vimp_se}
 \alias{vimp_se}
-\title{Estimate standard errors}
+\title{Estimate variable importance standard errors}
 \usage{
-vimp_se(eif, n = length(eif), na.rm = FALSE)
+vimp_se(
+  eif_full,
+  eif_reduced,
+  cross_fit = TRUE,
+  sample_split = TRUE,
+  na.rm = FALSE
+)
 }
 \arguments{
-\item{eif}{the estimated efficient influence function.}
+\item{eif_full}{the estimated efficient influence function (EIF) based on
+the full set of covariates.}
 
-\item{n}{the sample size.}
+\item{eif_reduced}{the estimated EIF based on the reduced set of covariates.}
 
-\item{na.rm}{logical; should NA's be removed in computation? 
+\item{cross_fit}{logical; was cross-fitting used to compute the EIFs?
+(defaults to \code{TRUE})}
+
+\item{sample_split}{logical; was sample-splitting used? (defaults to \code{TRUE})}
+
+\item{na.rm}{logical; should NA's be removed in computation?
 (defaults to \code{FALSE}).}
 }
 \value{
-The standard error for the estimated variable importance for the 
+The standard error for the estimated variable importance for the
   given group of left-out covariates.
 }
 \description{
@@ -23,6 +35,6 @@ Compute standard error estimates for estimates of variable importance.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more
-  details on the mathematics behind this function and the definition of the 
+  details on the mathematics behind this function and the definition of the
   parameter of interest.
 }

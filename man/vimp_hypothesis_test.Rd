@@ -7,8 +7,7 @@
 vimp_hypothesis_test(
   predictiveness_full,
   predictiveness_reduced,
-  se_full,
-  se_reduced,
+  se,
   delta = 0,
   alpha = 0.05
 )
@@ -18,9 +17,7 @@ vimp_hypothesis_test(
 
 \item{predictiveness_reduced}{the estimated predictiveness of the regression excluding the covariate(s) of interest.}
 
-\item{se_full}{the estimated standard error for the predictiveness of the regression including the covariate(s) of interest.}
-
-\item{se_reduced}{the estimated standard error for the predictiveness of the regression excluding the covariate(s) of interest.}
+\item{se}{the estimated standard error of the variable importance estimator}
 
 \item{delta}{the value of the \eqn{\delta}-null (i.e., testing if importance < \eqn{\delta}); defaults to 0.}
 

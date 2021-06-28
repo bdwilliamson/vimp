@@ -190,13 +190,21 @@ est_1 <- vim(y, x, indx = 2, type = "accuracy",
 # using pre-computed fitted values
 set.seed(4747)
 V <- 2
-full_fit <- SuperLearner::SuperLearner(Y = y, X = x,
+y_1 <- y[est_1$sample_splitting_folds == 1]
+y_2 <- y[est_1$sample_splitting_folds == 2]
+x_1 <- subset(x, est_1$sample_splitting_folds == 1)
+x_2 <- subset(x, est_1$sample_splitting_folds == 2)
+full_fit <- SuperLearner::SuperLearner(Y = y_1, X = x_1,
                                        SL.library = learners,
                                        cvControl = list(V = V))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 # fit the data with only X1
-reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted,
-                                          X = x[, -2, drop = FALSE],
+full_fit_2 <- SuperLearner::SuperLearner(Y = y_2, X = x_2, 
+                                         SL.library = learners,
+                                         cvControl = list(V = V))
+full_fitted_2 <- SuperLearner::predict.SuperLearner(full_fit_2)$pred
+reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted_2,
+                                          X = x_2[, -2, drop = FALSE],
                                           SL.library = learners,
                                           cvControl = list(V = V))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred

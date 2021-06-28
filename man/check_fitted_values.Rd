@@ -12,6 +12,7 @@ check_fitted_values(
   cross_fitted_f2 = NULL,
   sample_splitting_folds = NULL,
   cross_fitting_folds = NULL,
+  cross_fitted_se = TRUE,
   V = NULL,
   ss_V = NULL,
   cv = FALSE
@@ -37,6 +38,9 @@ hypothesis testing)}
 
 \item{cross_fitting_folds}{the folds for cross-fitting (used for point
 estimates of variable importance in \code{cv_vim} and \code{sp_vim})}
+
+\item{cross_fitted_se}{logical; should cross-fitting be used to estimate
+standard errors?}
 
 \item{V}{the number of cross-fitting folds}
 

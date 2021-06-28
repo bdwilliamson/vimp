@@ -50,12 +50,14 @@ validation data. If sample-splitting is requested, then these must
 be estimated specially; see Details.}
 
 \item{f1}{the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+regressing Y on X. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 then this argument is not used.}
 
 \item{f2}{the fitted values from a flexible estimation technique
 regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-\code{indx}. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+\code{indx}. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 then this argument is not used.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance

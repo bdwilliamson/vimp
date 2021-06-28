@@ -54,12 +54,14 @@ validation data. If sample-splitting is requested, then these must
 be estimated specially; see Details.}
 
 \item{f1}{the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+regressing Y on X. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 then this argument is not used.}
 
 \item{f2}{the fitted values from a flexible estimation technique
 regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-\code{indx}. Estimated using the whole dataset. If \code{cross_fitted_se = TRUE},
+\code{indx}. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 then this argument is not used.}
 
 \item{indx}{the indices of the covariate(s) to calculate variable importance
@@ -283,20 +285,8 @@ reduced_cv_preds <- extract_sampled_split_predictions(
     reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE
 )
 set.seed(5678)
-# refit on the whole dataset
-# (for estimating the efficient influence function)
-full_fit <- SuperLearner::SuperLearner(
-    Y = Y, X = x, SL.library = learners, cvControl = list(V = V)
-)
-fhat_ful <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
-reduced_fit <- SuperLearner::SuperLearner(
-    Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners,
-    cvControl = list(V = V)
-)
-fhat_red <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds,
-cross_fitted_f2 = reduced_cv_preds, f1 = fhat_ful,
-f2 = fhat_red, indx = 2, delta = 0, V = V, type = "r_squared",
+cross_fitted_f2 = reduced_cv_preds, indx = 2, delta = 0, V = V, type = "r_squared",
 cross_fitting_folds = cross_fitting_folds,
 sample_splitting_folds = sample_splitting_folds,
 run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
