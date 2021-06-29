@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Estimate standard errors — vimp_se • vimp</title>
+<title>Estimate variable importance standard errors — vimp_se • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Estimate standard errors — vimp_se" />
+<meta property="og:title" content="Estimate variable importance standard errors — vimp_se" />
 <meta property="og:description" content="Compute standard error estimates for estimates of variable importance." />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.3</span>
       </span>
     </div>
 
@@ -137,7 +137,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Estimate standard errors</h1>
+    <h1>Estimate variable importance standard errors</h1>
     <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/vimp_se.R'><code>R/vimp_se.R</code></a></small>
     <div class="hidden name"><code>vimp_se.Rd</code></div>
     </div>
@@ -146,34 +146,50 @@
     <p>Compute standard error estimates for estimates of variable importance.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vimp_se</span>(<span class='no'>eif</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='no'>eif</span>), <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>vimp_se</span>(
+  <span class='no'>eif_full</span>,
+  <span class='no'>eif_reduced</span>,
+  <span class='kw'>cross_fit</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>sample_split</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>eif</th>
-      <td><p>the estimated efficient influence function.</p></td>
+      <th>eif_full</th>
+      <td><p>the estimated efficient influence function (EIF) based on
+the full set of covariates.</p></td>
     </tr>
     <tr>
-      <th>n</th>
-      <td><p>the sample size.</p></td>
+      <th>eif_reduced</th>
+      <td><p>the estimated EIF based on the reduced set of covariates.</p></td>
+    </tr>
+    <tr>
+      <th>cross_fit</th>
+      <td><p>logical; was cross-fitting used to compute the EIFs?
+(defaults to <code>TRUE</code>)</p></td>
+    </tr>
+    <tr>
+      <th>sample_split</th>
+      <td><p>logical; was sample-splitting used? (defaults to <code>TRUE</code>)</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>logical; should NA's be removed in computation? 
+      <td><p>logical; should NA's be removed in computation?
 (defaults to <code>FALSE</code>).</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The standard error for the estimated variable importance for the 
+    <p>The standard error for the estimated variable importance for the
   given group of left-out covariates.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
-  details on the mathematics behind this function and the definition of the 
+  details on the mathematics behind this function and the definition of the
   parameter of interest.</p>
 
   </div>

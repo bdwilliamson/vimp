@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.3</span>
       </span>
     </div>
 
@@ -154,6 +154,7 @@
   <span class='kw'>cross_fitted_f2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>cross_fitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>cross_fitted_se</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ss_V</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>cv</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
@@ -195,6 +196,11 @@ hypothesis testing)</p></td>
       <th>cross_fitting_folds</th>
       <td><p>the folds for cross-fitting (used for point
 estimates of variable importance in <code>cv_vim</code> and <code>sp_vim</code>)</p></td>
+    </tr>
+    <tr>
+      <th>cross_fitted_se</th>
+      <td><p>logical; should cross-fitting be used to estimate
+standard errors?</p></td>
     </tr>
     <tr>
       <th>V</th>

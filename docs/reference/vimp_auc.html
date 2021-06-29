@@ -82,7 +82,7 @@ cv_vim, with type = &quot;auc&quot;." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.3</span>
       </span>
     </div>
 
@@ -208,14 +208,16 @@ be estimated specially; see Details.</p></td>
     <tr>
       <th>f1</th>
       <td><p>the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+regressing Y on X. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>f2</th>
       <td><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+<code>indx</code>. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
@@ -420,8 +422,7 @@ within the <code>vim</code> object. This results in a list including:</p><dl'>
 <span class='co'># estimate (with a small number of folds, for illustration only)</span>
 <span class='no'>est</span> <span class='kw'>&lt;-</span> <span class='fu'>vimp_auc</span>(<span class='no'>y</span>, <span class='no'>x</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>,
            <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>, <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-           <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: Original estimate &lt; 0; returning zero.</span></div><div class='input'>
-</div></pre>
+           <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -82,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.3</span>
       </span>
     </div>
 
@@ -153,8 +153,7 @@
     <pre class="usage"><span class='fu'>vimp_hypothesis_test</span>(
   <span class='no'>predictiveness_full</span>,
   <span class='no'>predictiveness_reduced</span>,
-  <span class='no'>se_full</span>,
-  <span class='no'>se_reduced</span>,
+  <span class='no'>se</span>,
   <span class='kw'>delta</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>
 )</pre>
@@ -171,12 +170,8 @@
       <td><p>the estimated predictiveness of the regression excluding the covariate(s) of interest.</p></td>
     </tr>
     <tr>
-      <th>se_full</th>
-      <td><p>the estimated standard error for the predictiveness of the regression including the covariate(s) of interest.</p></td>
-    </tr>
-    <tr>
-      <th>se_reduced</th>
-      <td><p>the estimated standard error for the predictiveness of the regression excluding the covariate(s) of interest.</p></td>
+      <th>se</th>
+      <td><p>the estimated standard error of the variable importance estimator</p></td>
     </tr>
     <tr>
       <th>delta</th>

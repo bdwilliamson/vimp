@@ -82,7 +82,7 @@ with type = &quot;r_squared&quot;." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.3</span>
       </span>
     </div>
 
@@ -208,14 +208,16 @@ be estimated specially; see Details.</p></td>
     <tr>
       <th>f1</th>
       <td><p>the fitted values from a flexible estimation technique
-regressing Y on X. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+regressing Y on X. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
       <th>f2</th>
       <td><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>. Estimated using the whole dataset. If <code>cross_fitted_se = TRUE</code>,
+<code>indx</code>. If sample-splitting is requested, then these must be 
+estimated specially; see Details. If <code>cross_fitted_se = TRUE</code>,
 then this argument is not used.</p></td>
     </tr>
     <tr>
