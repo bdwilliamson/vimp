@@ -378,12 +378,22 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         s = chr_indx, est = est, se = se, cil = ci[1], ciu = ci[2],
         test = hyp_test$test, p_value = hyp_test$p_value
     )
+    if (full_type == "anova") {
+        final_eif <- eif
+    } else {
+        if (length(eif_full) != length(eif_redu)) {
+            max_len <- max(c(length(eif_full), length(eif_redu)))
+            eif_full <- c(eif_full, rep(NA, max_len - length(eif_full)))
+            eif_redu <- c(eif_redu, rep(NA, max_len - length(eif_redu)))    
+        }
+        final_eif <- eif_full - eif_redu
+    }
     output <- list(s = chr_indx,
                  SL.library = SL.library,
                  full_fit = full_preds, red_fit = redu_preds,
                  est = est,
                  naive = naive,
-                 eif = eif_full - eif_redu,
+                 eif = final_eif,
                  eif_full = eif_full,
                  eif_reduced = eif_redu,
                  se = se, ci = ci,
