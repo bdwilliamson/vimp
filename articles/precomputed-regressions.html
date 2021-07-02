@@ -95,7 +95,7 @@
 </h1>
                         <h4 data-toc-skip class="author">Brian D. Williamson</h4>
             
-            <h4 data-toc-skip class="date">2021-06-29</h4>
+            <h4 data-toc-skip class="date">2021-07-02</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd" class="external-link"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -188,15 +188,15 @@
 <span class="va">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value   </span>
-<span class="co">#&gt; s = 9 0.3017067 0.04884936 [0.2059637, 0.3974497] FALSE    0.08611523</span>
-<span class="co">#&gt; s = 4 0.2961529 0.04874072 [0.2006229, 0.3916830] FALSE    0.08988940</span>
-<span class="co">#&gt; s = 1 0.2950984 0.04887545 [0.1993042, 0.3908925] FALSE    0.09096828</span>
-<span class="co">#&gt; s = 6 0.2939368 0.04889264 [0.1981090, 0.3897646] FALSE    0.09186982</span>
-<span class="co">#&gt; s = 3 0.2935752 0.04887027 [0.1977912, 0.3893592] FALSE    0.09208959</span>
-<span class="co">#&gt; s = 7 0.2927553 0.04885685 [0.1969977, 0.3885130] FALSE    0.09267353</span>
-<span class="co">#&gt; s = 8 0.2907197 0.04851334 [0.1956353, 0.3858041] FALSE    0.09343278</span>
-<span class="co">#&gt; s = 2 0.2877137 0.04866324 [0.1923355, 0.3830919] FALSE    0.09607460</span>
-<span class="co">#&gt; s = 5 0.2779442 0.04863776 [0.1826159, 0.3732724] FALSE    0.10378223</span></code></pre></div>
+<span class="co">#&gt; s = 2 0.2999271 0.05028913 [0.2013623, 0.3984920] FALSE    0.09053732</span>
+<span class="co">#&gt; s = 6 0.2908770 0.04993003 [0.1930159, 0.3887380] FALSE    0.09650051</span>
+<span class="co">#&gt; s = 1 0.2905168 0.05002921 [0.1924614, 0.3885723] FALSE    0.09699746</span>
+<span class="co">#&gt; s = 3 0.2900862 0.05037060 [0.1913616, 0.3888107] FALSE    0.09808795</span>
+<span class="co">#&gt; s = 7 0.2876414 0.05008772 [0.1894713, 0.3858116] FALSE    0.09935340</span>
+<span class="co">#&gt; s = 5 0.2845422 0.05044313 [0.1856755, 0.3834089] FALSE    0.10259379</span>
+<span class="co">#&gt; s = 4 0.2845238 0.05023381 [0.1860673, 0.3829802] FALSE    0.10213776</span>
+<span class="co">#&gt; s = 8 0.2829119 0.05027060 [0.1843834, 0.3814405] FALSE    0.10350845</span>
+<span class="co">#&gt; s = 9 0.2561815 0.04945465 [0.1592522, 0.3531109] FALSE    0.12466503</span></code></pre></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -243,8 +243,8 @@
 <span class="va">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1039316 [0, 0.2037022] FALSE    0.8022223</span></code></pre></div>
-<p>This takes approximately 0.243 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
+<span class="co">#&gt; s = 6 0        0.1126402 [0, 0.2207708] FALSE    0.7027146</span></code></pre></div>
+<p>This takes approximately 0.212 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># set up the data, removing the columns for alcohol use and chd</span>
