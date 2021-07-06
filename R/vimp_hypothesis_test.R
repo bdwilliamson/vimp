@@ -19,8 +19,9 @@
 #'
 #' @export
 vimp_hypothesis_test <- function(predictiveness_full, predictiveness_reduced, se, delta = 0, alpha = 0.05) {
-    # hypothesis test, based on t-statistic (requires independent splits to estimate full, reduced predictiveness)
-    test_statistic <- (predictiveness_full - predictiveness_reduced - delta)/(sqrt(se))
+    # hypothesis test, based on t-statistic 
+    # (requires independent splits to estimate full, reduced predictiveness)
+    test_statistic <- (predictiveness_full - predictiveness_reduced - delta) / se
     p_value <- 1 - pnorm(test_statistic)
     hyp_test <- p_value < alpha
     return(list(test = hyp_test, p_value = p_value, test_statistic = test_statistic))
