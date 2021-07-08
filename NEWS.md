@@ -8,6 +8,7 @@
 
 * Added explicit-value tests for point estimates throughout testthat/
 * Harmonized vignettes with new SE computation
+* Allow `C` to not be specified in `make_folds`
 
 # vimp 2.2.2
 
