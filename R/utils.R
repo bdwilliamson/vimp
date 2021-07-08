@@ -213,7 +213,7 @@ make_folds <- function(y, V = 2, stratified = FALSE,
   folds <- vector("numeric", length(y))
   if (length(unique(probs)) == 1) {
     if (stratified) {
-      if (length(unique(C)) == 1) {
+      if (length(unique(C)) <= 1) {
         folds_1 <- sample(rep(seq_len(V), length = sum(y == 1)))
         folds_0 <- sample(rep(seq_len(V), length = sum(y == 0)))
         folds[y == 1] <- folds_1
@@ -233,7 +233,7 @@ make_folds <- function(y, V = 2, stratified = FALSE,
     }
   } else {
     if (stratified) {
-      if (length(unique(C)) == 1) {
+      if (length(unique(C)) <= 1) {
         folds_1 <- rep(seq_len(V), probs * sum(y == 1))
         folds_1 <- c(folds_1, sample(seq_len(V), size = sum(y == 1) - length(folds_1),
                                      replace = TRUE, prob = probs))
