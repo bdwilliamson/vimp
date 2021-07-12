@@ -20,6 +20,7 @@ run_sl(
   indx = 1,
   weights = rep(1, nrow(X)),
   cross_fitted_se = TRUE,
+  full = NULL,
   ...
 )
 }
@@ -58,6 +59,11 @@ predictiveness estimation?}
 
 \item{cross_fitted_se}{if \code{TRUE}, uses a cross-fitted estimator of
 the standard error; otherwise, uses the entire dataset}
+
+\item{full}{should this be considered a "full" or "reduced" regression?
+If \code{NULL} (the default), this is determined automatically; a full
+regression corresponds to \code{s} being equal to the full covariate vector.
+For SPVIMs, can be entered manually.}
 
 \item{...}{other arguments to Super Learner}
 }

@@ -340,6 +340,10 @@ make_kfold <- function(cross_fitting_folds,
 #' @param weights weights to pass to estimation procedure
 #' @param cross_fitted_se if \code{TRUE}, uses a cross-fitted estimator of
 #'   the standard error; otherwise, uses the entire dataset
+#' @param full should this be considered a "full" or "reduced" regression?
+#'   If \code{NULL} (the default), this is determined automatically; a full
+#'   regression corresponds to \code{s} being equal to the full covariate vector.
+#'   For SPVIMs, can be entered manually.
 #' @param ... other arguments to Super Learner
 #'
 #' @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
@@ -348,7 +352,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
                    univariate_SL.library = NULL, s = 1, cv_folds = NULL,
                    sample_splitting = TRUE, ss_folds = NULL, split = 1, verbose = FALSE,
                    progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)),
-                   cross_fitted_se = TRUE, ...) {
+                   cross_fitted_se = TRUE, full = NULL, ...) {
   # if verbose, print what we're doing and make sure that SL is verbose;
   # set up the argument list for the Super Learner / CV.SuperLearner
   arg_lst <- list(...)
@@ -438,9 +442,15 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     # fit a cross-validated Super Learner
     fit <- do.call(SuperLearner::CV.SuperLearner, full_arg_lst_cv)
     # extract predictions on correct sampled-split folds
+    if (is.null(full)) {
+      all_equal_s <- all.equal(s, 1:ncol(X))
+      is_full <- switch((sample_splitting) + 1, TRUE, 
+                        !is.character(all_equal_s) & as.logical(all_equal_s))
+    } else {
+      is_full <- full
+    }
     preds <- extract_sampled_split_predictions(
-      cvsl_obj = fit, sample_splitting = sample_splitting, 
-      full = switch((sample_splitting) + 1, TRUE, all(s == 1:ncol(X))),
+      cvsl_obj = fit, sample_splitting = sample_splitting, full = is_full,
       sample_splitting_folds = switch((sample_splitting) + 1, rep(1, V), ss_folds)
     )
   }

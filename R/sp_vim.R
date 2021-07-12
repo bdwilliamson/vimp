@@ -217,7 +217,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  univariate_SL.library = univariate_SL.library, s = S[-1][[i]],
                  cv_folds = cross_fitting_folds_cc, sample_splitting = sample_splitting,
                  ss_folds = sample_splitting_folds, verbose = verbose,
-                 progress_bar = progress_bar, indx = i,
+                 progress_bar = progress_bar, indx = i, full = TRUE,
                  weights = weights_cc),
             arg_lst_cv
         ))}, simplify = FALSE
