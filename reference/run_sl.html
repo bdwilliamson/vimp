@@ -164,6 +164,7 @@
   indx <span class='op'>=</span> <span class='fl'>1</span>,
   weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span>,
   cross_fitted_se <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  full <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></code></pre></div>
 
@@ -234,6 +235,13 @@ predictiveness estimation?</p></td>
       <th>cross_fitted_se</th>
       <td><p>if <code>TRUE</code>, uses a cross-fitted estimator of
 the standard error; otherwise, uses the entire dataset</p></td>
+    </tr>
+    <tr>
+      <th>full</th>
+      <td><p>should this be considered a "full" or "reduced" regression?
+If <code>NULL</code> (the default), this is determined automatically; a full
+regression corresponds to <code>s</code> being equal to the full covariate vector.
+For SPVIMs, can be entered manually.</p></td>
     </tr>
     <tr>
       <th>...</th>

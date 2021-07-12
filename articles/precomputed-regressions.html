@@ -95,7 +95,7 @@
 </h1>
                         <h4 data-toc-skip class="author">Brian D. Williamson</h4>
             
-            <h4 data-toc-skip class="date">2021-07-08</h4>
+            <h4 data-toc-skip class="date">2021-07-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd" class="external-link"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -188,15 +188,15 @@
 <span class="va">lm_mat</span>
 <span class="co">#&gt; Variable importance estimates:</span>
 <span class="co">#&gt;       Estimate  SE         95% CI                 VIMP &gt; 0 p-value     </span>
-<span class="co">#&gt; s = 3 0.2692790 0.05471418 [0.1620412, 0.3765168] TRUE     4.292894e-07</span>
-<span class="co">#&gt; s = 5 0.2667534 0.05552296 [0.1579304, 0.3755764] TRUE     7.761553e-07</span>
-<span class="co">#&gt; s = 9 0.2565653 0.05573332 [0.1473300, 0.3658006] TRUE     2.077783e-06</span>
-<span class="co">#&gt; s = 1 0.2515116 0.05584825 [0.1420510, 0.3609721] TRUE     3.342448e-06</span>
-<span class="co">#&gt; s = 8 0.2510168 0.05582525 [0.1416013, 0.3604323] TRUE     3.454477e-06</span>
-<span class="co">#&gt; s = 4 0.2493783 0.05583635 [0.1399410, 0.3588155] TRUE     3.980400e-06</span>
-<span class="co">#&gt; s = 6 0.2472863 0.05577755 [0.1379643, 0.3566083] TRUE     4.637103e-06</span>
-<span class="co">#&gt; s = 7 0.2432372 0.05575207 [0.1339652, 0.3525093] TRUE     6.419329e-06</span>
-<span class="co">#&gt; s = 2 0.2274573 0.05467509 [0.1202961, 0.3346186] TRUE     1.590098e-05</span></code></pre></div>
+<span class="co">#&gt; s = 1 0.2376119 0.04814479 [0.1432499, 0.3319740] TRUE     4.000127e-07</span>
+<span class="co">#&gt; s = 5 0.2373552 0.04856638 [0.1421668, 0.3325435] TRUE     5.113170e-07</span>
+<span class="co">#&gt; s = 2 0.2366318 0.04860613 [0.1413655, 0.3318980] TRUE     5.626623e-07</span>
+<span class="co">#&gt; s = 7 0.2296410 0.04836665 [0.1348441, 0.3244379] TRUE     1.027597e-06</span>
+<span class="co">#&gt; s = 6 0.2265537 0.04867519 [0.1311520, 0.3219553] TRUE     1.624653e-06</span>
+<span class="co">#&gt; s = 8 0.2247435 0.04842950 [0.1298234, 0.3196635] TRUE     1.736727e-06</span>
+<span class="co">#&gt; s = 4 0.2247007 0.04818159 [0.1302665, 0.3191349] TRUE     1.553461e-06</span>
+<span class="co">#&gt; s = 3 0.2201380 0.04880383 [0.1244843, 0.3157918] TRUE     3.231143e-06</span>
+<span class="co">#&gt; s = 9 0.2089158 0.04797824 [0.1148802, 0.3029514] TRUE     6.672001e-06</span></code></pre></div>
 </div>
 <div id="estimating-the-importance-of-a-single-variable-with-a-large-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -242,9 +242,9 @@
 
 <span class="va">tpa_vim</span>
 <span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;       Estimate SE        95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 6 0        0.1015214 [0, 0.1989784] FALSE    0.7513343</span></code></pre></div>
-<p>This takes approximately 0.189 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
+<span class="co">#&gt;       Estimate SE       95% CI         VIMP &gt; 0 p-value</span>
+<span class="co">#&gt; s = 6 0        0.106894 [0, 0.2095085] FALSE    0.98532</span></code></pre></div>
+<p>This takes approximately 0.211 seconds — now rather than estimating both conditional means, I am only estimating one.</p>
 <p>I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into <code><a href="../reference/vim.html">vim()</a></code>. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use <code>heart_folds</code> as I did in the linear regression example. Then <code><a href="../reference/vim.html">vim()</a></code> returns variable importance estimates based on the inputted fitted values. For example, let’s estimate variable importance for current alcohol consumption using this approach.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># set up the data, removing the columns for alcohol use and chd</span>
