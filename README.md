@@ -10,7 +10,7 @@
 
 **Software authors:** [Brian Williamson](https://bdwilliamson.github.io/) and [Jean Feng](https://jeanfeng.com/)
 
-**Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Peter Gilbert](https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html), [Noah Simon](http://faculty.washington.edu/nrsimon/), [Marco Carone](http://faculty.washington.edu/mcarone/about.html), [Jean Feng](https://jeanfeng.com/)
+**Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Peter Gilbert](https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html), [Noah Simon](http://faculty.washington.edu/nrsimon/), [Marco Carone](http://faculty.washington.edu/mcarone/about.html), [Jean Feng](http://www.jeanfeng.com/)
 
 **Python package:** https://github.com/bdwilliamson/vimpy
 
