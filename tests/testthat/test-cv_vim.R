@@ -92,6 +92,32 @@ test_that("Cross-validated variable importance using internally-computed regress
   # expect_equal(sprintf("%.15f", est$est), "0.307418610446996")
 })
 
+set.seed(101112)
+test_that("Cross-validated variable importance with odd number of outer folds works", {
+  est <- cv_vim(Y = y, X = x, indx = 2, V = 3, type = "r_squared", 
+                run_regression = TRUE, SL.library = learners, 
+                alpha = 0.05, delta = 0, cvControl = list(V = V),
+                env = environment(), na.rm = TRUE)
+  # check variable importance estimate
+  expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+  # check full predictiveness estimate
+  expect_equal(est$predictiveness_full, 0.44, tolerance = 0.1, scale = 1)
+  # check that the SE, CI work
+  expect_length(est$ci, 2)
+  expect_length(est$se, 1)
+  # check that the p-value worked
+  expect_length(est$p_value, 1)
+  expect_true(est$test)
+  # check that printing, plotting, etc. work
+  expect_silent(format(est)[1])
+  expect_output(print(est), "Estimate", fixed = TRUE)
+  # check that influence curve worked
+  expect_equal(sum(!is.na(est$eif_full)), 24999)
+  expect_equal(sum(!is.na(est$eif_redu)), 25001)
+  # check that the point estimate is what it is supposed to be
+  # expect_equal(sprintf("%.15f", est$est), "0.307418610446996")
+})
+
 # cross-fitted estimates of the full and reduced regressions,
 # for point estimate of variable importance.
 indx <- 2

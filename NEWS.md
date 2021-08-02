@@ -1,3 +1,13 @@
+# vimp 2.2.4
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Allow for odd number of folds in cross-fit and sampled-split VIM estimation
+
 # vimp 2.2.3
 
 ## Major changes

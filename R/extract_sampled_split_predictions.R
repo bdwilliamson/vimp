@@ -33,14 +33,16 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
   # extract the folds used for cross-fitting
   cross_fitting_folds <- get_cv_sl_folds(cvsl_obj$folds)
   unique_cf_folds <- unique(cross_fitting_folds)
+  # get which sample-splitting fold to use
+  this_sample_split <- ifelse(full, 1, 2)
   if (sample_splitting) {
-    # use V / 2 for inner cross-fitting within cv_vim
-    V <- length(unique(cross_fitting_folds)) / 2
+    # use V / 2 for inner cross-fitting within cv_vim;
+    # note that if the input V is odd, the code below will still work
+    V <- sum(sample_splitting_folds == this_sample_split)
   } else {
     V <- length(unique(cross_fitting_folds))
   }
   lst <- vector("list", length = V)
-  this_sample_split <- ifelse(full, 1, 2)
   these_cf_folds <- sort(unique_cf_folds)[sample_splitting_folds == this_sample_split]
   for (v in 1:V) {
     lst[[v]] <- all_preds[cross_fitting_folds == these_cf_folds[[v]]]
