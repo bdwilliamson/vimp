@@ -3,6 +3,7 @@ This is a resubmission. In this version, I have:
 
 * Removed the WARNING from CRAN checks
 * Added a dataset for use in the vignettes
+* Updated links to the data source
 
 ## Test environments
 * local ubuntu 20.04, R 4.0.2
