@@ -249,25 +249,24 @@ This document introduces you to the basic tools in `vimp` and how to apply them 
 Throughout this document I will use the VRC01 data [@magaret2019], a subset of the data freely available from the Los Alamos National Laboratory's Compile, Neutralize, and Tally Neutralizing Antibody Panels database. Information about these data is available [here](https://doi.org/10.1371/journal.pcbi.1006952).
 
 ```{r load-vrc01-data}
-# read in the data from the Elements website
+# read in the data 
 data("vrc01")
 ```
 
 While there are several outcomes of interest in these data (continuous measures of neutralization and binary measures of resistance), we will focus on the binary measure of resistance to VRC01 given by `ic50.censored`. This variable is a binary indicator that the concentration of VRC01 necessary to neutralize 50% of viral replicates in a sample (IC-50) was right-censored; since higher values of IC-50 imply a more resistant virus, this indicator is a proxy for viral resistance. In addition to the outcome of interest, there are measurements on several groups of variables: viral subtype, geographic region of origin (a potential confounding variable), amino acid sequence features (further grouped into the CD4 binding sites, VRC01 binding footprint, sites with sufficient exposed surface area, sites identified as important for glycosylation, sites with residues that covary with the VRC01 binding footprint, sites associated with VRC01-specific potential N-linked glycosylation (PNGS) effects, sites in gp41 associated with VRC01 neutralization or sensitivity, sites for indicating N-linked glycosylation), region-specific counts of PNGS, viral geometry, cysteine counts, and steric bulk at critical locations. 
 
-For the sake of simplicity, we will focus here on only four groups of features: viral subtype, geographic region of origin, and amino acid sequence features in the CD4 binding sites. 
+For the sake of simplicity, we will focus here on only three groups of features: viral subtype, geographic region of origin, and viral geometry features. 
 
 ```{r subset-data}
 library("dplyr")
 library("tidyselect")
 # retain only the columns of interest for this analysis
 y <- vrc01$ic50.censored
-cd4bs <- as.character(c(124, 125, 126, 127, 196, 198, 279, 280, 281, 282, 283, 365, 366, 367, 368, 369, 370, 374, 425, 426, 427, 428, 429, 430, 431, 432, 455, 456, 457, 458, 459, 460, 461, 469, 471, 472, 473, 474, 475, 476, 477))
 X <- vrc01 %>% 
-  select(starts_with("geog"), starts_with("subtype"), contains(cd4bs))
+  select(starts_with("geog"), starts_with("subtype"), starts_with("length"))
 ```
 
-Since there are nine features and two groups, it is of interest to determine variable importance both for the individual features separately and for the two groups of features (since the geographic variables are potential confounders).
+Since there are 17 features and two groups, it is of interest to determine variable importance both for the individual features separately and for the two groups of features (since the geographic variables are potential confounders).
 
 ### A first approach: linear regression
 
@@ -275,15 +274,17 @@ Suppose that I believe that a linear model truly describes the relationship betw
 
 ```{r est-regressions-lm}
 geog_indx <- max(which(grepl("geog", names(X))))
+set.seed(1234)
 for (i in seq_len(ncol(X) - geog_indx)) {
-  lm_vim <- vim(Y = y, X = X, indx = geog_indx + i, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
+  # note that we're using a small number of cross-fitting folds for speed
+  lm_vim <- vim(Y = y, X = X, indx = geog_indx + i, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared", cvControl = list(V = 2))
   if (i == 1) {
     lm_mat <- lm_vim
   } else {
     lm_mat <- merge_vim(lm_mat, lm_vim)
   }
 }
-# print out the matrix
+# print out the importance 
 lm_mat
 ```
 
@@ -343,11 +344,11 @@ The main function for R-squared-based variable importance in the `vimp` package 
 - `X`, the covariates
 - `indx`, which determines the feature I want to estimate variable importance for
 - `SL.library`, the library of candidate learners
-- `V`, the number of cross-validation folds to use for computing variable importance
+- `V`, the number of cross-fitting folds (also referred to as cross-validation folds) to use for computing variable importance
 
 The main arguments differ if precomputed regression function estimates are used; please see ["Using precomputed regression function estimates in `vimp`"](precomputed-regressions.html) for further discussion of this case.
 
-Suppose that the first feature that I want to estimate variable importance for is family history of heart disease, `fam`. Then supplying `vimp_rsquared()` with
+Suppose that the first feature that I want to estimate variable importance for is whether the viral subtype is 01_AE, `subtype.is.01_AE`. Then supplying `vimp_rsquared()` with
 
 - `Y = y`
 - `X = X`
@@ -358,8 +359,8 @@ Suppose that the first feature that I want to estimate variable importance for i
 means that:
 
 - I want to use `SuperLearner()` to estimate the conditional means $\mu_{P_0}$ and $\mu_{P_0,s}$, and my candidate library is `learners`
-- I want to estimate variable importance for the fifth column of the South African heart disease study covariates, which is `fam`
-- I want to use five-fold cross-fitting to estimate importance
+- I want to estimate variable importance for the fifth column of the VRC01 covariates, which is `subtype.is.01_AE`
+- I want to use five-fold cross-fitting to estimate importance 
 
 The call to `vimp_rsquared()` looks like this:
 ```{r vimp-with-sl-1, eval = FALSE}
@@ -369,7 +370,7 @@ vimp_rsquared(Y = y, X = X,
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.
 
-However, for the sake of illustration, I can estimate varibable importance for family history only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):
+However, for the sake of illustration, I can estimate varibable importance for 01_AE subtype only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):
 ```{r vimp-with-sl-fam, message = FALSE}
 # small learners library
 learners.2 <- c("SL.ranger")
@@ -379,55 +380,50 @@ V <- 2
 sl_cvcontrol <- list(V = 2)
 
 # now estimate variable importance
+set.seed(5678)
 start_time <- Sys.time()
-fam_vim <- vimp_rsquared(Y = y, X = X, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+subtype_01_AE_vim <- vimp_rsquared(Y = y, X = X, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol, family = binomial())
 end_time <- Sys.time()
 ```
 
 This code takes approximately `r round(as.numeric(end_time - start_time), 3)` seconds to run on a (not very fast) PC. I can display these estimates:
 
-```{r print-fam-vim}
-fam_vim
+```{r print-vim}
+subtype_01_AE_vim
 ```
 
-The object returned by `vimp_rsquared()` also contains fitted values from using `SuperLearner()`; I access these using `$full_fit` and `$red_fit`. For example,
+The object returned by `vimp_rsquared()` also contains lists of fitted values from using `SuperLearner()`; I access these using `$full_fit` and `$red_fit`. For example,
 
-```{r look-at-fam-ests}
-head(fam_vim$full_fit)
-head(fam_vim$red_fit)
+```{r look-at-ests}
+head(subtype_01_AE_vim$full_fit[[1]])
+head(subtype_01_AE_vim$red_fit[[1]])
 ```
 
 I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):
-```{r heart-sl}
-# estimate variable importance
-tpa_vim <- vimp_rsquared(Y = y, X = X, indx = 6, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-alc_vim <- vimp_rsquared(Y = y, X = X, indx = 8, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-sbp_vim <- vimp_rsquared(Y = y, X = X, indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-tob_vim <- vimp_rsquared(Y = y, X = X, indx = 2, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-ldl_vim <- vimp_rsquared(Y = y, X = X, indx = 3, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-adi_vim <- vimp_rsquared(Y = y, X = X, indx = 4, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-obe_vim <- vimp_rsquared(Y = y, X = X, indx = 7, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-age_vim <- vimp_rsquared(Y = y, X = X, indx = 9, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+```{r vrc01-sl}
+ests <- subtype_01_AE_vim
+set.seed(1234)
+for (i in seq_len(ncol(X) - geog_indx - 1)) {
+  # note that we're using a small number of cross-fitting folds for speed
+  this_vim <- vimp_rsquared(Y = y, X = X, indx = geog_indx + i + 1, run_regression = TRUE, SL.library = learners.2, V = V, cvControl = sl_cvcontrol, family = binomial())
+  ests <- merge_vim(ests, this_vim)
+}
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
-```{r heart-vim, fig.width = 8.5, fig.height = 8, message = FALSE}
-library("dplyr")
-library("tibble")
+```{r vrc01-vim, fig.width = 8.5, fig.height = 8, message = FALSE}
 library("ggplot2")
 library("cowplot")
 theme_set(theme_cowplot())
-# combine the objects together
-ests <- merge_vim(sbp_vim, tob_vim, ldl_vim, adi_vim,
-                fam_vim, tpa_vim, obe_vim, alc_vim, age_vim)
-all_vars <- c("Sys. blood press.", "Tobacco consump.", "LDL cholesterol",
-              "Adiposity", "Family history", "Type A behavior", "Obesity",
-              "Alcohol consump.", "Age")
+all_vars <- c(paste0("Subtype is ", c("01_AE", "02_AG", "07_BC", "A1", "A1C", "A1D",
+                                      "B", "C", "D", "O", "Other")),
+              paste0("Length of ", c("Env", "gp120", "V5", "V5 outliers", "Loop E",
+                                     "Loop E outliers")))
 
 est_plot_tib <- ests$mat %>%
   mutate(
     var_fct = rev(factor(s, levels = ests$mat$s,
-                     labels = all_vars[as.numeric(ests$mat$s)],
+                     labels = all_vars[as.numeric(ests$mat$s) - geog_indx],
                      ordered = TRUE))
   )
 
@@ -439,7 +435,7 @@ est_plot_tib %>%
   xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
   ylab("") +
   ggtitle("Estimated individual feature importance") +
-  labs(subtitle = "in the South African heart disease study data")
+  labs(subtitle = "in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)")
 ```
 
 ## Estimating variable importance for a group of variables
@@ -448,20 +444,21 @@ Now that I have estimated variable importance for each of the individual feature
 
 The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for `s`; I can use any of the options listed in the previous section to compute these estimates.
 
-```{r heart-group-vim, fig.width = 8.5, fig.height = 8}
+```{r vrc01-group-vim, fig.width = 8.5, fig.height = 8}
 # get the estimates
-behav_vim <- vimp_rsquared(Y = y, X = X, indx = c(2, 6, 8), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-bios_vim <- vimp_rsquared(Y = y, X = X, indx = c(1, 3, 4, 5, 7, 9), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+set.seed(91011)
+subtype_vim <- vimp_rsquared(Y = y, X = X, indx = 5:15, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+geometry_vim <- vimp_rsquared(Y = y, X = X, indx = 16:21, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 
 # combine and plot
-groups <- merge_vim(behav_vim, bios_vim)
-all_grp_nms <- c("Behavioral features", "Biological features")
+groups <- merge_vim(subtype_vim, geometry_vim)
+all_grp_nms <- c("Viral subtype", "Viral geometry")
 
 grp_plot_tib <- groups$mat %>%
   mutate(
     grp_fct = factor(case_when(
-      s == "2,6,8" ~ "1",
-      s == "1,3,4,5,7,9" ~ "2"
+      s == "5,6,7,8,9,10,11,12,13,14,15" ~ "1",
+      s == "16,17,18,19,20,21" ~ "2"
     ), levels = c("1", "2"),  labels = all_grp_nms, ordered = TRUE)
   )
 grp_plot_tib %>%
@@ -471,7 +468,7 @@ grp_plot_tib %>%
   xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
   ylab("") +
   ggtitle("Estimated feature group importance") +
-  labs(subtitle = "in the South African heart disease study data")
+  labs(subtitle = "in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)")
 ```
 
 ## Types of population variable importance
