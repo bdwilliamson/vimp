@@ -361,6 +361,10 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       (length(unique(Y)) == 2) + 1, stats::gaussian(), stats::binomial()
     )
   }
+  if (is.character(arg_lst$family)) {
+    family <- get(arg_lst$family, mode = "function", envir = parent.frame())
+    arg_lst$family <- family()
+  }
   if ((arg_lst$family$family == "binomial") & (length(unique(Y)) > 2)) {
     arg_lst$family <- stats::gaussian()
   }
