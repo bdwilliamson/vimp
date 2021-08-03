@@ -7,19 +7,23 @@ vignette: >
   %\VignetteIndexEntry{Types of VIMs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+csl: chicago-author-date.csl
 references:
-- id: hastie2009
-  title: The Elements of Statistical Learning
+- id: magaret 2019
+  title: Prediction of VRC01 neutralization sensitivity by HIV-1 gp160 sequence features
   author:
-  - family: Hastie
-    given: T
-  - family: Tibshirani
-    given: R
-  - family: Friedman
-    given: J
-  type: book
+  - family: Magaret
+    given: CA
+  - family: Benkeser
+    given: DC
+  - family: Williamson
+    given: BD
+  - family: Borate
+    given: BR
+  publisher: PLOS Computational Biology
+  type: article-journal
   issued:
-    year: 2009
+   year: 2019 
 ---
 
 ```{r, include = FALSE}
@@ -40,42 +44,41 @@ In the [main vignette](introduction-to-vimp.html), I discussed variable importan
 
 In general, I define variable importance as a function of the true population distribution (denoted by $P_0$) and a predictiveness measure $V$ -- large values of $V$ are assumed to be better. Currently, the measures $V$ implemented in `vimp` are $R^2$, classification accuracy, area under the receiver operating characteristic curve (AUC), and deviance. For a fixed function $f$, the predictiveness is given by $V(f, P)$, where large values imply that $f$ is a good predictor of the outcome. The best possible prediction function, $f_0$, is the *oracle* model -- i.e., the prediction function that I would use if I had access to the distribution $P_0$. Often, $f_0$ is the true conditional mean (e.g., for $R^2$). Then the *total oracle predictiveness* can be defined as $V(f_0, P_0)$. This is the best possible value of predictiveness.
 
-I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have $p$ variables, and an index set $s$ of interest (containing some subset of the $p$ variables). Throughout this document, I will use the South African heart disease study data [@hastie2009] to illustrate how each VIM may be estimated (freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data); more information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt)). Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the [main vignette](introduction-to-vimp.html)). Finally, I will use the area under the receiver operating characteristic curve (AUC) to measure importance.
+I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have $p$ variables, and an index set $s$ of interest (containing some subset of the $p$ variables). Throughout this document, I will use the VRC01 data [@magaret2019] (freely available [here](https://github.com/benkeser/vrc01/data/fulldata.csv); more information about these data is available [here](https://doi.org/10.1371/journal.pcbi.1006952) and in the Los Alamos National Laboratory's Compile, Neutralize, and Tally Neutralizing Antibody Panels database).. Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the [main vignette](introduction-to-vimp.html)). Finally, I will use the area under the receiver operating characteristic curve (AUC) to measure importance.
 
-```{r load-heart-data}
-## read in the data from the Elements website
-library("RCurl")
-heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
-## minor data cleaning
-heart <- heart_data[, 2:dim(heart_data)[2]]
-heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
-x <- heart[, -ncol(heart)]
-# a simple library, to speed up the vignette;
-# in general, we recommend fitting a flexible library
-learners.2 <- c("SL.glm")
-set.seed(12345)
+```{r load-vrc01-data}
+## read in the data 
+data("vrc01")
+# subset to the columns of interest for this analysis
+library("dplyr")
+library("tidyselect")
+# retain only the columns of interest for this analysis
+y <- vrc01$ic50.censored
+X <- vrc01 %>% 
+  select(starts_with("geog"), starts_with("subtype"), starts_with("length"))
+learners <- "SL.glm"
 ```
 
 ## Conditional VIMs
 
 The *reduced oracle predictiveness* is defined as $V(f_{0,-s}, P_0)$, where $f_{0,-s}$ is the best possible prediction function that *does not use the covariates with index in $s$*. Then the conditional VIM is defined as $$V(f_0, P_0) - V(f_{0,-s}, P_0).$$ This is the measure of importance that I estimated in the [main vignette](introduction-to-vimp.html). To estimate the conditional VIM for family history of heart disease, I can use the following code:
 
-```{r est-famhist-cond}
+```{r est-subtype-01AE-cond}
 # note the use of a small V and a small number of SL folds, for illustration only
 set.seed(1234)
 V <- 2
 sl_cvcontrol <- list(V = 2)
-fam_vim_cond <- vimp_auc(Y = heart$chd, X = x, indx = 5, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
+subtype_01_AE_cond <- vimp_auc(Y = y, X = X, indx = 5, SL.library = learners, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
 ```
 
 ## Marginal VIMs
 
 The *marginal oracle predictiveness* is defined as $V(f_{0,s}, P_0)$, where $f_{0,s}$ is the best possible prediction function that *only uses the covariates with index in $s$*. The *null oracle predictiveness* is defined as $V(f_{0, \emptyset}, P_0)$, where $f_{0,\emptyset}$ is the best possible prediction function that *uses no covariates* (i.e., is fitting the mean). Then the marginal VIM is defined as $$V(f_{0,s}, P_0) - V(f_{0,\emptyset}, P_0).$$ To estimate the marginal VIM for family history of heart disease, I can use the following code:
 
-```{r est-famhist-marg}
+```{r est-subtype-01AE-marg}
 # note the use of a small V and a small number of SL folds, for illustration only
 set.seed(5678)
-fam_vim_marg <- vimp_auc(Y = heart$chd, X = x[, 5, drop = FALSE], indx = 1, SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
+subtype_01_AE_marg <- vimp_auc(Y = y, X = X[, 5, drop = FALSE], indx = 1, SL.library = learners, na.rm = TRUE, V = V, cvControl = sl_cvcontrol)
 ```
 
 ## Shapley VIMs
@@ -84,7 +87,7 @@ The Shapley population VIM (SPVIM) generalizes the marginal and conditional VIMs
 
 ```{r est-famhist-spvim}
 set.seed(91011)
-all_vim_spvim <- sp_vim(Y = heart$chd, X = x, type = "r_squared", SL.library = learners.2, na.rm = TRUE, V = V, cvControl = sl_cvcontrol, env = environment())
+all_vim_spvim <- sp_vim(Y = y, X = X, type = "auc", SL.library = learners, na.rm = TRUE, V = V, cvControl = sl_cvcontrol, env = environment())
 ```
 
 ## Adjusting for confounders
@@ -95,8 +98,8 @@ In some cases, there may be confounding factors that you want to adjust for in a
 
 The three VIMs defined here may be different for a given feature of interest. Indeed, we can see this for family history of heart disease in the South African heart disease study data:
 ```{r show-ests}
-fam_vim_cond
-fam_vim_marg
+subtype_01_AE_vim_cond
+subtype_01_AE_vim_marg
 # note: need to look at row for s = 5
 all_vim_spvim
 ```
