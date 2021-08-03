@@ -8,22 +8,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 csl: chicago-author-date.csl
-references:
-- id: magaret 2019
-  title: Prediction of VRC01 neutralization sensitivity by HIV-1 gp160 sequence features
-  author:
-  - family: Magaret
-    given: CA
-  - family: Benkeser
-    given: DC
-  - family: Williamson
-    given: BD
-  - family: Borate
-    given: BR
-  publisher: PLOS Computational Biology
-  type: article-journal
-  issued:
-   year: 2019 
+bibliography: vimp_bib.bib
 ---
 
 ```{r, include = FALSE}
@@ -47,14 +32,14 @@ In general, I define variable importance as a function of the true population di
 I define variable importance measures (VIMs) as contrasts in oracle predictivness. The oracle models that I plug in determine what type of variable importance is being considered, as I outline below. For the remainder of this document, suppose that I have $p$ variables, and an index set $s$ of interest (containing some subset of the $p$ variables). Throughout this document, I will use the VRC01 data [@magaret2019] (freely available [here](https://github.com/benkeser/vrc01/data/fulldata.csv); more information about these data is available [here](https://doi.org/10.1371/journal.pcbi.1006952) and in the Los Alamos National Laboratory's Compile, Neutralize, and Tally Neutralizing Antibody Panels database).. Throughout, I will also use a simple library of learners for the Super Learner (this is for illustration only; in practice, I suggest using a large library of learners, as outlined in the [main vignette](introduction-to-vimp.html)). Finally, I will use the area under the receiver operating characteristic curve (AUC) to measure importance.
 
 ```{r load-vrc01-data}
-# read in the data 
+# read in the data
 data("vrc01")
 # subset to the columns of interest for this analysis
 library("dplyr")
 library("tidyselect")
 # retain only the columns of interest for this analysis
 y <- vrc01$ic50.censored
-X <- vrc01 %>% 
+X <- vrc01 %>%
   select(starts_with("geog"), starts_with("subtype"), starts_with("length"))
 learners <- "SL.glm"
 ```
