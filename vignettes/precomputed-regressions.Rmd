@@ -7,19 +7,23 @@ vignette: >
   %\VignetteIndexEntry{Using precomputed regression function estimates in `vimp`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+csl: chicago-author-date.csl
 references:
-- id: hastie2009
-  title: The Elements of Statistical Learning
+- id: magaret 2019
+  title: Prediction of VRC01 neutralization sensitivity by HIV-1 gp160 sequence features
   author:
-  - family: Hastie
-    given: T
-  - family: Tibshirani
-    given: R
-  - family: Friedman
-    given: J
-  type: book
+  - family: Magaret
+    given: CA
+  - family: Benkeser
+    given: DC
+  - family: Williamson
+    given: BD
+  - family: Borate
+    given: BR
+  publisher: PLOS Computational Biology
+  type: article-journal
   issued:
-    year: 2009
+   year: 2019 
 ---
 
 ```{r, include = FALSE}
@@ -36,17 +40,20 @@ library("SuperLearner")
 
 ## Introduction
 
-In the [main vignette](introduction-to-vimp.html), we analyzed the South African heart disease study data [@hastie2009] (freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data); more information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt)). In each of the analyses, I used `run_regression = TRUE`. In this vignette, I discuss how to use precomputed regression function estimates with `vimp`. The results of this analysis replicate the analysis in the [main vignette](introduction-to-vimp.html).
+In the [main vignette](introduction-to-vimp.html), we analyzed the VRC01 data [@magaret2019] (freely available [here](https://github.com/benkeser/vrc01/data/fulldata.csv); more information about these data is available [here](https://doi.org/10.1371/journal.pcbi.1006952) and in the Los Alamos National Laboratory's Compile, Neutralize, and Tally Neutralizing Antibody Panels database). In each of the analyses, I used `run_regression = TRUE`. In this vignette, I discuss how to use precomputed regression function estimates with `vimp`. The results of this analysis replicate the analysis in the [main vignette](introduction-to-vimp.html).
 
-```{r load-heart-data}
-# read in the data from the Elements website
-library("RCurl")
-heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
-# minor data cleaning
-heart <- heart_data[, 2:dim(heart_data)[2]]
-heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
-# sample-splitting folds for hypothesis testing
-heart_folds <- sample(rep(seq_len(2), length = dim(heart)[1]))
+```{r load-vrc01-data}
+# read in the data 
+data("vrc01")
+# subset to the columns of interest for this analysis
+library("dplyr")
+library("tidyselect")
+# retain only the columns of interest for this analysis
+y <- vrc01$ic50.censored
+X <- vrc01 %>% 
+  select(starts_with("geog"), starts_with("subtype"), starts_with("length"))
+set.seed(1234)
+vrc01_folds <- make_folds(y = y, V = 2, stratified = TRUE)
 ```
 
 ## Using precomputed regression function estimates without cross-fitting
@@ -55,224 +62,52 @@ heart_folds <- sample(rep(seq_len(2), length = dim(heart)[1]))
 
 As in the [main vignette](introduction-to-vimp.html), we first start by fitting only linear regression models. In this section, we use the function `vim()`; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.
 
-```{r est-heart-regressions-lm}
-heart_1 <- subset(heart, heart_folds == 1)
-full_mod <- lm(chd ~ ., data = heart_1)
+```{r est-regressions-lm}
+library("rlang")
+vrc01_subset <- vrc01 %>% 
+  select(ic50.censored, starts_with("geog"), starts_with("subtype"), starts_with("length")) %>%
+  rename(y = ic50.censored)
+vrc01_1 <- subset(vrc01_subset, vrc01_folds == 1)
+full_mod <- lm(y ~ ., data = vrc01_1)
 full_fit <- predict(full_mod)
 
 # estimate the reduced conditional means for each of the individual variables
 # remove the outcome for the predictor matrix
-X <- heart[, -dim(heart)[2]]
-X_1 <- subset(X, heart_folds == 1)
-X_2 <- subset(X, heart_folds == 2)
-x_2_mat <- as.matrix(X_2)
+vrc01_2 <- subset(vrc01_subset, vrc01_folds == 2)
+X_2 <- vrc01_2 %>% select(-y)
 # get the full regression fit and use as outcome for reduced regressions; this may provide some stability in this analysis
-heart_2 <- subset(heart, heart_folds == 2)
-full_fit_2 <- predict(lm(chd ~ ., data = heart_2))
-red_mod_sbp <- lm(full_fit ~ x_2_mat[,-1])
-red_fit_sbp <- predict(red_mod_sbp)
-red_mod_tob <- lm(full_fit ~ x_2_mat[,-2])
-red_fit_tob <- predict(red_mod_tob)
-red_mod_ldl <- lm(full_fit ~ x_2_mat[,-3])
-red_fit_ldl <- predict(red_mod_ldl)
-red_mod_adi <- lm(full_fit ~ x_2_mat[,-4])
-red_fit_adi <- predict(red_mod_adi)
-red_mod_fam <- lm(full_fit ~ x_2_mat[,-5])
-red_fit_fam <- predict(red_mod_fam)
-red_mod_tpa <- lm(full_fit ~ x_2_mat[, -6])
-red_fit_tpa <- predict(red_mod_tpa)
-red_mod_obe <- lm(full_fit ~ x_2_mat[,-7])
-red_fit_obe <- predict(red_mod_obe)
-red_mod_alc <- lm(full_fit ~ x_2_mat[, -8])
-red_fit_alc <- predict(red_mod_alc)
-red_mod_age <- lm(full_fit ~ x_2_mat[,-9])
-red_fit_age <- predict(red_mod_age)
-
-# plug the regression function estimates into vim
-lm_vim_sbp <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_sbp, indx = 1, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_tob <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_tob, indx = 2, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_ldl <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_ldl, indx = 3, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_adi <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_adi, indx = 4, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_fam <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_fam, indx = 5, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_tpa <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_tpa, indx = 6, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_obe <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_obe, indx = 7, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_alc <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_alc, indx = 8, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-lm_vim_age <- vim(Y = heart$chd, f1 = full_fit, f2 = red_fit_age, indx = 9, run_regression = FALSE, type = "r_squared", sample_splitting_folds = heart_folds)
-
-# make a table with the estimates using the merge_vim() function
-library("dplyr")
-lm_mat <- merge_vim(lm_vim_sbp, lm_vim_tob, lm_vim_ldl, lm_vim_adi,
-                lm_vim_fam, lm_vim_tpa, lm_vim_obe, lm_vim_alc, lm_vim_age)
+full_fit_2 <- predict(lm(y ~ ., data = vrc01_2))
+geog_indx <- max(which(grepl("geog", names(X))))
+for (i in seq_len(ncol(X_2) - geog_indx)) {
+  this_name <- names(X_2)[i + geog_indx]
+  red_fit <- predict(lm(full_fit_2 ~ ., data = X_2 %>% select(-!!this_name)))
+  this_vim <- vim(Y = y, f1 = full_fit, f2 = red_fit, indx = i + geog_indx,
+                  run_regression = FALSE, type = "r_squared", 
+                  sample_splitting_folds = vrc01_folds)
+  if (i == 1) {
+    lm_mat <- this_vim
+  } else {
+    lm_mat <- merge_vim(lm_mat, this_vim)
+  }
+}
 # print out the matrix
 lm_mat
 ```
 
-### Estimating the importance of a single variable with a large library of learners
-
-Say I have already computed one regression function estimate for the full set of features; call the fitted values from this procedure `f1`. Further, suppose that I have done estimated a second regression function by removing the `indx` of interest; call the fitted values from this procedure `f2`. Then I can use `vimp` to compute variable importance based on these fitted values. There five main arguments to `vim()` when I have already computed:
-
-- `Y`, the outcome
-- `f1` and `f2`, the fitted values from a regression procedure (`f1` used all covariates, `f2` drops the covariates in `indx`)
-- `indx`, which determines the feature I want to estimate variable importance for
-- `run_regression = FALSE`
-- `folds`, a list of folds for hypothesis testing and cross-fitting
-
-I can estimate the variable importance for family history only using one base learner (for illustration; also, using a small number of cross-fitting folds and a small number of Super Learner cross-validation folds) as follows:
-```{r vimp-with-sl-fam, message = FALSE}
-# small learners library
-learners.2 <- c("SL.ranger")
-
-# small number of folds
-V <- 2
-sl_cvcontrol <- list(V = 2)
-
-# now estimate variable importance
-fam_vim <- vim(Y = heart$chd, X = X, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), cvControl = sl_cvcontrol, sample_splitting_folds = heart_folds)
-```
-
-I said earlier that I want to obtain estimates of all individual features in these data, so let's choose type A behavior (`tpa`) next. Now that I have estimated variable importance for family history, the `full_fit` object contains our estimate of $\mu_{P_0}$. Since I have spent the time to estimate this using `SuperLearner()`, there is no reason to estimate this function again. This leads me to choose (2) above for estimating the importance of type A behavior, since I have already estimated variable importance on one feature in this dataset. Using the small learners library (again only for illustration) yields
-
-```{r typea-vim, message = FALSE}
-# specify that full_fit doesn't change; but note that this was fit on the first half of the data
-full_fit <- fam_vim$full_fit
-# get the full fit on the second half of the data; for stability later
-full_fit_2 <- predict(SuperLearner::SuperLearner(Y = heart_2$chd, X = X_2, SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-
-# estimate variable importance for the average number of rooms
-start_time <- Sys.time()
-reduced_fit <- SuperLearner::SuperLearner(Y = full_fit_2, X = X_2[, -6, drop = FALSE], SL.library = learners.2, cvControl = sl_cvcontrol)
-end_time <- Sys.time()
-red_fit <- predict(reduced_fit)$pred
-tpa_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = red_fit, indx = 6, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-tpa_vim
-```
-
-This takes approximately `r round(as.numeric(end_time - start_time), 3)` seconds --- now rather than estimating both conditional means, I am only estimating one.
-
-I can achieve the same results by also estimating the regression function based on all variables myself, and plugging these estimates into `vim()`. Note that I am using the folds from the first fit above so that the estimates are consistent with each other; if I was doing this analysis from scratch, I could use `heart_folds` as I did in the linear regression example. Then `vim()` returns variable importance estimates based on the inputted fitted values. For example, let's estimate variable importance for current alcohol consumption using this approach.
-
-```{r alc-vim}
-# set up the data, removing the columns for alcohol use and chd
-x <- heart_2[, -c(8, dim(heart)[2])]
-
-# fit an RF model using SuperLearner
-reduced_mod <- SuperLearner(Y = full_fit_2, X = x, SL.library = learners.2, cvControl = sl_cvcontrol)
-reduced_fit <- predict(reduced_mod)$pred
-# this takes 2 seconds
-
-# estimate variable importance
-alc_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_fit, indx = 8, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-```
-
-I can obtain estimates for the remaining individual features in the same way (again using a small library for illustration):
-```{r heart-sl}
-reduced_sbp <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -1], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-sbp_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_sbp,
-                indx = 1, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-reduced_tob <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -2], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-tob_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_tob,
-                indx = 2, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-reduced_ldl <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -3], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-ldl_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_ldl,
-                indx = 3, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-reduced_adi <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -4], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-adi_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_adi,
-                indx = 4, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-reduced_obe <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -7], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-obe_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_obe,
-                indx = 7, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-reduced_age <- predict(SuperLearner(Y = full_fit_2, X = X_2[, -9], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-age_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_age,
-                indx = 9, run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-```
-
-Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
-```{r heart-vim, fig.width = 8.5, fig.height = 8, message = FALSE}
-library("dplyr")
-library("tibble")
-library("ggplot2")
-library("cowplot")
-theme_set(theme_cowplot())
-# combine the objects together
-ests <- merge_vim(sbp_vim, tob_vim, ldl_vim, adi_vim,
-                fam_vim, tpa_vim, obe_vim, alc_vim, age_vim)
-all_vars <- c("Sys. blood press.", "Tobacco consump.", "LDL cholesterol",
-              "Adiposity", "Family history", "Type A behavior", "Obesity",
-              "Alcohol consump.", "Age")
-
-est_plot_tib <- ests$mat %>%
-  mutate(
-    var_fct = rev(factor(s, levels = ests$mat$s,
-                     labels = all_vars[as.numeric(ests$mat$s)],
-                     ordered = TRUE))
-  )
-
-# plot
-est_plot_tib %>%
-  ggplot(aes(x = est, y = var_fct)) +
-  geom_point() +
-  geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
-  xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
-  ylab("") +
-  ggtitle("Estimated individual feature importance") +
-  labs(subtitle = "in the South African heart disease study data")
-```
-
-## Estimating variable importance for a group of variables
-
-Now that I have estimated variable importance for each of the individual features, I can estimate variable importance for each of the groups that I mentioned above: biological and behavioral features.
-
-The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for `s`; I can use any of the options listed in the previous section to compute these estimates.
-
-```{r heart-group-vim, fig.width = 8.5, fig.height = 8}
-# get the estimates
-reduced_behav <- predict(SuperLearner(Y = full_fit_2, X = heart_2[, -c(2, 6, 8, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-behav_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_behav, indx = c(2, 6, 8), run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-reduced_bios <- predict(SuperLearner(Y = full_fit_2, X = heart_2[, -c(1, 3, 4, 5, 7, 9, dim(heart)[2])], SL.library = learners.2, cvControl = sl_cvcontrol))$pred
-bios_vim <- vim(Y = heart$chd, f1 = full_fit_2, f2 = reduced_bios, indx = c(1, 3, 4, 5, 7, 9), run_regression = FALSE, type = "r_squared", sample_splitting_folds = fam_vim$sample_splitting_folds)
-
-# combine and plot
-groups <- merge_vim(behav_vim, bios_vim)
-all_grp_nms <- c("Behavioral features", "Biological features")
-
-grp_plot_tib <- groups$mat %>%
-  mutate(
-    grp_fct = factor(case_when(
-      s == "2,6,8" ~ "1",
-      s == "1,3,4,5,7,9" ~ "2"
-    ), levels = c("1", "2"),  labels = all_grp_nms, ordered = TRUE)
-  )
-grp_plot_tib %>%
-  ggplot(aes(x = est, y = grp_fct)) +
-  geom_point() +
-  geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
-  xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
-  ylab("") +
-  ggtitle("Estimated feature group importance") +
-  labs(subtitle = "in the South African heart disease study data")
-```
-
-## Using precomputed regression function estimates with cross-fitting
+## Estimating variable importance for a single variable using precomputed regression function estimates
 
 In this section, we will use cross-fitting and pre-computed estimates of the regression functions. This can be especially useful if you have already run a call to `CV.SuperLearner` -- that function returns estimates based on each observation being part of the hold-out set. However, while this approach can save you some computation time, it requires a hefty amount of mental overhead.
 
-To replicate the Super Learning analysis from above using cross-fitting, we will use `CV.SuperLearner` to fit the individual regression functions, taking care to use the same cross-fitting folds in each regression. We will then create two groups of validation folds for sample-splitting. For this analysis, we will use `V = 5` folds for cross-fitted variable importance estimation (as we did in the [main vignette](introduction-to-vimp.html)). Note that this entails running `CV.SuperLearner` with $2V = 10$ folds.
+We will use `CV.SuperLearner` to fit the individual regression functions, taking care to use the same cross-fitting folds in each regression. We will then create two groups of validation folds for sample-splitting. For this analysis, we will use `V = 2` folds for cross-fitted variable importance estimation (as we did in the [main vignette](introduction-to-vimp.html)). Note that this entails running `CV.SuperLearner` with $2V = 10$ folds.
 
 First, we estimate the regression function based on all variables:
 ```{r estimate-full-regression-with-cf, message = FALSE}
-x <- heart[, -ncol(heart)]
+learners <- "SL.ranger"
 # estimate the full regression function
-V <- 5
+V <- 2
 set.seed(4747)
 full_cv_fit <- SuperLearner::CV.SuperLearner(
-  Y = heart$chd, X = x, SL.library = learners.2, cvControl = list(V = 2 * V),
+  Y = y, X = X, SL.library = learners, cvControl = list(V = 2 * V),
   innerCvControl = list(list(V = V))
 )
 # get a numeric vector of cross-fitting folds
@@ -288,12 +123,13 @@ full_cv_preds <- extract_sampled_split_predictions(
 ```
 
 Next, to estimate the importance of each variable, we need to estimate the reduced regression function for each variable:
-```{r estimate-redu-regressions-with-cf, message = FALSE}
-vars <- c("sbp", "tob", "ldl", "adi", "fam", "tpa", "obe", "alc", "age")
+```{r estimate-reduced-regressions-with-cf, message = FALSE}
+vars <- names(X)[(geog_indx + 1):ncol(X)]
+set.seed(1234)
 for (i in seq_len(length(vars))) {
   # use "eval" and "parse" to assign the objects of interest to avoid duplicating code
   eval(parse(text = paste0("reduced_", vars[i], "_cv_fit <- SuperLearner::CV.SuperLearner(
-  Y = heart$chd, X = x[, -i, drop = FALSE], SL.library = learners.2,
+  Y = y, X = X[, -(geog_indx + i), drop = FALSE], SL.library = learners,
   cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),
   innerCvControl = list(list(V = V))
 )")))
@@ -306,61 +142,38 @@ for (i in seq_len(length(vars))) {
 
 Then we can plug these values into `vimp_rsquared()` (or equivalently, `cv_vim()` with `type = "r_squared"`) as follows:
 ```{r cf-vims}
-cf_sbp_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_sbp_cv_preds,
-  indx = 1, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_tob_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_tob_cv_preds,
-  indx = 2, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_ldl_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_ldl_cv_preds,
-  indx = 3, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_adi_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_adi_cv_preds,
-  indx = 4, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_fam_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_fam_cv_preds,
-  indx = 5, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_tpa_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_tpa_cv_preds,
-  indx = 6, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_obe_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_obe_cv_preds,
-  indx = 7, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_alc_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_alc_cv_preds,
-  indx = 8, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-cf_age_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_age_cv_preds,
-  indx = 9, run_regression = FALSE, V = V,
-  cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
-)
-
-cf_ests <- merge_vim(cf_sbp_vim, cf_tob_vim, cf_ldl_vim, cf_adi_vim, cf_fam_vim, cf_tpa_vim, cf_obe_vim, cf_alc_vim, cf_age_vim)
+for (i in seq_len(length(vars))) {
+  # again, use "eval" and "parse" to assign the objects of interest to avoid duplicating code
+  eval(parse(text = paste0("cf_", vars[i], "_vim <- vimp_rsquared(Y = y, 
+  cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_", vars[i], "_cv_preds,
+  indx = (geog_indx + i), cross_fitting_folds = cross_fitting_folds,
+  sample_splitting_folds = sample_splitting_folds, run_regression = FALSE, alpha = 0.05,
+  V = V, na.rm = TRUE)")))
+}
+cf_ests <- merge_vim(cf_subtype.is.01_AE_vim,
+                     cf_subtype.is.02_AG_vim, cf_subtype.is.07_BC_vim,
+                     cf_subtype.is.A1_vim, cf_subtype.is.A1C_vim,
+                     cf_subtype.is.A1D_vim, cf_subtype.is.B_vim,
+                     cf_subtype.is.C_vim, cf_subtype.is.D_vim,
+                     cf_subtype.is.O_vim, cf_subtype.is.Other_vim,
+                     cf_length.env_vim, cf_length.gp120_vim, cf_length.loop.e_vim,
+                     cf_length.loop.e.outliers_vim, cf_length.v5_vim,
+                     cf_length.v5.outliers_vim)
+all_vars <- c(paste0("Subtype is ", c("01_AE", "02_AG", "07_BC", "A1", "A1C", "A1D",
+                                      "B", "C", "D", "O", "Other")),
+              paste0("Length of ", c("Env", "gp120", "V5", "V5 outliers", "Loop E",
+                                     "Loop E outliers")))
 ```
 
 And we can view them all simultaneously by plotting:
 ```{r plot-cf-vim, fig.width = 8.5, fig.height = 8}
+library("ggplot2")
+library("cowplot")
+theme_set(theme_cowplot())
 cf_est_plot_tib <- cf_ests$mat %>%
   mutate(
     var_fct = rev(factor(s, levels = cf_ests$mat$s,
-                     labels = all_vars[as.numeric(cf_ests$mat$s)],
+                     labels = all_vars[as.numeric(cf_ests$mat$s) - geog_indx],
                      ordered = TRUE))
   )
 
@@ -371,57 +184,61 @@ cf_est_plot_tib %>%
   geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
   xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
   ylab("") +
-  ggtitle("Cross-fitted individual feature importance estimates") +
-  labs(subtitle = "in the South African heart disease study data")
+  ggtitle("Estimated individual feature importance") +
+  labs(subtitle = "in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)")
 ```
+
+## Estimating variable importance for a group of variables using precomputed regression function estimates
 
 Finally, we can estimate and plot group importance:
 ```{r cf-group-vim, fig.width = 8.5, fig.height = 8}
-reduced_behav_cv_fit <- SuperLearner::CV.SuperLearner(
-  Y = heart$chd, X = x[, -c(2, 6, 8), drop = FALSE], SL.library = learners.2,
+set.seed(91011)
+reduced_subtype_cv_fit <- SuperLearner::CV.SuperLearner(
+  Y = y, X = X[, -c(5:15), drop = FALSE], SL.library = learners,
   cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),
   innerCvControl = list(list(V = V))
 )
-reduced_behav_cv_preds <- extract_sampled_split_predictions(
-  cvsl_obj = reduced_behav_cv_fit, sample_splitting = TRUE,
+reduced_subtype_cv_preds <- extract_sampled_split_predictions(
+  cvsl_obj = reduced_subtype_cv_fit, sample_splitting = TRUE,
   sample_splitting_folds = sample_splitting_folds, full = FALSE
 )
-reduced_bios_cv_fit <- SuperLearner::CV.SuperLearner(
-  Y = heart$chd, X = x[, -c(1, 3, 4, 5, 7, 9), drop = FALSE], SL.library = learners.2,
+reduced_geometry_cv_fit <- SuperLearner::CV.SuperLearner(
+  Y = y, X = X[, -c(16:21), drop = FALSE], SL.library = learners,
   cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),
   innerCvControl = list(list(V = V))
 )
-reduced_bios_cv_preds <- extract_sampled_split_predictions(
-  cvsl_obj = reduced_bios_cv_fit, sample_splitting = TRUE,
+reduced_geometry_cv_preds <- extract_sampled_split_predictions(
+  cvsl_obj = reduced_geometry_cv_fit, sample_splitting = TRUE,
   sample_splitting_folds = sample_splitting_folds, full = FALSE
 )
-cf_behav_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_behav_cv_preds,
-  indx = c(2, 6, 8), run_regression = FALSE, V = V,
+cf_subtype_vim <- vimp_rsquared(
+  Y = y, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_subtype_cv_preds,
+  indx = 5:15, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
-cf_bios_vim <- vimp_rsquared(
-  Y = heart$chd, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_bios_cv_preds,
-  indx = c(1, 3, 4, 5, 7, 9), run_regression = FALSE, V = V,
+cf_geometry_vim <- vimp_rsquared(
+  Y = y, cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_geometry_cv_preds,
+  indx = 16:21, run_regression = FALSE, V = V,
   cross_fitting_folds = cross_fitting_folds, sample_splitting_folds = sample_splitting_folds
 )
-cf_groups <- merge_vim(cf_behav_vim, cf_bios_vim)
+cf_groups <- merge_vim(cf_subtype_vim, cf_geometry_vim)
+all_grp_nms <- c("Viral subtype", "Viral geometry")
 
-cf_grp_plot_tib <- cf_groups$mat %>%
+grp_plot_tib <- cf_groups$mat %>%
   mutate(
     grp_fct = factor(case_when(
-      s == "2,6,8" ~ "1",
-      s == "1,3,4,5,7,9" ~ "2"
+      s == "5,6,7,8,9,10,11,12,13,14,15" ~ "1",
+      s == "16,17,18,19,20,21" ~ "2"
     ), levels = c("1", "2"),  labels = all_grp_nms, ordered = TRUE)
   )
-cf_grp_plot_tib %>%
+grp_plot_tib %>%
   ggplot(aes(x = est, y = grp_fct)) +
   geom_point() +
   geom_errorbarh(aes(xmin = cil, xmax = ciu)) +
   xlab(expression(paste("Variable importance estimates: ", R^2, sep = ""))) +
   ylab("") +
-  ggtitle("Cross-fitted feature group importance estimates") +
-  labs(subtitle = "in the South African heart disease study data")
+  ggtitle("Estimated feature group importance") +
+  labs(subtitle = "in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)")
 ```
 
 ## Conclusion
