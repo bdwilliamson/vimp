@@ -361,6 +361,9 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       (length(unique(Y)) == 2) + 1, stats::gaussian(), stats::binomial()
     )
   }
+  if ((arg_lst$family$family == "binomial") & (length(unique(Y)) > 2)) {
+    arg_lst$family <- stats::gaussian()
+  }
   if (verbose) {
     if (is.null(arg_lst$cvControl)) {
       arg_lst$cvControl <- list(verbose = TRUE)
