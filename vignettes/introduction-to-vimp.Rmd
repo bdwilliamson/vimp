@@ -93,7 +93,7 @@ library("ranger")
 ```
 
 The code
-```{r est-1}
+```{r est-1, warning = FALSE}
 est_1 <- vimp_rsquared(Y = y, X = x, indx = 1, run_regression = TRUE,
                        SL.library = c("SL.ranger", "SL.mean"), V = 2,
                        env = environment())
@@ -251,7 +251,7 @@ vimp_rsquared(Y = y, X = X,
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.
 
 However, for the sake of illustration, I can estimate varibable importance for 01_AE subtype only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):
-```{r vimp-with-sl-fam, message = FALSE}
+```{r vimp-with-sl-fam, message = FALSE, warning = FALSE}
 # small learners library
 learners.2 <- c("SL.ranger")
 # small number of cross-fitting folds
@@ -280,7 +280,7 @@ head(subtype_01_AE_vim$red_fit[[1]])
 ```
 
 I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):
-```{r vrc01-sl}
+```{r vrc01-sl, warning = FALSE}
 ests <- subtype_01_AE_vim
 set.seed(1234)
 for (i in seq_len(ncol(X) - geog_indx - 1)) {

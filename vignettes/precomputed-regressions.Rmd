@@ -47,7 +47,7 @@ vrc01_folds <- make_folds(y = y, V = 2, stratified = TRUE)
 
 As in the [main vignette](introduction-to-vimp.html), we first start by fitting only linear regression models. In this section, we use the function `vim()`; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.
 
-```{r est-regressions-lm}
+```{r est-regressions-lm, warning = FALSE}
 library("rlang")
 vrc01_subset <- vrc01 %>%
   select(ic50.censored, starts_with("geog"), starts_with("subtype"), starts_with("length")) %>%
@@ -86,7 +86,7 @@ In this section, we will use cross-fitting and pre-computed estimates of the reg
 We will use `CV.SuperLearner` to fit the individual regression functions, taking care to use the same cross-fitting folds in each regression. We will then create two groups of validation folds for sample-splitting. For this analysis, we will use `V = 2` folds for cross-fitted variable importance estimation (as we did in the [main vignette](introduction-to-vimp.html)). Note that this entails running `CV.SuperLearner` with $2V = 10$ folds.
 
 First, we estimate the regression function based on all variables:
-```{r estimate-full-regression-with-cf, message = FALSE}
+```{r estimate-full-regression-with-cf, message = FALSE, warning = FALSE}
 learners <- "SL.ranger"
 # estimate the full regression function
 V <- 2
@@ -108,7 +108,7 @@ full_cv_preds <- extract_sampled_split_predictions(
 ```
 
 Next, to estimate the importance of each variable, we need to estimate the reduced regression function for each variable:
-```{r estimate-reduced-regressions-with-cf, message = FALSE}
+```{r estimate-reduced-regressions-with-cf, message = FALSE, warning = FALSE}
 vars <- names(X)[(geog_indx + 1):ncol(X)]
 set.seed(1234)
 for (i in seq_len(length(vars))) {
@@ -176,7 +176,7 @@ cf_est_plot_tib %>%
 ## Estimating variable importance for a group of variables using precomputed regression function estimates
 
 Finally, we can estimate and plot group importance:
-```{r cf-group-vim, fig.width = 8.5, fig.height = 8}
+```{r cf-group-vim, fig.width = 8.5, fig.height = 8, warning = FALSE}
 set.seed(91011)
 reduced_subtype_cv_fit <- SuperLearner::CV.SuperLearner(
   Y = y, X = X[, -c(5:15), drop = FALSE], SL.library = learners,
