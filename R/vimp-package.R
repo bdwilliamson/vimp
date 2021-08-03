@@ -48,7 +48,7 @@
 #' and quadprog allow a flexible library of candidate learners in the Super
 #' Learner; ggplot2 and cowplot help with plotting variable
 #' importance estimates; testthat and covr help with unit tests; and
-#' knitr, rmarkdown,and RCurl help with the vignettes and examples.
+#' knitr, rmarkdown, and tidyselect help with the vignettes and examples.
 #'
 #' @docType package
 #' @name vimp
