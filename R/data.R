@@ -889,6 +889,6 @@
 #'   \item{taylor.small.total.loop.d}{The steric bulk of residues at critical locations.}  
 #'   \item{taylor.small.total.cd4}{The steric bulk of residues at critical locations.}  
 #' }
-#' @source \url{https://github.com/benkeser/vrc01/tree/master/data/fulldata.csv}
+#' @source \url{https://github.com/benkeser/vrc01/blob/master/data/fulldata.csv}
 #' @usage data("vrc01")
 "vrc01"
