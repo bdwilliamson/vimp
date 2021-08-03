@@ -1,8 +1,8 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Verified that LazyData is no longer specified
-* Increased tolerance slightly for several tests in testthat/
+* Removed the WARNING from CRAN checks
+* Added a dataset for use in the vignettes
 
 ## Test environments
 * local ubuntu 20.04, R 4.0.2
