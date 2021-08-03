@@ -95,7 +95,7 @@
 </h1>
                         <h4 data-toc-skip class="author">Brian D. Williamson</h4>
             
-            <h4 data-toc-skip class="date">2021-08-02</h4>
+            <h4 data-toc-skip class="date">2021-08-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/introduction-to-vimp.Rmd" class="external-link"><code>vignettes/introduction-to-vimp.Rmd</code></a></small>
       <div class="hidden name"><code>introduction-to-vimp.Rmd</code></div>
@@ -163,7 +163,7 @@
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/imbs-hl/ranger" class="external-link">"ranger"</a></span><span class="op">)</span></code></pre></div>
 <p>The code</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">est_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, 
+<code class="sourceCode R"><span class="va">est_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">x</span>, indx <span class="op">=</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>,
                        SL.library <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SL.ranger"</span>, <span class="st">"SL.mean"</span><span class="op">)</span>, V <span class="op">=</span> <span class="fl">2</span>,
                        env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>uses the Super Learner to fit the required regression functions, and computes an estimate of variable importance for the importance of <span class="math inline">\(X_1\)</span>. We can visualize the estimate, standard error, and confidence interval by printing or typing the object name:</p>
@@ -182,7 +182,7 @@
 <div id="detailed-guide" class="section level2">
 <h2 class="hasAnchor">
 <a href="#detailed-guide" class="anchor" aria-hidden="true"></a>Detailed guide</h2>
-<p>In this section, we provide a fuller example of estimating <span class="math inline">\(R^2\)</span>-based variable importance in the context of the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span>.</p>
+<p>In this section, we provide a fuller example of estimating <span class="math inline">\(R^2\)</span>-based variable importance in the context of assessing the importance of amino acid sequence features in predicting the neutralization sensitivity of the HIV virus to the broadly neutralizing antibody VRC01. For more information about this study, see <span class="citation">Magaret et al. (2019)</span>.</p>
 <p>Often when working with data we attempt to estimate the conditional mean of the outcome <span class="math inline">\(Y\)</span> given features <span class="math inline">\(X\)</span>, defined as <span class="math inline">\(\mu_P(x) = E_P(Y \mid X = x)\)</span>.</p>
 <p>There are many tools for estimating this conditional mean. We might choose a classical parametric tool such as linear regression. We might also want to be model-agnostic and use a more nonparametric approach to estimate the conditional mean. However,</p>
 <ul>
@@ -191,55 +191,18 @@
 </ul>
 <p>Once we have a good estimate of the conditional mean, it is often of scientific interest to understand which features contribute the most to the variation in <span class="math inline">\(\mu_P\)</span>. Specifically, we might consider <span class="math display">\[\mu_{P, s}(x) = E_P(Y \mid X_{(-s)} = x_{(-s)}),\]</span> where for a vector <span class="math inline">\(v\)</span> and a set of indices <span class="math inline">\(s\)</span>, <span class="math inline">\(v_{-(s)}\)</span> denotes the elements of <span class="math inline">\(v\)</span> with index not in <span class="math inline">\(s\)</span>. By comparing <span class="math inline">\(\mu_{P, s}\)</span> to <span class="math inline">\(\mu_P\)</span> we can evaluate the importance of the <span class="math inline">\(s\)</span>th element (or group of elements).</p>
 <p>Assume that our data are generated according to the mechanism <span class="math inline">\(P_0\)</span>. We define the population <span class="math inline">\(R^2\)</span> value of a given regression function <span class="math inline">\(\mu\)</span> as <span class="math inline">\(R^2(\mu, P_0) = 1 - \frac{E_{P_0}\{Y - \mu(X)\}^2}{var_{P_0}(Y)}\)</span>, where the numerator of this expression is the population mean squared error and the denominator is the population variance. We can then define a nonparametric measure of variable importance, <span class="math display">\[\psi_{0, s} = R^2(\mu_{P_0}, P_0) - R^2(\mu_{P_0,s}, P_0),\]</span> which is the proportion of the variability in the outcome explained by including <span class="math inline">\(X_j\)</span> in our chosen estimation technique.</p>
-<p>This document introduces you to the basic tools in <code>vimp</code> and how to apply them to a dataset. I will explore one method for obtaining variable estimates using <code>vimp</code>: you only specify a <em>library</em> of candidate estimators for the conditional means <span class="math inline">\(\mu_{P_0}\)</span> and <span class="math inline">\(\mu_{P_0, s}\)</span>; you allow <code>vimp</code> to obtain the optimal estimates of these quantities using the <code>SuperLearner</code> <span class="citation">(van der Laan, Polley, and Hubbard 2007)</span>, and use these estimates to obtain variable importance estimates. A second method (using precomputed estimates of the regression functions) exists and is described in <a href="precomputed-regressions.html">“Using precomputed regression function estimates in <code>vimp</code>”</a>.</p>
-<div id="a-look-at-the-south-african-heart-disease-study-data" class="section level3">
+<p>This document introduces you to the basic tools in <code>vimp</code> and how to apply them to a dataset. I will explore one method for obtaining variable estimates using <code>vimp</code>: you only specify a <em>library</em> of candidate estimators for the conditional means <span class="math inline">\(\mu_{P_0}\)</span> and <span class="math inline">\(\mu_{P_0, s}\)</span>; you allow <code>vimp</code> to obtain the optimal estimates of these quantities using the <code>SuperLearner</code> <span class="citation">(Laan, Polley, and Hubbard 2007)</span>, and use these estimates to obtain variable importance estimates. A second method (using precomputed estimates of the regression functions) exists and is described in <a href="precomputed-regressions.html">“Using precomputed regression function estimates in <code>vimp</code>”</a>.</p>
+<div id="a-look-at-the-vrc01-data" class="section level3">
 <h3 class="hasAnchor">
-<a href="#a-look-at-the-south-african-heart-disease-study-data" class="anchor" aria-hidden="true"></a>A look at the South African heart disease study data</h3>
-<p>Throughout this document I will use the South African heart disease study data <span class="citation">(Hastie, Tibshirani, and Friedman 2009)</span>, freely available from the <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data" class="external-link">Elements of Statistical Learning website</a>. Information about these data is available <a href="https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt" class="external-link">here</a>.</p>
+<a href="#a-look-at-the-vrc01-data" class="anchor" aria-hidden="true"></a>A look at the VRC01 data</h3>
+<p>Throughout this document I will use the VRC01 data <span class="citation">(Magaret et al. 2019)</span>, a subset of the data freely available from the Los Alamos National Laboratory’s Compile, Neutralize, and Tally Neutralizing Antibody Panels database. Information about these data is available <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># read in the data from the Elements website</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st">"RCurl"</span><span class="op">)</span>
-<span class="va">heart_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RCurl/man/getURL.html" class="external-link">getURL</a></span><span class="op">(</span><span class="st">"http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"</span><span class="op">)</span>, header <span class="op">=</span> <span class="cn">TRUE</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="co"># minor data cleaning</span>
-<span class="va">heart</span> <span class="op">&lt;-</span> <span class="va">heart_data</span><span class="op">[</span>, <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">heart_data</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>
-<span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">heart</span><span class="op">$</span><span class="va">famhist</span> <span class="op">==</span> <span class="st">"Present"</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>
-<span class="co"># sample-splitting folds for hypothesis testing</span>
-<span class="va">heart_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>In addition to the indicator of myocardial infarction <code>chd</code>, the outcome of interest, there are measurements on two groups of variables. First are behavioral features: cumulative tobacco consumption, current alcohol consumption, and type A behavior (a behavioral pattern linked to stress). Second are biological features: systolic blood pressure, low-density lipoprotein (LDL) cholesterol, adiposity (similar to body mass index), family history of heart disease, obesity, and age.</p>
-<p>Since there are nine features and two groups, it is of interest to determine variable importance both for the nine individual features separately and for the two groups of features.</p>
-</div>
-<div id="a-first-approach-linear-regression" class="section level3">
-<h3 class="hasAnchor">
-<a href="#a-first-approach-linear-regression" class="anchor" aria-hidden="true"></a>A first approach: linear regression</h3>
-<p>Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. Note that because I chose to fit the regression functions first and then plug them into <code>vimp</code>, I need to explicitly specify the folds used for hypothesis testing. The analysis is achieved by the following:</p>
+<code class="sourceCode R"><span class="co"># read in the data</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"vrc01"</span><span class="op">)</span></code></pre></div>
+<p>While there are several outcomes of interest in these data (continuous measures of neutralization and binary measures of resistance), we will focus on the binary measure of resistance to VRC01 given by <code>ic50.censored</code>. This variable is a binary indicator that the concentration of VRC01 necessary to neutralize 50% of viral replicates in a sample (IC-50) was right-censored; since higher values of IC-50 imply a more resistant virus, this indicator is a proxy for viral resistance. In addition to the outcome of interest, there are measurements on several groups of variables: viral subtype, geographic region of origin (a potential confounding variable), amino acid sequence features (further grouped into the CD4 binding sites, VRC01 binding footprint, sites with sufficient exposed surface area, sites identified as important for glycosylation, sites with residues that covary with the VRC01 binding footprint, sites associated with VRC01-specific potential N-linked glycosylation (PNGS) effects, sites in gp41 associated with VRC01 neutralization or sensitivity, sites for indicating N-linked glycosylation), region-specific counts of PNGS, viral geometry, cysteine counts, and steric bulk at critical locations.</p>
+<p>For the sake of simplicity, we will focus here on only three groups of features: viral subtype, geographic region of origin, and viral geometry features.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">heart</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">heart</span><span class="op">)</span><span class="op">]</span>
-<span class="va">lm_vim_sbp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
-<span class="va">lm_vim_tob</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">2</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
-<span class="va">lm_vim_ldl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">3</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 3, run_regression = TRUE, SL.library
-## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lm_vim_adi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">4</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 4, run_regression = TRUE, SL.library
-## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lm_vim_fam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">5</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 5, run_regression = TRUE, SL.library
-## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lm_vim_tpa</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">6</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
-<span class="va">lm_vim_obe</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">7</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 7, run_regression = TRUE, SL.library
-## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lm_vim_alc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">8</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span>
-<span class="va">lm_vim_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">9</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in vim(Y = heart$chd, X = X, indx = 9, run_regression = TRUE, SL.library
-## = "SL.lm", : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># make a table with the estimates using the merge_vim() function</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org" class="external-link">"dplyr"</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org" class="external-link">"dplyr"</a></span><span class="op">)</span></code></pre></div>
 <pre><code>## 
 ## Attaching package: 'dplyr'</code></pre>
 <pre><code>## The following objects are masked from 'package:stats':
@@ -248,22 +211,51 @@
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">lm_vim_sbp</span>, <span class="va">lm_vim_tob</span>, <span class="va">lm_vim_ldl</span>, <span class="va">lm_vim_adi</span>,
-                <span class="va">lm_vim_fam</span>, <span class="va">lm_vim_tpa</span>, <span class="va">lm_vim_obe</span>, <span class="va">lm_vim_alc</span>, <span class="va">lm_vim_age</span><span class="op">)</span>
-<span class="co"># print out the matrix</span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyselect.r-lib.org" class="external-link">"tidyselect"</a></span><span class="op">)</span>
+<span class="co"># retain only the columns of interest for this analysis</span>
+<span class="va">y</span> <span class="op">&lt;-</span> <span class="va">vrc01</span><span class="op">$</span><span class="va">ic50.censored</span>
+<span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Since there are 17 features and two groups, it is of interest to determine variable importance both for the individual features separately and for the two groups of features (since the geographic variables are potential confounders).</p>
+</div>
+<div id="a-first-approach-linear-regression" class="section level3">
+<h3 class="hasAnchor">
+<a href="#a-first-approach-linear-regression" class="anchor" aria-hidden="true"></a>A first approach: linear regression</h3>
+<p>Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. The analysis is achieved by the following:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">geog_indx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"geog"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span> <span class="op">-</span> <span class="va">geog_indx</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="co"># note that we're using a small number of cross-fitting folds for speed</span>
+  <span class="va">lm_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="va">geog_indx</span> <span class="op">+</span> <span class="va">i</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="st">"SL.lm"</span>, type <span class="op">=</span> <span class="st">"r_squared"</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
+    <span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="va">lm_vim</span>
+  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
+    <span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">lm_mat</span>, <span class="va">lm_vim</span><span class="op">)</span>
+  <span class="op">}</span>
+<span class="op">}</span>
+<span class="co"># print out the importance</span>
 <span class="va">lm_mat</span></code></pre></div>
 <pre><code>## Variable importance estimates:
-##       Estimate    SE         95% CI                  VIMP &gt; 0 p-value    
-## s = 6 0.153805289 0.06370556 [0.02894468, 0.2786659]  TRUE    0.007882415
-## s = 1 0.106271949 0.06527667 [0.00000000, 0.2342119] FALSE    0.051759967
-## s = 2 0.056141041 0.06566352 [0.00000000, 0.1848392] FALSE    0.196280933
-## s = 8 0.002729782 0.06526496 [0.00000000, 0.1306468] FALSE    0.483318645
-## s = 3 0.000000000 0.06454085 [0.00000000, 0.1264977] FALSE    0.698985853
-## s = 4 0.000000000 0.06569661 [0.00000000, 0.1287630] FALSE    0.786483408
-## s = 5 0.000000000 0.06440021 [0.00000000, 0.1262221] FALSE    0.652526489
-## s = 7 0.000000000 0.06585528 [0.00000000, 0.1290740] FALSE    0.567346094
-## s = 9 0.000000000 0.06465425 [0.00000000, 0.1267200] FALSE    0.789434279</code></pre>
+##        Estimate   SE         95% CI                  VIMP &gt; 0 p-value   
+## s = 5  0.13438499 0.06330276 [0.01031386, 0.2584561]  TRUE    0.01688141
+## s = 11 0.09569336 0.06240703 [0.00000000, 0.2180089] FALSE    0.06259177
+## s = 18 0.07087508 0.05996798 [0.00000000, 0.1884102] FALSE    0.11862626
+## s = 13 0.06857330 0.06312482 [0.00000000, 0.1922957] FALSE    0.13867032
+## s = 8  0.05317778 0.06370201 [0.00000000, 0.1780314] FALSE    0.20191808
+## s = 12 0.03756380 0.06238020 [0.00000000, 0.1598267] FALSE    0.27352878
+## s = 21 0.02864616 0.06110488 [0.00000000, 0.1484095] FALSE    0.31960515
+## s = 20 0.01252676 0.06701578 [0.00000000, 0.1438753] FALSE    0.42586066
+## s = 16 0.01146941 0.06511882 [0.00000000, 0.1391000] FALSE    0.43009570
+## s = 6  0.01018668 0.06250895 [0.00000000, 0.1327020] FALSE    0.43527356
+## s = 7  0.00000000 0.06565987 [0.00000000, 0.1286910] FALSE    0.56052497
+## s = 9  0.00000000 0.06131146 [0.00000000, 0.1201682] FALSE    0.85483413
+## s = 10 0.00000000 0.06182744 [0.00000000, 0.1211796] FALSE    0.74269077
+## s = 14 0.00000000 0.06162074 [0.00000000, 0.1207744] FALSE    0.63428683
+## s = 15 0.00000000 0.06549287 [0.00000000, 0.1283637] FALSE    0.62766542
+## s = 17 0.00000000 0.06045251 [0.00000000, 0.1184847] FALSE    0.86887592
+## s = 19 0.00000000 0.06174183 [0.00000000, 0.1210118] FALSE    0.78557864</code></pre>
 </div>
 <div id="building-a-library-of-learners" class="section level3">
 <h3 class="hasAnchor">
@@ -272,7 +264,7 @@
 <p>The choice of either method is somewhat subjective, and I also will have to use a technique like cross-validation to determine an optimal tuning parameter in each case. It is also possible that neither additive models nor the elastic net will do a good job estimating the true conditional means!</p>
 <p>This motivates using <code>SuperLearner</code> to allow the data to determine the optimal combination of <em>base learners</em> from a <em>library</em> that I define. These base learners are a combination of different methods (e.g., generalized additive models and elastic net) and instances of the same method with different tuning parameter values (e.g., additive models with 3 and 4 degrees of freedom). The Super Learner is an example of model stacking, or model aggregation — these approaches use a data-adaptive combination of base learners to make predictions.</p>
 <p>For instance, my library could include the elastic net, random forests <span class="citation">(Breiman 2001)</span>, and gradient boosted trees <span class="citation">(Friedman 2001)</span> as follows:</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># create a function for boosted stumps</span>
 <span class="va">SL.gbm.1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span>, <span class="va">interaction.depth</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/write.SL.template.html" class="external-link">SL.gbm</a></span><span class="op">(</span><span class="va">...</span>, interaction.depth <span class="op">=</span> <span class="va">interaction.depth</span><span class="op">)</span>
 
@@ -322,12 +314,12 @@
 <li>
 <code>SL.library</code>, the library of candidate learners</li>
 <li>
-<code>V</code>, the number of cross-validation folds to use for computing variable importance</li>
+<code>V</code>, the number of cross-fitting folds (also referred to as cross-validation folds) to use for computing variable importance</li>
 </ul>
 <p>The main arguments differ if precomputed regression function estimates are used; please see <a href="precomputed-regressions.html">“Using precomputed regression function estimates in <code>vimp</code>”</a> for further discussion of this case.</p>
-<p>Suppose that the first feature that I want to estimate variable importance for is family history of heart disease, <code>fam</code>. Then supplying <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> with</p>
+<p>Suppose that the first feature that I want to estimate variable importance for is whether the viral subtype is 01_AE, <code>subtype.is.01_AE</code>. Then supplying <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> with</p>
 <ul>
-<li><code>Y = heart$chd</code></li>
+<li><code>Y = y</code></li>
 <li><code>X = X</code></li>
 <li><code>indx = 5</code></li>
 <li><code>SL.library = learners</code></li>
@@ -337,17 +329,17 @@
 <ul>
 <li>I want to use <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner()</a></code> to estimate the conditional means <span class="math inline">\(\mu_{P_0}\)</span> and <span class="math inline">\(\mu_{P_0,s}\)</span>, and my candidate library is <code>learners</code>
 </li>
-<li>I want to estimate variable importance for the fifth column of the South African heart disease study covariates, which is <code>fam</code>
+<li>I want to estimate variable importance for the fifth column of the VRC01 covariates, which is <code>subtype.is.01_AE</code>
 </li>
 <li>I want to use five-fold cross-fitting to estimate importance</li>
 </ul>
 <p>The call to <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> looks like this:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>,
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>,
     indx <span class="op">=</span> <span class="fl">5</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="va">learners</span>, V <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></code></pre></div>
 <p>While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay — in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.</p>
-<p>However, for the sake of illustration, I can estimate varibable importance for family history only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<p>However, for the sake of illustration, I can estimate varibable importance for 01_AE subtype only using only using a small library, a small number of cross-validation folds in the Super Learner, and a small number of cross-fitting folds as follows (again, I suggest using a larger number of folds and a larger library in practice):</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># small learners library</span>
 <span class="va">learners.2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SL.ranger"</span><span class="op">)</span>
 <span class="co"># small number of cross-fitting folds</span>
@@ -356,132 +348,46 @@
 <span class="va">sl_cvcontrol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
 <span class="co"># now estimate variable importance</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">5678</span><span class="op">)</span>
 <span class="va">start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span>
-<span class="va">fam_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">5</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
-## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>This code takes approximately 0.858 seconds to run on a (not very fast) PC. I can display these estimates:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">fam_vim</span></code></pre></div>
+<span class="va">subtype_01_AE_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">5</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="va">end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>This code takes approximately 0.794 seconds to run on a (not very fast) PC. I can display these estimates:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">subtype_01_AE_vim</span></code></pre></div>
 <pre><code>## Variable importance estimates:
-##       Estimate SE         95% CI         VIMP &gt; 0 p-value  
-## s = 5 0        0.06751344 [0, 0.1323239] FALSE    0.9125567</code></pre>
-<p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fam_vim</span><span class="op">$</span><span class="va">full_fit</span><span class="op">)</span></code></pre></div>
-<pre><code>## [[1]]
-##   [1] 0.768 0.040 0.516 0.234 0.568 0.580 0.488 0.164 0.604 0.340 0.228 0.336
-##  [13] 0.194 0.182 0.320 0.248 0.024 0.226 0.176 0.290 0.336 0.138 0.350 0.552
-##  [25] 0.614 0.472 0.808 0.594 0.544 0.424 0.428 0.164 0.828 0.006 0.298 0.272
-##  [37] 0.316 0.296 0.380 0.708 0.736 0.226 0.224 0.718 0.628 0.204 0.004 0.026
-##  [49] 0.076 0.422 0.260 0.788 0.044 0.726 0.462 0.130 0.608 0.782 0.418 0.470
-##  [61] 0.596 0.324 0.012 0.070 0.504 0.010 0.012 0.636 0.026 0.042 0.334 0.300
-##  [73] 0.010 0.334 0.682 0.542 0.192 0.540 0.318 0.176 0.290 0.468 0.422 0.402
-##  [85] 0.744 0.380 0.116 0.424 0.408 0.736 0.294 0.722 0.144 0.190 0.432 0.490
-##  [97] 0.548 0.118 0.818 0.820 0.578 0.428 0.564 0.124 0.048 0.050 0.158 0.234
-## [109] 0.024 0.222 0.156 0.486 0.132 0.650 0.720 0.458
-## 
-## [[2]]
-##   [1] 0.468 0.572 0.458 0.418 0.834 0.364 0.384 0.310 0.260 0.804 0.242 0.060
-##  [13] 0.244 0.304 0.710 0.030 0.494 0.262 0.064 0.794 0.102 0.488 0.790 0.570
-##  [25] 0.016 0.350 0.110 0.152 0.430 0.250 0.660 0.120 0.160 0.204 0.490 0.538
-##  [37] 0.642 0.166 0.352 0.010 0.110 0.176 0.200 0.360 0.420 0.020 0.228 0.098
-##  [49] 0.298 0.674 0.024 0.490 0.156 0.056 0.031 0.372 0.442 0.482 0.648 0.742
-##  [61] 0.650 0.608 0.378 0.072 0.288 0.096 0.502 0.284 0.562 0.006 0.118 0.256
-##  [73] 0.148 0.356 0.510 0.388 0.102 0.274 0.696 0.702 0.574 0.304 0.580 0.026
-##  [85] 0.386 0.142 0.346 0.096 0.196 0.242 0.628 0.356 0.136 0.144 0.090 0.238
-##  [97] 0.583 0.420 0.398 0.382 0.166 0.204 0.072 0.362 0.612 0.242 0.232 0.338
-## [109] 0.392 0.658 0.544 0.172 0.040 0.446 0.174</code></pre>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fam_vim</span><span class="op">$</span><span class="va">red_fit</span><span class="op">)</span></code></pre></div>
-<pre><code>## [[1]]
-##   [1] 0.50762876 0.43818597 0.05986187 0.03267841 0.23805552 0.39895193
-##   [7] 0.59264122 0.50635638 0.40213401 0.42934556 0.29116532 0.06117763
-##  [13] 0.08562731 0.58682773 0.44820991 0.14434694 0.11642562 0.37646538
-##  [19] 0.54017204 0.36206363 0.46563673 0.18992342 0.19701669 0.27074802
-##  [25] 0.26970014 0.17275899 0.46117438 0.10940483 0.28022236 0.34213880
-##  [31] 0.36129973 0.31891496 0.34230888 0.27930652 0.07202310 0.44644717
-##  [37] 0.11231414 0.22902107 0.62368953 0.55898730 0.51593344 0.38867467
-##  [43] 0.64671918 0.26016292 0.19687428 0.03487573 0.31238362 0.23099263
-##  [49] 0.42782346 0.28921696 0.49831636 0.56836934 0.28590613 0.39732611
-##  [55] 0.37451839 0.41495960 0.43986468 0.08798628 0.26254679 0.43932760
-##  [61] 0.34430942 0.08034767 0.52497360 0.58035913 0.15709138 0.40493216
-##  [67] 0.05780570 0.50572422 0.04137530 0.67232953 0.45854807 0.15921257
-##  [73] 0.51524310 0.36408766 0.23859237 0.29122073 0.41220462 0.46032340
-##  [79] 0.37554322 0.52080772 0.32345140 0.38231607 0.07148692 0.42677673
-##  [85] 0.22409881 0.48347944 0.29650450 0.29276636 0.49630604 0.38126334
-##  [91] 0.50226869 0.42109608 0.43021863 0.34465520 0.65595347 0.54979967
-##  [97] 0.57064404 0.46874008 0.45622572 0.52620253 0.27153780 0.51359752
-## [103] 0.54849673 0.61913360 0.21964416 0.19792388 0.16081652 0.31109317
-## [109] 0.03309137 0.16189872 0.33000838 0.29600593 0.18329060 0.18610731
-## [115] 0.24725533 0.31232214
-## 
-## [[2]]
-##   [1] 0.31639986 0.24345986 0.25651531 0.55024760 0.50834367 0.66790522
-##   [7] 0.54831051 0.43062973 0.27993620 0.33205693 0.21259606 0.26861654
-##  [13] 0.38916821 0.17231469 0.39105516 0.31859379 0.13583101 0.30130880
-##  [19] 0.21584921 0.22192656 0.34612528 0.59472682 0.36169080 0.47776297
-##  [25] 0.09812260 0.53182116 0.54423100 0.16533572 0.24118361 0.15237429
-##  [31] 0.18194168 0.57778873 0.40791600 0.10148278 0.19446137 0.45937862
-##  [37] 0.76705629 0.19918880 0.64561480 0.11983637 0.57836302 0.69395627
-##  [43] 0.60801407 0.09835854 0.33758237 0.07035326 0.51956278 0.01316013
-##  [49] 0.01812399 0.37190660 0.30984440 0.45989997 0.19333909 0.70214700
-##  [55] 0.30999519 0.52904480 0.26179990 0.45055263 0.30049342 0.68282558
-##  [61] 0.43161854 0.48162998 0.54533482 0.71475044 0.56105420 0.10456850
-##  [67] 0.02515080 0.39529380 0.26838847 0.48059502 0.29840719 0.51537031
-##  [73] 0.34006463 0.40908312 0.28618190 0.08436547 0.29560478 0.49348158
-##  [79] 0.25100760 0.36882830 0.02300694 0.31389919 0.36496703 0.24022417
-##  [85] 0.39296140 0.44523808 0.14013743 0.49862018 0.46812773 0.28879558
-##  [91] 0.09565977 0.57145298 0.57603170 0.27514168 0.43193839 0.42815702
-##  [97] 0.66364929 0.17920563 0.42424084 0.32287790 0.55357467 0.57768940
-## [103] 0.26564174 0.46958091 0.36310943 0.37638458 0.25917234 0.13786476
-## [109] 0.07000134 0.04263926 0.04442203 0.31157336 0.29958307 0.41756718
-## [115] 0.45334232</code></pre>
+##       Estimate   SE         95% CI         VIMP &gt; 0 p-value  
+## s = 5 0.09978721 0.05652241 [0, 0.2105691] TRUE     0.0387445</code></pre>
+<p>The object returned by <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> also contains lists of fitted values from using <code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner()</a></code>; I access these using <code>$full_fit</code> and <code>$red_fit</code>. For example,</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">subtype_01_AE_vim</span><span class="op">$</span><span class="va">full_fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.06328207 0.04434974 0.07080725 0.04842419 0.06171238 0.16839416</code></pre>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">subtype_01_AE_vim</span><span class="op">$</span><span class="va">red_fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>## [1] 0.06893430 0.06991585 0.06411649 0.06898277 0.05727859 0.04704426</code></pre>
 <p>I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># estimate variable importance</span>
-<span class="va">tpa_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">6</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
-## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">alc_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">8</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
-## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sbp_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">1</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
-<span class="va">tob_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">2</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
-<span class="va">ldl_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">3</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
-## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">adi_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">4</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
-<span class="va">obe_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">7</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
-## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">age_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">9</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
-<pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
-## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ests</span> <span class="op">&lt;-</span> <span class="va">subtype_01_AE_vim</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
+<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span> <span class="op">-</span> <span class="va">geog_indx</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="co"># note that we're using a small number of cross-fitting folds for speed</span>
+  <span class="va">this_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="va">geog_indx</span> <span class="op">+</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span>, run_regression <span class="op">=</span> <span class="cn">TRUE</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+  <span class="va">ests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">ests</span>, <span class="va">this_vim</span><span class="op">)</span>
+<span class="op">}</span></code></pre></div>
 <p>Now that I have estimates of each of individual feature’s variable importance, I can view them all simultaneously by plotting:</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org" class="external-link">"dplyr"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tibble.tidyverse.org/" class="external-link">"tibble"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://wilkelab.org/cowplot/" class="external-link">"cowplot"</a></span><span class="op">)</span>
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html" class="external-link">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="co"># combine the objects together</span>
-<span class="va">ests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">sbp_vim</span>, <span class="va">tob_vim</span>, <span class="va">ldl_vim</span>, <span class="va">adi_vim</span>,
-                <span class="va">fam_vim</span>, <span class="va">tpa_vim</span>, <span class="va">obe_vim</span>, <span class="va">alc_vim</span>, <span class="va">age_vim</span><span class="op">)</span>
-<span class="va">all_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sys. blood press."</span>, <span class="st">"Tobacco consump."</span>, <span class="st">"LDL cholesterol"</span>,
-              <span class="st">"Adiposity"</span>, <span class="st">"Family history"</span>, <span class="st">"Type A behavior"</span>, <span class="st">"Obesity"</span>,
-              <span class="st">"Alcohol consump."</span>, <span class="st">"Age"</span><span class="op">)</span>
+<span class="va">all_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Subtype is "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01_AE"</span>, <span class="st">"02_AG"</span>, <span class="st">"07_BC"</span>, <span class="st">"A1"</span>, <span class="st">"A1C"</span>, <span class="st">"A1D"</span>,
+                                      <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"O"</span>, <span class="st">"Other"</span><span class="op">)</span><span class="op">)</span>,
+              <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Length of "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Env"</span>, <span class="st">"gp120"</span>, <span class="st">"V5"</span>, <span class="st">"V5 outliers"</span>, <span class="st">"Loop E"</span>,
+                                     <span class="st">"Loop E outliers"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">est_plot_tib</span> <span class="op">&lt;-</span> <span class="va">ests</span><span class="op">$</span><span class="va">mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>
     var_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">s</span>, levels <span class="op">=</span> <span class="va">ests</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">s</span>,
-                     labels <span class="op">=</span> <span class="va">all_vars</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">ests</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">s</span><span class="op">)</span><span class="op">]</span>,
+                     labels <span class="op">=</span> <span class="va">all_vars</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">ests</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">s</span><span class="op">)</span> <span class="op">-</span> <span class="va">geog_indx</span><span class="op">]</span>,
                      ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
   <span class="op">)</span>
 
@@ -493,8 +399,8 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated individual feature importance"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the South African heart disease study data"</span><span class="op">)</span></code></pre></div>
-<p><img src="introduction-to-vimp_files/figure-html/heart-vim-1.png" width="816"></p>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></code></pre></div>
+<p><img src="introduction-to-vimp_files/figure-html/vrc01-vim-1.png" width="816"></p>
 </div>
 </div>
 <div id="estimating-variable-importance-for-a-group-of-variables" class="section level2">
@@ -502,23 +408,24 @@
 <a href="#estimating-variable-importance-for-a-group-of-variables" class="anchor" aria-hidden="true"></a>Estimating variable importance for a group of variables</h2>
 <p>Now that I have estimated variable importance for each of the individual features, I can estimate variable importance for each of the groups that I mentioned above: biological and behavioral features.</p>
 <p>The only difference between estimating variable importance for a group of features rather than an individual feature is that now I specify a vector for <code>s</code>; I can use any of the options listed in the previous section to compute these estimates.</p>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># get the estimates</span>
-<span class="va">behav_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">91011</span><span class="op">)</span>
+<span class="va">subtype_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">15</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></code></pre></div>
 <pre><code>## Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =
 ## cross_fitted_f1, : Original estimate &lt; 0; returning zero.</code></pre>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">bios_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">heart</span><span class="op">$</span><span class="va">chd</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span><span class="op">)</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">geometry_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">16</span><span class="op">:</span><span class="fl">21</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span>
 
 <span class="co"># combine and plot</span>
-<span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">behav_vim</span>, <span class="va">bios_vim</span><span class="op">)</span>
-<span class="va">all_grp_nms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Behavioral features"</span>, <span class="st">"Biological features"</span><span class="op">)</span>
+<span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">subtype_vim</span>, <span class="va">geometry_vim</span><span class="op">)</span>
+<span class="va">all_grp_nms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Viral subtype"</span>, <span class="st">"Viral geometry"</span><span class="op">)</span>
 
 <span class="va">grp_plot_tib</span> <span class="op">&lt;-</span> <span class="va">groups</span><span class="op">$</span><span class="va">mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>
     grp_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span>
-      <span class="va">s</span> <span class="op">==</span> <span class="st">"2,6,8"</span> <span class="op">~</span> <span class="st">"1"</span>,
-      <span class="va">s</span> <span class="op">==</span> <span class="st">"1,3,4,5,7,9"</span> <span class="op">~</span> <span class="st">"2"</span>
+      <span class="va">s</span> <span class="op">==</span> <span class="st">"5,6,7,8,9,10,11,12,13,14,15"</span> <span class="op">~</span> <span class="st">"1"</span>,
+      <span class="va">s</span> <span class="op">==</span> <span class="st">"16,17,18,19,20,21"</span> <span class="op">~</span> <span class="st">"2"</span>
     <span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span>,  labels <span class="op">=</span> <span class="va">all_grp_nms</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
   <span class="op">)</span>
 <span class="va">grp_plot_tib</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span>
@@ -528,8 +435,8 @@
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated feature group importance"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the South African heart disease study data"</span><span class="op">)</span></code></pre></div>
-<p><img src="introduction-to-vimp_files/figure-html/heart-group-vim-1.png" width="816"></p>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></code></pre></div>
+<p><img src="introduction-to-vimp_files/figure-html/vrc01-group-vim-1.png" width="816"></p>
 </div>
 <div id="types-of-population-variable-importance" class="section level2">
 <h2 class="hasAnchor">
@@ -541,31 +448,31 @@
 <a href="#references" class="anchor" aria-hidden="true"></a>References</h2>
 <div id="refs" class="references">
 <div id="ref-breiman2001">
-<p>Breiman, L. 2001. “Random Forests” 45.</p>
+<p>Breiman, L. 2001. “Random Forests.” <em>Machine Learning</em> 45 (1): 5–32.</p>
 </div>
 <div id="ref-friedman2001">
-<p>Friedman, JH. 2001. “Greedy Function Approximation: A Gradient Boosting Machine.”</p>
+<p>Friedman, JH. 2001. “Greedy Function Approximation: A Gradient Boosting Machine.” <em>Annals of Statistics</em> 29 (5): 1189–1232.</p>
 </div>
 <div id="ref-hastie1990">
 <p>Hastie, TJ, and RJ Tibshirani. 1990. <em>Generalized Additive Models</em>. Vol. 43. CRC Press.</p>
 </div>
-<div id="ref-hastie2009">
-<p>Hastie, T, R Tibshirani, and J Friedman. 2009. <em>The Elements of Statistical Learning</em>.</p>
-</div>
 <div id="ref-vanderlaan2007">
-<p>van der Laan, MJ, EC Polley, and AE Hubbard. 2007. “Super Learner” 6.</p>
+<p>Laan, MJ van der, EC Polley, and AE Hubbard. 2007. “Super Learner.” <em>Statistical Applications in Genetics and Molecular Biology</em> 6 (1): Online Article 25.</p>
+</div>
+<div id="ref-magaret2019">
+<p>Magaret, CA, DC Benkeser, BD Williamson, BR Borate, LN Carpp, IS Georgiev, I Setliff, et al. 2019. “Prediction of VRC01 Neutralization Sensitivity by HIV-1 Gp160 Sequence Features.” <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">https://doi.org/10.1371/journal.pcbi.1006952</a>.</p>
 </div>
 <div id="ref-williamson2020c">
-<p>Williamson, Brian D, and Jean Feng. 2020. “Efficient Nonparametric Statistical Inference on Population Feature Importance Using Shapley Values.” <a href="https://arxiv.org/abs/2006.09481" class="external-link">https://arxiv.org/abs/2006.09481</a>.</p>
+<p>Williamson, BD, and J Feng. 2020. “Efficient Nonparametric Statistical Inference on Population Feature Importance Using Shapley Values.” In <em>Proceedings of the 37th International Conference on Machine Learning</em>, 119:10282–91. Proceedings of Machine Learning Research. <a href="http://proceedings.mlr.press/v119/williamson20a.html" class="external-link">http://proceedings.mlr.press/v119/williamson20a.html</a>.</p>
 </div>
 <div id="ref-williamson2020a">
-<p>Williamson, Brian D, Peter B Gilbert, Marco Carone, and Noah Simon. 2020. “Nonparametric Variable Importance Assessment Using Machine Learning Techniques.”</p>
+<p>Williamson, BD, PB Gilbert, M Carone, and N Simon. 2020. “Nonparametric Variable Importance Assessment Using Machine Learning Techniques.” <em>Biometrics</em>.</p>
 </div>
 <div id="ref-williamson2020b">
-<p>Williamson, Brian D, Peter B Gilbert, Noah Simon, and Marco Carone. 2020. “A Unified Approach for Inference on Algorithm-Agnostic Variable Importance.” <a href="https://arxiv.org/abs/2004.03683" class="external-link">https://arxiv.org/abs/2004.03683</a>.</p>
+<p>Williamson, BD, PB Gilbert, NR Simon, and M Carone. 2020. “A Unified Approach for Inference on Algorithm-Agnostic Variable Importance.” <em>arXiv</em>. <a href="https://arxiv.org/abs/2004.03683" class="external-link">https://arxiv.org/abs/2004.03683</a>.</p>
 </div>
 <div id="ref-zou2005">
-<p>Zou, H, and TJ Hastie. 2005. “Regularization and Variable Selection via the Elastic Net.”</p>
+<p>Zou, H, and T Hastie. 2005. “Regularization and Variable Selection via the Elastic Net.” <em>Journal of the Royal Statistical Society: Series B (Statistical Methodology)</em> 67 (2): 301–20.</p>
 </div>
 </div>
 </div>
