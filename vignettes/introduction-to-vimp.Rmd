@@ -9,6 +9,7 @@ vignette: >
   %\VignetteIndexEntry{Introduction to `vimp`}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+csl: chicago-author-date.csl
 references:
 - id: williamson2020a
   title: Nonparametric variable importance assessment using machine learning techniques
@@ -53,6 +54,21 @@ references:
   issued:
    year: 2020
   URL: https://arxiv.org/abs/2006.09481
+- id: magaret 2019
+  title: Prediction of VRC01 neutralization sensitivity by HIV-1 gp160 sequence features
+  author:
+  - family: Magaret
+    given: CA
+  - family: Benkeser
+    given: DC
+  - family: Williamson
+    given: BD
+  - family: Borate
+    given: BR
+  publisher: PLOS Computational Biology
+  type: article-journal
+  issued:
+   year: 2019 
 - id: hastie1990
   title: Generalized Additive Models
   author:
@@ -71,18 +87,6 @@ references:
   issued:
     year: 1990
     #month: 3
-- id: hastie2009
-  title: The Elements of Statistical Learning
-  author:
-  - family: Hastie
-    given: T
-  - family: Tibshirani
-    given: R
-  - family: Friedman
-    given: J
-  type: book
-  issued:
-    year: 2009
 - id: vanderlaan2007
   title: Super learner
   author:
@@ -225,7 +229,7 @@ This output shows that we have estimated the importance of $X_1$ to be `r round(
 
 ## Detailed guide
 
-In this section, we provide a fuller example of estimating $R^2$-based variable importance in the context of the South African heart disease study data [@hastie2009].
+In this section, we provide a fuller example of estimating $R^2$-based variable importance in the context of assessing the importance of amino acid sequence features in predicting the neutralization sensitivity of the HIV virus to the broadly neutralizing antibody VRC01. For more information about this study, see @magaret2019.
 
 Often when working with data we attempt to estimate the conditional mean of the outcome $Y$ given features $X$, defined as $\mu_P(x) = E_P(Y \mid X = x)$.
 
@@ -240,44 +244,45 @@ Assume that our data are generated according to the mechanism $P_0$. We define t
 
 This document introduces you to the basic tools in `vimp` and how to apply them to a dataset. I will explore one method for obtaining variable estimates using `vimp`: you only specify a *library* of candidate estimators for the conditional means $\mu_{P_0}$ and $\mu_{P_0, s}$; you allow `vimp` to obtain the optimal estimates of these quantities using the `SuperLearner` [@vanderlaan2007], and use these estimates to obtain variable importance estimates. A second method (using precomputed estimates of the regression functions) exists and is described in ["Using precomputed regression function estimates in `vimp`"](precomputed-regressions.html).
 
-### A look at the South African heart disease study data
+### A look at the VRC01 data
 
-Throughout this document I will use the South African heart disease study data [@hastie2009], freely available from the [Elements of Statistical Learning website](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data). Information about these data is available [here](https://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.info.txt).
+Throughout this document I will use the VRC01 data [@magaret2019], a subset of the data freely available from the Los Alamos National Laboratory's Compile, Neutralize, and Tally Neutralizing Antibody Panels database. Information about these data is available [here](https://doi.org/10.1371/journal.pcbi.1006952).
 
-```{r load-heart-data}
+```{r load-vrc01-data}
 # read in the data from the Elements website
-library("RCurl")
-heart_data <- read.csv(text = getURL("http://web.stanford.edu/~hastie/ElemStatLearn/datasets/SAheart.data"), header = TRUE, stringsAsFactors = FALSE)
-# minor data cleaning
-heart <- heart_data[, 2:dim(heart_data)[2]]
-heart$famhist <- ifelse(heart$famhist == "Present", 1, 0)
-# sample-splitting folds for hypothesis testing
-heart_folds <- sample(rep(seq_len(2), length = dim(heart)[1]))
+data("vrc01")
 ```
 
-In addition to the indicator of myocardial infarction `chd`, the outcome of interest, there are measurements on two groups of variables. First are behavioral features: cumulative tobacco consumption, current alcohol consumption, and type A behavior (a behavioral pattern linked to stress). Second are biological features: systolic blood pressure, low-density lipoprotein (LDL) cholesterol, adiposity (similar to body mass index), family history of heart disease, obesity, and age.
+While there are several outcomes of interest in these data (continuous measures of neutralization and binary measures of resistance), we will focus on the binary measure of resistance to VRC01 given by `ic50.censored`. This variable is a binary indicator that the concentration of VRC01 necessary to neutralize 50% of viral replicates in a sample (IC-50) was right-censored; since higher values of IC-50 imply a more resistant virus, this indicator is a proxy for viral resistance. In addition to the outcome of interest, there are measurements on several groups of variables: viral subtype, geographic region of origin (a potential confounding variable), amino acid sequence features (further grouped into the CD4 binding sites, VRC01 binding footprint, sites with sufficient exposed surface area, sites identified as important for glycosylation, sites with residues that covary with the VRC01 binding footprint, sites associated with VRC01-specific potential N-linked glycosylation (PNGS) effects, sites in gp41 associated with VRC01 neutralization or sensitivity, sites for indicating N-linked glycosylation), region-specific counts of PNGS, viral geometry, cysteine counts, and steric bulk at critical locations. 
 
-Since there are nine features and two groups, it is of interest to determine variable importance both for the nine individual features separately and for the two groups of features.
+For the sake of simplicity, we will focus here on only four groups of features: viral subtype, geographic region of origin, and amino acid sequence features in the CD4 binding sites. 
+
+```{r subset-data}
+library("dplyr")
+library("tidyselect")
+# retain only the columns of interest for this analysis
+y <- vrc01$ic50.censored
+cd4bs <- as.character(c(124, 125, 126, 127, 196, 198, 279, 280, 281, 282, 283, 365, 366, 367, 368, 369, 370, 374, 425, 426, 427, 428, 429, 430, 431, 432, 455, 456, 457, 458, 459, 460, 461, 469, 471, 472, 473, 474, 475, 476, 477))
+X <- vrc01 %>% 
+  select(starts_with("geog"), starts_with("subtype"), contains(cd4bs))
+```
+
+Since there are nine features and two groups, it is of interest to determine variable importance both for the individual features separately and for the two groups of features (since the geographic variables are potential confounders).
 
 ### A first approach: linear regression
-Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. Note that because I chose to fit the regression functions first and then plug them into `vimp`, I need to explicitly specify the folds used for hypothesis testing. The analysis is achieved by the following:
 
-```{r est-heart-regressions-lm}
-X <- heart[, -ncol(heart)]
-lm_vim_sbp <- vim(Y = heart$chd, X = X, indx = 1, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_tob <- vim(Y = heart$chd, X = X, indx = 2, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_ldl <- vim(Y = heart$chd, X = X, indx = 3, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_adi <- vim(Y = heart$chd, X = X, indx = 4, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_fam <- vim(Y = heart$chd, X = X, indx = 5, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_tpa <- vim(Y = heart$chd, X = X, indx = 6, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_obe <- vim(Y = heart$chd, X = X, indx = 7, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_alc <- vim(Y = heart$chd, X = X, indx = 8, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
-lm_vim_age <- vim(Y = heart$chd, X = X, indx = 9, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
+Suppose that I believe that a linear model truly describes the relationship between the outcome and the covariates in these data. In that case, I would be justified in only fitting a linear regression to estimate the conditional means; this means that in my importance analysis, I should also use only linear regression. The analysis is achieved by the following:
 
-# make a table with the estimates using the merge_vim() function
-library("dplyr")
-lm_mat <- merge_vim(lm_vim_sbp, lm_vim_tob, lm_vim_ldl, lm_vim_adi,
-                lm_vim_fam, lm_vim_tpa, lm_vim_obe, lm_vim_alc, lm_vim_age)
+```{r est-regressions-lm}
+geog_indx <- max(which(grepl("geog", names(X))))
+for (i in seq_len(ncol(X) - geog_indx)) {
+  lm_vim <- vim(Y = y, X = X, indx = geog_indx + i, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared")
+  if (i == 1) {
+    lm_mat <- lm_vim
+  } else {
+    lm_mat <- merge_vim(lm_mat, lm_vim)
+  }
+}
 # print out the matrix
 lm_mat
 ```
@@ -344,7 +349,7 @@ The main arguments differ if precomputed regression function estimates are used;
 
 Suppose that the first feature that I want to estimate variable importance for is family history of heart disease, `fam`. Then supplying `vimp_rsquared()` with
 
-- `Y = heart$chd`
+- `Y = y`
 - `X = X`
 - `indx = 5`
 - `SL.library = learners`
@@ -358,7 +363,7 @@ means that:
 
 The call to `vimp_rsquared()` looks like this:
 ```{r vimp-with-sl-1, eval = FALSE}
-vimp_rsquared(Y = heart$chd, X = X,
+vimp_rsquared(Y = y, X = X,
     indx = 5, run_regression = TRUE, SL.library = learners, V = 5)
 ```
 
@@ -375,7 +380,7 @@ sl_cvcontrol <- list(V = 2)
 
 # now estimate variable importance
 start_time <- Sys.time()
-fam_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+fam_vim <- vimp_rsquared(Y = y, X = X, indx = 5, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 end_time <- Sys.time()
 ```
 
@@ -395,14 +400,14 @@ head(fam_vim$red_fit)
 I can obtain estimates for the remaining individual features in the same way (again using only using a small library for illustration):
 ```{r heart-sl}
 # estimate variable importance
-tpa_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 6, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-alc_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 8, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-sbp_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-tob_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 2, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-ldl_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 3, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-adi_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 4, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-obe_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 7, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-age_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = 9, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+tpa_vim <- vimp_rsquared(Y = y, X = X, indx = 6, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+alc_vim <- vimp_rsquared(Y = y, X = X, indx = 8, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+sbp_vim <- vimp_rsquared(Y = y, X = X, indx = 1, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+tob_vim <- vimp_rsquared(Y = y, X = X, indx = 2, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+ldl_vim <- vimp_rsquared(Y = y, X = X, indx = 3, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+adi_vim <- vimp_rsquared(Y = y, X = X, indx = 4, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+obe_vim <- vimp_rsquared(Y = y, X = X, indx = 7, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+age_vim <- vimp_rsquared(Y = y, X = X, indx = 9, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 ```
 
 Now that I have estimates of each of individual feature's variable importance, I can view them all simultaneously by plotting:
@@ -445,8 +450,8 @@ The only difference between estimating variable importance for a group of featur
 
 ```{r heart-group-vim, fig.width = 8.5, fig.height = 8}
 # get the estimates
-behav_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = c(2, 6, 8), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-bios_vim <- vimp_rsquared(Y = heart$chd, X = X, indx = c(1, 3, 4, 5, 7, 9), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+behav_vim <- vimp_rsquared(Y = y, X = X, indx = c(2, 6, 8), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+bios_vim <- vimp_rsquared(Y = y, X = X, indx = c(1, 3, 4, 5, 7, 9), SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
 
 # combine and plot
 groups <- merge_vim(behav_vim, bios_vim)
