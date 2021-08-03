@@ -889,7 +889,7 @@ A data frame with 611 rows and 837variables:
 }
 }
 \source{
-\url{https://github.com/benkeser/vrc01/data/fulldata.csv}
+\url{https://github.com/benkeser/vrc01/tree/master/data/fulldata.csv}
 }
 \usage{
 data("vrc01")
