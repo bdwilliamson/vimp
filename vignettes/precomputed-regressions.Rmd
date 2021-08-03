@@ -25,7 +25,7 @@ library("SuperLearner")
 
 ## Introduction
 
-In the [main vignette](introduction-to-vimp.html), we analyzed the VRC01 data [@magaret2019] (freely available [here](https://github.com/benkeser/vrc01/tree/master/data/fulldata.csv); more information about these data is available [here](https://doi.org/10.1371/journal.pcbi.1006952) and in the Los Alamos National Laboratory's Compile, Neutralize, and Tally Neutralizing Antibody Panels database). In each of the analyses, I used `run_regression = TRUE`. In this vignette, I discuss how to use precomputed regression function estimates with `vimp`. The results of this analysis replicate the analysis in the [main vignette](introduction-to-vimp.html).
+In the [main vignette](introduction-to-vimp.html), we analyzed the VRC01 data [@magaret2019], a subset of the data freely available from the Los Alamos National Laboratory's Compile, Neutralize, and Tally Neutralizing Antibody Panels database. Information about these data is available [here](https://doi.org/10.1371/journal.pcbi.1006952). In each of the analyses, I used `run_regression = TRUE`. In this vignette, I discuss how to use precomputed regression function estimates with `vimp`. The results of this analysis replicate the analysis in the [main vignette](introduction-to-vimp.html).
 
 ```{r load-vrc01-data}
 # read in the data
