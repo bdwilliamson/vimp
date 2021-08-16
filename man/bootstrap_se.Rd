@@ -4,7 +4,15 @@
 \alias{bootstrap_se}
 \title{Compute bootstrap-based standard error estimates for variable importance}
 \usage{
-bootstrap_se(Y = NULL, f1 = NULL, f2 = NULL, type = "r_squared", b = 1000)
+bootstrap_se(
+  Y = NULL,
+  f1 = NULL,
+  f2 = NULL,
+  type = "r_squared",
+  b = 1000,
+  boot_interval_type = "perc",
+  alpha = 0.05
+)
 }
 \arguments{
 \item{Y}{the outcome.}
@@ -20,7 +28,15 @@ regressing either (a) \code{f1} or (b) Y on X withholding the columns in
 \code{r_squared}, but other supported options are \code{auc},
 \code{accuracy}, \code{deviance}, and \code{anova}.}
 
-\item{b}{the number of bootstrap replicates (defaults to 1000)}
+\item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
+and \code{sample_splitting = FALSE}); defaults to 1000.}
+
+\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"}, 
+\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in 
+\code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
+
+\item{alpha}{the level to compute the confidence interval at.
+Defaults to 0.05, corresponding to a 95\% confidence interval.}
 }
 \value{
 a bootstrap-based standard error estimate

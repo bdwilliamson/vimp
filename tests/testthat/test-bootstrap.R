@@ -23,19 +23,24 @@ V <- 2
 set.seed(1234)
 test_that("Bootstrap without cross-fitting works", {
   # a small number of bootstraps, for speed
-  est <- vim(Y = y, X = x, run_regression = TRUE, SL.library = learners, 
-             cvControl = list(V = V), indx = 1, type = "r_squared",
-             sample_splitting = FALSE, env = environment(), 
-             bootstrap = TRUE, b = 10)
+  expect_warning(
+    est <- vim(Y = y, X = x, run_regression = TRUE, SL.library = learners, 
+               cvControl = list(V = V), indx = 1, type = "r_squared",
+               sample_splitting = FALSE, env = environment(), 
+               bootstrap = TRUE, b = 10, boot_interval_type = "perc")
+  )
   expect_true(est$ci[1] <= r2_one & est$ci[2] >= r2_one)
 })
 set.seed(4747)
 test_that("Bootstrap with cross-fitting works", {
   # small number of boostraps, for speed
-  est <- cv_vim(Y = y, X = x, run_regression = TRUE, SL.library = learners, 
-                cvControl = list(V = V), indx = 1, V = V, type = "r_squared",
-                sample_splitting = FALSE, env = environment(), 
-                bootstrap = TRUE, b = 10, cross_fitted_se = FALSE)
+  expect_warning(
+    est <- cv_vim(Y = y, X = x, run_regression = TRUE, SL.library = learners, 
+                  cvControl = list(V = V), indx = 1, V = V, type = "r_squared",
+                  sample_splitting = FALSE, env = environment(), 
+                  bootstrap = TRUE, b = 10, cross_fitted_se = FALSE,
+                  boot_interval_type = "perc")  
+  )
   # check that the estimate is nearly correct
   expect_true(est$ci[1] <= r2_one & est$ci[2] >= r2_one)
 })

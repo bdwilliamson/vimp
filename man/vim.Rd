@@ -27,6 +27,7 @@ vim(
   scale_est = TRUE,
   bootstrap = FALSE,
   b = 1000,
+  boot_interval_type = "perc",
   ...
 )
 }
@@ -111,7 +112,11 @@ Defaults to \code{FALSE} (and currently may only be used if
 \code{sample_splitting = FALSE}).}
 
 \item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
-and \code{sample_splitting = FALSE}).}
+and \code{sample_splitting = FALSE}); defaults to 1000.}
+
+\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"}, 
+\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in 
+\code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

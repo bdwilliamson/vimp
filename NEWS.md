@@ -1,3 +1,13 @@
+# vimp 2.2.6
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Allow different types of bootstrap interval (e.g., percentile) to be computed
+
 # vimp 2.2.5
 
 ## Major changes

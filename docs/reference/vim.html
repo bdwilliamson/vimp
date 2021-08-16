@@ -82,7 +82,7 @@ predictiveness using the feature(s) of interest versus not." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.6</span>
       </span>
     </div>
 
@@ -173,6 +173,7 @@ predictiveness using the feature(s) of interest versus not.</p>
   <span class='kw'>scale_est</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>bootstrap</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>b</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
+  <span class='kw'>boot_interval_type</span> <span class='kw'>=</span> <span class='st'>"perc"</span>,
   <span class='no'>...</span>
 )</pre>
 
@@ -303,7 +304,13 @@ Defaults to <code>FALSE</code> (and currently may only be used if
     <tr>
       <th>b</th>
       <td><p>the number of bootstrap replicates (only used if <code>bootstrap = TRUE</code>
-and <code>sample_splitting = FALSE</code>).</p></td>
+and <code>sample_splitting = FALSE</code>); defaults to 1000.</p></td>
+    </tr>
+    <tr>
+      <th>boot_interval_type</th>
+      <td><p>the type of bootstrap interval (one of <code>"norm"</code>, 
+<code>"basic"</code>, <code>"stud"</code>, <code>"perc"</code>, or <code>"bca"</code>, as in 
+<code>boot{boot.ci}</code>) if requested. Defaults to <code>"perc"</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>

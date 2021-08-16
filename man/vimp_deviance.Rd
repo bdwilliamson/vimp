@@ -50,66 +50,68 @@ validation data. If sample-splitting is requested, then these must
 be estimated specially; see Details.}
 
 \item{f1}{the fitted values from a flexible estimation technique
-regressing Y on X. If sample-splitting is requested, then these must be 
+regressing Y on X. If sample-splitting is requested, then these must be
 estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 then this argument is not used.}
 
 \item{f2}{the fitted values from a flexible estimation technique
 regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-\code{indx}. If sample-splitting is requested, then these must be 
+\code{indx}. If sample-splitting is requested, then these must be
 estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 then this argument is not used.}
 
-\item{indx}{the indices of the covariate(s) to calculate variable importance
-for; defaults to 1.}
+\item{indx}{the indices of the covariate(s) to calculate variable
+importance for; defaults to 1.}
 
 \item{V}{the number of folds for cross-fitting, defaults to 5. If
 \code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
 is done. See Details for a more detailed explanation.}
 
 \item{run_regression}{if outcome Y and covariates X are passed to
-\code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner
-will be used; otherwise, variable importance will be computed using the
-inputted fitted values.}
+\code{vimp_accuracy}, and \code{run_regression} is \code{TRUE},
+then Super Learner will be used; otherwise, variable importance
+will be computed using the inputted fitted values.}
 
 \item{SL.library}{a character vector of learners to pass to
-\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively.
-Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
+\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X,
+respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost},
+and \code{SL.mean}.}
 
-\item{alpha}{the level to compute the confidence interval at. Defaults to
-0.05, corresponding to a 95\% confidence interval.}
+\item{alpha}{the level to compute the confidence interval at.
+Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
 \item{delta}{the value of the \eqn{\delta}-null (i.e., testing if
 importance < \eqn{\delta}); defaults to 0.}
 
-\item{na.rm}{should we remove NA's in the outcome and fitted values in
-computation? (defaults to \code{FALSE})}
+\item{na.rm}{should we remove NAs in the outcome and fitted values
+in computation? (defaults to \code{FALSE})}
 
 \item{cross_fitting_folds}{the folds for cross-fitting. Only used if
 \code{run_regression = FALSE}.}
 
-\item{sample_splitting_folds}{the folds to use for sample-splitting; if entered,
-these should result in balance within the cross-fitting folds. Only used
-if \code{run_regression = FALSE} and \code{sample_splitting = TRUE}. A vector
-of length \eqn{2 * V}.}
+\item{sample_splitting_folds}{the folds used for sample-splitting;
+these identify the observations that should be used to evaluate
+predictiveness based on the full and reduced sets of covariates, respectively.
+Only used if \code{run_regression = FALSE}.}
 
-\item{stratified}{if run_regression = TRUE, then should the generated folds
-be stratified based on the outcome (helps to ensure class balance across
-cross-fitting folds)}
+\item{stratified}{if run_regression = TRUE, then should the generated
+folds be stratified based on the outcome (helps to ensure class balance
+across cross-validation folds)}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}
 
 \item{Z}{either (i) NULL (the default, in which case the argument
-\code{C} above must be all ones), or (ii) a character vector specifying
-the variable(s) among Y and X that are thought to play a role in the
-coarsening mechanism.}
+\code{C} above must be all ones), or (ii) a character vector
+specifying the variable(s) among Y and X that are thought to play a
+role in the coarsening mechanism.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse
-probability weights for coarsened-at-random settings). Assumed to be
-already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+\item{ipc_weights}{weights for the computed influence curve (i.e.,
+inverse probability weights for coarsened-at-random settings).
+Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated
+probability weights]).}
 
-\item{scale}{should CIs be computed on original ("identity", default) or
+\item{scale}{should CIs be computed on original ("identity") or
 logit ("logit") scale?}
 
 \item{ipc_est_type}{the type of procedure used for coarsened-at-random

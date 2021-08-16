@@ -37,11 +37,14 @@ sp_vim(
 \code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
 is done. See Details for a more detailed explanation.}
 
-\item{type}{the type of parameter (e.g., ANOVA-based is \code{"anova"}).}
+\item{type}{the type of importance to compute; defaults to
+\code{r_squared}, but other supported options are \code{auc},
+\code{accuracy}, \code{deviance}, and \code{anova}.}
 
 \item{SL.library}{a character vector of learners to pass to
-\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively.
-Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.}
+\code{SuperLearner}, if \code{f1} and \code{f2} are Y and X,
+respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost},
+and \code{SL.mean}.}
 
 \item{univariate_SL.library}{(optional) a character vector of learners to
 pass to \code{SuperLearner} for estimating univariate regression functions.
@@ -51,18 +54,18 @@ Defaults to \code{SL.polymars}}
 (e.g., \code{gamma = 1} samples the same number of subsets as the sample
 size)}
 
-\item{alpha}{the level to compute the confidence interval at. Defaults to
-0.05, corresponding to a 95\% confidence interval.}
+\item{alpha}{the level to compute the confidence interval at.
+Defaults to 0.05, corresponding to a 95\% confidence interval.}
 
 \item{delta}{the value of the \eqn{\delta}-null (i.e., testing if
 importance < \eqn{\delta}); defaults to 0.}
 
-\item{na.rm}{should we remove NA's in the outcome and fitted values in
-computation? (defaults to \code{FALSE})}
+\item{na.rm}{should we remove NAs in the outcome and fitted values
+in computation? (defaults to \code{FALSE})}
 
-\item{stratified}{if run_regression = TRUE, then should the generated folds
-be stratified based on the outcome (helps to ensure class balance across
-cross-fitting folds)}
+\item{stratified}{if run_regression = TRUE, then should the generated
+folds be stratified based on the outcome (helps to ensure class balance
+across cross-validation folds)}
 
 \item{verbose}{should \code{sp_vim} and \code{SuperLearner} print out
 progress? (defaults to \code{FALSE})}
@@ -76,20 +79,21 @@ importance.}
 unobserved).}
 
 \item{Z}{either (i) NULL (the default, in which case the argument
-\code{C} above must be all ones), or (ii) a character vector specifying
-the variable(s) among Y and X that are thought to play a role in the
-coarsening mechanism.}
+\code{C} above must be all ones), or (ii) a character vector
+specifying the variable(s) among Y and X that are thought to play a
+role in the coarsening mechanism.}
 
-\item{ipc_weights}{weights for the computed influence curve (i.e., inverse
-probability weights for coarsened-at-random settings). Assumed to be
-already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+\item{ipc_weights}{weights for the computed influence curve (i.e.,
+inverse probability weights for coarsened-at-random settings).
+Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated
+probability weights]).}
 
 \item{ipc_est_type}{the type of procedure used for coarsened-at-random
 settings; options are "ipw" (for inverse probability weighting) or
 "aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
 
-\item{scale}{should CIs be computed on original ("identity", default) or
+\item{scale}{should CIs be computed on original ("identity") or
 logit ("logit") scale?}
 
 \item{scale_est}{should the point estimate be scaled to be greater than 0?

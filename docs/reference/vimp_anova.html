@@ -88,7 +88,7 @@ vimp_rsquared instead." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.6</span>
       </span>
     </div>
 
@@ -216,8 +216,8 @@ be estimated specially; see Details.</p></td>
     </tr>
     <tr>
       <th>indx</th>
-      <td><p>the indices of the covariate(s) to calculate variable importance
-for; defaults to 1.</p></td>
+      <td><p>the indices of the covariate(s) to calculate variable
+importance for; defaults to 1.</p></td>
     </tr>
     <tr>
       <th>V</th>
@@ -228,20 +228,21 @@ is done. See Details for a more detailed explanation.</p></td>
     <tr>
       <th>run_regression</th>
       <td><p>if outcome Y and covariates X are passed to
-<code>cv_vim</code>, and <code>run_regression</code> is <code>TRUE</code>, then Super Learner
-will be used; otherwise, variable importance will be computed using the
-inputted fitted values.</p></td>
+<code>vimp_accuracy</code>, and <code>run_regression</code> is <code>TRUE</code>,
+then Super Learner will be used; otherwise, variable importance
+will be computed using the inputted fitted values.</p></td>
     </tr>
     <tr>
       <th>SL.library</th>
       <td><p>a character vector of learners to pass to
-<code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X, respectively.
-Defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>, and <code>SL.mean</code>.</p></td>
+<code>SuperLearner</code>, if <code>f1</code> and <code>f2</code> are Y and X,
+respectively. Defaults to <code>SL.glmnet</code>, <code>SL.xgboost</code>,
+and <code>SL.mean</code>.</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>the level to compute the confidence interval at. Defaults to
-0.05, corresponding to a 95% confidence interval.</p></td>
+      <td><p>the level to compute the confidence interval at.
+Defaults to 0.05, corresponding to a 95% confidence interval.</p></td>
     </tr>
     <tr>
       <th>delta</th>
@@ -250,8 +251,8 @@ importance &lt; \(\delta\)); defaults to 0.</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>should we remove NA's in the outcome and fitted values in
-computation? (defaults to <code>FALSE</code>)</p></td>
+      <td><p>should we remove NAs in the outcome and fitted values
+in computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
       <th>cross_fitting_folds</th>
@@ -260,9 +261,9 @@ computation? (defaults to <code>FALSE</code>)</p></td>
     </tr>
     <tr>
       <th>stratified</th>
-      <td><p>if run_regression = TRUE, then should the generated folds
-be stratified based on the outcome (helps to ensure class balance across
-cross-fitting folds)</p></td>
+      <td><p>if run_regression = TRUE, then should the generated
+folds be stratified based on the outcome (helps to ensure class balance
+across cross-validation folds)</p></td>
     </tr>
     <tr>
       <th>C</th>
@@ -272,19 +273,20 @@ unobserved).</p></td>
     <tr>
       <th>Z</th>
       <td><p>either (i) NULL (the default, in which case the argument
-<code>C</code> above must be all ones), or (ii) a character vector specifying
-the variable(s) among Y and X that are thought to play a role in the
-coarsening mechanism.</p></td>
+<code>C</code> above must be all ones), or (ii) a character vector
+specifying the variable(s) among Y and X that are thought to play a
+role in the coarsening mechanism.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for the computed influence curve (i.e., inverse
-probability weights for coarsened-at-random settings). Assumed to be
-already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
+      <td><p>weights for the computed influence curve (i.e.,
+inverse probability weights for coarsened-at-random settings).
+Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated
+probability weights]).</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>should CIs be computed on original ("identity", default) or
+      <td><p>should CIs be computed on original ("identity") or
 logit ("logit") scale?</p></td>
     </tr>
     <tr>
