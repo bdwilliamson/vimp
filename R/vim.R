@@ -63,7 +63,10 @@
 #'   Defaults to \code{FALSE} (and currently may only be used if
 #'   \code{sample_splitting = FALSE}).
 #' @param b the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
-#'   and \code{sample_splitting = FALSE}).
+#'   and \code{sample_splitting = FALSE}); defaults to 1000.
+#' @param boot_interval_type the type of bootstrap interval (one of \code{"norm"}, 
+#'   \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in 
+#'   \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and the type of risk-based measure.
@@ -168,7 +171,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 sample_splitting = TRUE, sample_splitting_folds = NULL, stratified = FALSE,
                 C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
                 ipc_est_type = "aipw", scale_est = TRUE, bootstrap = FALSE,
-                b = 1000, ...) {
+                b = 1000, boot_interval_type = "perc", ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -277,8 +280,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- NA
         se_redu <- NA
         if (bootstrap) {
-            se <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
-                               type = full_type, b = b)$se
+            boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
+                                         type = full_type, b = b, 
+                                         boot_interval_type = boot_interval_type,
+                                         alpha = alpha)
+            se <- boot_results$se
         } else {
             se <- sqrt(mean(eif ^ 2) / length(eif))
         }
@@ -327,11 +333,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- sqrt(mean(eif_full ^ 2) / length(eif_full))
         se_redu <- sqrt(mean(eif_redu ^ 2) / length(eif_redu))
         if (bootstrap & !sample_splitting) {
-            ses <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds, type = full_type,
-                                b = b)
-            se <- ses$se
-            se_full <- ses$se_full
-            se_redu <- ses$se_reduced
+            boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds, 
+                                         type = full_type, b = b, 
+                                         boot_interval_type = boot_interval_type,
+                                         alpha = alpha)
+            se <- boot_results$se
+            se_full <- boot_results$se_full
+            se_redu <- boot_results$se_reduced
         } else {
             if (bootstrap) {
                 warning(paste0("Bootstrap-based standard error estimates are currently",
@@ -355,6 +363,9 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
 
     # compute the confidence intervals
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
+    if (bootstrap) {
+        ci <- boot_results$ci
+    }
     predictiveness_ci_full <- vimp_ci(
         predictiveness_full, se = se_full, scale = scale, level = 1 - alpha
     )

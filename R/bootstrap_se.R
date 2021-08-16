@@ -1,13 +1,14 @@
 #' Compute bootstrap-based standard error estimates for variable importance
 #' 
 #' @inheritParams vim
-#' @param b the number of bootstrap replicates (defaults to 1000)
 #' 
 #' @return a bootstrap-based standard error estimate
 #' 
+#' @importFrom boot boot boot.ci
 #' @export
 bootstrap_se <- function(Y = NULL, f1 = NULL, f2 = NULL, 
-                          type = "r_squared", b = 1000) {
+                         type = "r_squared", b = 1000,
+                         boot_interval_type = "perc", alpha = 0.05) {
   vim_boot_stat <- function(data, indices, type) {
     y <- data$y[indices]
     f1 <- data$f1[indices]
@@ -26,5 +27,9 @@ bootstrap_se <- function(Y = NULL, f1 = NULL, f2 = NULL,
                                   sim = "ordinary", stype = "i", 
                                   type = type)
   vars <- apply(bootstrapped_ests$t, 2, function(x) mean( (x - mean( x ) ) ^ 2) )
-  list(se = sqrt(vars[1]), se_full = sqrt(vars[2]), se_reduced = sqrt(vars[3]))
+  ci_init <- boot::boot.ci(bootstrapped_ests, type = boot_interval_type, 
+                           conf = 1 - alpha)[[4]]
+  num_ci_cols <- length(ci_init)
+  ci <- ci_init[, c(num_ci_cols - 1, num_ci_cols)]
+  list(se = sqrt(vars[1]), se_full = sqrt(vars[2]), se_reduced = sqrt(vars[3]), ci = ci)
 }

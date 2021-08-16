@@ -5,8 +5,7 @@
 #' population-level contrast between the oracle predictiveness using the
 #' feature(s) of interest versus not.
 #'
-#' @param Y the outcome.
-#' @param X the covariates.
+#' @inheritParams vim
 #' @param cross_fitted_f1 the predicted values on validation data from a
 #'   flexible estimation technique regressing Y on X in the training data;
 #'   a list of length V, where each object is a set of predictions on the
@@ -19,71 +18,21 @@
 #'   validation data. If sample-splitting is requested, then these must
 #'   be estimated specially; see Details.
 #' @param f1 the fitted values from a flexible estimation technique
-#'   regressing Y on X. If sample-splitting is requested, then these must be 
+#'   regressing Y on X. If sample-splitting is requested, then these must be
 #'   estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 #'   then this argument is not used.
 #' @param f2 the fitted values from a flexible estimation technique
 #'   regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-#'   \code{indx}. If sample-splitting is requested, then these must be 
+#'   \code{indx}. If sample-splitting is requested, then these must be
 #'   estimated specially; see Details. If \code{cross_fitted_se = TRUE},
 #'   then this argument is not used.
-#' @param indx the indices of the covariate(s) to calculate variable importance
-#'   for; defaults to 1.
 #' @param V the number of folds for cross-fitting, defaults to 5. If
 #'   \code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
 #'   is done. See Details for a more detailed explanation.
-#' @param sample_splitting should we use sample-splitting to estimate the full and
-#'   reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
-#'   \code{sample_splitting = FALSE} will be invalid for variable with truly zero
-#'   importance.
-#' @param sample_splitting_folds the folds to use for sample-splitting; if entered,
-#'   these should result in balance within the cross-fitting folds. Only used
-#'   if \code{run_regression = FALSE} and \code{sample_splitting = TRUE}. A vector
-#'   of length \eqn{2 * V}.
 #' @param cross_fitting_folds the folds for cross-fitting. Only used if
 #'   \code{run_regression = FALSE}.
-#' @param stratified if run_regression = TRUE, then should the generated folds
-#'   be stratified based on the outcome (helps to ensure class balance across
-#'   cross-fitting folds)
-#' @param type the type of parameter (e.g., ANOVA-based is \code{"anova"}).
-#' @param run_regression if outcome Y and covariates X are passed to
-#'   \code{cv_vim}, and \code{run_regression} is \code{TRUE}, then Super Learner
-#'   will be used; otherwise, variable importance will be computed using the
-#'   inputted fitted values.
-#' @param SL.library a character vector of learners to pass to
-#'   \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X, respectively.
-#'   Defaults to \code{SL.glmnet}, \code{SL.xgboost}, and \code{SL.mean}.
-#' @param alpha the level to compute the confidence interval at. Defaults to
-#'   0.05, corresponding to a 95\% confidence interval.
-#' @param delta the value of the \eqn{\delta}-null (i.e., testing if
-#'   importance < \eqn{\delta}); defaults to 0.
-#' @param scale should CIs be computed on original ("identity", default) or
-#'   logit ("logit") scale?
-#' @param na.rm should we remove NA's in the outcome and fitted values in
-#'   computation? (defaults to \code{FALSE})
-#' @param C the indicator of coarsening (1 denotes observed, 0 denotes
-#'   unobserved).
-#' @param Z either (i) NULL (the default, in which case the argument
-#'   \code{C} above must be all ones), or (ii) a character vector specifying
-#'   the variable(s) among Y and X that are thought to play a role in the
-#'   coarsening mechanism.
-#' @param ipc_weights weights for the computed influence curve (i.e., inverse
-#'   probability weights for coarsened-at-random settings). Assumed to be
-#'   already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
-#' @param ipc_est_type the type of procedure used for coarsened-at-random
-#'   settings; options are "ipw" (for inverse probability weighting) or
-#'   "aipw" (for augmented inverse probability weighting).
-#'   Only used if \code{C} is not all equal to 1.
-#' @param scale_est should the point estimate be scaled to be greater than 0?
-#'   Defaults to \code{TRUE}.
 #' @param cross_fitted_se should we use cross-fitting to estimate the standard
 #'   errors (\code{TRUE}, the default) or not (\code{FALSE})?
-#' @param bootstrap should bootstrap-based standard error estimates be computed?
-#'   Defaults to \code{FALSE} (and currently may only be used if
-#'   \code{sample_splitting = FALSE} and \code{cross_fitted_se = FALSE}).
-#' @param b the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
-#'   and \code{sample_splitting = FALSE}).
-#' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of class \code{vim}. See Details for more information.
 #'
@@ -240,7 +189,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL,
                    ipc_weights = rep(1, length(Y)),
                    ipc_est_type = "aipw", scale_est = TRUE,
-                   cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000, ...) {
+                   cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000, 
+                   boot_interval_type = "perc", ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, cross_fitted_f1, cross_fitted_f2, indx)
@@ -293,32 +243,32 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     # if we need to run the regression, fit Super Learner with the given library
     if (run_regression) {
         full_feature_vec <- 1:ncol(X_cc)
-        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = ss_V, 
+        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = ss_V,
                               SL.library = SL.library, s = full_feature_vec,
-                              sample_splitting = sample_splitting, 
+                              sample_splitting = sample_splitting,
                               cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = 1,
-                              verbose = FALSE, weights = weights_cc, 
+                              verbose = FALSE, weights = weights_cc,
                               cross_fitted_se = cross_fitted_se, ...)
         red_split <- switch((sample_splitting) + 1, 1, 2)
         red_Y <- Y_cc
         if (full_type == "r_squared" || full_type == "anova") {
             if (sample_splitting) {
                 non_ss_folds <- rep(2, nrow(Y_cc))
-                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, 
+                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1,
                                         SL.library = SL.library, s = full_feature_vec,
-                                        sample_splitting = FALSE, 
+                                        sample_splitting = FALSE,
                                         ss_folds = non_ss_folds, split = 2,
-                                        verbose = FALSE, weights = weights_cc, 
+                                        verbose = FALSE, weights = weights_cc,
                                         cross_fitted_se = FALSE, ...)
                 red_Y <- matrix(full_sl_lst_2$preds, ncol = 1)
             } else {
-                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, 
+                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1,
                                         SL.library = SL.library, s = full_feature_vec,
-                                        sample_splitting = FALSE, 
+                                        sample_splitting = FALSE,
                                         ss_folds = rep(2, nrow(Y_cc)), split = 2,
                                         cv_folds = cross_fitting_folds_cc,
-                                        verbose = FALSE, weights = weights_cc, 
+                                        verbose = FALSE, weights = weights_cc,
                                         cross_fitted_se = FALSE, ...)
                 red_Y <- matrix(full_sl_lst_2$preds, ncol = 1)
             }
@@ -326,12 +276,12 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 red_Y <- Y_cc
             }
         }
-        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = ss_V, 
+        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = ss_V,
                               SL.library = SL.library, s = full_feature_vec[-indx],
-                              sample_splitting = sample_splitting, 
+                              sample_splitting = sample_splitting,
                               cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = red_split,
-                              verbose = FALSE, weights = weights_cc, 
+                              verbose = FALSE, weights = weights_cc,
                               cross_fitted_se = cross_fitted_se, ...)
         full <- full_sl_lst$fit
         reduced <- redu_sl_lst$fit
@@ -344,7 +294,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         check_fitted_values(Y = Y, cross_fitted_f1 = cross_fitted_f1,
                             cross_fitted_f2 = cross_fitted_f2, f1 = f1, f2 = f2,
                             sample_splitting_folds = sample_splitting_folds,
-                            cross_fitting_folds = cross_fitting_folds, 
+                            cross_fitting_folds = cross_fitting_folds,
                             cross_fitted_se = cross_fitted_se, V = V,
                             ss_V = ss_V, cv = TRUE)
         # set up the fitted value objects (both are lists!)
@@ -413,8 +363,9 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         se_full <- NA
         se_redu <- NA
         if (bootstrap) {
-            se <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds, 
-                               f2 = non_cf_redu_preds, type = full_type, b = b)$se
+            boot_results <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds,
+                                         f2 = non_cf_redu_preds, type = full_type, b = b)
+            se <- boot_results$se
         }
     } else {
         if (sample_splitting) {
@@ -509,11 +460,13 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         se_full <- sqrt(var_full / sum(full_test_cc))
         se_redu <- sqrt(var_redu / sum(full_test_cc))
         if (bootstrap & !sample_splitting & !cross_fitted_se) {
-            ses <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds, 
-                                f2 = non_cf_redu_preds, type = full_type, b = b)
-            se <- ses$se
-            se_full <- ses$se_full
-            se_redu <- ses$se_reduced
+            boot_results <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds,
+                                         f2 = non_cf_redu_preds, type = full_type, 
+                                         b = b, boot_interval_type = boot_interval_type, 
+                                         alpha = alpha)
+            se <- boot_results$se
+            se_full <- boot_results$se_full
+            se_redu <- boot_results$se_reduced
         } else {
             if (bootstrap) {
                 warning(paste0("Bootstrap-based standard error estimates are currently",
@@ -542,6 +495,9 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
 
     # calculate the confidence interval
     ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
+    if (bootstrap) {
+        ci <- boot_results$ci
+    }
     predictiveness_ci_full <- vimp_ci(
         predictiveness_full, se = se_full, scale = scale, level = 1 - alpha
     )
@@ -576,7 +532,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         if (length(eif_full) != length(eif_redu)) {
             max_len <- max(c(length(eif_full), length(eif_redu)))
             eif_full <- c(eif_full, rep(NA, max_len - length(eif_full)))
-            eif_redu <- c(eif_redu, rep(NA, max_len - length(eif_redu)))    
+            eif_redu <- c(eif_redu, rep(NA, max_len - length(eif_redu)))
         }
         final_eif <- eif_full - eif_redu
     }
