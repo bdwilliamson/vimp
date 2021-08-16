@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -23,6 +23,7 @@ y_2 <- y[folds == 2]
 x_1 <- subset(x_df, folds == 1)
 x_2 <- subset(x_df, folds == 2)
 
+# fit nuisance regressions -----------------------------------------------------
 # set up a library for SuperLearner
 learners <- c("SL.glm")
 V <- 2
@@ -49,6 +50,7 @@ reduced_fit_2 <- SuperLearner::SuperLearner(Y = full_fitted_1,
                               SL.library = learners, cvControl = list(V = V))
 reduced_fitted_2 <- SuperLearner::predict.SuperLearner(reduced_fit_2)$pred
 
+# test merging -----------------------------------------------------------------
 set.seed(4747)
 test_that("Merging variable importance estimates works", {
   est_1 <- vim(Y = y, f1 = full_fitted_1, f2 = reduced_fitted_1, 

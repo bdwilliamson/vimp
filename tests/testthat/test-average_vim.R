@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -28,6 +28,7 @@ folds <- sample(rep(seq_len(2), length = length(samp)))
 learners <- c("SL.glm", "SL.mean")
 V <- 2
 
+# average variable importance --------------------------------------------------
 # fit the data with all covariates
 set.seed(1234)
 full_fit_1 <- SuperLearner::SuperLearner(Y = y_samp, 

@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -19,6 +19,7 @@ r2_two <- 0.75 ^ 2 * 1 / true_var
 learners <- c("SL.glm")
 V <- 2
 
+# test the bootstrap -----------------------------------------------------------
 set.seed(1234)
 test_that("Bootstrap without cross-fitting works", {
   # a small number of bootstraps, for speed

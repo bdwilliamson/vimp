@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -35,6 +35,7 @@ ipc_weights <- 1 / predict(glm(C ~ y, family = "binomial"), type = "response")
 learners <- c("SL.glm", "SL.mean")
 V <- 2
 
+# test IPW VIM -----------------------------------------------------------------
 set.seed(1234)
 # test that VIM with inverse probability of coarsening weights works
 test_that("VIM with inverse probability of coarsening weights works", {
@@ -73,6 +74,8 @@ test_that("IPW AUC estimation with a better learner works", {
   expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
 })
 set.seed(5678)
+
+# test IPW CV-VIM --------------------------------------------------------------
 # test that VIM with inverse probability of coarsening weights and cross-fitting works
 test_that("CV-VIM with inverse probability of coarsening weights works", {
   est_cv <- cv_vim(Y = y, X = x_df, indx = 1, type = "r_squared", V = 2, 
@@ -84,6 +87,8 @@ test_that("CV-VIM with inverse probability of coarsening weights works", {
 
 univariate_learners <- "SL.glm"
 set.seed(91011)
+
+# test IPW SPVIM ---------------------------------------------------------------
 # test that SPVIM with inverse probability of coarsening weights works
 test_that("SPVIM with inverse probability of coarsening weights works", {
   expect_warning(est_spvim <- sp_vim(Y = y, X = x_df, type = "r_squared", V = 2, 

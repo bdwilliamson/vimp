@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data
+# generate the data ------------------------------------------------------------
 make_y <- function(b, p) rbinom(b, 1, p)
 make_x <- function(b, mu_0, mu_1, sigma, y) {
   n_col <- ifelse(!is.null(dim(mu_0)), dim(mu_0)[2], length(mu_0))
@@ -38,6 +38,7 @@ x <- as.data.frame(dat$x)
 folds <- sample(rep(seq_len(2), length = length(y)))
 indx <- 1
 
+# estimate nuisance functions --------------------------------------------------
 # set up a library for SuperLearner
 learners <- c("SL.glm")
 V <- 2
@@ -61,6 +62,7 @@ reduced_fit <- SuperLearner::SuperLearner(Y = y_2, X = x_2[, -indx, drop = FALSE
                                           cvControl = list(V = V))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 
+# test accuracy ----------------------------------------------------------------
 set.seed(1234)
 est_acc <- vimp_accuracy(Y = y, X = x, run_regression = TRUE,
                          SL.library = learners, indx = 1, V = V,
@@ -74,6 +76,7 @@ test_that("Accuracy-based variable importance works", {
   expect_equal(est_acc_noncv$est, t_acc[1], tolerance = 0.1, scale = 1)
 })
 
+# test AUC ---------------------------------------------------------------------
 set.seed(5678)
 test_that("AUC-based variable importance works", {
   est_auc <- vimp_auc(Y = y, X = x, cross_fitted_f1 = est_acc$full_fit,
@@ -90,6 +93,7 @@ test_that("AUC-based variable importance works", {
   expect_equal(est_auc_noncv$est, t_auc[1], tolerance = 0.1, scale = 1)
 })
 
+# test deviance ----------------------------------------------------------------
 set.seed(91011)
 test_that("Deviance-based variable importance works", {
   est_dev <- vimp_deviance(Y = y, X = x, cross_fitted_f1 = est_acc$full_fit,
@@ -106,6 +110,7 @@ test_that("Deviance-based variable importance works", {
   expect_equal(est_dev_noncv$est, t_dev[1], tolerance = 0.1, scale = 1)
 })
 
+# test measures of predictiveness ----------------------------------------------
 test_that("Measures of predictiveness work", {
  auc_lst <- est_predictiveness(full_fitted, y_1,
                                 type = "auc")
@@ -122,6 +127,7 @@ test_that("Measures of predictiveness work", {
  expect_equal(full_ce, -0.24, tolerance = 0.1, scale = 1)
 })
 
+# check against cvAUC ----------------------------------------------------------
 set.seed(1234)
 full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
   Y = y, X = x, SL.library = learners, cvControl = list(V = V),

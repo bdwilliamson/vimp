@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -19,6 +19,7 @@ r2_two <- 0.75 ^ 2 * 1 / true_var
 learners <- c("SL.glm")
 V <- 2
 
+# test ANOVA -------------------------------------------------------------------
 set.seed(1234)
 test_that("ANOVA-based R^2 with old function name works", {
   # check deprecated message
@@ -43,6 +44,8 @@ test_that("ANOVA-based R^2 without cross-fitting works", {
              sample_splitting = FALSE)
   expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
 })
+
+# test R-squared ---------------------------------------------------------------
 set.seed(121314)
 test_that("R^2-based variable importance works", {
   est <- vimp_rsquared(Y = y, X = x, run_regression = TRUE, 

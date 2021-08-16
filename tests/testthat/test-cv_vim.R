@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -19,6 +19,7 @@ r2_two <- 0.75 ^ 2 * 1 / true_var
 learners <- c("SL.glm", "SL.mean")
 V <- 2
 
+# no sample-splitting ----------------------------------------------------------
 set.seed(4747)
 test_that("CV-VIM without sample splitting works", {
   est_no_ss <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
@@ -67,6 +68,7 @@ test_that("CV-VIM with no SS, non-cross-fitted SE, single algorithm works", {
                # "0.305288025743816")
 })
 
+# cross-fitting and sample-splitting -------------------------------------------
 set.seed(101112)
 test_that("Cross-validated variable importance using internally-computed regressions works", {
   est <- cv_vim(Y = y, X = x, indx = 2, V = V, type = "r_squared", 
@@ -118,6 +120,7 @@ test_that("Cross-validated variable importance with odd number of outer folds wo
   # expect_equal(sprintf("%.15f", est$est), "0.307418610446996")
 })
 
+# using pre-computed regression functions --------------------------------------
 # cross-fitted estimates of the full and reduced regressions,
 # for point estimate of variable importance.
 indx <- 2
@@ -185,6 +188,8 @@ test_that("Cross-validated variable importance using externally-computed regress
   # check the actual value of the point estimate
   # expect_equal(sprintf("%.15f", est_prefit$est), "0.311079577886281")
 })
+
+# non-cross-fitted SEs
 test_that("Cross-validated variable importance using externally-computed regressions and non-cross-fitted SEs works", {
   est_prefit_no_cf_se <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 
                                 cross_fitted_f2 = reduced_cv_preds, f1 = fhat_ful,
@@ -212,6 +217,7 @@ test_that("Cross-validated variable importance using externally-computed regress
   # expect_equal(sprintf("%.15f", est_prefit_no_cf_se$est), "0.311079577886281")
 })
 
+# measures of predictiveness ---------------------------------------------------
 test_that("Measures of predictiveness work", {
   k_fold_lst <- make_kfold(cross_fitting_folds, sample_splitting_folds)    
   full_test <- (k_fold_lst$sample_splitting_folds == 1)
@@ -226,6 +232,7 @@ test_that("Measures of predictiveness work", {
   expect_equal(length(full_rsquared$all_eifs), V)
 })
 
+# error messages ---------------------------------------------------------------
 test_that("Error messages work", {
   expect_error(cv_vim(X = x))
   expect_error(cv_vim(Y = y))
@@ -233,4 +240,57 @@ test_that("Error messages work", {
   expect_error(cv_vim(Y = y, X = x, run_regression = FALSE))
   expect_error(cv_vim(Y = y, f1 = mean(y)))
   expect_error(cv_vim(Y = y, f1 = rep(mean(y), length(y)), f2 = mean(y)))
+})
+
+# pre-computed regression functions with an odd number of folds ----------------
+# with an odd number of outer folds
+indx <- 2
+Y <- matrix(y)
+set.seed(4747)
+full_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = Y, X = x, SL.library = learners, cvControl = list(V = 5),
+  innerCvControl = list(list(V = V))
+))
+# use the same cross-fitting folds for reduced
+reduced_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners, 
+  cvControl = SuperLearner::SuperLearner.CV.control(
+    V = 5, validRows = full_cv_fit$folds
+  ), 
+  innerCvControl = list(list(V = V))
+))
+# extract the predictions on split portions of the data, for hypothesis testing
+cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
+set.seed(1234)
+sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
+full_cv_preds <- extract_sampled_split_predictions(
+  cvsl_obj = full_cv_fit, sample_splitting = TRUE, 
+  sample_splitting_folds = sample_splitting_folds, full = TRUE
+)
+reduced_cv_preds <- extract_sampled_split_predictions(
+  cvsl_obj = reduced_cv_fit, sample_splitting = TRUE, 
+  sample_splitting_folds = sample_splitting_folds, full = FALSE
+)
+test_that("Cross-validated VIM works with externally-computed regressions and an odd number of folds", {
+  est_prefit <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 
+                       cross_fitted_f2 = reduced_cv_preds, indx = 2, delta = 0, V = 2, 
+                       type = "r_squared", cross_fitting_folds = cross_fitting_folds, 
+                       sample_splitting_folds = sample_splitting_folds,
+                       run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
+  # check variable importance estimate
+  expect_equal(est_prefit$est, r2_two, tolerance = 0.1, scale = 1)
+  # check full predictiveness estimate
+  expect_equal(est_prefit$predictiveness_full, 0.44, tolerance = 0.1, scale = 1)
+  # check that the SE, CI work
+  expect_length(est_prefit$ci, 2)
+  expect_length(est_prefit$se, 1)
+  # check that the p-value worked
+  expect_length(est_prefit$p_value, 1)
+  expect_true(est_prefit$test)
+  # check that printing, plotting, etc. work
+  expect_silent(format(est_prefit)[1])
+  expect_output(print(est_prefit), "Estimate", fixed = TRUE)
+  # check that influence curve worked; note that we used 5-fold outer CV and 
+  # 3 of those went to the full nuisance function
+  expect_length(est_prefit$eif, length(y) / 5 * 3)
 })

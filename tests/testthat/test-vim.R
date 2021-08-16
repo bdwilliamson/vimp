@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -20,6 +20,7 @@ folds <- sample(rep(seq_len(2), length = length(y)))
 learners <- c("SL.glm", "SL.mean")
 V <- 5
 
+# test VIM ---------------------------------------------------------------------
 set.seed(4747)
 test_that("VIM without sample splitting works", {
   est <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,
@@ -59,6 +60,7 @@ test_that("General variable importance estimates using internally-computed fitte
   expect_length(est$eif_full, length(y) / 2)
 })
 
+# fit nuisance regressions -----------------------------------------------------
 # fit the data with all covariates and sample-splitting
 set.seed(4747)
 full_fit <- SuperLearner::SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], 
@@ -75,6 +77,8 @@ reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted_2,
                                           SL.library = learners, 
                                           cvControl = list(V = V))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
+
+# test VIM with pre-computed nuisance estimates --------------------------------
 test_that("General variable importance estimates using externally-computed fitted values work", {
     # provide folds
     est <- vim(Y = y, X = x, indx = 2, type = "r_squared", 
@@ -92,7 +96,7 @@ test_that("General variable importance estimates using externally-computed fitte
     expect_length(ci_logit, 2)
 })
 
-
+# measures of predictiveness ---------------------------------------------------
 test_that("Measures of predictiveness work", {
   full_rsquared <- est_predictiveness(full_fitted, y[folds == 1], 
                                       type = "r_squared")
@@ -100,6 +104,7 @@ test_that("Measures of predictiveness work", {
   expect_length(full_rsquared$eif, sum(folds == 1))
 })
 
+# error messages ---------------------------------------------------------------
 test_that("Error messages work", {
     expect_error(vim(X = x))
     expect_error(vim(Y = y))

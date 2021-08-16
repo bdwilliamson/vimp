@@ -2,7 +2,7 @@
 library("testthat")
 library("SuperLearner")
 
-# generate the data -- note that this is a simple setting, for speed
+# generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
 n <- 5e4
@@ -26,6 +26,7 @@ learners <- c("SL.glm")
 univariate_learners <- "SL.glm"
 V <- 2
 
+# test SPVIMs ------------------------------------------------------------------
 set.seed(1234)
 test_that("Estimating SPVIMs works", {
   est <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
@@ -89,7 +90,7 @@ test_that("Estimating SPVIMs with verbose = TRUE works", {
   expect_equal(as.numeric(est_verbose$est[2]), shapley_val_1, tolerance = 0.2)
 })
 
-
+# error messages ---------------------------------------------------------------
 test_that("Error messages work", {
     expect_error(sp_vim(X = x))
     expect_error(sp_vim(Y = y))
