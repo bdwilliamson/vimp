@@ -92,19 +92,11 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
       stop(paste0("You must enter an estimator of the population-optimal predictor",
                   " using the reduced set of covariates."))
     }
-    if (length(sample_splitting_folds) != ss_V) {
+    if (length(sample_splitting_folds) != length(unique(cross_fitting_folds))) {
       stop("The sample splitting folds must be the same length as the number of cross-fitting folds.")
     }
     if (is.null(cross_fitting_folds)) {
       stop("You must specify the folds that were used for cross-fitting.")
-    }
-    if (length(cross_fitted_f1) != V) {
-      stop(paste0("The number of folds from the full regression must be the ",
-                  "same length as the number of folds."))
-    }
-    if (length(cross_fitted_f2) != V) {
-      stop(paste0("The number of folds from the reduced regression must be ",
-                  "the same length as the number of folds."))
     }
   }
 }

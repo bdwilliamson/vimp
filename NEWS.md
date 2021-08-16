@@ -1,3 +1,13 @@
+# vimp 2.2.5
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Update how `cv_vim` handles an odd number of outer folds being passed with pre-computed regression function estimates. Now, you can use an odd number of folds (e.g., 5) to estimate the full and reduced regression functions and still obtain cross-validated variable importance estimates.
+
 # vimp 2.2.4
 
 ## Major changes
