@@ -62,7 +62,7 @@ check_inputs <- function(Y, X, f1, f2, indx) {
 check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
                                 cross_fitted_f1 = NULL, cross_fitted_f2 = NULL,
                                 sample_splitting_folds = NULL,
-                                cross_fitting_folds = NULL, 
+                                cross_fitting_folds = NULL,
                                 cross_fitted_se = TRUE, V = NULL, ss_V = NULL,
                                 cv = FALSE) {
   if (is.null(Y)) stop("Y must be entered.")
@@ -324,7 +324,7 @@ make_kfold <- function(cross_fitting_folds,
 #'   predictiveness estimation?
 #' @param ss_folds the sample-splitting folds; only used if
 #'   \code{sample_splitting = TRUE}
-#' @param split the split to use for sample-splitting; only used if 
+#' @param split the split to use for sample-splitting; only used if
 #'   \code{sample_splitting = TRUE}
 #' @param verbose should we print progress? defaults to FALSE
 #' @param progress_bar the progress bar to print to (only if verbose = TRUE)
@@ -367,11 +367,11 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       arg_lst$cvControl$verbose <- TRUE
     }
   }
-  arg_lst_bool <- is.null(arg_lst$cvControl) | 
+  arg_lst_bool <- is.null(arg_lst$cvControl) |
     ifelse(!is.null(arg_lst$cvControl), (arg_lst$cvControl$V != V) & (cross_fitted_se), FALSE)
   if (arg_lst_bool) {
     arg_lst$cvControl <- list(V = ifelse(V == 1, 5, V))
-  } 
+  }
   if (is.null(arg_lst$obsWeights)) {
     arg_lst$obsWeights <- weights
   }
@@ -385,7 +385,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     which(cv_folds == v)
   })
   if (V > 1) {
-    arg_lst_cv$cvControl$validRows <- cf_folds_lst  
+    arg_lst_cv$cvControl$validRows <- cf_folds_lst
   }
   this_sl_lib <- SL.library
   # if univariate regression (i.e., length(s) == 1) then check univariate_SL.library
@@ -393,7 +393,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   if (length(s) == 1) {
     if (!is.null(univariate_SL.library)) {
       this_sl_lib <- univariate_SL.library
-    } 
+    }
     requires_2d <- c("glmnet", "polymars")
     for (i in 1:length(requires_2d)) {
       if (any(grepl(requires_2d[i], this_sl_lib)) & (ncol(red_X) == 1)) {
@@ -407,9 +407,9 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   # if dim(red_X) == 0, then return the mean
   if (ncol(red_X) == 0) {
     this_sl_lib <- eval(parse(text = "SL.mean"))
-  } 
+  }
   # if a single learner, don't do inner CV
-  if (!is.character(this_sl_lib) | length(this_sl_lib) == 1) {
+  if (!is.character(this_sl_lib) | ((length(this_sl_lib) == 1) & !is.list(this_sl_lib))) {
     if (is.character(this_sl_lib)) {
       this_sl_lib <- eval(parse(text = this_sl_lib))
     }
@@ -428,9 +428,9 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
                            newX = red_X[test_v, , drop = FALSE],
                            family = full_arg_lst_cv$family,
                            obsWeights = full_arg_lst_cv$obsWeights[train_v])
-          preds[[pred_indx]] <- fit$pred  
+          preds[[pred_indx]] <- fit$pred
           pred_indx <- pred_indx + 1
-        } 
+        }
       }
     }
   } else if (V == 1) {
@@ -443,7 +443,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     # extract predictions on correct sampled-split folds
     if (is.null(full)) {
       all_equal_s <- all.equal(s, 1:ncol(X))
-      is_full <- switch((sample_splitting) + 1, TRUE, 
+      is_full <- switch((sample_splitting) + 1, TRUE,
                         !is.character(all_equal_s) & as.logical(all_equal_s))
     } else {
       is_full <- full
@@ -457,10 +457,10 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   if (!cross_fitted_se) {
     # refit to the entire dataset
     if (!is.character(this_sl_lib)) {
-      fit_se <- this_sl_lib(Y = Y[ss_folds == split, ], 
-                            X = red_X[ss_folds == split, , drop = FALSE], 
-                            newX = red_X[ss_folds == split, , drop = FALSE], 
-                            family = arg_lst$family, 
+      fit_se <- this_sl_lib(Y = Y[ss_folds == split, ],
+                            X = red_X[ss_folds == split, , drop = FALSE],
+                            newX = red_X[ss_folds == split, , drop = FALSE],
+                            family = arg_lst$family,
                             obsWeights = arg_lst$obsWeights[ss_folds == split])
       preds_se <- fit_se$pred
       if (all(is.na(preds))) {
@@ -472,7 +472,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       fit_se <- do.call(
         SuperLearner::SuperLearner,
         args = c(arg_lst, list(
-          Y = Y[ss_folds == split, ], X = red_X[ss_folds == split, , drop = FALSE], 
+          Y = Y[ss_folds == split, ], X = red_X[ss_folds == split, , drop = FALSE],
           SL.library = this_sl_lib
         ))
       )
