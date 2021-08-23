@@ -409,7 +409,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     this_sl_lib <- eval(parse(text = "SL.mean"))
   }
   # if a single learner, don't do inner CV
-  if (!is.character(this_sl_lib) | ((length(this_sl_lib) == 1) & !is.list(this_sl_lib))) {
+  if ((length(this_sl_lib) == 1) & !is.list(this_sl_lib)) {
     if (is.character(this_sl_lib)) {
       this_sl_lib <- eval(parse(text = this_sl_lib))
     }
