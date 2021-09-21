@@ -7,6 +7,8 @@
 ## Minor changes
 
 * Allow different types of bootstrap interval (e.g., percentile) to be computed
+* More precise documentation for `Z` in coarsened-data settings; allow case-insensitive specification of covariate names/positions when creating `Z`
+* `V` defaults to 5 if no cross-fitting folds are specified externally
 
 # vimp 2.2.5
 
