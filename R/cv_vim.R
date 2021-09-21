@@ -179,7 +179,7 @@
 #' @export
 cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    cross_fitted_f2 = NULL, f1 = NULL, f2 = NULL, indx = 1,
-                   V = length(unique(cross_fitting_folds)),
+                   V = ifelse(is.null(cross_fitting_folds), 5, length(unique(cross_fitting_folds))),
                    sample_splitting = TRUE,
                    sample_splitting_folds = NULL, cross_fitting_folds = NULL,
                    stratified = FALSE, type = "r_squared",
