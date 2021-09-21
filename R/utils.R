@@ -118,15 +118,14 @@ create_z <- function(Y, C, Z, X, ipc_weights) {
   if (!all(C == 1) || !all(ipc_weights == 1)) {
     if (is.character(Z)) {
       tmp_Z <- Z[Z != "Y"]
-      minus_X <- as.numeric(gsub("X", "", tmp_Z))
+      minus_X <- as.numeric(gsub("x", "", tmp_Z, ignore.case = TRUE))
       # check to see if it is only part of X matrix
       if (any(sapply(seq_along(minus_X), function(j) length(minus_X[j]) > 0))) {
         if (any(grepl("Y", Z))) {
-          Z_in <- as.data.frame(mget("Y"))
+          Z_in <- cbind.data.frame(as.data.frame(mget("Y")), X[, minus_X])
         } else {
-          Z_in <- NULL
+          Z_in <- as.data.frame(X[, minus_X])
         }
-        Z_in <- cbind.data.frame(Z_in, X[, minus_X])
       } else {
         Z_in <- as.data.frame(mget(Z))
       }
