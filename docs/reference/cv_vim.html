@@ -160,7 +160,7 @@ feature(s) of interest versus not.</p>
   <span class='kw'>f1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>f2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>V</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>cross_fitting_folds</span>)),
+  <span class='kw'>V</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/NULL.html'>is.null</a></span>(<span class='no'>cross_fitting_folds</span>), <span class='fl'>5</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span>(<span class='no'>cross_fitting_folds</span>))),
   <span class='kw'>sample_splitting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>sample_splitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>cross_fitting_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
@@ -313,7 +313,9 @@ unobserved).</p></td>
       <td><p>either (i) NULL (the default, in which case the argument
 <code>C</code> above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism.</p></td>
+role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to 
+specify covariates, use a character number corresponding to the desired
+position in X (e.g., <code>"1"</code>).</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
