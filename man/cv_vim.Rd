@@ -121,7 +121,9 @@ unobserved).}
 \item{Z}{either (i) NULL (the default, in which case the argument
 \code{C} above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism.}
+role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to 
+specify covariates, use a character number corresponding to the desired
+position in X (e.g., \code{"1"}).}
 
 \item{ipc_weights}{weights for the computed influence curve (i.e.,
 inverse probability weights for coarsened-at-random settings).

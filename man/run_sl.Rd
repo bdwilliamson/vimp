@@ -46,7 +46,7 @@ predictiveness estimation?}
 \item{ss_folds}{the sample-splitting folds; only used if
 \code{sample_splitting = TRUE}}
 
-\item{split}{the split to use for sample-splitting; only used if 
+\item{split}{the split to use for sample-splitting; only used if
 \code{sample_splitting = TRUE}}
 
 \item{verbose}{should we print progress? defaults to FALSE}
