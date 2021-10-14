@@ -10,7 +10,7 @@
 * More precise documentation for `Z` in coarsened-data settings; allow case-insensitive specification of covariate names/positions when creating `Z`
 * `V` defaults to 5 if no cross-fitting folds are specified externally
 * More precise documentation for `cross_fitted_f1` and `cross_fitted_f2` in `cv_vim`
-* Added an input check for `cross_fitted_f1` and `cross_fitted_f2`; these must be lists
+* Allow non-list `cross_fitted_f1` and `cross_fitted_f2` in `cv_vim`
 
 # vimp 2.2.5
 
