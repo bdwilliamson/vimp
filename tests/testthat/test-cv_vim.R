@@ -240,6 +240,8 @@ test_that("Error messages work", {
   expect_error(cv_vim(Y = y, X = x, run_regression = FALSE))
   expect_error(cv_vim(Y = y, f1 = mean(y)))
   expect_error(cv_vim(Y = y, f1 = rep(mean(y), length(y)), f2 = mean(y)))
+  expect_error(cv_vim(Y = y, X = x, run_regression = FALSE,
+                      cross_fitted_f1 = full_fit))
 })
 
 # pre-computed regression functions with an odd number of folds ----------------

@@ -12,16 +12,26 @@
 #' @param f2 estimator of the population-optimal prediction function
 #'   using the reduced set of covariates
 #' @param indx the index or indices of the covariate(s) of interest
+#' @param cv is cross-fitted VIM desired?
 #'
 #' @return None. Called for the side effect of stopping the algorithm if
 #'   any inputs are in an unexpected format.
 #' @export
-check_inputs <- function(Y, X, f1, f2, indx) {
+check_inputs <- function(Y, X, f1, f2, indx, cv = FALSE) {
   if (is.null(f1) && is.null(Y)) {
     stop("You must enter either Y or fitted values for the full regression.")
   }
   if (is.null(f2) && is.null(X)) {
     stop("You must enter either X or fitted values for the reduced regression.")
+  }
+  # if cross-fitting but f1, f2 aren't lists, error
+  if (cv) {
+    if (!is.list(f1)) {
+      stop("cross_fitted_f1 must be a list of length V.")
+    }
+    if (!is.list(f2)) {
+      stop("cross_fitted_f2 must be a list of length V.")
+    }
   }
   # if indx is outside the range of X, stop and throw an error
   if (!is.null(X)) {
