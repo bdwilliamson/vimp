@@ -297,6 +297,25 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                             cross_fitting_folds = cross_fitting_folds,
                             cross_fitted_se = cross_fitted_se, V = V,
                             ss_V = ss_V, cv = TRUE)
+        # if cross_fitted_f1 and/or cross_fitted_f2 aren't lists, make them lists
+        if (!is.list(cross_fitted_f1)) {
+            cross_fitted_f1 <- extract_sampled_split_predictions(
+                preds = cross_fitted_f1, sample_splitting = sample_splitting,
+                sample_splitting_folds = switch((sample_splitting) + 1,
+                                                rep(1, V), sample_splitting_folds),
+                cross_fitting_folds = cross_fitting_folds,
+                full = TRUE
+            )
+        }
+        if (!is.list(cross_fitted_f2)) {
+            cross_fitted_f2 <- extract_sampled_split_predictions(
+                preds = cross_fitted_f2, sample_splitting = sample_splitting,
+                sample_splitting_folds = switch((sample_splitting) + 1,
+                                                rep(2, V), sample_splitting_folds),
+                cross_fitting_folds = cross_fitting_folds,
+                full = FALSE
+            )
+        }
         # set up the fitted value objects (both are lists!)
         full_preds <- cross_fitted_f1
         redu_preds <- cross_fitted_f2

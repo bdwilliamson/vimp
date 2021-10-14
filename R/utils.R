@@ -75,11 +75,11 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
       stop("The entered folds must be the same length as the outcome of interest.")
     }
   } else {
-    if (is.null(cross_fitted_f1) | !is.list(cross_fitted_f1)) {
+    if (is.null(cross_fitted_f1)) {
       stop(paste0("You must specify a list of predicted values from a ",
                   "regression of Y on X."))
     }
-    if (is.null(cross_fitted_f2) | !is.list(cross_fitted_f2)) {
+    if (is.null(cross_fitted_f2)) {
       stop(paste0("You must specify a list of predicted values from either ",
                   "(a) a regression of the fitted values from the Y on X ",
                   "regression on the reduced set of covariates, or (b) ",
