@@ -17,21 +17,12 @@
 #' @return None. Called for the side effect of stopping the algorithm if
 #'   any inputs are in an unexpected format.
 #' @export
-check_inputs <- function(Y, X, f1, f2, indx, cv = FALSE) {
+check_inputs <- function(Y, X, f1, f2, indx) {
   if (is.null(f1) && is.null(Y)) {
     stop("You must enter either Y or fitted values for the full regression.")
   }
   if (is.null(f2) && is.null(X)) {
     stop("You must enter either X or fitted values for the reduced regression.")
-  }
-  # if cross-fitting but f1, f2 aren't lists, error
-  if (cv) {
-    if (!is.list(f1)) {
-      stop("cross_fitted_f1 must be a list of length V.")
-    }
-    if (!is.list(f2)) {
-      stop("cross_fitted_f2 must be a list of length V.")
-    }
   }
   # if indx is outside the range of X, stop and throw an error
   if (!is.null(X)) {
@@ -84,14 +75,14 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
       stop("The entered folds must be the same length as the outcome of interest.")
     }
   } else {
-    if (is.null(cross_fitted_f1)) {
+    if (is.null(cross_fitted_f1) | !is.list(cross_fitted_f1)) {
       stop(paste0("You must specify a list of predicted values from a ",
                   "regression of Y on X."))
     }
-    if (is.null(cross_fitted_f2)) {
+    if (is.null(cross_fitted_f2) | !is.list(cross_fitted_f2)) {
       stop(paste0("You must specify a list of predicted values from either ",
                   "(a) a regression of the fitted values from the Y on X ",
-                  "regression on the reduced set of covariates, or (b)",
+                  "regression on the reduced set of covariates, or (b) ",
                   "a regression of Y on the reduced set of covariates."))
     }
     if (is.null(f1) & !cross_fitted_se) {

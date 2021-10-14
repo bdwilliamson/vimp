@@ -22,16 +22,24 @@
 extract_sampled_split_predictions <- function(cvsl_obj = NULL,
                                               sample_splitting = TRUE,
                                               sample_splitting_folds = NULL,
-                                              full = TRUE) {
-  if (is.null(cvsl_obj) | !(class(cvsl_obj) == "CV.SuperLearner")) {
-    stop("Please enter a CV.SuperLearner object.")
+                                              full = TRUE,
+                                              preds = NULL,
+                                              cross_fitting_folds = NULL) {
+  if ((is.null(cvsl_obj) | !(class(cvsl_obj) == "CV.SuperLearner")) & is.null(preds)) {
+    stop("Please enter a CV.SuperLearner object or the predictions and folds from such an object.")
+  } else if (!is.null(preds) & is.null(cross_fitting_folds)) {
+    stop("You must enter cross-fitting folds if you choose to enter predicted values rather than a CV.SuperLearner object.")
   }
   if (is.null(sample_splitting_folds)) {
     stop("Please enter sample-splitting folds.")
   }
-  all_preds <- cvsl_obj$SL.predict
-  # extract the folds used for cross-fitting
-  cross_fitting_folds <- get_cv_sl_folds(cvsl_obj$folds)
+  # get all predictions and folds from cross-fitting
+  if (!is.null(cvsl_obj)) {
+    all_preds <- cvsl_obj$SL.predict
+    cross_fitting_folds <- get_cv_sl_folds(cvsl_obj$folds)
+  } else {
+    all_preds <- preds
+  }
   unique_cf_folds <- unique(cross_fitting_folds)
   # get which sample-splitting fold to use
   this_sample_split <- ifelse(full, 1, 2)
