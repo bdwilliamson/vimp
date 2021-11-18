@@ -1,3 +1,13 @@
+# vimp 2.2.7
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Allow `parallel` argument to be specified for calls to `CV.SuperLearner` but not for calls to `SuperLearner`
+
 # vimp 2.2.6
 
 ## Major changes
