@@ -5,6 +5,8 @@
 #' @param fitted_values fitted values from a regression function using the 
 #'   observed data.
 #' @param y the observed outcome.
+#' @param a the observed treatment assignment (may be within a specified fold,
+#'   for cross-fitted estimates). Only used if \code{type = "average_value"}.
 #' @param full_y the observed outcome (from the entire dataset, for 
 #'   cross-fitted estimates).
 #' @param type which parameter are you estimating (defaults to \code{r_squared}, 
@@ -30,6 +32,12 @@
 #'   apply the correction, and back-transform).
 #' @param na.rm logical; should NA's be removed in computation? 
 #'   (defaults to \code{FALSE})
+#' @param nuisance_estimators (only used if \code{type = "average_value"}) 
+#'   a list of nuisance function estimators on the
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#'   Specifically: an estimator of the optimal treatment rule; an estimator of the
+#'   propensity score under the estimated optimal treatment rule; and an estimator
+#'   of the outcome regression when treatment is assigned according to the estimated optimal rule.
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A list, with: the estimated predictiveness; the estimated efficient 
@@ -47,11 +55,11 @@ est_predictiveness <- function(fitted_values, y, full_y = NULL,
                                ipc_fit_type = "external", 
                                ipc_eif_preds = rep(1, length(C)), 
                                ipc_est_type = "aipw", scale = "identity", 
-                               na.rm = FALSE, ...) {
+                               na.rm = FALSE, nuisance_estimators = NULL, ...) {
 
     # get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse", 
-               "cross_entropy")
+               "cross_entropy", "average_value")
     full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop(
         paste0("We currently do not support the entered variable importance ", 
@@ -59,7 +67,7 @@ est_predictiveness <- function(fitted_values, y, full_y = NULL,
     )
     measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance, 
                        measure_r_squared, NA, measure_mse, 
-                       measure_cross_entropy)
+                       measure_cross_entropy, measure_average_value)
     measure_func <- measure_funcs[pmatch(type, types)]
 
     # compute plug-in point estimate, EIF, inverse-weighted EIF predictions
@@ -68,7 +76,7 @@ est_predictiveness <- function(fitted_values, y, full_y = NULL,
             fitted_values = fitted_values, y = y, full_y = full_y, C = C, Z = Z, 
             ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, 
             ipc_eif_preds = ipc_eif_preds, ipc_est_type = ipc_est_type, 
-            scale = scale, na.rm = na.rm, ...
+            scale = scale, na.rm = na.rm, nuisance_estimators = nuisance_estimators, ...
         )
     } else { # if type is anova, no plug-in from predictiveness
         est_lst <- list(point_est = NA, ic = NA, 

@@ -61,6 +61,21 @@
 #'   Only used if \code{C} is not all equal to 1.
 #' @param scale_est should the point estimate be scaled to be greater than 0?
 #'   Defaults to \code{TRUE}.
+#' @param nuisance_estimators_full (only used if \code{type = "average_value"}) 
+#'   a list of nuisance function estimators on the
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#'   Specifically: an estimator of the optimal treatment rule; an estimator of the
+#'   propensity score under the estimated optimal treatment rule; and an estimator
+#'   of the outcome regression when treatment is assigned according to the estimated optimal rule.
+#' @param nuisance_estimators_reduced (only used if \code{type = "average_value"}) 
+#'   a list of nuisance function estimators on the
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#'   Specifically: an estimator of the optimal treatment rule; an estimator of the
+#'   propensity score under the estimated optimal treatment rule; and an estimator
+#'   of the outcome regression when treatment is assigned according to the estimated optimal rule.
+#' @param exposure_name (only used if \code{type = "average_value"}) the name of 
+#'   the exposure of interest; binary, with 1 indicating presence of the exposure and 
+#'   0 indicating absence of the exposure.
 #' @param bootstrap should bootstrap-based standard error estimates be computed?
 #'   Defaults to \code{FALSE} (and currently may only be used if
 #'   \code{sample_splitting = FALSE}).
@@ -172,8 +187,9 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE,
                 sample_splitting = TRUE, sample_splitting_folds = NULL, stratified = FALSE,
                 C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
-                ipc_est_type = "aipw", scale_est = TRUE, bootstrap = FALSE,
-                b = 1000, boot_interval_type = "perc", ...) {
+                ipc_est_type = "aipw", scale_est = TRUE, nuisance_estimators_full = NULL,
+                nuisance_estimators_reduced = NULL, exposure_name = NULL, 
+                bootstrap = FALSE, b = 1000, boot_interval_type = "perc", ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -239,6 +255,28 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         reduced <- redu_sl_lst$fit
         full_preds <- full_sl_lst$preds
         redu_preds <- redu_sl_lst$preds
+        
+        # if variable importance based on the average value under the optimal rule is requested,
+        # create a list with the necessary nuisance function estimators
+        if (grepl("average_value", full_type)) {
+            nuisance_estimators_full <- estimate_nuisances(fit = full, X = X_cc,
+                                                           exposure_name = exposure_name,
+                                                           V = 1, SL.library = SL.library,
+                                                           sample_splitting = sample_splitting,
+                                                           sample_splitting_folds = sample_splitting_folds_cc,
+                                                           verbose = FALSE, weights = weights_cc,
+                                                           cross_fitted_se = FALSE, split = 1, ...)
+            nuisance_estimators_reduced <- estimate_nuisances(fit = reduced, X = X_cc %>% select(-!!exposure_name),
+                                                              exposure_name = exposure_name,
+                                                              V = 1, SL.library = SL.library,
+                                                              sample_splitting = sample_splitting,
+                                                              sample_splitting_folds = sample_splitting_folds_cc,
+                                                              verbose = FALSE, weights = weights_cc,
+                                                              cross_fitted_se = FALSE, split = red_split, ...)
+        } else {
+            nuisance_estimators_full <- NULL
+            nuisance_estimators_reduced <- NULL
+        }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
         check_fitted_values(Y = Y, f1 = f1, f2 = f2,

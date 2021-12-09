@@ -148,7 +148,7 @@ create_z <- function(Y, C, Z, X, ipc_weights) {
 #' @return the full string indicating the type of VIM
 #' @export
 get_full_type <- function(type) {
-  types <- c("accuracy", "auc", "deviance", "r_squared", "anova")
+  types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "average_value")
   full_type <- types[pmatch(type, types)]
   if (is.na(full_type)) {
     stop("We currently do not support the entered variable importance parameter.")
@@ -495,6 +495,39 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   }
   return(list(fit = fit, preds = preds, ss_folds = ss_folds,
               cv_folds = cv_folds, fit_non_cf_se = fit_se, preds_non_cf_se = preds_se))
+}
+
+# estimate nuisance functions (for average value) ------------------------------
+#' Estimate nuisance functions for average value-based VIMs
+#' 
+#' @inheritParams vim
+#' @return nuisance function estimators for use in the average value VIM: 
+#'  the treatment assignment based on the estimated optimal rule 
+#'  (based on the estimated outcome regression); the expected outcome under the
+#'  estimated optimal rule; and the estimated propensity score.
+#' @export
+estimate_nuisances <- function(fit, X, exposure_name, V = 1, SL.library, sample_splitting,
+                               sample_splitting_folds, verbose, weights, cross_fitted_se, 
+                               split = 1, ...) {
+  A <- X %>% pull(!!exposure_name)
+  W <- X %>% select(-!!exposure_name)
+  # estimate the optimal rule
+  A_1 <- cbind.data.frame(A = 1, W)
+  A_0 <- cbind.data.frame(A = 0, W)
+  names(A_1)[1] <- exposure_name
+  names(A_0)[1] <- exposure_name
+  f_n <- as.numeric(predict(fit, newdata = A_1)$pred > predict(fit, newdata = A_0)$pred)
+  # estimate the propensity score
+  g_n <- run_sl(Y = f_n, X = W, V = V, SL.library = SL.library,
+                s = 1:ncol(W), sample_splitting = sample_splitting,
+                ss_folds = sample_splitting_folds, split = split, verbose = verbose,
+                weights = weights, cross_fitted_se = cross_fitted_se, ...)
+  # set up data based on f_n, f_n_reduced
+  A_f <- cbind.data.frame(A = f_n, W)
+  names(A_f)[1] <- exposure_name
+  nuisance_estimators <- list(f_n = f_n, q_n = predict(full, newdata = A_f)$pred,
+                              g_n = predict(g_n, A_f)$pred)
+  return(nuisance_estimators)
 }
 
 # -------------------------------------

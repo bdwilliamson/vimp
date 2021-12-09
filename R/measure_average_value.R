@@ -12,7 +12,6 @@
 #' @param a the observed treatment assignment (may be within a specified fold,
 #'   for cross-fitted estimates).
 #' @param full_y the observed outcome (not used, defaults to \code{NULL}).
-#' @param g_n the estimated propensity score.
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
