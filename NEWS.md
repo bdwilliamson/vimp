@@ -1,3 +1,13 @@
+# vimp 2.2.7
+
+## Major changes
+
+* You can now compute variable importance using the average value under the optimal treatment rule. This includes functions `measure_avg_value` (computes the average value and efficient influence function) and updates to 
+
+## Minor changes
+
+* None
+
 # vimp 2.2.6
 
 ## Major changes

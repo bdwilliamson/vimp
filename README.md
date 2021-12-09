@@ -20,7 +20,7 @@ In predictive modeling applications, it is often of interest to determine the re
 
 Specifically, the types of variable importance supported by `vimp` include: difference in population classification accuracy, difference in population area under the receiver operating characteristic curve, difference in population deviance, difference in population R-squared.
 
-More detail may be found in our paper on [R-squared-based variable importance](https://doi.org/10.1111/biom.13392) and in our tech reports on [general variable importance](https://arxiv.org/abs/2004.03683) and [general Shapley-based variable importance](https://arxiv.org/abs/2006.09481).
+More detail may be found in our papers on [R-squared-based variable importance](https://doi.org/10.1111/biom.13392), [general variable importance](https://doi.org/10.1080/01621459.2021.2003200) and [general Shapley-based variable importance](https://proceedings.mlr.press/v119/williamson20a.html).
 
 This method works on low-dimensional and high-dimensional data.
 
@@ -104,12 +104,12 @@ After using the `vimp` package, please cite the following (for R-squared-based v
 or the following (for general variable importance parameters):
 
 ```
-  @article{williamson2020,
+  @article{williamson2021,
     author={Williamson, BD and Gilbert, PB and Simon, NR and Carone, M},
-    title={A unified approach for inference on algorithm-agnostic variable importance},
-    journal={arXiv:2004.03683},
-    year={2020},
-    note={URL: https://arxiv.org/abs/2004.03683}
+    title={A general framework for inference on algorithm-agnostic variable importance},
+    journal={Journal of the American Statistical Association (Theory \& Methods)},
+    year={2021},
+    doi={https://doi.org/10.1080/01621459.2021.2003200}
   }
 ```
 
@@ -135,7 +135,7 @@ The contents of this repository are distributed under the MIT license. See below
 ```
 MIT License
 
-Copyright (c) [2018-2021] [Brian D. Williamson]
+Copyright (c) [2018-present] [Brian D. Williamson]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
