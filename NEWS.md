@@ -2,11 +2,11 @@
 
 ## Major changes
 
-* You can now compute variable importance using the average value under the optimal treatment rule. This includes functions `measure_avg_value` (computes the average value and efficient influence function) and updates to 
+* You can now compute variable importance using the average value under the optimal treatment rule. This includes functions `measure_avg_value` (computes the average value and efficient influence function) and updates to
 
 ## Minor changes
 
-* None
+* Allow `parallel` argument to be specified for calls to `CV.SuperLearner` but not for calls to `SuperLearner`
 
 # vimp 2.2.6
 
@@ -114,7 +114,7 @@ None
 
 # vimp 2.1.8
 
-## Major changes 
+## Major changes
 None
 
 ## Minor changes

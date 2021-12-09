@@ -469,6 +469,10 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       }
     } else {
       arg_lst$obsWeights <- weights[ss_folds == split]
+      if (any(grepl("parallel", names(arg_lst)))) {
+        # remove it for SL calls
+        arg_lst$parallel <- NULL
+      }
       fit_se <- do.call(
         SuperLearner::SuperLearner,
         args = c(arg_lst, list(
