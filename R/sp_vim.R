@@ -363,21 +363,18 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     } else {
         var_none_0 <- mean(ic_none_0 ^ 2, na.rm = na.rm)
     }
-    se_none_0 <- sqrt(var_none_0) /
-        sqrt(length(cross_fitting_folds_cc) / 2)
+    se_none_0 <- sqrt(var_none_0 / sum(redu_test_cc)) 
     # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
-    ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) /
-                        (length(cross_fitting_folds_cc) / 2) +
+    ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) / sum(full_test_cc) +
                         se_none_0 ^ 2)
     # save objects necessary to compute the test statistics
-    test_stat_lst <- list(ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0, se_0 = se_none_0)
+    test_stat_lst <- list(ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0, 
+                          se_0 = se_none_0, n_for_v = n_for_v)
     test_statistics <- unlist(lapply(
         as.list(2:length(est)),
         function(j, ests, ses, est_0, se_0, delta) {
-            var_j <- (var_v_contribs[j] * n_for_v + var_s_contribs[j]) /
-                (length(cross_fitting_folds_cc) / 2)
-            (ests[j] - est_0 - delta) / sqrt(var_j + se_0 ^ 2)
+            (ests[j] - est_0 - delta) / sqrt(ses[j] ^ 2 + se_0 ^ 2)
         }, ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0,
         se_0 = se_none_0, delta = delta
     ))
