@@ -267,7 +267,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
         )
         ics_lst <- lapply(ic_all_lst, function(l) l$all_eifs)
         ic_lst <- lapply(ic_all_lst, function(l) l$eif)
-    } 
+    }
     v <- matrix(c(v_none, unlist(v_lst)))
     # do constrained wls
     if (verbose) {
@@ -358,7 +358,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     ics_none_0 <- v_none_0_lst$all_eifs
     ic_none_0 <- v_none_0_lst$eif
     if (cross_fitted_se) {
-        var_none_0 <- mean(unlist(lapply(ics_none_0, 
+        var_none_0 <- mean(unlist(lapply(ics_none_0,
                                          function(ic) mean(ic ^ 2, na.rm = na.rm))))
     } else {
         var_none_0 <- mean(ic_none_0 ^ 2, na.rm = na.rm)
@@ -370,6 +370,8 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) /
                         (length(cross_fitting_folds_cc) / 2) +
                         se_none_0 ^ 2)
+    # save objects necessary to compute the test statistics
+    test_stat_lst <- list(ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0, se_0 = se_none_0)
     test_statistics <- unlist(lapply(
         as.list(2:length(est)),
         function(j, ests, ses, est_0, se_0, delta) {
@@ -404,6 +406,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    test = hyp_tests,
                    p_value = p_values,
                    test_statistic = test_statistics,
+                   test_statistic_computation = test_stat_lst,
                    gamma = gamma,
                    alpha = alpha,
                    delta = delta,
