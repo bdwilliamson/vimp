@@ -1,3 +1,13 @@
+# vimp 2.2.8
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Return objects in `sp_vim` that are necessary to compute the test statistics
+
 # vimp 2.2.7
 
 ## Major changes
