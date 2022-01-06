@@ -2,7 +2,18 @@
 
 ## Major changes
 
-* You can now compute variable importance using the average value under the optimal treatment rule. This includes functions `measure_avg_value` (computes the average value and efficient influence function) and updates to
+* You can now measure predictiveness using the average value under an estimated optimal treatment rule (`measure_average_value`).
+* Also, predictiveness measures now have their own `S3` class, which makes internal code more clean and facilitates simpler addition of new predictiveness measures.
+
+## Minor changes
+
+* Return objects in `sp_vim` that are necessary to compute the test statistics
+
+# vimp 2.2.7
+
+## Major changes
+
+* None
 
 ## Minor changes
 
