@@ -25,6 +25,9 @@ vim(
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
   scale_est = TRUE,
+  nuisance_estimators_full = NULL,
+  nuisance_estimators_reduced = NULL,
+  exposure_name = NULL,
   bootstrap = FALSE,
   b = 1000,
   boot_interval_type = "perc",
@@ -108,6 +111,24 @@ Only used if \code{C} is not all equal to 1.}
 
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
+
+\item{nuisance_estimators_full}{(only used if \code{type = "average_value"}) 
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
+\item{nuisance_estimators_reduced}{(only used if \code{type = "average_value"}) 
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
+\item{exposure_name}{(only used if \code{type = "average_value"}) the name of 
+the exposure of interest; binary, with 1 indicating presence of the exposure and 
+0 indicating absence of the exposure.}
 
 \item{bootstrap}{should bootstrap-based standard error estimates be computed?
 Defaults to \code{FALSE} (and currently may only be used if

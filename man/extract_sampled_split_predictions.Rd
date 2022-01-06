@@ -8,7 +8,9 @@ extract_sampled_split_predictions(
   cvsl_obj = NULL,
   sample_splitting = TRUE,
   sample_splitting_folds = NULL,
-  full = TRUE
+  full = TRUE,
+  preds = NULL,
+  cross_fitting_folds = NULL
 )
 }
 \arguments{

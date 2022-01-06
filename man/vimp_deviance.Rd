@@ -37,17 +37,19 @@ vimp_deviance(
 \item{X}{the covariates.}
 
 \item{cross_fitted_f1}{the predicted values on validation data from a
-flexible estimation technique regressing Y on X in the training data;
-a list of length V, where each object is a set of predictions on the
-validation data. If sample-splitting is requested, then these must
-be estimated specially; see Details.}
+flexible estimation technique regressing Y on X in the training data. Provided as
+either (a) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold; or (b) a vector, where each element is
+the predicted value when that observation is part of the validation fold.
+If sample-splitting is requested, then these must be estimated specially; see Details.}
 
 \item{cross_fitted_f2}{the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
-\code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx};
-a list of length V, where each object is a set of predictions on the
-validation data. If sample-splitting is requested, then these must
-be estimated specially; see Details.}
+\code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}.
+Provided as either (a) a list of length V, where each object is a set of predictions on the
+corresponding validation data fold; or (b) a vector, where each element is
+the predicted value when that observation is part of the validation fold.
+If sample-splitting is requested, then these must be estimated specially; see Details.}
 
 \item{f1}{the fitted values from a flexible estimation technique
 regressing Y on X. If sample-splitting is requested, then these must be

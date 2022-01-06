@@ -17,6 +17,7 @@ est_predictiveness(
   ipc_est_type = "aipw",
   scale = "identity",
   na.rm = FALSE,
+  nuisance_estimators = NULL,
   ...
 )
 }
@@ -61,7 +62,17 @@ apply the correction, and back-transform).}
 \item{na.rm}{logical; should NA's be removed in computation? 
 (defaults to \code{FALSE})}
 
+\item{nuisance_estimators}{(only used if \code{type = "average_value"}) 
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
+
+\item{a}{the observed treatment assignment (may be within a specified fold,
+for cross-fitted estimates). Only used if \code{type = "average_value"}.}
 }
 \value{
 A list, with: the estimated predictiveness; the estimated efficient 
