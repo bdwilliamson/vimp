@@ -101,7 +101,7 @@ full_fit_b <- SuperLearner::SuperLearner(Y = y_binary, X = x_binary,
                                          family = "binomial")
 full_fitted_b <- SuperLearner::predict.SuperLearner(full_fit_b, onlySL = TRUE)$pred
 # also a cross-fitted version
-full_fit_b_cv <- SuperLearner::CV.SuperLearner(Y = y_binary, X = x, 
+full_fit_b_cv <- SuperLearner::CV.SuperLearner(Y = y_binary, X = x_binary, 
                                                SL.library = learners,
                                                cvControl = list(validRows = sl_folds_b, V = 2),
                                                innerCvControl = list(list(V = V)),
@@ -171,8 +171,6 @@ test_that("Cross-validated R-squared using S3 class works", {
   expect_length(full_r_squared_cv$eif, length(y_continuous))
 })
 
-
-
 # test AUC, accuracy, deviance, cross-entropy ----------------------------------
 # accuracy
 test_that("Accuracy using S3 class works", {
@@ -187,6 +185,15 @@ test_that("Accuracy works (est_predictiveness)", {
                                       type = "accuracy")
   expect_equal(full_accuracy$point_est, accuracy_full, tolerance = 0.1)
   expect_length(full_accuracy$eif, length(y_binary))
+})
+test_that("Cross-validated accuracy using S3 class works", {
+  full_accuracy_object_cv <- predictiveness_measure(type = "accuracy", y = y_binary, 
+                                                     fitted_values = full_fitted_b_cv, 
+                                                     cross_fitting_folds = folds_b,
+                                                     full_y = y_binary)
+  full_accuracy_cv <- estimate(full_accuracy_object_cv)
+  expect_equal(full_accuracy_cv$point_est, accuracy_full, tolerance = 0.1)
+  expect_length(full_accuracy_cv$eif, length(y_binary))
 })
 
 # AUC
@@ -203,6 +210,15 @@ test_that("AUC works (est_predictiveness)", {
   expect_equal(full_auc$point_est, auc_full, tolerance = 0.1)
   expect_length(full_auc$eif, length(y_binary))
 })
+test_that("Cross-validated AUC using S3 class works", {
+  full_auc_object_cv <- predictiveness_measure(type = "auc", y = y_binary, 
+                                                    fitted_values = full_fitted_b_cv, 
+                                                    cross_fitting_folds = folds_b,
+                                                    full_y = y_binary)
+  full_auc_cv <- estimate(full_auc_object_cv)
+  expect_equal(full_auc_cv$point_est, auc_full, tolerance = 0.1)
+  expect_length(full_auc_cv$eif, length(y_binary))
+})
 
 # Cross-entropy
 test_that("Cross Entropy using S3 class works", {
@@ -218,6 +234,16 @@ test_that("Cross Entropy works (est_predictiveness)", {
   expect_equal(full_cross_entropy$point_est, cross_entropy_full, tolerance = 0.1)
   expect_length(full_cross_entropy$eif, length(y_binary))
 })
+test_that("Cross-validated cross entropy using S3 class works", {
+  full_cross_entropy_object_cv <- predictiveness_measure(type = "cross_entropy", y = y_binary, 
+                                                    fitted_values = full_fitted_b_cv, 
+                                                    cross_fitting_folds = folds_b,
+                                                    full_y = y_binary)
+  full_cross_entropy_cv <- estimate(full_cross_entropy_object_cv)
+  expect_equal(full_cross_entropy_cv$point_est, cross_entropy_full, tolerance = 0.1)
+  expect_length(full_cross_entropy_cv$eif, length(y_binary))
+})
+
 
 # Deviance
 test_that("Deviance using S3 class works", {
@@ -233,6 +259,16 @@ test_that("Deviance works (est_predictiveness)", {
   expect_equal(full_deviance$point_est, deviance_full, tolerance = 0.15)
   expect_length(full_deviance$eif, length(y_binary))
 })
+test_that("Cross-validated deviance using S3 class works", {
+  full_deviance_object_cv <- predictiveness_measure(type = "deviance", y = y_binary, 
+                                                    fitted_values = full_fitted_b_cv, 
+                                                    cross_fitting_folds = folds_b,
+                                                    full_y = y_binary)
+  full_deviance_cv <- estimate(full_deviance_object_cv)
+  expect_equal(full_deviance_cv$point_est, deviance_full, tolerance = 0.15)
+  expect_length(full_deviance_cv$eif, length(y_binary))
+})
+
 
 # test average value -----------------------------------------------------------
 test_that("Average Value using S3 class works", {
