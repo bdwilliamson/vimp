@@ -7,17 +7,20 @@
 predictiveness_measure(
   type = character(),
   y = numeric(),
-  a = NULL,
+  a = numeric(),
   fitted_values = numeric(),
+  cross_fitting_folds = rep(1, length(fitted_values)),
   full_y = NULL,
-  C = numeric(),
+  nuisance_estimators = list(),
+  C = rep(1, length(y)),
   Z = NULL,
-  ipc_weights = numeric(),
-  ipc_fit_type = character(),
+  folds_Z = rep(1, length(y)),
+  ipc_weights = rep(1, length(y)),
+  ipc_fit_type = "SL",
   ipc_eif_preds = numeric(),
-  ipc_est_type = character(),
-  scale = character(),
-  na.rm = logical(),
+  ipc_est_type = "aipw",
+  scale = "identity",
+  na.rm = TRUE,
   ...
 )
 }
@@ -31,7 +34,16 @@ predictiveness_measure(
 \item{fitted_values}{fitted values from a regression function using the
 observed data (may be within a specified fold, for cross-fitted estimates).}
 
+\item{cross_fitting_folds}{folds for cross-fitting, if used to obtain the
+fitted values. If not used, a vector of ones.}
+
 \item{full_y}{the observed outcome (not used, defaults to \code{NULL}).}
+
+\item{nuisance_estimators}{a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+For the average value measure: an estimator of the optimal treatment rule (\code{f_n}); an estimator of the
+propensity score under the estimated optimal treatment rule (\code{g_n}); and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule (\code{q_n}).}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}

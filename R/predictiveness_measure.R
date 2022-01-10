@@ -5,7 +5,14 @@
 #' @param a the exposure of interest (only used if \code{type = "average_value"})
 #' @param fitted_values fitted values from a regression function using the
 #'   observed data (may be within a specified fold, for cross-fitted estimates).
+#' @param cross_fitting_folds folds for cross-fitting, if used to obtain the
+#'   fitted values. If not used, a vector of ones.
 #' @param full_y the observed outcome (not used, defaults to \code{NULL}).
+#' @param nuisance_estimators a list of nuisance function estimators on the
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#'   For the average value measure: an estimator of the optimal treatment rule (\code{f_n}); an estimator of the
+#'   propensity score under the estimated optimal treatment rule (\code{g_n}); and an estimator
+#'   of the outcome regression when treatment is assigned according to the estimated optimal rule (\code{q_n}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
@@ -35,22 +42,25 @@
 #' @export
 predictiveness_measure <- function(type = character(),
                                    y = numeric(),
-                                   a = NULL,
+                                   a = numeric(),
                                    fitted_values = numeric(),
+                                   cross_fitting_folds = rep(1, length(fitted_values)),
                                    full_y = NULL,
-                                   C = numeric(),
+                                   nuisance_estimators = list(),
+                                   C = rep(1, length(y)),
                                    Z = NULL,
-                                   ipc_weights = numeric(),
-                                   ipc_fit_type = character(),
+                                   folds_Z = cross_fitting_folds,
+                                   ipc_weights = rep(1, length(y)),
+                                   ipc_fit_type = "SL",
                                    ipc_eif_preds = numeric(),
-                                   ipc_est_type = character(),
-                                   scale = character(),
-                                   na.rm = logical(),
+                                   ipc_est_type = "aipw",
+                                   scale = "identity",
+                                   na.rm = TRUE,
                                    ...) {
   validate_predictiveness_measure(new_predictiveness_measure(
-    type = type, y = y, a = a, fitted_values = fitted_values,
-    full_y = full_y, C = C, Z = Z, ipc_weights = ipc_weights,
-    ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds,
+    type = type, y = y, a = a, fitted_values = fitted_values, cross_fitting_folds = cross_fitting_folds,
+    full_y = full_y, nuisance_estimators = nuisance_estimators, C = C, Z = Z, folds_Z = folds_Z,
+    ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type, ipc_eif_preds = ipc_eif_preds,
     ipc_est_type = ipc_est_type, scale = scale, na.rm = na.rm, ...
   ))
 }
@@ -58,11 +68,14 @@ predictiveness_measure <- function(type = character(),
 
 new_predictiveness_measure <- function(type = character(),
                                        y = numeric(),
-                                       a = NULL,
+                                       a = numeric(),
                                        fitted_values = numeric(),
+                                       cross_fitting_folds = numeric(),
                                        full_y = NULL,
+                                       nuisance_estimators = list(),
                                        C = numeric(),
                                        Z = NULL,
+                                       folds_Z = NULL,
                                        ipc_weights = numeric(),
                                        ipc_fit_type = character(),
                                        ipc_eif_preds = numeric(),
@@ -73,8 +86,9 @@ new_predictiveness_measure <- function(type = character(),
   stopifnot(type %in% c("accuracy", "anova", "auc", "average_value",
                         "cross_entropy", "deviance", "mse", "r_squared"))
   stopifnot(is.numeric(y))
-  stopifnot(is.null(a) || (!is.null(a) & is.numeric(a)))
+  stopifnot(is.numeric(a))
   stopifnot(is.numeric(fitted_values))
+  stopifnot(is.numeric(cross_fitting_folds))
   stopifnot(is.numeric(C))
   stopifnot(is.numeric(ipc_weights))
   stopifnot(is.character(ipc_fit_type))
@@ -84,9 +98,18 @@ new_predictiveness_measure <- function(type = character(),
   stopifnot(is.logical(na.rm))
 
   arg_lst <- list(...)
+  if (length(ipc_weights) == 0) {
+    ipc_weights <- rep(1, length(y))
+  }
+  if (length(C) == 0) {
+    C <- rep(1, length(y))
+    folds_Z <- cross_fitting_folds
+  }
   structure(
-    c(list(y = y, a = a, fitted_values = fitted_values, full_y = full_y,
-         C = C, Z = Z, ipc_weights = ipc_weights, ipc_eif_preds = ipc_eif_preds),
+    c(list(y = y, a = a, fitted_values = fitted_values, cross_fitting_folds = cross_fitting_folds,
+         K = length(unique(cross_fitting_folds)), full_y = full_y,
+         nuisance_estimators = nuisance_estimators, point_est = NA, eif = rep(NA, length(y)),
+         C = C, Z = Z, folds_Z = folds_Z, ipc_weights = ipc_weights, ipc_eif_preds = ipc_eif_preds),
       arg_lst),
     type = type, ipc_fit_type = ipc_fit_type, ipc_est_type = ipc_est_type,
     scale = scale, na.rm = na.rm,
@@ -102,11 +125,35 @@ validate_predictiveness_measure <- function(x) {
   scale <- attr(x, "scale")
   na.rm <- attr(x, "na.rm")
 
-  if (length(input_data$y) != length(input_data$fitted_values)) {
-    stop("The outcome data must have the same dimension as the fitted values",
-         call. = FALSE)
+  if (!any(grepl("average_value", type))) {
+    if (length(input_data$y) != length(input_data$fitted_values)) {
+      stop("The outcome data must have the same dimension as the fitted values",
+           call. = FALSE)
+    }
+  } else {
+    if (length(input_data$nuisance_estimators) == 0) {
+      stop(paste0(
+        "To estimate the average value, the following must be estimated:",
+        " the optimal treatment rule (pass this in as named element f_n of the list);",
+        " the propensity score under the optimal treatment rule (pass this in as named element g_n of the list);",
+        " and the outcome regression when treatment is assigned according to the optimal rule (pass this in as named element q_n of the list)."
+      ), call. = FALSE)
+    } else {
+      if (length(input_data$nuisance_estimators$f_n) != length(input_data$y)) {
+        stop("The optimal treatment assignment must have the same dimension as the outcome.", call. = FALSE)
+      }
+      if (length(input_data$nuisance_estimators$g_n) != length(input_data$y)) {
+        stop("The estimated propensity score must have the same dimension as the outcome.", call. = FALSE)
+      }
+      if (length(input_data$nuisance_estimators$q_n) != length(input_data$y)) {
+        stop("The estimated outcome regression must have the same dimension as the outcome.", call. = FALSE)
+      }
+    }
   }
-  if (!is.null(input_data$a)) {
+  if (length(input_data$cross_fitting_folds) != length(input_data$fitted_values)) {
+    stop("If cross-fitting is desired, each observation must be put into a fold.")
+  }
+  if (length(input_data$a) != 0) {
     if (length(input_data$y) != length(input_data$a)) {
       stop("The outcome data must have the same dimension as the exposure data",
            call. = FALSE)
@@ -123,4 +170,8 @@ validate_predictiveness_measure <- function(x) {
     }
   }
   x
+}
+
+is.predictiveness_measure <- function(x) {
+  inherits(x, "predictiveness_measure")
 }

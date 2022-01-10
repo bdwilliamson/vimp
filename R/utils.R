@@ -309,6 +309,26 @@ make_kfold <- function(cross_fitting_folds,
        sample_splitting_folds = sample_splitting_vec)
 }
 
+#' Return test-set only data
+#'
+#' @param arg_lst a list of estimates, data, etc.
+#' @param k the index of interest
+#'
+#' @return the test-set only data
+#' @export
+get_test_set <- function(arg_lst, k) {
+  folds <- arg_lst$cross_fitting_folds
+  folds_Z <- arg_lst$folds_Z
+  test_lst <- arg_lst
+  test_lst$fitted_values <- arg_lst$fitted_values[folds == k]
+  test_lst$y <- arg_lst$y[folds == k]
+  test_lst$C <- arg_lst$C[folds_Z == k]
+  test_lst$Z <- arg_lst$Z[folds_Z == k, , drop = FALSE]
+  test_lst$ipc_weights <- arg_lst$ipc_weights[folds_Z == k]
+  test_lst$ipc_eif_preds <- arg_lst$ipc_eif_preds[folds_Z == k]
+  return(test_lst)
+}
+
 # For sp_vim -------------------------------------------------------------------
 #' Run a Super Learner for the provided subset of features
 #'
@@ -499,15 +519,15 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
 
 # estimate nuisance functions (for average value) ------------------------------
 #' Estimate nuisance functions for average value-based VIMs
-#' 
+#'
 #' @inheritParams vim
-#' @return nuisance function estimators for use in the average value VIM: 
-#'  the treatment assignment based on the estimated optimal rule 
+#' @return nuisance function estimators for use in the average value VIM:
+#'  the treatment assignment based on the estimated optimal rule
 #'  (based on the estimated outcome regression); the expected outcome under the
 #'  estimated optimal rule; and the estimated propensity score.
 #' @export
 estimate_nuisances <- function(fit, X, exposure_name, V = 1, SL.library, sample_splitting,
-                               sample_splitting_folds, verbose, weights, cross_fitted_se, 
+                               sample_splitting_folds, verbose, weights, cross_fitted_se,
                                split = 1, ...) {
   A <- X %>% pull(!!exposure_name)
   W <- X %>% select(-!!exposure_name)

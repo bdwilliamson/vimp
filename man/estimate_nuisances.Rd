@@ -44,8 +44,8 @@ Only used if \code{run_regression = FALSE}.}
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
-nuisance function estimators for use in the average value VIM: 
- the treatment assignment based on the estimated optimal rule 
+nuisance function estimators for use in the average value VIM:
+ the treatment assignment based on the estimated optimal rule
  (based on the estimated outcome regression); the expected outcome under the
  estimated optimal rule; and the estimated propensity score.
 }

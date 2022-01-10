@@ -1,18 +1,10 @@
-#' Obtain a Point Estimate and Efficient Influence Function Estimate for a Given Predictiveness Measure
+#' Estimate Predictiveness Given a Type
 #'
-#' @param x an object of class \code{"predictiveness_measure"}
+#' Estimate the specified type of predictiveness
 #'
-#' @return A list with the point estimate, naive point estimate (for ANOVA only),
-#'   estimated EIF, and the predictions for coarsened data EIF (for coarsened data settings only)
-#'
-#' @export
-estimate.predictiveness_measure <- function(x) {
-  arg_lst <- unclass(x)
-  arg_lst$ipc_fit_type <- attr(x, "ipc_fit_type")
-  arg_lst$ipc_est_type <- attr(x, "ipc_est_type")
-  arg_lst$scale <- attr(x, "scale")
-  arg_lst$na.rm <- attr(x, "na.rm")
-  type <- attr(x, "type")
+#' @param arg_lst a list of arguments; from, e.g., \code{predictiveness_measure}
+#' @param type the type of predictiveness, e.g., \code{"r_squared"}
+estimate_type_predictiveness <- function(arg_lst, type) {
   if (grepl("accuracy", type)) {
     est_lst <- do.call(measure_accuracy, arg_lst)
   } else if (grepl("anova", type)) {
