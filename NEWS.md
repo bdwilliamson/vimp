@@ -1,3 +1,13 @@
+# vimp 2.2.9
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Allow for unequal numbers of cross-fitting folds between full and reduced predictiveness
+
 # vimp 2.2.8
 
 ## Major changes
@@ -124,7 +134,7 @@ None
 
 # vimp 2.1.8
 
-## Major changes 
+## Major changes
 None
 
 ## Minor changes

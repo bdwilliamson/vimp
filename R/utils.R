@@ -295,13 +295,17 @@ make_kfold <- function(cross_fitting_folds,
   redu_cf_folds <- cross_fitting_folds[cross_fitting_folds %in% redu_folds]
   unique_full <- sort(unique(full_cf_folds))
   unique_redu <- sort(unique(redu_cf_folds))
-  K <- length(unique_full)
-  folds_k <- seq_len(K)
+  K_full <- length(unique_full)
+  K_redu <- length(unique_redu)
+  folds_k_full <- seq_len(K_full)
+  folds_k_redu <- seq_len(K_redu)
   k_fold_full <- full_cf_folds
   k_fold_redu <- redu_cf_folds
-  for (v in seq_len(K)) {
-    k_fold_full <- replace(k_fold_full, full_cf_folds == unique_full[v], folds_k[v])
-    k_fold_redu <- replace(k_fold_redu, redu_cf_folds == unique_redu[v], folds_k[v])
+  for (v in seq_len(K_full)) {
+    k_fold_full <- replace(k_fold_full, full_cf_folds == unique_full[v], folds_k_full[v])
+  }
+  for (v in seq_len(K_redu)) {
+    k_fold_redu <- replace(k_fold_redu, redu_cf_folds == unique_redu[v], folds_k_redu[v])
   }
   # return a list; the first four values are the cross-fitting folds,
   # while the last two values replicate the sample-splitting folds
