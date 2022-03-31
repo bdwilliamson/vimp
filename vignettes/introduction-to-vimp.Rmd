@@ -24,7 +24,7 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 ## Introduction
 
-`vimp` is a package that computes nonparametric estimates of variable importance and provides valid inference on the true importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts @williamson2020a, @williamson2020b, and @williamson2020c.
+`vimp` is a package that computes nonparametric estimates of variable importance and provides valid inference on the true importance. The package supports flexible estimation of variable importance based on the difference in nonparametric $R^2$, classification accuracy, and area under the receiver operating characteristic curve (AUC). These quantities are all nonparametric generalizations of the usual measures in simple parametric models (e.g., linear models). For more details, see the accompanying manuscripts @williamson2020a, @williamson2021, and @williamson2020c.
 
 Variable importance estimates may be computed quickly, depending on the techniques used to estimate the underlying conditional means --- if these techniques are slow, then the variable importance procedure will be slow.
 
