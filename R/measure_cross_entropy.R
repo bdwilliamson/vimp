@@ -65,8 +65,7 @@ measure_cross_entropy <- function(fitted_values, y, full_y = NULL,
         # if IPC EIF preds aren't entered, estimate the regression
         if (ipc_fit_type != "external") {
           ipc_eif_mod <- SuperLearner::SuperLearner(
-            Y = obs_grad, X = subset(Z, C == 1, drop = FALSE),
-            method = "method.CC_LS", ...
+            Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...
           )
           ipc_eif_preds <- SuperLearner::predict.SuperLearner(
             ipc_eif_mod, newdata = Z, onlySL = TRUE
