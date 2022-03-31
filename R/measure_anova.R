@@ -66,14 +66,9 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
         obs_grad <- obs_eif_num / obs_var$point_est -
             obs_num / (obs_var$point_est ^ 2) * obs_var$eif
         # if IPC EIF preds aren't entered, estimate the regression
-        if (ipc_fit_type != "external") {
-            ipc_eif_mod <- SuperLearner::SuperLearner(
-                Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...
-            )
-            ipc_eif_preds <- SuperLearner::predict.SuperLearner(
-                ipc_eif_mod, newdata = Z, onlySL = TRUE
-            )$pred
-        }
+        ipc_eif_preds <- estimate_eif_projection(obs_grad = obs_grad, C = C,
+                                                 Z = Z, ipc_fit_type = ipc_fit_type,
+                                                 ...)
         weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds

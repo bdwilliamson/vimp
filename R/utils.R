@@ -210,6 +210,25 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
   est
 }
 
+#' Estimate projection of EIF on fully-observed variables
+#' 
+#' @param obs_grad the estimated (observed) EIF
+#' @param Z a matrix (or data.frame) with the fully-observed variables
+#' @inheritParams vim
+#' 
+#' @return the projection of the EIF onto the fully-observed variables
+estimate_eif_projection <- function(obs_grad, C, Z, ipc_fit_type, ...) {
+  if (ipc_fit_type != "external" & !all(C == 1)) {
+    ipc_eif_mod <- SuperLearner::SuperLearner(
+      Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...
+    )
+    ipc_eif_preds <- SuperLearner::predict.SuperLearner(
+      ipc_eif_mod, newdata = Z, onlySL = TRUE
+    )$pred
+  }
+  ipc_eif_preds
+}
+
 # ------------------------------------------------------------------------------
 
 #' Create Folds for Cross-Fitting
