@@ -34,6 +34,8 @@ In some settings, we don't have access to the full data unit on each observation
 * `ipc_est_type`: the type of procedure used for coarsened-at-random settings; options are `"ipw"` (for inverse probability weighting) or `"aipw"` (for augmented inverse probability weighting). Only used if `C` is not all equal to 1.
 * `Z`: a character vector specifying the variable(s) among `Y` and `X` that are thought to play a role in the coarsening mechanism. To specify the outcome, use `"Y"`; to specify covariates, use a character number corresponding to the desired position in `X` (e.g., `"1"` or `"X1"` [the latter is case-insensitive]).
 
+`Z` plays a role in the additional estimation mentioned above. Unless otherwise specified, an internal call to `SuperLearner` regresses the full-data EIF (estimated on the fully-observed data) onto a matrix that is the parsed version of `Z`. If you wish to use any covariates from `X` as part of your coarsening mechanism (and thus include them in `Z`), and they have *different names from `X1`, ...*, then you must use character numbers (i.e., `"1"` refers to the first variable, etc.) to refer to the variables to include in `Z`. Otherwise, `vimp` will throw an error.
+
 ## Example
 
 Consider the following example. Here, we observe outcome `Y` and covariate `X1` on all participants in a study. Based on the value of `Y` and `X1`, we include some participants in a second-phase sample, and further measure covariate `X2` on these participants. This is an example of a two-phase study. We generate data as follows:
