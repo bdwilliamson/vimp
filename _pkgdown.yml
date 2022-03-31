@@ -56,6 +56,7 @@ reference:
       - get_cv_sl_folds
       - get_full_type
       - scale_est
+      - process_arg_lst
     - title: "Deprecated functions"
       desc: "Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead."
       contents:
