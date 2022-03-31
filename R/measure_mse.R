@@ -49,15 +49,9 @@ measure_mse <- function(fitted_values, y, full_y = NULL,
         obs_mse <- mean(((y - fitted_values) ^ 2), na.rm = na.rm)
         obs_grad <- ((y - fitted_values) ^ 2) - obs_mse
         # if IPC EIF preds aren't entered, estimate the regression
-        if (ipc_fit_type != "external") {
-            ipc_eif_mod <- SuperLearner::SuperLearner(
-                Y = obs_grad, X = subset(Z, C == 1, drop = FALSE),
-                method = "method.CC_LS", ...
-            )
-            ipc_eif_preds <- SuperLearner::predict.SuperLearner(
-                ipc_eif_mod, newdata = Z, onlySL = TRUE
-            )$pred
-        }
+        ipc_eif_preds <- estimate_eif_projection(obs_grad = obs_grad, C = C,
+                                                 Z = Z, ipc_fit_type = ipc_fit_type,
+                                                 ...)
         weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds

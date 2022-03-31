@@ -1,3 +1,14 @@
+# vimp 2.2.10
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Specify `method` and `family` for weighted EIF estimation within outer functions (`vim`, `cv_vim`, `sp_vim`) rather than the `measure*` functions. This allows compatibility for binary outcomes.
+* Added a vignette for coarsened-data settings.
+
 # vimp 2.2.9
 
 ## Major changes

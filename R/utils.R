@@ -139,6 +139,29 @@ create_z <- function(Y, C, Z, X, ipc_weights) {
   list(Y = Y_cc, weights = weights_cc, Z = Z_in)
 }
 
+#' Process argument list for Super Learner estimation of the EIF
+#'
+#' @param arg_lst the list of arguments for Super Learner
+#'
+#' @return a list of modified arguments for EIF estimation
+#' @export
+process_arg_lst <- function(arg_lst) {
+  if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
+    arg_lst$cvControl$stratifyCV <- FALSE
+  }
+  if (!is.null(names(arg_lst)) && any(grepl("method", names(arg_lst)))) {
+    if (grepl("NNloglik", arg_lst$method)) {
+      arg_lst$method <- "method.NNLS"
+    } else {
+      arg_lst$method <- "method.CC_LS"
+    }
+  }
+  if (!is.null(names(arg_lst)) && any(grepl("family", names(arg_lst)))) {
+    arg_lst$family <- stats::gaussian()
+  }
+  arg_lst
+}
+
 # ------------------------------------------------------------------------------
 
 #' Obtain the type of VIM to estimate using partial matching
@@ -185,6 +208,25 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
     est <- obs_est + mean(grad)
   }
   est
+}
+
+#' Estimate projection of EIF on fully-observed variables
+#'
+#' @param obs_grad the estimated (observed) EIF
+#' @param Z a matrix (or data.frame) with the fully-observed variables
+#' @inheritParams vim
+#'
+#' @return the projection of the EIF onto the fully-observed variables
+estimate_eif_projection <- function(obs_grad, C, Z, ipc_fit_type, ...) {
+  if (ipc_fit_type != "external" & !all(C == 1)) {
+    ipc_eif_mod <- SuperLearner::SuperLearner(
+      Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...
+    )
+    ipc_eif_preds <- SuperLearner::predict.SuperLearner(
+      ipc_eif_mod, newdata = Z, onlySL = TRUE
+    )$pred
+  }
+  ipc_eif_preds
 }
 
 # ------------------------------------------------------------------------------
@@ -295,17 +337,13 @@ make_kfold <- function(cross_fitting_folds,
   redu_cf_folds <- cross_fitting_folds[cross_fitting_folds %in% redu_folds]
   unique_full <- sort(unique(full_cf_folds))
   unique_redu <- sort(unique(redu_cf_folds))
-  K_full <- length(unique_full)
-  K_redu <- length(unique_redu)
-  folds_k_full <- seq_len(K_full)
-  folds_k_redu <- seq_len(K_redu)
+  K <- length(unique_full)
+  folds_k <- seq_len(K)
   k_fold_full <- full_cf_folds
   k_fold_redu <- redu_cf_folds
-  for (v in seq_len(K_full)) {
-    k_fold_full <- replace(k_fold_full, full_cf_folds == unique_full[v], folds_k_full[v])
-  }
-  for (v in seq_len(K_redu)) {
-    k_fold_redu <- replace(k_fold_redu, redu_cf_folds == unique_redu[v], folds_k_redu[v])
+  for (v in seq_len(K)) {
+    k_fold_full <- replace(k_fold_full, full_cf_folds == unique_full[v], folds_k[v])
+    k_fold_redu <- replace(k_fold_redu, redu_cf_folds == unique_redu[v], folds_k[v])
   }
   # return a list; the first four values are the cross-fitting folds,
   # while the last two values replicate the sample-splitting folds
