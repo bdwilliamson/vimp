@@ -2,7 +2,7 @@
 title: "Variable importance with coarsened data"
 author: "Brian D. Williamson"
 date: "`r Sys.Date()`"
-output: 
+output:
   rmarkdown::html_vignette:
     keep_md: true
 vignette: >
@@ -24,7 +24,7 @@ par(mar = c(5, 12, 4, 2) + 0.1)
 
 ## Introduction
 
-In some settings, we don't have access to the full data unit on each observation in our sample. These "coarsened-data" settings (see, e.g., @vandervaart2000) create a layer of complication in estimating variable importance. In particular, the efficient influence function (EIF) in the coarsened-data setting is more complex, and involves estimating an additional quantity: the projection of the full-data EIF (estimated on the fully-observed sample) onto the variables that are always observed (Chapter 25.5.3 of @vandervaart2000; see also Example 6 in @williamson2021). 
+In some settings, we don't have access to the full data unit on each observation in our sample. These "coarsened-data" settings (see, e.g., @vandervaart2000) create a layer of complication in estimating variable importance. In particular, the efficient influence function (EIF) in the coarsened-data setting is more complex, and involves estimating an additional quantity: the projection of the full-data EIF (estimated on the fully-observed sample) onto the variables that are always observed (Chapter 25.5.3 of @vandervaart2000; see also Example 6 in @williamson2021).
 
 ## Coarsened data in `vimp`
 
@@ -37,9 +37,48 @@ In some settings, we don't have access to the full data unit on each observation
 
 `Z` plays a role in the additional estimation mentioned above. Unless otherwise specified, an internal call to `SuperLearner` regresses the full-data EIF (estimated on the fully-observed data) onto a matrix that is the parsed version of `Z`. If you wish to use any covariates from `X` as part of your coarsening mechanism (and thus include them in `Z`), and they have *different names from `X1`, ...*, then you must use character numbers (i.e., `"1"` refers to the first variable, etc.) to refer to the variables to include in `Z`. Otherwise, `vimp` will throw an error.
 
-## Example
+## Example with missing outcomes
 
-Consider the following example. Here, we observe outcome `Y` and covariate `X1` on all participants in a study. Based on the value of `Y` and `X1`, we include some participants in a second-phase sample, and further measure covariate `X2` on these participants. This is an example of a two-phase study. We generate data as follows:
+In this example, the outcome `Y` is subject to missingness. We generate data as follows:
+```{r gen-data-missing-y}
+set.seed(1234)
+p <- 2
+n <- 100
+x <- replicate(p, stats::rnorm(n, 0, 1))
+# apply the function to the x's
+y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
+# indicator of observing Y
+logit_g_x <- .01 * x[, 1] + .05 * x[, 2] - 2.5
+g_x <- exp(logit_g_x) / (1 + exp(logit_g_x))
+C <- rbinom(n, size = 1, prob = g_x)
+obs_y <- y
+obs_y[C == 0] <- NA
+x_df <- as.data.frame(x)
+full_df <- data.frame(Y = obs_y, x_df, C = C)
+```
+
+Next, we estimate the relevant components for `vimp`:
+```{r missing-y-vim}
+library("vimp")
+library("SuperLearner")
+# estimate the probability of missing outcome
+ipc_weights <- 1 / predict(glm(C ~ V1 + V2, family = "binomial", data = full_df),
+                           type = "response")
+
+# set up the SL
+learners <- c("SL.glm", "SL.mean")
+V <- 2
+
+# estimate vim for X2
+set.seed(1234)
+est <- vim(Y = obs_y, X = x_df, indx = 2, type = "r_squared", run_regression = TRUE,
+           SL.library = learners, alpha = 0.05, delta = 0, C = C, Z = c("Y", "1"),
+           ipc_weights = ipc_weights, cvControl = list(V = V))
+```
+
+## Example with two-phase sampling
+
+In this example, we observe outcome `Y` and covariate `X1` on all participants in a study. Based on the value of `Y` and `X1`, we include some participants in a second-phase sample, and further measure covariate `X2` on these participants. This is an example of a two-phase study. We generate data as follows:
 ```{r generate-data}
 set.seed(4747)
 p <- 2
@@ -61,17 +100,17 @@ If we want to estimate variable importance of `X2`, we need to use the coarsened
 ```{r ipw-vim}
 library("vimp")
 library("SuperLearner")
-# estimate the probability of coarsening
-ipc_weights <- 1 / predict(glm(C ~ y + V1, family = "binomial", data = full_df), 
+# estimate the probability of being included only in the first phase sample
+ipc_weights <- 1 / predict(glm(C ~ y + V1, family = "binomial", data = full_df),
                            type = "response")
 
 # set up the SL
-learners <- c("SL.glm", "SL.mean")
+learners <- c("SL.glm")
 V <- 2
 
 # estimate vim for X2
 set.seed(1234)
-est <- vim(Y = y, X = x_df, indx = 2, type = "r_squared", run_regression = TRUE, 
-           SL.library = learners, alpha = 0.05, delta = 0, C = C, Z = c("Y", "1"), 
-           ipc_weights = ipc_weights, cvControl = list(V = V), env = environment())
+est <- vim(Y = y, X = x_df, indx = 2, type = "r_squared", run_regression = TRUE,
+           SL.library = learners, alpha = 0.05, delta = 0, C = C, Z = c("Y", "1"),
+           ipc_weights = ipc_weights, cvControl = list(V = V), method = "method.CC_LS")
 ```

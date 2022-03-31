@@ -218,7 +218,7 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 #'
 #' @return the projection of the EIF onto the fully-observed variables
 estimate_eif_projection <- function(obs_grad, C, Z, ipc_fit_type, ...) {
-  if (ipc_fit_type != "external" & !all(C == 1)) {
+  if (ipc_fit_type != "external") {
     ipc_eif_mod <- SuperLearner::SuperLearner(
       Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...
     )
