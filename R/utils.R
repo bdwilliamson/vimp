@@ -139,6 +139,29 @@ create_z <- function(Y, C, Z, X, ipc_weights) {
   list(Y = Y_cc, weights = weights_cc, Z = Z_in)
 }
 
+#' Process argument list for Super Learner estimation of the EIF
+#' 
+#' @param arg_lst the list of arguments for Super Learner
+#' 
+#' @return a list of modified arguments for EIF estimation
+#' @export
+process_arg_lst <- function(arg_lst) {
+  if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
+    arg_lst$cvControl$stratifyCV <- FALSE
+  }
+  if (!is.null(names(arg_lst)) && any(grepl("method", names(arg_lst)))) {
+    if (grepl("NNloglik", arg_lst$method)) {
+      arg_lst$method <- "method.NNLS"
+    } else {
+      arg_lst$method <- "method.CC_LS"
+    }
+  }
+  if (!is.null(names(arg_lst)) && any(grepl("family", names(arg_lst)))) {
+    arg_lst$family <- stats::gaussian()
+  }
+  arg_lst
+}
+
 # ------------------------------------------------------------------------------
 
 #' Obtain the type of VIM to estimate using partial matching

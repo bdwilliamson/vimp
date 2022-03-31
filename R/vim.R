@@ -259,9 +259,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     }
     # calculate the estimators, EIFs
     arg_lst <- list(...)
-    if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
-        arg_lst$cvControl$stratifyCV <- FALSE
-    }
+    # set method and family to compatible with continuous values, for EIF estimation
+    arg_lst <- process_arg_lst(arg_lst)
     if (full_type == "anova") {
         # no sample-splitting, since no hypothesis testing
         est_lst <- measure_anova(

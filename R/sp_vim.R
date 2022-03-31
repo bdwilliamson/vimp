@@ -154,20 +154,18 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     S <- z_w_lst$S
 
     arg_lst <- list(...)
-    if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
-        arg_lst$cvControl$stratifyCV <- FALSE
-    }
     if (is.null(arg_lst$family)) {
         arg_lst$family <- switch(
             (length(unique(Y_cc)) == 2) + 1, stats::gaussian(),
             stats::binomial()
         )
     }
+    # set method and family to compatible with continuous values, for EIF estimation
+    eif_arg_lst <- process_arg_lst(arg_lst)
     arg_lst_cv <- arg_lst
     if (is.null(arg_lst_cv$innerCvControl)) {
         arg_lst_cv$innerCvControl <- rep(list(list(V = V)), ss_V)
     }
-
     # get v, preds, ic for null set
     preds_none <- list()
     fitted_none <- list()
@@ -195,7 +193,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  ipc_fit_type = "SL", type = full_type, scale = scale,
                  ipc_est_type = ipc_est_type, na.rm = na.rm,
                  SL.library = SL.library),
-            arg_lst
+            eif_arg_lst
         ), quote = TRUE
     )
     v_none <- v_none_lst$point_est
@@ -240,7 +238,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                          type = full_type, ipc_fit_type = "SL", scale = scale,
                          ipc_est_type = ipc_est_type, na.rm = na.rm,
                          SL.library = SL.library),
-                    arg_lst
+                    eif_arg_lst
                 ), quote = TRUE
             )
     )
@@ -261,7 +259,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                              type = full_type, ipc_fit_type = "SL", scale = scale,
                              ipc_est_type = ipc_est_type, na.rm = na.rm,
                              SL.library = SL.library),
-                        arg_lst
+                        eif_arg_lst
                     ), quote = TRUE
                 )
         )
@@ -351,7 +349,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  ipc_fit_type = "SL", type = full_type, scale = scale,
                  ipc_est_type = ipc_est_type, na.rm = na.rm,
                  SL.library = SL.library),
-            arg_lst
+            eif_arg_lst
         ), quote = TRUE
     )
     v_none_0 <- v_none_0_lst$point_est
