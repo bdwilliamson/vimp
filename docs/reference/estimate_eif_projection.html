@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Confidence intervals for variable importance — vimp_ci • vimp</title>
+<title>Estimate projection of EIF on fully-observed variables — estimate_eif_projection • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Confidence intervals for variable importance — vimp_ci" />
-<meta property="og:description" content="Compute confidence intervals for the true variable importance parameter." />
+<meta property="og:title" content="Estimate projection of EIF on fully-observed variables — estimate_eif_projection" />
+<meta property="og:description" content="Estimate projection of EIF on fully-observed variables" />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
 
 
@@ -140,45 +140,42 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Confidence intervals for variable importance</h1>
-    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/vimp_ci.R'><code>R/vimp_ci.R</code></a></small>
-    <div class="hidden name"><code>vimp_ci.Rd</code></div>
+    <h1>Estimate projection of EIF on fully-observed variables</h1>
+    <small class="dont-index">Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/R/utils.R'><code>R/utils.R</code></a></small>
+    <div class="hidden name"><code>estimate_eif_projection.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Compute confidence intervals for the true variable importance parameter.</p>
+    <p>Estimate projection of EIF on fully-observed variables</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vimp_ci</span><span class='op'>(</span><span class='va'>est</span>, <span class='va'>se</span>, scale <span class='op'>=</span> <span class='st'>"identity"</span>, level <span class='op'>=</span> <span class='fl'>0.95</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>estimate_eif_projection</span><span class='op'>(</span><span class='va'>obs_grad</span>, <span class='va'>C</span>, <span class='va'>Z</span>, <span class='va'>ipc_fit_type</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>est</th>
-      <td><p>estimate of variable importance, e.g., from a call to <code>vimp_point_est</code>.</p></td>
+      <th>obs_grad</th>
+      <td><p>the estimated (observed) EIF</p></td>
     </tr>
     <tr>
-      <th>se</th>
-      <td><p>estimate of the standard error of <code>est</code>, e.g., from a call to <code>vimp_se</code>.</p></td>
+      <th>C</th>
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes
+unobserved).</p></td>
     </tr>
     <tr>
-      <th>scale</th>
-      <td><p>scale to compute interval estimate on (defaults to "identity": compute Wald-type CI).</p></td>
+      <th>Z</th>
+      <td><p>a matrix (or data.frame) with the fully-observed variables</p></td>
     </tr>
     <tr>
-      <th>level</th>
-      <td><p>confidence interval type (defaults to 0.95).</p></td>
+      <th>...</th>
+      <td><p>other arguments to the estimation tool, see "See also".</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The Wald-based confidence interval for the true importance of the given group of left-out covariates.</p>
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
-details on the mathematics behind this function and the definition of the parameter of interest.</p>
+    <p>the projection of the EIF onto the fully-observed variables</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

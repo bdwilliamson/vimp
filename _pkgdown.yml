@@ -57,6 +57,7 @@ reference:
       - get_full_type
       - scale_est
       - process_arg_lst
+      - estimate_eif_projection
     - title: "Deprecated functions"
       desc: "Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead."
       contents:
