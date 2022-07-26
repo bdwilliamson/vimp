@@ -122,8 +122,14 @@ nuisances <- list(f_n = f_n, q_n = predict(q_n, newdata = cbind.data.frame(a = f
                   g_n = predict(g_n, newdata = cbind.data.frame(x_av))$pred)
 # also a cross-fitted version
 q_n_cv <- SuperLearner::CV.SuperLearner(Y = y_av, X = cbind.data.frame(a = a, x_av),
-                                        SL.library = learners, cvControl = list(V = V),
-                                        innerCvControl = list(list(V = V)))
+                                        SL.library = learners, cvControl = list(V = V, validRows = sl_folds_c),
+                                        innerCvControl = list(list(V = V)),
+                                        saveAll = TRUE, control = list(saveFitLibrary = TRUE))
+q_n_cv_preds_lst <- lapply(as.list(seq_len(length(q_n_cv$AllSL))), function(l) {
+  as.numeric(predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 1, x_av[folds_c == l, ]))$pred > 
+    predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 0, x_av[folds_c == l, ]))$pred)
+})
+f_n_cv <- 
 f_n_cv <- as.numeric(predict(q_n_cv, newdata = cbind.data.frame(a = 1, x_av))$pred > 
                        predict(q_n_cv, newdata = cbind.data.frame(a = 0, x_av))$pred)
 g_n_cv <- SuperLearner::CV.SuperLearner(Y = f_n_cv, X = x_av, SL.library = learners,
