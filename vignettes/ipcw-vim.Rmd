@@ -114,3 +114,5 @@ est <- vim(Y = y, X = x_df, indx = 2, type = "r_squared", run_regression = TRUE,
            SL.library = learners, alpha = 0.05, delta = 0, C = C, Z = c("Y", "1"),
            ipc_weights = ipc_weights, cvControl = list(V = V), method = "method.CC_LS")
 ```
+
+# References
