@@ -120,6 +120,16 @@ f_n <- as.numeric(predict(q_n, newdata = cbind.data.frame(a = 1, x_av))$pred >
 g_n <- SuperLearner::SuperLearner(Y = f_n, X = x_av, SL.library = learners, cvControl = list(V = V))
 nuisances <- list(f_n = f_n, q_n = predict(q_n, newdata = cbind.data.frame(a = f_n, x_av))$pred,
                   g_n = predict(g_n, newdata = cbind.data.frame(x_av))$pred)
+# also a cross-fitted version
+q_n_cv <- SuperLearner::CV.SuperLearner(Y = y_av, X = cbind.data.frame(a = a, x_av),
+                                        SL.library = learners, cvControl = list(V = V),
+                                        innerCvControl = list(list(V = V)))
+f_n_cv <- as.numeric(predict(q_n_cv, newdata = cbind.data.frame(a = 1, x_av))$pred > 
+                       predict(q_n_cv, newdata = cbind.data.frame(a = 0, x_av))$pred)
+g_n_cv <- SuperLearner::CV.SuperLearner(Y = f_n_cv, X = x_av, SL.library = learners,
+                                        cvControl = list(V = V), innerCvControl = list(list(V = V)))
+nuisances_cv <- list(f_n = f_n_cv, q_n = predict(q_n_cv, newdata = cbind.data.frame(a = f_n_cv, x_av))$pred,
+                     g_n = predict(g_n_cv, newdata = cbind.data.frame(x_av))$pred)
 
 # test R-squared, MSE ----------------------------------------------------------
 # MSE
@@ -199,7 +209,7 @@ test_that("Cross-validated accuracy using S3 class works", {
 # AUC
 test_that("AUC using S3 class works", {
   full_auc_object <- predictiveness_measure(type = "auc", y = y_binary,
-                                                 fitted_values = full_fitted_b, full_y = y_binary)
+                                            fitted_values = full_fitted_b, full_y = y_binary)
   full_auc <- estimate(full_auc_object)
   expect_equal(full_auc$point_est, auc_full, tolerance = 0.1)
   expect_length(full_auc$eif, length(y_binary))
@@ -274,8 +284,17 @@ test_that("Cross-validated deviance using S3 class works", {
 test_that("Average Value using S3 class works", {
   full_average_value_object <- predictiveness_measure(type = "average_value", y = y_av,
                                                       a = a, full_y = y_av, 
+                                                      fitted_values = nuisances$q_n,
                                                       nuisance_estimators = nuisances)
   full_average_value <- estimate(full_average_value_object)
   expect_equal(full_average_value$point_est, average_value_full, tolerance = 0.1)
   expect_length(full_average_value$eif, length(y_av))
+})
+test_that("Average value works (est_predictiveness)", {
+  average_value <- est_predictiveness(fitted_values = nuisances$q_n, y = y_av,
+                                      a = a,
+                                      nuisance_estimators = nuisances,
+                                      type = "average_value")
+  expect_equal(average_value$point_est, average_value_full, tolerance = 0.1)
+  expect_length(average_value$eif, length(y_av))
 })
