@@ -114,7 +114,8 @@ X_for_vim <- data.frame(X1 = W, X2=A)
 set.seed(5678)
 test_that("SPVIM with IPW and binary outcome works", {
   expect_warning(est <- sp_vim(Y = Y, X = X_for_vim, V = 2, type = "auc", 
-                               SL.library = c("SL.mean","SL.glm","SL.xgboost"),
+                               SL.library = learners,
+                               univariate_SL.library = univariate_learners, gamma = 0.1,
                                stratified = TRUE, C = rep(1,nrow(X_for_vim)),
                                ipc_weights = propW*censoringW, ipc_est_type = "ipw",
                                Z = c("Y","X1","X2")))
