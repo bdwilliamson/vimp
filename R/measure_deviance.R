@@ -5,8 +5,8 @@
 #' @param fitted_values fitted values from a regression function using the
 #'   observed data.
 #' @param y the observed outcome.
-#' @param full_y the observed outcome (defaults to \code{NULL}; allows the 
-#'   full-data outcome to be used for empirical estimates that do not rely 
+#' @param full_y the observed outcome (defaults to \code{NULL}; allows the
+#'   full-data outcome to be used for empirical estimates that do not rely
 #'   on covariates).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
 #'   unobserved).
@@ -28,6 +28,7 @@
 #' @param scale if doing an IPC correction, then the scale that the correction
 #'   should be computed on (e.g., "identity"; or "logit" to logit-transform,
 #'   apply the correction, and back-transform).
+#' @param nuisance_estimators not used; for compatibility with \code{measure_average_value}.
 #' @param na.rm logical; should \code{NA}s be removed in computation?
 #'   (defaults to \code{FALSE})
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
@@ -37,13 +38,13 @@
 #'   (3) the IPC EIF predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_deviance <- function(fitted_values, y, full_y = NULL, 
+measure_deviance <- function(fitted_values, y, full_y = NULL,
                              C = rep(1, length(y)), Z = NULL,
                              ipc_weights = rep(1, length(y)),
                              ipc_fit_type = "external",
                              ipc_eif_preds = rep(1, length(y)),
                              ipc_est_type = "aipw", scale = "identity",
-                             na.rm = FALSE, ...) {
+                             na.rm = FALSE, nuisance_estimators = NULL, ...) {
     # point estimates of all components
     if (is.null(dim(y))) { # assume that zero is in first column
         y_mult <- cbind(1 - y, y)

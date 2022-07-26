@@ -4,7 +4,7 @@
 #'
 #' @param fitted_values fitted values from a regression function using the
 #'   observed data (may be within a specified fold, for cross-fitted estimates).
-#' @param y the observed outcome (may be within a specified fold, for 
+#' @param y the observed outcome (may be within a specified fold, for
 #'   cross-fitted estimates).
 #' @param full_y the observed outcome (not used; defaults to \code{NULL}).
 #' @param C the indicator of coarsening (1 denotes observed, 0 denotes
@@ -29,6 +29,7 @@
 #'   apply the correction, and back-transform).
 #' @param na.rm logical; should \code{NA}s be removed in computation?
 #'   (defaults to \code{FALSE})
+#' @param nuisance_estimators not used; for compatibility with \code{measure_average_value}.
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated mean squared error of the fitted
@@ -42,7 +43,7 @@ measure_mse <- function(fitted_values, y, full_y = NULL,
                         ipc_fit_type = "external",
                         ipc_eif_preds = rep(1, length(y)),
                         ipc_est_type = "aipw", scale = "identity",
-                        na.rm = FALSE, ...) {
+                        na.rm = FALSE, nuisance_estimators = NULL, ...) {
     # compute the EIF: if there is coarsening, do a correction
     if (!all(ipc_weights == 1)) {
         # observed mse
@@ -58,7 +59,7 @@ measure_mse <- function(fitted_values, y, full_y = NULL,
         obs_est <- mean((1 * ipc_weights[C == 1]) * (y - fitted_values) ^ 2,
                         na.rm = na.rm)
         if (ipc_est_type == "ipw") {
-            est <- scale_est(obs_est, rep(0, length(grad)), scale = scale)   
+            est <- scale_est(obs_est, rep(0, length(grad)), scale = scale)
         } else {
             est <- scale_est(obs_est, grad, scale = scale)
         }

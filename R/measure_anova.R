@@ -27,6 +27,7 @@
 #'   apply the correction, and back-transform)
 #' @param na.rm logical; should \code{NA}s be removed in computation?
 #'   (defaults to \code{FALSE})
+#' @param nuisance_estimators not used; for compatibility with \code{measure_average_value}.
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated ANOVA (based on a one-step
@@ -35,13 +36,13 @@
 #'   predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_anova <- function(full, reduced, y, full_y = NULL, 
+measure_anova <- function(full, reduced, y, full_y = NULL,
                           C = rep(1, length(y)), Z = NULL,
                           ipc_weights = rep(1, length(y)),
                           ipc_fit_type = "external",
                           ipc_eif_preds = rep(1, length(y)),
                           ipc_est_type = "aipw", scale = "identity",
-                          na.rm = FALSE, ...) {
+                          na.rm = FALSE, nuisance_estimators = NULL, ...) {
     if (is.null(full_y)) {
         obs_mn_y <- mean(y, na.rm = na.rm)
     } else {
@@ -84,7 +85,7 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
         }
     } else {
         num <- mean((full - reduced) ^ 2, na.rm = na.rm)
-        var <- measure_mse(fitted_values = rep(obs_mn_y, length(y)), y, 
+        var <- measure_mse(fitted_values = rep(obs_mn_y, length(y)), y,
                            na.rm = na.rm)
         num_eif <- 2 * (y - full) * (full - reduced) +
             (full - reduced) ^ 2 - num
