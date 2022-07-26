@@ -6,7 +6,7 @@ Authors@R:
     c(person(given = "Brian D.",
              family = "Williamson",
              role = c("aut", "cre"),
-             email = "bwillia2@fredhutch.org",
+             email = "brian.d.williamson@kp.org",
              comment = c(ORCID = "0000-0002-7024-548X")),
       person(given = "Jean",
              family = "Feng",
@@ -54,6 +54,6 @@ Suggests:
 License: MIT + file LICENSE
 URL: https://bdwilliamson.github.io/vimp/, https://github.com/bdwilliamson/vimp
 BugReports: https://github.com/bdwilliamson/vimp/issues
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 LazyData: true
