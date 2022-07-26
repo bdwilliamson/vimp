@@ -74,3 +74,6 @@ test_that("Average-value-based VIM works", {
                        nuisance_estimators_reduced = nuisances1)
   expect_equal(vim_avg_value$est, avg_value_1, tol = 0.1, scale = 1)
 })
+test_that("Average-value-based VIM with cross-fitting works", {
+  
+})

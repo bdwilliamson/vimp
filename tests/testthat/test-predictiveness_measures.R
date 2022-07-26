@@ -36,7 +36,7 @@ gen_data <- function(a, mu_0, mu_1, sigma, p, j) {
   # x <- make_x(a)
   x <- make_x(a, mu_0, mu_1, sigma, y)
   red_x <- x[, -j]
-  
+
   return(list(x = x, red_x = red_x, y = y, j = j))
 }
 mu_0 <- matrix(c(0, 0), nrow = 1)
@@ -83,25 +83,25 @@ sl_folds_b <- lapply(as.list(1:2), function(i) which(folds_b == i))
 # fit nuisance regressions -----------------------------------------------------
 # for continuous y
 set.seed(4747)
-full_fit_c <- SuperLearner::SuperLearner(Y = y_continuous, X = x, 
-                                         SL.library = learners, 
+full_fit_c <- SuperLearner::SuperLearner(Y = y_continuous, X = x,
+                                         SL.library = learners,
                                          cvControl = list(V = V))
 full_fitted_c <- SuperLearner::predict.SuperLearner(full_fit_c, onlySL = TRUE)$pred
 # also a cross-fitted version
-full_fit_c_cv <- SuperLearner::CV.SuperLearner(Y = y_continuous, X = x, 
+full_fit_c_cv <- SuperLearner::CV.SuperLearner(Y = y_continuous, X = x,
                                                SL.library = learners,
                                                cvControl = list(validRows = sl_folds_c, V = 2),
                                                innerCvControl = list(list(V = V)))
 full_fitted_c_cv <- full_fit_c_cv$SL.predict
 # for binary y
 set.seed(4747)
-full_fit_b <- SuperLearner::SuperLearner(Y = y_binary, X = x_binary, 
-                                         SL.library = learners, 
+full_fit_b <- SuperLearner::SuperLearner(Y = y_binary, X = x_binary,
+                                         SL.library = learners,
                                          cvControl = list(V = V),
                                          family = "binomial")
 full_fitted_b <- SuperLearner::predict.SuperLearner(full_fit_b, onlySL = TRUE)$pred
 # also a cross-fitted version
-full_fit_b_cv <- SuperLearner::CV.SuperLearner(Y = y_binary, X = x_binary, 
+full_fit_b_cv <- SuperLearner::CV.SuperLearner(Y = y_binary, X = x_binary,
                                                SL.library = learners,
                                                cvControl = list(validRows = sl_folds_b, V = 2),
                                                innerCvControl = list(list(V = V)),
@@ -114,47 +114,31 @@ set.seed(1234)
 q_n <- SuperLearner::SuperLearner(Y = y_av, X = cbind.data.frame(a = a, x_av), SL.library = learners,
                                   cvControl = list(V = V))
 # estimate the optimal rule
-f_n <- as.numeric(predict(q_n, newdata = cbind.data.frame(a = 1, x_av))$pred > 
+f_n <- as.numeric(predict(q_n, newdata = cbind.data.frame(a = 1, x_av))$pred >
                     predict(q_n, newdata = cbind.data.frame(a = 0, x_av))$pred)
 # estimate the propensity score
 g_n <- SuperLearner::SuperLearner(Y = f_n, X = x_av, SL.library = learners, cvControl = list(V = V))
 nuisances <- list(f_n = f_n, q_n = predict(q_n, newdata = cbind.data.frame(a = f_n, x_av))$pred,
                   g_n = predict(g_n, newdata = cbind.data.frame(x_av))$pred)
-# also a cross-fitted version
-q_n_cv <- SuperLearner::CV.SuperLearner(Y = y_av, X = cbind.data.frame(a = a, x_av),
-                                        SL.library = learners, cvControl = list(V = V, validRows = sl_folds_c),
-                                        innerCvControl = list(list(V = V)),
-                                        saveAll = TRUE, control = list(saveFitLibrary = TRUE))
-q_n_cv_preds_lst <- lapply(as.list(seq_len(length(q_n_cv$AllSL))), function(l) {
-  as.numeric(predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 1, x_av[folds_c == l, ]))$pred > 
-    predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 0, x_av[folds_c == l, ]))$pred)
-})
-f_n_cv <- 
-f_n_cv <- as.numeric(predict(q_n_cv, newdata = cbind.data.frame(a = 1, x_av))$pred > 
-                       predict(q_n_cv, newdata = cbind.data.frame(a = 0, x_av))$pred)
-g_n_cv <- SuperLearner::CV.SuperLearner(Y = f_n_cv, X = x_av, SL.library = learners,
-                                        cvControl = list(V = V), innerCvControl = list(list(V = V)))
-nuisances_cv <- list(f_n = f_n_cv, q_n = predict(q_n_cv, newdata = cbind.data.frame(a = f_n_cv, x_av))$pred,
-                     g_n = predict(g_n_cv, newdata = cbind.data.frame(x_av))$pred)
 
 # test R-squared, MSE ----------------------------------------------------------
 # MSE
 test_that("MSE using S3 class works", {
-  full_mse_object <- predictiveness_measure(type = "mse", y = y_continuous, 
+  full_mse_object <- predictiveness_measure(type = "mse", y = y_continuous,
                                             fitted_values = full_fitted_c, full_y = y_continuous)
   full_mse <- estimate(full_mse_object)
   expect_equal(full_mse$point_est, mse_full, tolerance = 0.1)
   expect_length(full_mse$eif, length(y_continuous))
 })
 test_that("MSE works (est_predictiveness)", {
-  full_mse <- est_predictiveness(full_fitted_c, y_continuous, 
+  full_mse <- est_predictiveness(full_fitted_c, y_continuous,
                                  type = "mse")
   expect_equal(full_mse$point_est, mse_full, tolerance = 0.1)
   expect_length(full_mse$eif, length(y_continuous))
 })
 test_that("Cross-validated MSE using S3 class works", {
-  full_mse_object_cv <- predictiveness_measure(type = "mse", y = y_continuous, 
-                                               fitted_values = full_fitted_c_cv, 
+  full_mse_object_cv <- predictiveness_measure(type = "mse", y = y_continuous,
+                                               fitted_values = full_fitted_c_cv,
                                                cross_fitting_folds = folds_c,
                                                full_y = y_continuous)
   full_mse_cv <- estimate(full_mse_object_cv)
@@ -165,21 +149,21 @@ test_that("Cross-validated MSE using S3 class works", {
 
 # R-squared
 test_that("R-squared using S3 class works", {
-  full_r_squared_object <- predictiveness_measure(type = "r_squared", y = y_continuous, 
+  full_r_squared_object <- predictiveness_measure(type = "r_squared", y = y_continuous,
                                             fitted_values = full_fitted_c, full_y = y_continuous)
   full_r_squared <- estimate(full_r_squared_object)
   expect_equal(full_r_squared$point_est, r_squared_full, tolerance = 0.1)
   expect_length(full_r_squared$eif, length(y_continuous))
 })
 test_that("R-squared works (est_predictiveness)", {
-  full_rsquared <- est_predictiveness(full_fitted_c, y_continuous, 
+  full_rsquared <- est_predictiveness(full_fitted_c, y_continuous,
                                       type = "r_squared")
   expect_equal(full_rsquared$point_est, r_squared_full, tolerance = 0.1)
   expect_length(full_rsquared$eif, length(y_continuous))
 })
 test_that("Cross-validated R-squared using S3 class works", {
-  full_r_squared_object_cv <- predictiveness_measure(type = "r_squared", y = y_continuous, 
-                                               fitted_values = full_fitted_c_cv, 
+  full_r_squared_object_cv <- predictiveness_measure(type = "r_squared", y = y_continuous,
+                                               fitted_values = full_fitted_c_cv,
                                                cross_fitting_folds = folds_c,
                                                full_y = y_continuous)
   full_r_squared_cv <- estimate(full_r_squared_object_cv)
@@ -197,14 +181,14 @@ test_that("Accuracy using S3 class works", {
   expect_length(full_accuracy$eif, length(y_binary))
 })
 test_that("Accuracy works (est_predictiveness)", {
-  full_accuracy <- est_predictiveness(full_fitted_b, y_binary, 
+  full_accuracy <- est_predictiveness(full_fitted_b, y_binary,
                                       type = "accuracy")
   expect_equal(full_accuracy$point_est, accuracy_full, tolerance = 0.1)
   expect_length(full_accuracy$eif, length(y_binary))
 })
 test_that("Cross-validated accuracy using S3 class works", {
-  full_accuracy_object_cv <- predictiveness_measure(type = "accuracy", y = y_binary, 
-                                                     fitted_values = full_fitted_b_cv, 
+  full_accuracy_object_cv <- predictiveness_measure(type = "accuracy", y = y_binary,
+                                                     fitted_values = full_fitted_b_cv,
                                                      cross_fitting_folds = folds_b,
                                                      full_y = y_binary)
   full_accuracy_cv <- estimate(full_accuracy_object_cv)
@@ -221,14 +205,14 @@ test_that("AUC using S3 class works", {
   expect_length(full_auc$eif, length(y_binary))
 })
 test_that("AUC works (est_predictiveness)", {
-  full_auc <- est_predictiveness(full_fitted_b, y_binary, 
+  full_auc <- est_predictiveness(full_fitted_b, y_binary,
                                       type = "auc")
   expect_equal(full_auc$point_est, auc_full, tolerance = 0.1)
   expect_length(full_auc$eif, length(y_binary))
 })
 test_that("Cross-validated AUC using S3 class works", {
-  full_auc_object_cv <- predictiveness_measure(type = "auc", y = y_binary, 
-                                                    fitted_values = full_fitted_b_cv, 
+  full_auc_object_cv <- predictiveness_measure(type = "auc", y = y_binary,
+                                                    fitted_values = full_fitted_b_cv,
                                                     cross_fitting_folds = folds_b,
                                                     full_y = y_binary)
   full_auc_cv <- estimate(full_auc_object_cv)
@@ -245,14 +229,14 @@ test_that("Cross Entropy using S3 class works", {
   expect_length(full_cross_entropy$eif, length(y_binary))
 })
 test_that("Cross Entropy works (est_predictiveness)", {
-  full_cross_entropy <- est_predictiveness(full_fitted_b, y_binary, 
+  full_cross_entropy <- est_predictiveness(full_fitted_b, y_binary,
                                       type = "cross_entropy")
   expect_equal(full_cross_entropy$point_est, cross_entropy_full, tolerance = 0.1)
   expect_length(full_cross_entropy$eif, length(y_binary))
 })
 test_that("Cross-validated cross entropy using S3 class works", {
-  full_cross_entropy_object_cv <- predictiveness_measure(type = "cross_entropy", y = y_binary, 
-                                                    fitted_values = full_fitted_b_cv, 
+  full_cross_entropy_object_cv <- predictiveness_measure(type = "cross_entropy", y = y_binary,
+                                                    fitted_values = full_fitted_b_cv,
                                                     cross_fitting_folds = folds_b,
                                                     full_y = y_binary)
   full_cross_entropy_cv <- estimate(full_cross_entropy_object_cv)
@@ -270,14 +254,14 @@ test_that("Deviance using S3 class works", {
   expect_length(full_deviance$eif, length(y_binary))
 })
 test_that("Deviance works (est_predictiveness)", {
-  full_deviance <- est_predictiveness(full_fitted_b, y_binary, 
+  full_deviance <- est_predictiveness(full_fitted_b, y_binary,
                                       type = "deviance")
   expect_equal(full_deviance$point_est, deviance_full, tolerance = 0.15)
   expect_length(full_deviance$eif, length(y_binary))
 })
 test_that("Cross-validated deviance using S3 class works", {
-  full_deviance_object_cv <- predictiveness_measure(type = "deviance", y = y_binary, 
-                                                    fitted_values = full_fitted_b_cv, 
+  full_deviance_object_cv <- predictiveness_measure(type = "deviance", y = y_binary,
+                                                    fitted_values = full_fitted_b_cv,
                                                     cross_fitting_folds = folds_b,
                                                     full_y = y_binary)
   full_deviance_cv <- estimate(full_deviance_object_cv)
@@ -289,7 +273,7 @@ test_that("Cross-validated deviance using S3 class works", {
 # test average value -----------------------------------------------------------
 test_that("Average Value using S3 class works", {
   full_average_value_object <- predictiveness_measure(type = "average_value", y = y_av,
-                                                      a = a, full_y = y_av, 
+                                                      a = a, full_y = y_av,
                                                       fitted_values = nuisances$q_n,
                                                       nuisance_estimators = nuisances)
   full_average_value <- estimate(full_average_value_object)
