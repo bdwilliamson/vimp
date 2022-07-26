@@ -1,72 +1,80 @@
-url: https://bdwilliamson.github.io/vimp
-
+url: http://bdwilliamson.github.io/vimp/
 destination: docs
-
 reference:
-    - title: "Estimate specific variable importance parameters"
-      desc: "Functions that set default values to measure variable importance via specific parameters."
-      contents:
-      - vimp_accuracy
-      - vimp_anova
-      - vimp_auc
-      - vimp_deviance
-      - vimp_rsquared
-    - title: "Estimate variable importance"
-      desc: "General functions to measure population variable importance and compute point estimates and confidence intervals."
-      contents:
-      - vim
-      - cv_vim
-      - vimp_se
-      - vimp_ci
-      - vimp_hypothesis_test
-      - sp_vim
-      - spvim_ics
-      - spvim_se
-      - sample_subsets
-      - measure_anova
-      - bootstrap_se
-    - title: "Predictiveness measures"
-      desc: "Functions to measure population predictiveness (e.g., R-squared or AUC) and compute point estimates and confidence intervals for predictiveness."
-      contents:
-      - measure_accuracy
-      - measure_auc
-      - measure_cross_entropy
-      - measure_deviance
-      - measure_mse
-      - measure_r_squared
-      - est_predictiveness_cv
-      - est_predictiveness
-    - title: "Aggregate variable importance estimates"
-      desc: "Functions to aggregate individual variable importance objects (created with calls to `vim` or `cv_vim`) by averaging or merging into larger objects."
-      contents:
-      - average_vim
-      - merge_vim
-    - title: "Internal package utility functions"
-      desc: "Functions for internal convenience, used by other core functions."
-      contents:
-      - print.vim
-      - format.vim
-      - make_folds
-      - create_z
-      - make_kfold
-      - run_sl
-      - check_fitted_values
-      - check_inputs
-      - extract_sampled_split_predictions
-      - get_cv_sl_folds
-      - get_full_type
-      - scale_est
-      - process_arg_lst
-      - estimate_eif_projection
-    - title: "Deprecated functions"
-      desc: "Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead."
-      contents:
-      - vimp_regression
-    - title: "Package documentation homepage"
-      desc: "Landing page for R help"
-      contents:
-      - vimp
-    - title: "VRC01 data"
-      desc: "Dataset for use in the vignette examples"
-      contents:
-      - vrc01
+- title: Estimate specific variable importance parameters
+  desc: Functions that set default values to measure variable importance via specific
+    parameters.
+  contents:
+  - vimp_accuracy
+  - vimp_anova
+  - vimp_auc
+  - vimp_deviance
+  - vimp_rsquared
+- title: Estimate variable importance
+  desc: General functions to measure population variable importance and compute point
+    estimates and confidence intervals.
+  contents:
+  - vim
+  - cv_vim
+  - vimp_se
+  - vimp_ci
+  - vimp_hypothesis_test
+  - sp_vim
+  - spvim_ics
+  - spvim_se
+  - sample_subsets
+  - measure_anova
+  - bootstrap_se
+- title: Predictiveness measures
+  desc: Functions to measure population predictiveness (e.g., R-squared or AUC) and
+    compute point estimates and confidence intervals for predictiveness.
+  contents:
+  - predictiveness_measure
+  - estimate
+  - eif
+  - estimate.predictiveness_measure
+  - estimate_type_predictiveness
+  - measure_accuracy
+  - measure_average_value
+  - measure_auc
+  - measure_cross_entropy
+  - measure_deviance
+  - measure_mse
+  - measure_r_squared
+  - est_predictiveness_cv
+  - est_predictiveness
+- title: Aggregate variable importance estimates
+  desc: Functions to aggregate individual variable importance objects (created with
+    calls to `vim` or `cv_vim`) by averaging or merging into larger objects.
+  contents:
+  - average_vim
+  - merge_vim
+- title: Internal package utility functions
+  desc: Functions for internal convenience, used by other core functions.
+  contents:
+  - format.predictiveness_measure
+  - print.predictiveness_measure
+  - print.vim
+  - format.vim
+  - make_folds
+  - create_z
+  - make_kfold
+  - run_sl
+  - check_fitted_values
+  - check_inputs
+  - extract_sampled_split_predictions
+  - get_cv_sl_folds
+  - get_full_type
+  - scale_est
+  - process_arg_lst
+  - estimate_eif_projection
+- title: Deprecated functions
+  desc: Functions that are kept for backwards compatability; we recommend using the
+    updated or replacement functions instead.
+  contents: vimp_regression
+- title: Package documentation homepage
+  desc: Landing page for R help
+  contents: vimp
+- title: VRC01 data
+  desc: Dataset for use in the vignette examples
+  contents: vrc01

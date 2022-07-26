@@ -16,6 +16,7 @@ measure_deviance(
   ipc_est_type = "aipw",
   scale = "identity",
   na.rm = FALSE,
+  nuisance_estimators = NULL,
   ...
 )
 }
@@ -25,8 +26,8 @@ observed data.}
 
 \item{y}{the observed outcome.}
 
-\item{full_y}{the observed outcome (defaults to \code{NULL}; allows the 
-full-data outcome to be used for empirical estimates that do not rely 
+\item{full_y}{the observed outcome (defaults to \code{NULL}; allows the
+full-data outcome to be used for empirical estimates that do not rely
 on covariates).}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
@@ -58,6 +59,8 @@ apply the correction, and back-transform).}
 
 \item{na.rm}{logical; should \code{NA}s be removed in computation?
 (defaults to \code{FALSE})}
+
+\item{nuisance_estimators}{not used; for compatibility with \code{measure_average_value}.}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }

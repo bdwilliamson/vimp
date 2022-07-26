@@ -52,7 +52,9 @@ Suggests:
     cvAUC,
     tidyselect
 License: MIT + file LICENSE
-URL: https://bdwilliamson.github.io/vimp/, https://github.com/bdwilliamson/vimp
+URL: https://bdwilliamson.github.io/vimp/,
+    https://github.com/bdwilliamson/vimp,
+    http://bdwilliamson.github.io/vimp/
 BugReports: https://github.com/bdwilliamson/vimp/issues
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr

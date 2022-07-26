@@ -16,6 +16,7 @@ measure_cross_entropy(
   ipc_est_type = "aipw",
   scale = "identity",
   na.rm = FALSE,
+  nuisance_estimators = NULL,
   ...
 )
 }
@@ -56,6 +57,8 @@ apply the correction, and back-transform).}
 
 \item{na.rm}{logical; should \code{NA}s be removed in computation?
 (defaults to \code{FALSE})}
+
+\item{nuisance_estimators}{not used; for compatibility with \code{measure_average_value}.}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }
