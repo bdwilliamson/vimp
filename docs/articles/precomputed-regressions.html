@@ -95,14 +95,15 @@
 
       
 
-      </header><script src="precomputed-regressions_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="precomputed-regressions_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Using precomputed regression function estimates in <code>vimp</code>
+      <h1 data-toc-skip>Using precomputed regression function estimates
+in <code>vimp</code>
 </h1>
                         <h4 class="author">Brian D. Williamson</h4>
             
-            <h4 class="date">2022-03-31</h4>
+            <h4 class="date">2022-07-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
@@ -121,13 +122,22 @@
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
-<p>In the <a href="introduction-to-vimp.html">main vignette</a>, we analyzed the VRC01 data <span class="citation">(Magaret et al. 2019)</span>, a subset of the data freely available from the Los Alamos National Laboratory’s Compile, Neutralize, and Tally Neutralizing Antibody Panels database. Information about these data is available <a href="https://doi.org/10.1371/journal.pcbi.1006952">here</a>. In each of the analyses, I used <code>run_regression = TRUE</code>. In this vignette, I discuss how to use precomputed regression function estimates with <code>vimp</code>. The results of this analysis replicate the analysis in the <a href="introduction-to-vimp.html">main vignette</a>.</p>
+<p>In the <a href="introduction-to-vimp.html">main vignette</a>, we
+analyzed the VRC01 data <span class="citation">(Magaret, Benkeser,
+Williamson, et al. 2019)</span>, a subset of the data freely available
+from the Los Alamos National Laboratory’s Compile, Neutralize, and Tally
+Neutralizing Antibody Panels database. Information about these data is
+available <a href="https://doi.org/10.1371/journal.pcbi.1006952">here</a>. In each of
+the analyses, I used <code>run_regression = TRUE</code>. In this
+vignette, I discuss how to use precomputed regression function estimates
+with <code>vimp</code>. The results of this analysis replicate the
+analysis in the <a href="introduction-to-vimp.html">main
+vignette</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># read in the data</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vrc01"</span><span class="op">)</span>
 <span class="co"># subset to the columns of interest for this analysis</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org">"dplyr"</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: package 'dplyr' was built under R version 4.0.5</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Attaching package: 'dplyr'</span>
 <span class="co">#&gt; The following objects are masked from 'package:stats':</span>
@@ -147,11 +157,16 @@
 </div>
 <div id="using-precomputed-regression-function-estimates-without-cross-fitting" class="section level2">
 <h2 class="hasAnchor">
-<a href="#using-precomputed-regression-function-estimates-without-cross-fitting" class="anchor"></a>Using precomputed regression function estimates without cross-fitting</h2>
+<a href="#using-precomputed-regression-function-estimates-without-cross-fitting" class="anchor"></a>Using precomputed regression function estimates without
+cross-fitting</h2>
 <div id="a-first-approach-linear-regression" class="section level3">
 <h3 class="hasAnchor">
 <a href="#a-first-approach-linear-regression" class="anchor"></a>A first approach: linear regression</h3>
-<p>As in the <a href="introduction-to-vimp.html">main vignette</a>, we first start by fitting only linear regression models. In this section, we use the function <code><a href="../reference/vim.html">vim()</a></code>; this function does not use cross-fitting to estimate variable importance, and greatly simplifies the code for precomputed regression models.</p>
+<p>As in the <a href="introduction-to-vimp.html">main vignette</a>, we
+first start by fitting only linear regression models. In this section,
+we use the function <code><a href="../reference/vim.html">vim()</a></code>; this function does not use
+cross-fitting to estimate variable importance, and greatly simplifies
+the code for precomputed regression models.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://rlang.r-lib.org">"rlang"</a></span><span class="op">)</span>
 <span class="va">vrc01_subset</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
@@ -205,10 +220,23 @@
 </div>
 <div id="estimating-variable-importance-for-a-single-variable-using-precomputed-regression-function-estimates" class="section level2">
 <h2 class="hasAnchor">
-<a href="#estimating-variable-importance-for-a-single-variable-using-precomputed-regression-function-estimates" class="anchor"></a>Estimating variable importance for a single variable using precomputed regression function estimates</h2>
-<p>In this section, we will use cross-fitting and pre-computed estimates of the regression functions. This can be especially useful if you have already run a call to <code>CV.SuperLearner</code> – that function returns estimates based on each observation being part of the hold-out set. However, while this approach can save you some computation time, it requires a hefty amount of mental overhead.</p>
-<p>We will use <code>CV.SuperLearner</code> to fit the individual regression functions, taking care to use the same cross-fitting folds in each regression. We will then create two groups of validation folds for sample-splitting. For this analysis, we will use <code>V = 2</code> folds for cross-fitted variable importance estimation (as we did in the <a href="introduction-to-vimp.html">main vignette</a>). Note that this entails running <code>CV.SuperLearner</code> with <span class="math inline">\(2V = 10\)</span> folds.</p>
-<p>First, we estimate the regression function based on all variables:</p>
+<a href="#estimating-variable-importance-for-a-single-variable-using-precomputed-regression-function-estimates" class="anchor"></a>Estimating variable importance for a single variable using
+precomputed regression function estimates</h2>
+<p>In this section, we will use cross-fitting and pre-computed estimates
+of the regression functions. This can be especially useful if you have
+already run a call to <code>CV.SuperLearner</code> – that function
+returns estimates based on each observation being part of the hold-out
+set. However, while this approach can save you some computation time, it
+requires a hefty amount of mental overhead.</p>
+<p>We will use <code>CV.SuperLearner</code> to fit the individual
+regression functions, taking care to use the same cross-fitting folds in
+each regression. We will then create two groups of validation folds for
+sample-splitting. For this analysis, we will use <code>V = 2</code>
+folds for cross-fitted variable importance estimation (as we did in the
+<a href="introduction-to-vimp.html">main vignette</a>). Note that this
+entails running <code>CV.SuperLearner</code> with <span class="math inline">\(2V = 10\)</span> folds.</p>
+<p>First, we estimate the regression function based on all
+variables:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">learners</span> <span class="op">&lt;-</span> <span class="st">"SL.ranger"</span>
 <span class="co"># estimate the full regression function</span>
@@ -228,7 +256,8 @@
   cvsl_obj <span class="op">=</span> <span class="va">full_cv_fit</span>, sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,
   sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>, full <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span></code></pre></div>
-<p>Next, to estimate the importance of each variable, we need to estimate the reduced regression function for each variable:</p>
+<p>Next, to estimate the importance of each variable, we need to
+estimate the reduced regression function for each variable:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">[</span><span class="op">(</span><span class="va">geog_indx</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">]</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
@@ -244,7 +273,9 @@
   sample_splitting_folds = sample_splitting_folds, full = FALSE
 )"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
 <span class="op">}</span></code></pre></div>
-<p>Then we can plug these values into <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> (or equivalently, <code><a href="../reference/cv_vim.html">cv_vim()</a></code> with <code>type = "r_squared"</code>) as follows:</p>
+<p>Then we can plug these values into <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> (or
+equivalently, <code><a href="../reference/cv_vim.html">cv_vim()</a></code> with
+<code>type = "r_squared"</code>) as follows:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
   <span class="co"># again, use "eval" and "parse" to assign the objects of interest to avoid duplicating code</span>
@@ -341,7 +372,8 @@
 </div>
 <div id="estimating-variable-importance-for-a-group-of-variables-using-precomputed-regression-function-estimates" class="section level2">
 <h2 class="hasAnchor">
-<a href="#estimating-variable-importance-for-a-group-of-variables-using-precomputed-regression-function-estimates" class="anchor"></a>Estimating variable importance for a group of variables using precomputed regression function estimates</h2>
+<a href="#estimating-variable-importance-for-a-group-of-variables-using-precomputed-regression-function-estimates" class="anchor"></a>Estimating variable importance for a group of variables using
+precomputed regression function estimates</h2>
 <p>Finally, we can estimate and plot group importance:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">91011</span><span class="op">)</span>
@@ -396,14 +428,24 @@
 <div id="conclusion" class="section level2">
 <h2 class="hasAnchor">
 <a href="#conclusion" class="anchor"></a>Conclusion</h2>
-<p>In this document, we learned a second method for computing variable importance estimates: rather than having <code>vimp</code> run all regression functions for you, you can compute your own regressions and pass these to <code>vimp</code>. The results are equivalent, but there is a tradeoff: what you save in computation time by only computing the full regression once must be balanced with the mental overhead of correctly computing the regressions. Additionally, this task is more difficult when using cross-fitted variable importance, which I recommend in nearly all cases when using flexible machine learning tools.</p>
+<p>In this document, we learned a second method for computing variable
+importance estimates: rather than having <code>vimp</code> run all
+regression functions for you, you can compute your own regressions and
+pass these to <code>vimp</code>. The results are equivalent, but there
+is a tradeoff: what you save in computation time by only computing the
+full regression once must be balanced with the mental overhead of
+correctly computing the regressions. Additionally, this task is more
+difficult when using cross-fitted variable importance, which I recommend
+in nearly all cases when using flexible machine learning tools.</p>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references">
-<div id="ref-magaret2019">
-<p>Magaret, CA, DC Benkeser, BD Williamson, BR Borate, LN Carpp, IS Georgiev, I Setliff, et al. 2019. “Prediction of VRC01 Neutralization Sensitivity by HIV-1 Gp160 Sequence Features.” <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952">https://doi.org/10.1371/journal.pcbi.1006952</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-magaret2019" class="csl-entry">
+Magaret, CA, DC Benkeser, BD Williamson, et al. 2019. <span>“Prediction
+of <span>Vrc01</span> Neutralization Sensitivity by <span>HIV</span>-1
+Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952">https://doi.org/10.1371/journal.pcbi.1006952</a>.
 </div>
 </div>
 </div>
