@@ -154,20 +154,18 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     S <- z_w_lst$S
 
     arg_lst <- list(...)
-    if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
-        arg_lst$cvControl$stratifyCV <- FALSE
-    }
     if (is.null(arg_lst$family)) {
         arg_lst$family <- switch(
             (length(unique(Y_cc)) == 2) + 1, stats::gaussian(),
             stats::binomial()
         )
     }
+    # set method and family to compatible with continuous values, for EIF estimation
+    eif_arg_lst <- process_arg_lst(arg_lst)
     arg_lst_cv <- arg_lst
     if (is.null(arg_lst_cv$innerCvControl)) {
         arg_lst_cv$innerCvControl <- rep(list(list(V = V)), ss_V)
     }
-
     # get v, preds, ic for null set
     preds_none <- list()
     fitted_none <- list()
@@ -195,7 +193,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  ipc_fit_type = "SL", type = full_type, scale = scale,
                  ipc_est_type = ipc_est_type, na.rm = na.rm,
                  SL.library = SL.library),
-            arg_lst
+            eif_arg_lst
         ), quote = TRUE
     )
     v_none <- v_none_lst$point_est
@@ -240,7 +238,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                          type = full_type, ipc_fit_type = "SL", scale = scale,
                          ipc_est_type = ipc_est_type, na.rm = na.rm,
                          SL.library = SL.library),
-                    arg_lst
+                    eif_arg_lst
                 ), quote = TRUE
             )
     )
@@ -261,13 +259,13 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                              type = full_type, ipc_fit_type = "SL", scale = scale,
                              ipc_est_type = ipc_est_type, na.rm = na.rm,
                              SL.library = SL.library),
-                        arg_lst
+                        eif_arg_lst
                     ), quote = TRUE
                 )
         )
         ics_lst <- lapply(ic_all_lst, function(l) l$all_eifs)
         ic_lst <- lapply(ic_all_lst, function(l) l$eif)
-    } 
+    }
     v <- matrix(c(v_none, unlist(v_lst)))
     # do constrained wls
     if (verbose) {
@@ -351,31 +349,30 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                  ipc_fit_type = "SL", type = full_type, scale = scale,
                  ipc_est_type = ipc_est_type, na.rm = na.rm,
                  SL.library = SL.library),
-            arg_lst
+            eif_arg_lst
         ), quote = TRUE
     )
     v_none_0 <- v_none_0_lst$point_est
     ics_none_0 <- v_none_0_lst$all_eifs
     ic_none_0 <- v_none_0_lst$eif
     if (cross_fitted_se) {
-        var_none_0 <- mean(unlist(lapply(ics_none_0, 
+        var_none_0 <- mean(unlist(lapply(ics_none_0,
                                          function(ic) mean(ic ^ 2, na.rm = na.rm))))
     } else {
         var_none_0 <- mean(ic_none_0 ^ 2, na.rm = na.rm)
     }
-    se_none_0 <- sqrt(var_none_0) /
-        sqrt(length(cross_fitting_folds_cc) / 2)
+    se_none_0 <- sqrt(var_none_0 / sum(redu_test_cc)) 
     # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
-    ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) /
-                        (length(cross_fitting_folds_cc) / 2) +
+    ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) / sum(full_test_cc) +
                         se_none_0 ^ 2)
+    # save objects necessary to compute the test statistics
+    test_stat_lst <- list(ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0, 
+                          se_0 = se_none_0, n_for_v = n_for_v)
     test_statistics <- unlist(lapply(
         as.list(2:length(est)),
         function(j, ests, ses, est_0, se_0, delta) {
-            var_j <- (var_v_contribs[j] * n_for_v + var_s_contribs[j]) /
-                (length(cross_fitting_folds_cc) / 2)
-            (ests[j] - est_0 - delta) / sqrt(var_j + se_0 ^ 2)
+            (ests[j] - est_0 - delta) / sqrt(ses[j] ^ 2 + se_0 ^ 2)
         }, ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0,
         se_0 = se_none_0, delta = delta
     ))
@@ -404,6 +401,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    test = hyp_tests,
                    p_value = p_values,
                    test_statistic = test_statistics,
+                   test_statistic_computation = test_stat_lst,
                    gamma = gamma,
                    alpha = alpha,
                    delta = delta,

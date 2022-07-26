@@ -329,9 +329,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         cross_fitting_folds_cc <- cross_fitting_folds[C == 1]
     }
     arg_lst <- list(...)
-    if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
-        arg_lst$cvControl$stratifyCV <- FALSE
-    }
+    # set method and family to compatible with continuous values, for EIF estimation
+    arg_lst <- process_arg_lst(arg_lst)
     eifs_lst <- NA
     # calculate the estimators, EIFs
     if (full_type == "anova") {

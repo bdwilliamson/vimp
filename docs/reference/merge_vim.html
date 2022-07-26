@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Merge multiple <code>vim</code> objects into one — merge_vim • vimp</title>
+<title>Merge multiple vim objects into one — merge_vim • vimp</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Merge multiple <code>vim</code> objects into one — merge_vim" />
+<meta property="og:title" content="Merge multiple vim objects into one — merge_vim" />
 <meta property="og:description" content="Take the output from multiple different calls to vimp_regression and
 merge into a single vim object; mostly used for plotting results." />
 <meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
@@ -81,7 +81,7 @@ merge into a single vim object; mostly used for plotting results." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
       </span>
     </div>
 
@@ -89,7 +89,7 @@ merge into a single vim object; mostly used for plotting results." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -107,6 +107,9 @@ merge into a single vim object; mostly used for plotting results." />
       <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
     </li>
     <li>
+      <a href="../articles/ipcw-vim.html">Variable importance with coarsened data</a>
+    </li>
+    <li>
       <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
     </li>
     <li>
@@ -121,7 +124,7 @@ merge into a single vim object; mostly used for plotting results." />
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/bdwilliamson/vimp/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -148,7 +151,7 @@ merge into a single vim object; mostly used for plotting results." />
 merge into a single <code>vim</code> object; mostly used for plotting results.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>merge_vim</span>(<span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>merge_vim</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -180,30 +183,39 @@ from the individual <code>vim</code> objects. This results in a list containing:
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># generate the data</span>
-<span class='co'># generate X</span>
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='no'>p</span>, <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span>(<span class='no'>n</span>, -<span class='fl'>5</span>, <span class='fl'>5</span>)))
-
-<span class='co'># apply the function to the x's</span>
-<span class='no'>smooth</span> <span class='kw'>&lt;-</span> (<span class='no'>x</span>[,<span class='fl'>1</span>]/<span class='fl'>5</span>)^<span class='fl'>2</span>*(<span class='no'>x</span>[,<span class='fl'>1</span>]+<span class='fl'>7</span>)/<span class='fl'>5</span> + (<span class='no'>x</span>[,<span class='fl'>2</span>]/<span class='fl'>3</span>)^<span class='fl'>2</span>
-
-<span class='co'># generate Y ~ Normal (smooth, 1)</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>smooth</span> + <span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span>, <span class='fl'>0</span>, <span class='fl'>1</span>)
-
-<span class='co'># set up a library for SuperLearner; note simple library for speed</span>
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='st'>"SuperLearner"</span>)
-<span class='no'>learners</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"SL.glm"</span>, <span class='st'>"SL.mean"</span>)
-
-<span class='co'># using Super Learner (with a small number of folds, for illustration only)</span>
-<span class='no'>est_2</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='vimp_regression.html'>vimp_regression</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-           <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-           <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span></div><div class='output co'>#&gt; <span class='message'>Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Original estimate &lt; 0; returning zero.</span></div><div class='input'>
-<span class='no'>est_1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='vimp_regression.html'>vimp_regression</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-           <span class='kw'>run_regression</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>0.05</span>,
-           <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='no'>learners</span>, <span class='kw'>cvControl</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(<span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>2</span>))</div><div class='output co'>#&gt; <span class='warning'>Warning: vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span></div><div class='output co'>#&gt; <span class='message'>Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Original estimate &lt; 0; returning zero.</span></div><div class='input'>
-<span class='no'>ests</span> <span class='kw'>&lt;-</span> <span class='fu'>merge_vim</span>(<span class='no'>est_1</span>, <span class='no'>est_2</span>)</div></pre>
+    <pre class="examples"><span class='r-in'><span class='co'># generate the data</span></span>
+<span class='r-in'><span class='co'># generate X</span></span>
+<span class='r-in'><span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>2</span></span>
+<span class='r-in'><span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>100</span></span>
+<span class='r-in'><span class='va'>x</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span><span class='op'>(</span><span class='va'>p</span>, <span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Uniform.html'>runif</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='op'>-</span><span class='fl'>5</span>, <span class='fl'>5</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># apply the function to the x's</span></span>
+<span class='r-in'><span class='va'>smooth</span> <span class='op'>&lt;-</span> <span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>]</span><span class='op'>/</span><span class='fl'>5</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>*</span><span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>]</span><span class='op'>+</span><span class='fl'>7</span><span class='op'>)</span><span class='op'>/</span><span class='fl'>5</span> <span class='op'>+</span> <span class='op'>(</span><span class='va'>x</span><span class='op'>[</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>/</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># generate Y ~ Normal (smooth, 1)</span></span>
+<span class='r-in'><span class='va'>y</span> <span class='op'>&lt;-</span> <span class='va'>smooth</span> <span class='op'>+</span> <span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span>, <span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># set up a library for SuperLearner; note simple library for speed</span></span>
+<span class='r-in'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='st'><a href='https://github.com/ecpolley/SuperLearner'>"SuperLearner"</a></span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>learners</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"SL.glm"</span>, <span class='st'>"SL.mean"</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># using Super Learner (with a small number of folds, for illustration only)</span></span>
+<span class='r-in'><span class='va'>est_2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='vimp_regression.html'>vimp_regression</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span>, X <span class='op'>=</span> <span class='va'>x</span>, indx <span class='op'>=</span> <span class='fl'>2</span>, V <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span class='r-in'>           run_regression <span class='op'>=</span> <span class='cn'>TRUE</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>,</span>
+<span class='r-in'>           SL.library <span class='op'>=</span> <span class='va'>learners</span>, cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Original estimate &lt; 0; returning zero.</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>est_1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='vimp_regression.html'>vimp_regression</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span>, X <span class='op'>=</span> <span class='va'>x</span>, indx <span class='op'>=</span> <span class='fl'>1</span>, V <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span class='r-in'>           run_regression <span class='op'>=</span> <span class='cn'>TRUE</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>,</span>
+<span class='r-in'>           SL.library <span class='op'>=</span> <span class='va'>learners</span>, cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.</span>
+<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>Original estimate &lt; 0; returning zero.</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>ests</span> <span class='op'>&lt;-</span> <span class='fu'>merge_vim</span><span class='op'>(</span><span class='va'>est_1</span>, <span class='va'>est_2</span><span class='op'>)</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -219,7 +231,7 @@ from the individual <code>vim</code> objects. This results in a list containing:
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
       </span>
     </div>
 
@@ -88,7 +88,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,6 +106,9 @@
       <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
     </li>
     <li>
+      <a href="../articles/ipcw-vim.html">Variable importance with coarsened data</a>
+    </li>
+    <li>
       <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
     </li>
     <li>
@@ -120,7 +123,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/bdwilliamson/vimp/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -146,25 +149,25 @@
     <p>Run a Super Learner for the provided subset of features</p>
     </div>
 
-    <pre class="usage"><span class='fu'>run_sl</span>(
-  <span class='kw'>Y</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>X</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>V</span> <span class='kw'>=</span> <span class='fl'>5</span>,
-  <span class='kw'>SL.library</span> <span class='kw'>=</span> <span class='st'>"SL.glm"</span>,
-  <span class='kw'>univariate_SL.library</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>s</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>cv_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>sample_splitting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>ss_folds</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>split</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>progress_bar</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>indx</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>weights</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span>(<span class='no'>X</span>)),
-  <span class='kw'>cross_fitted_se</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>full</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>run_sl</span><span class='op'>(</span>
+  Y <span class='op'>=</span> <span class='cn'>NULL</span>,
+  X <span class='op'>=</span> <span class='cn'>NULL</span>,
+  V <span class='op'>=</span> <span class='fl'>5</span>,
+  SL.library <span class='op'>=</span> <span class='st'>"SL.glm"</span>,
+  univariate_SL.library <span class='op'>=</span> <span class='cn'>NULL</span>,
+  s <span class='op'>=</span> <span class='fl'>1</span>,
+  cv_folds <span class='op'>=</span> <span class='cn'>NULL</span>,
+  sample_splitting <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  ss_folds <span class='op'>=</span> <span class='cn'>NULL</span>,
+  split <span class='op'>=</span> <span class='fl'>1</span>,
+  verbose <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  progress_bar <span class='op'>=</span> <span class='cn'>NULL</span>,
+  indx <span class='op'>=</span> <span class='fl'>1</span>,
+  weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span>,
+  cross_fitted_se <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  full <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -266,7 +269,7 @@ For SPVIMs, can be entered manually.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

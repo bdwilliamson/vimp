@@ -1,8 +1,49 @@
+# vimp 2.2.11
+
+## Major changes
+
+* You can now compute variable importance using the average value under the optimal treatment rule. This includes functions `measure_avg_value` (computes the average value and efficient influence function) and updates to `vim`, `cv_vim`, and `sp_vim`.
+
+## Minor changes
+
+* None
+
+# vimp 2.2.10
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Specify `method` and `family` for weighted EIF estimation within outer functions (`vim`, `cv_vim`, `sp_vim`) rather than the `measure*` functions. This allows compatibility for binary outcomes.
+* Added a vignette for coarsened-data settings.
+
+# vimp 2.2.9
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Allow for unequal numbers of cross-fitting folds between full and reduced predictiveness
+
+# vimp 2.2.8
+
+## Major changes
+
+* None
+
+## Minor changes
+
+* Return objects in `sp_vim` that are necessary to compute the test statistics
+
 # vimp 2.2.7
 
 ## Major changes
 
-* You can now compute variable importance using the average value under the optimal treatment rule. This includes functions `measure_avg_value` (computes the average value and efficient influence function) and updates to
+* None
 
 ## Minor changes
 

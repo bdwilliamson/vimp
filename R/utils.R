@@ -139,6 +139,29 @@ create_z <- function(Y, C, Z, X, ipc_weights) {
   list(Y = Y_cc, weights = weights_cc, Z = Z_in)
 }
 
+#' Process argument list for Super Learner estimation of the EIF
+#'
+#' @param arg_lst the list of arguments for Super Learner
+#'
+#' @return a list of modified arguments for EIF estimation
+#' @export
+process_arg_lst <- function(arg_lst) {
+  if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
+    arg_lst$cvControl$stratifyCV <- FALSE
+  }
+  if (!is.null(names(arg_lst)) && any(grepl("method", names(arg_lst)))) {
+    if (grepl("NNloglik", arg_lst$method)) {
+      arg_lst$method <- "method.NNLS"
+    } else {
+      arg_lst$method <- "method.CC_LS"
+    }
+  }
+  if (!is.null(names(arg_lst)) && any(grepl("family", names(arg_lst)))) {
+    arg_lst$family <- stats::gaussian()
+  }
+  arg_lst
+}
+
 # ------------------------------------------------------------------------------
 
 #' Obtain the type of VIM to estimate using partial matching
@@ -187,6 +210,24 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
   est
 }
 
+#' Estimate projection of EIF on fully-observed variables
+#'
+#' @param obs_grad the estimated (observed) EIF
+#' @param Z a matrix (or data.frame) with the fully-observed variables
+#' @inheritParams vim
+#'
+#' @return the projection of the EIF onto the fully-observed variables
+estimate_eif_projection <- function(obs_grad, C, Z, ipc_fit_type, ...) {
+  if (ipc_fit_type != "external") {
+    ipc_eif_mod <- SuperLearner::SuperLearner(
+      Y = obs_grad, X = subset(Z, C == 1, drop = FALSE), ...
+    )
+    ipc_eif_preds <- SuperLearner::predict.SuperLearner(
+      ipc_eif_mod, newdata = Z, onlySL = TRUE
+    )$pred
+  }
+  ipc_eif_preds
+}
 # ------------------------------------------------------------------------------
 
 #' Create Folds for Cross-Fitting

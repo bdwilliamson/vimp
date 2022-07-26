@@ -1,0 +1,118 @@
+---
+title: "Variable importance with coarsened data"
+author: "Brian D. Williamson"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    keep_md: true
+vignette: >
+  %\VignetteIndexEntry{Variable importance with coarsened data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+csl: chicago-author-date.csl
+bibliography: vimp_bib.bib
+---
+
+```{r setup, echo = FALSE, include = FALSE}
+library(knitr)
+opts_knit$set(cache = FALSE, verbose = TRUE, global.par = TRUE)
+```
+
+```{r more-setup, echo = FALSE}
+par(mar = c(5, 12, 4, 2) + 0.1)
+```
+
+## Introduction
+
+In some settings, we don't have access to the full data unit on each observation in our sample. These "coarsened-data" settings (see, e.g., @vandervaart2000) create a layer of complication in estimating variable importance. In particular, the efficient influence function (EIF) in the coarsened-data setting is more complex, and involves estimating an additional quantity: the projection of the full-data EIF (estimated on the fully-observed sample) onto the variables that are always observed (Chapter 25.5.3 of @vandervaart2000; see also Example 6 in @williamson2021).
+
+## Coarsened data in `vimp`
+
+`vimp` can handle coarsened data, with the specification of several arguments:
+
+* `C`: and binary indicator vector, denoting which observations have been coarsened; 1 denotes fully observed, while 0 denotes coarsened.
+* `ipc_weights`: inverse probability of coarsening weights, assumed to already be inverted (i.e., `ipc_weights` = 1 / [estimated probability of coarsening]).
+* `ipc_est_type`: the type of procedure used for coarsened-at-random settings; options are `"ipw"` (for inverse probability weighting) or `"aipw"` (for augmented inverse probability weighting). Only used if `C` is not all equal to 1.
+* `Z`: a character vector specifying the variable(s) among `Y` and `X` that are thought to play a role in the coarsening mechanism. To specify the outcome, use `"Y"`; to specify covariates, use a character number corresponding to the desired position in `X` (e.g., `"1"` or `"X1"` [the latter is case-insensitive]).
+
+`Z` plays a role in the additional estimation mentioned above. Unless otherwise specified, an internal call to `SuperLearner` regresses the full-data EIF (estimated on the fully-observed data) onto a matrix that is the parsed version of `Z`. If you wish to use any covariates from `X` as part of your coarsening mechanism (and thus include them in `Z`), and they have *different names from `X1`, ...*, then you must use character numbers (i.e., `"1"` refers to the first variable, etc.) to refer to the variables to include in `Z`. Otherwise, `vimp` will throw an error.
+
+## Example with missing outcomes
+
+In this example, the outcome `Y` is subject to missingness. We generate data as follows:
+```{r gen-data-missing-y}
+set.seed(1234)
+p <- 2
+n <- 100
+x <- replicate(p, stats::rnorm(n, 0, 1))
+# apply the function to the x's
+y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
+# indicator of observing Y
+logit_g_x <- .01 * x[, 1] + .05 * x[, 2] - 2.5
+g_x <- exp(logit_g_x) / (1 + exp(logit_g_x))
+C <- rbinom(n, size = 1, prob = g_x)
+obs_y <- y
+obs_y[C == 0] <- NA
+x_df <- as.data.frame(x)
+full_df <- data.frame(Y = obs_y, x_df, C = C)
+```
+
+Next, we estimate the relevant components for `vimp`:
+```{r missing-y-vim}
+library("vimp")
+library("SuperLearner")
+# estimate the probability of missing outcome
+ipc_weights <- 1 / predict(glm(C ~ V1 + V2, family = "binomial", data = full_df),
+                           type = "response")
+
+# set up the SL
+learners <- c("SL.glm", "SL.mean")
+V <- 2
+
+# estimate vim for X2
+set.seed(1234)
+est <- vim(Y = obs_y, X = x_df, indx = 2, type = "r_squared", run_regression = TRUE,
+           SL.library = learners, alpha = 0.05, delta = 0, C = C, Z = c("Y", "1"),
+           ipc_weights = ipc_weights, cvControl = list(V = V))
+```
+
+## Example with two-phase sampling
+
+In this example, we observe outcome `Y` and covariate `X1` on all participants in a study. Based on the value of `Y` and `X1`, we include some participants in a second-phase sample, and further measure covariate `X2` on these participants. This is an example of a two-phase study. We generate data as follows:
+```{r generate-data}
+set.seed(4747)
+p <- 2
+n <- 100
+x <- replicate(p, stats::rnorm(n, 0, 1))
+# apply the function to the x's
+y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
+# make this a two-phase study, assume that X2 is only measured on
+# subjects in the second phase; note C = 1 is inclusion
+C <- rbinom(n, size = 1, prob = exp(y + 0.1 * x[, 1]) / (1 + exp(y + 0.1 * x[, 1])))
+tmp_x <- x
+tmp_x[C == 0, 2] <- NA
+x <- tmp_x
+x_df <- as.data.frame(x)
+full_df <- data.frame(Y = y, x_df, C = C)
+```
+
+If we want to estimate variable importance of `X2`, we need to use the coarsened-data arguments in `vimp`. This can be accomplished in the following manner:
+```{r ipw-vim}
+library("vimp")
+library("SuperLearner")
+# estimate the probability of being included only in the first phase sample
+ipc_weights <- 1 / predict(glm(C ~ y + V1, family = "binomial", data = full_df),
+                           type = "response")
+
+# set up the SL
+learners <- c("SL.glm")
+V <- 2
+
+# estimate vim for X2
+set.seed(1234)
+est <- vim(Y = y, X = x_df, indx = 2, type = "r_squared", run_regression = TRUE,
+           SL.library = learners, alpha = 0.05, delta = 0, C = C, Z = c("Y", "1"),
+           ipc_weights = ipc_weights, cvControl = list(V = V), method = "method.CC_LS")
+```
+
+# References

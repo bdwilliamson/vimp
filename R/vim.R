@@ -255,7 +255,6 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         reduced <- redu_sl_lst$fit
         full_preds <- full_sl_lst$preds
         redu_preds <- redu_sl_lst$preds
-        
         # if variable importance based on the average value under the optimal rule is requested,
         # create a list with the necessary nuisance function estimators
         if (grepl("average_value", full_type)) {
@@ -297,9 +296,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     }
     # calculate the estimators, EIFs
     arg_lst <- list(...)
-    if (!is.null(names(arg_lst)) && any(grepl("cvControl", names(arg_lst)))) {
-        arg_lst$cvControl$stratifyCV <- FALSE
-    }
+    # set method and family to compatible with continuous values, for EIF estimation
+    arg_lst <- process_arg_lst(arg_lst)
     if (full_type == "anova") {
         # no sample-splitting, since no hypothesis testing
         est_lst <- measure_anova(
