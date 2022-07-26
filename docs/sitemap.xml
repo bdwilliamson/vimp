@@ -22,6 +22,9 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/cv_vim.html</loc>
   </url>
   <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/estimate_eif_projection.html</loc>
+  </url>
+  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/est_predictiveness.html</loc>
   </url>
   <url>
@@ -73,6 +76,9 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/print.vim.html</loc>
   </url>
   <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/process_arg_lst.html</loc>
+  </url>
+  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/run_sl.html</loc>
   </url>
   <url>
@@ -82,13 +88,13 @@
     <loc>https://bdwilliamson.github.io/vimp/reference/scale_est.html</loc>
   </url>
   <url>
-    <loc>https://bdwilliamson.github.io/vimp/reference/sp_vim.html</loc>
-  </url>
-  <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/spvim_ics.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/spvim_se.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/reference/sp_vim.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/reference/vim.html</loc>
@@ -128,6 +134,9 @@
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/articles/introduction-to-vimp.html</loc>
+  </url>
+  <url>
+    <loc>https://bdwilliamson.github.io/vimp/articles/ipcw-vim.html</loc>
   </url>
   <url>
     <loc>https://bdwilliamson.github.io/vimp/articles/precomputed-regressions.html</loc>

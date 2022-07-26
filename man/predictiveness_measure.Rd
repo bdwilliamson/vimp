@@ -14,7 +14,7 @@ predictiveness_measure(
   nuisance_estimators = list(),
   C = rep(1, length(y)),
   Z = NULL,
-  folds_Z = rep(1, length(y)),
+  folds_Z = cross_fitting_folds,
   ipc_weights = rep(1, length(y)),
   ipc_fit_type = "SL",
   ipc_eif_preds = numeric(),

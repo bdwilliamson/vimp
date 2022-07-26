@@ -20,7 +20,7 @@ In predictive modeling applications, it is often of interest to determine the re
 
 Specifically, the types of variable importance supported by `vimp` include: difference in population classification accuracy, difference in population area under the receiver operating characteristic curve, difference in population deviance, difference in population R-squared.
 
-More detail may be found in our papers on [R-squared-based variable importance](https://doi.org/10.1111/biom.13392), [general variable importance](https://doi.org/10.1080/01621459.2021.2003200) and [general Shapley-based variable importance](https://proceedings.mlr.press/v119/williamson20a.html).
+More detail may be found in our papers on [R-squared-based variable importance](https://doi.org/10.1111/biom.13392),  [general variable importance](https://doi.org/10.1080/01621459.2021.2003200), and [general Shapley-based variable importance](http://proceedings.mlr.press/v119/williamson20a.html).
 
 This method works on low-dimensional and high-dimensional data.
 
@@ -107,9 +107,9 @@ or the following (for general variable importance parameters):
   @article{williamson2021,
     author={Williamson, BD and Gilbert, PB and Simon, NR and Carone, M},
     title={A general framework for inference on algorithm-agnostic variable importance},
-    journal={Journal of the American Statistical Association (Theory \& Methods)},
+    journal={Journal of the American Statistical Association},
     year={2021},
-    doi={https://doi.org/10.1080/01621459.2021.2003200}
+    doi={10.1080/01621459.2021.2003200}
   }
 ```
 

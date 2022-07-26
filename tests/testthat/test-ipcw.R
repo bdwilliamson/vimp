@@ -99,3 +99,25 @@ test_that("SPVIM with inverse probability of coarsening weights works", {
                       cvControl = list(V = 2), env = environment()))
   expect_equal(est_spvim$est[3], shapley_val_2, tolerance = 0.3, scale = 1)
 })
+# binary SPVIM
+set.seed(1234)
+n <- 250
+W <- runif(n, min = -1,  max = 1)
+A <- rbinom(n, size = 1, prob = plogis(W))
+Y <- rbinom(n,1,plogis(A * (1 + W + 2*W^2) + sin(5*W)))
+propW <- 1/rnorm(n,0.5,0.1)
+censoringW <-  runif(n, min = 1,  max = 5)
+data <- data.frame(W,A,Y, propW, censoringW)
+
+X_for_vim <- data.frame(X1 = W, X2=A)
+
+set.seed(5678)
+test_that("SPVIM with IPW and binary outcome works", {
+  expect_warning(est <- sp_vim(Y = Y, X = X_for_vim, V = 2, type = "auc", 
+                               SL.library = c("SL.mean","SL.glm","SL.xgboost"),
+                               stratified = TRUE, C = rep(1,nrow(X_for_vim)),
+                               ipc_weights = propW*censoringW, ipc_est_type = "ipw",
+                               Z = c("Y","X1","X2")))
+  expect_equal(est$est[2], 0.1, tolerance = 0.05, scale = 1)
+})
+

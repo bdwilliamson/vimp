@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -105,6 +105,9 @@
       <a href="../articles/introduction-to-vimp.html">Introduction to `vimp`</a>
     </li>
     <li>
+      <a href="../articles/ipcw-vim.html">Variable importance with coarsened data</a>
+    </li>
+    <li>
       <a href="../articles/precomputed-regressions.html">Using precomputed regression function estimates in `vimp`</a>
     </li>
     <li>
@@ -119,7 +122,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/bdwilliamson/vimp/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -151,7 +154,8 @@
       <tr>
         <th colspan="2">
           <h2 id="section-estimate-specific-variable-importance-parameters" class="hasAnchor"><a href="#section-estimate-specific-variable-importance-parameters" class="anchor"></a>Estimate specific variable importance parameters</h2>
-          <p class="section-desc"><p>Functions that set default values to measure variable importance via specific parameters.</p></p>
+          <p class="section-desc"><p>Functions that set default values to measure variable importance via
+specific parameters.</p></p>
         </th>
       </tr>
       
@@ -194,7 +198,8 @@
       <tr>
         <th colspan="2">
           <h2 id="section-estimate-variable-importance" class="hasAnchor"><a href="#section-estimate-variable-importance" class="anchor"></a>Estimate variable importance</h2>
-          <p class="section-desc"><p>General functions to measure population variable importance and compute point estimates and confidence intervals.</p></p>
+          <p class="section-desc"><p>General functions to measure population variable importance and
+compute point estimates and confidence intervals.</p></p>
         </th>
       </tr>
       
@@ -273,7 +278,9 @@
       <tr>
         <th colspan="2">
           <h2 id="section-predictiveness-measures" class="hasAnchor"><a href="#section-predictiveness-measures" class="anchor"></a>Predictiveness measures</h2>
-          <p class="section-desc"><p>Functions to measure population predictiveness (e.g., R-squared or AUC) and compute point estimates and confidence intervals for predictiveness.</p></p>
+          <p class="section-desc"><p>Functions to measure population predictiveness (e.g., R-squared or
+AUC) and compute point estimates and confidence intervals for
+predictiveness.</p></p>
         </th>
       </tr>
       
@@ -334,7 +341,9 @@
       <tr>
         <th colspan="2">
           <h2 id="section-aggregate-variable-importance-estimates" class="hasAnchor"><a href="#section-aggregate-variable-importance-estimates" class="anchor"></a>Aggregate variable importance estimates</h2>
-          <p class="section-desc"><p>Functions to aggregate individual variable importance objects (created with calls to <code>vim</code> or <code>cv_vim</code>) by averaging or merging into larger objects.</p></p>
+          <p class="section-desc"><p>Functions to aggregate individual variable importance objects
+(created with calls to <code>vim</code> or <code>cv_vim</code>) by
+averaging or merging into larger objects.</p></p>
         </th>
       </tr>
       
@@ -439,12 +448,25 @@
           <p><code><a href="scale_est.html">scale_est()</a></code> </p>
         </td>
         <td><p>Return an estimator on a different scale</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="process_arg_lst.html">process_arg_lst()</a></code> </p>
+        </td>
+        <td><p>Process argument list for Super Learner estimation of the EIF</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="estimate_eif_projection.html">estimate_eif_projection()</a></code> </p>
+        </td>
+        <td><p>Estimate projection of EIF on fully-observed variables</p></td>
       </tr>
     </tbody><tbody>
       <tr>
         <th colspan="2">
           <h2 id="section-deprecated-functions" class="hasAnchor"><a href="#section-deprecated-functions" class="anchor"></a>Deprecated functions</h2>
-          <p class="section-desc"><p>Functions that are kept for backwards compatability; we recommend using the updated or replacement functions instead.</p></p>
+          <p class="section-desc"><p>Functions that are kept for backwards compatability; we recommend
+using the updated or replacement functions instead.</p></p>
         </th>
       </tr>
       
@@ -515,7 +537,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
