@@ -191,6 +191,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL,
                    ipc_weights = rep(1, length(Y)),
                    ipc_est_type = "aipw", scale_est = TRUE,
+                   nuisance_estimators_full = NULL, 
+                   nuisance_estimators_reduced = NULL, exposure_name = NULL,
                    cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000,
                    boot_interval_type = "perc", ...) {
     # check to see if f1 and f2 are missing
@@ -212,7 +214,9 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     # set up internal data -- based on complete cases only
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
-    X_cc <- subset(X, C == 1)
+    X_cc <- X[C == 1, ]
+    A_cc <- X_cc[, exposure_name]
+    X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
 
