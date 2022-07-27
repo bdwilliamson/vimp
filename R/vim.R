@@ -205,7 +205,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
     X_cc <- X[C == 1, ]
-    A_cc <- X_cc[, exposure_name]
+    if (is.null(exposure_name)) {
+      A_cc <- rep(1, nrow(X_cc))
+    } else {
+      A_cc <- X_cc[, exposure_name] 
+    }
     X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
@@ -350,10 +354,10 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
           SL.library = SL.library
         )
         predictiveness_reduced_object <- predictiveness_measure(
-          type = full_type, y = Y_cc[ss_folds_full == 2, , drop = FALSE],
-          a = A_cc[ss_folds_full == 2], fitted_values = redu_preds,
-          full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_full, function(l) {
-            l[ss_folds_full == 2]
+          type = full_type, y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
+          a = A_cc[ss_folds_redu == 2], fitted_values = redu_preds,
+          full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_reduced, function(l) {
+            l[ss_folds_redu == 2]
           }), C = C[sample_splitting_folds == 2],
           Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
           ipc_weights = ipc_weights[sample_splitting_folds == 2],
