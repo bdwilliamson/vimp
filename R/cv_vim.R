@@ -215,7 +215,11 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
     X_cc <- X[C == 1, ]
-    A_cc <- X_cc[, exposure_name]
+    if (is.null(exposure_name)) {
+      A_cc <- rep(1, nrow(X_cc))
+    } else {
+      A_cc <- X_cc[, exposure_name] 
+    }
     X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
@@ -303,26 +307,26 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                             cross_fitting_folds = cross_fitting_folds,
                             cross_fitted_se = cross_fitted_se, V = V,
                             ss_V = ss_V, cv = TRUE)
-        # if cross_fitted_f1 and/or cross_fitted_f2 aren't lists, make them lists
-        if (!is.list(cross_fitted_f1)) {
+        # if cross_fitted_f1 and/or cross_fitted_f2 aren't vectors, make them vectors
+        if (!is.numeric(cross_fitted_f1)) {
             cross_fitted_f1 <- extract_sampled_split_predictions(
                 preds = cross_fitted_f1, sample_splitting = sample_splitting,
                 sample_splitting_folds = switch((sample_splitting) + 1,
                                                 rep(1, V), sample_splitting_folds),
                 cross_fitting_folds = cross_fitting_folds,
-                full = TRUE
+                full = TRUE, vector = TRUE
             )
         }
-        if (!is.list(cross_fitted_f2)) {
+        if (!is.numeric(cross_fitted_f2)) {
             cross_fitted_f2 <- extract_sampled_split_predictions(
                 preds = cross_fitted_f2, sample_splitting = sample_splitting,
                 sample_splitting_folds = switch((sample_splitting) + 1,
                                                 rep(2, V), sample_splitting_folds),
                 cross_fitting_folds = cross_fitting_folds,
-                full = FALSE
+                full = FALSE, vector = TRUE
             )
         }
-        # set up the fitted value objects (both are lists!)
+        # set up the fitted value objects (both are vectors!)
         full_preds <- cross_fitted_f1
         redu_preds <- cross_fitted_f2
         # non-cross-fitted fits (only used if cross_fitted_se = FALSE)
@@ -411,32 +415,34 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         cf_folds_redu_cc <- cf_folds_redu[C[redu_test] == 1]
         full_test_cc <- full_test[C == 1]
         redu_test_cc <- redu_test[C == 1]
-        predictiveness_full_lst <- do.call(
-            est_predictiveness_cv,
-            args = c(
-                list(fitted_values = full_preds,
-                     y = Y_cc[full_test_cc], full_y = Y_cc,
-                     folds = cf_folds_full_cc, type = full_type, C = C[full_test],
-                     Z = Z_in[full_test, , drop = FALSE],
-                     folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
-                     ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
-                     na.rm = na.rm, SL.library = SL.library),
-                arg_lst
-            ), quote = TRUE
+        predictiveness_full_object <- predictiveness_measure(
+          type = full_type, y = Y_cc[full_test_cc], full_y = Y_cc,
+          a = A_cc[full_test_cc], fitted_values = full_preds[full_test_cc],
+          cross_fitting_folds = cf_folds_full_cc, C = C[full_test],
+          Z = Z_in[full_test, , drop = FALSE],
+          folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
+          ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+          na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
+            nuisance_estimators_full, function(l) {
+              l[full_test_cc]
+            }
+          )
         )
-        predictiveness_redu_lst <- do.call(
-            est_predictiveness_cv,
-            args = c(
-                list(fitted_values = redu_preds,
-                     y = Y_cc[redu_test_cc], full_y = Y_cc,
-                     folds = cf_folds_redu_cc, type = full_type, C = C[redu_test],
-                     Z = Z_in[redu_test, , drop = FALSE],
-                     folds_Z = cf_folds_redu, ipc_weights = ipc_weights[redu_test],
-                     ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
-                     na.rm = na.rm, SL.library = SL.library),
-                arg_lst
-            ), quote = TRUE
+        predictiveness_reduced_object <- predictiveness_measure(
+          type = full_type, y = Y_cc[redu_test_cc], full_y = Y_cc,
+          a = A_cc[redu_test_cc], fitted_values = redu_preds[redu_test_cc],
+          cross_fitting_folds = cf_folds_full_cc, C = C[redu_test],
+          Z = Z_in[redu_test, , drop = FALSE],
+          folds_Z = cf_folds_full, ipc_weights = ipc_weights[redu_test],
+          ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+          na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
+            nuisance_estimators_full, function(l) {
+              l[redu_test_cc]
+            }
+          )
         )
+        predictiveness_full_lst <- estimate(predictiveness_full_object)
+        predictiveness_redu_lst <- estimate(predictiveness_reduced_object)
         eifs_full <- predictiveness_full_lst$all_eifs
         eifs_redu <- predictiveness_redu_lst$all_eifs
         # use non-cross-fitted SE if requested
