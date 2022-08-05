@@ -3,6 +3,7 @@
 ## Major changes
 
 * Predictiveness measures now have their own `S3` class, which makes internal code cleaner and facilitates simpler addition of new predictiveness measures.
+* In this version, the default return value of `extract_sampled_split_predictions` is a vector, not a list. This facilitates proper use in the new version of the package.
 
 ## Minor changes
 

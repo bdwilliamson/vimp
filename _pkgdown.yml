@@ -30,7 +30,6 @@ reference:
     compute point estimates and confidence intervals for predictiveness.
   contents:
   - predictiveness_measure
-  - estimate
   - eif
   - estimate.predictiveness_measure
   - estimate_type_predictiveness
@@ -68,6 +67,8 @@ reference:
   - scale_est
   - process_arg_lst
   - estimate_eif_projection
+  - estimate_nuisances
+  - get_test_set
 - title: Deprecated functions
   desc: Functions that are kept for backwards compatability; we recommend using the
     updated or replacement functions instead.
