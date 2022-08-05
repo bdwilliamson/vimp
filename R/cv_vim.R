@@ -421,7 +421,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         redu_test_cc <- redu_test[C == 1]
         predictiveness_full_object <- predictiveness_measure(
           type = full_type, y = Y_cc[full_test_cc], full_y = Y_cc,
-          a = A_cc[full_test_cc], fitted_values = full_preds[full_test_cc],
+          a = A_cc[full_test_cc], fitted_values = full_preds,
           cross_fitting_folds = cf_folds_full_cc, C = C[full_test],
           Z = Z_in[full_test, , drop = FALSE],
           folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
@@ -434,7 +434,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         )
         predictiveness_reduced_object <- predictiveness_measure(
           type = full_type, y = Y_cc[redu_test_cc], full_y = Y_cc,
-          a = A_cc[redu_test_cc], fitted_values = redu_preds[redu_test_cc],
+          a = A_cc[redu_test_cc], fitted_values = redu_preds,
           cross_fitting_folds = cf_folds_full_cc, C = C[redu_test],
           Z = Z_in[redu_test, , drop = FALSE],
           folds_Z = cf_folds_full, ipc_weights = ipc_weights[redu_test],
