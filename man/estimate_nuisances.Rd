@@ -20,10 +20,11 @@ estimate_nuisances(
 )
 }
 \arguments{
-\item{X}{the covariates.}
+\item{X}{the covariates. If \code{type = "average_value"}, then the exposure
+variable should be part of \code{X}, with its name provided in \code{exposure_name}.}
 
-\item{exposure_name}{(only used if \code{type = "average_value"}) the name of 
-the exposure of interest; binary, with 1 indicating presence of the exposure and 
+\item{exposure_name}{(only used if \code{type = "average_value"}) the name of
+the exposure of interest; binary, with 1 indicating presence of the exposure and
 0 indicating absence of the exposure.}
 
 \item{SL.library}{a character vector of learners to pass to

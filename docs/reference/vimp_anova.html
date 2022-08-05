@@ -56,7 +56,7 @@ are not possible using type = &quot;anova&quot;.
 If you want to do null hypothesis testing
 on an equivalent population parameter, use
 vimp_rsquared instead." />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -88,7 +88,7 @@ vimp_rsquared instead." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -198,15 +198,17 @@ on an equivalent population parameter, use
     </tr>
     <tr>
       <th>X</th>
-      <td><p>the covariates.</p></td>
+      <td><p>the covariates. If <code>type = "average_value"</code>, then the exposure
+variable should be part of <code>X</code>, with its name provided in <code>exposure_name</code>.</p></td>
     </tr>
     <tr>
       <th>cross_fitted_f1</th>
       <td><p>the predicted values on validation data from a
 flexible estimation technique regressing Y on X in the training data. Provided as
-either (a) a list of length V, where each element in the list is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.</p></td>
     </tr>
     <tr>
@@ -214,9 +216,10 @@ If sample-splitting is requested, then these must be estimated specially; see De
       <td><p>the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
 <code>cross_fitted_f1</code>, or (b) Y, on X withholding the columns in <code>indx</code>.
-Provided as either (a) a list of length V, where each object is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+Provided as either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.</p></td>
     </tr>
     <tr>
@@ -280,7 +283,7 @@ unobserved).</p></td>
       <td><p>either (i) NULL (the default, in which case the argument
 <code>C</code> above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to 
+role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., <code>"1"</code>).</p></td>
     </tr>

@@ -50,7 +50,7 @@
 <meta property="og:description" content="Compute estimates of and confidence intervals for nonparametric intrinsic
 variable importance based on the population-level contrast between the oracle
 predictiveness using the feature(s) of interest versus not." />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -82,7 +82,7 @@ predictiveness using the feature(s) of interest versus not." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -174,6 +174,9 @@ predictiveness using the feature(s) of interest versus not.</p>
   ipc_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
   ipc_est_type <span class='op'>=</span> <span class='st'>"aipw"</span>,
   scale_est <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  nuisance_estimators_full <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nuisance_estimators_reduced <span class='op'>=</span> <span class='cn'>NULL</span>,
+  exposure_name <span class='op'>=</span> <span class='cn'>NULL</span>,
   bootstrap <span class='op'>=</span> <span class='cn'>FALSE</span>,
   b <span class='op'>=</span> <span class='fl'>1000</span>,
   boot_interval_type <span class='op'>=</span> <span class='st'>"perc"</span>,
@@ -189,7 +192,8 @@ predictiveness using the feature(s) of interest versus not.</p>
     </tr>
     <tr>
       <th>X</th>
-      <td><p>the covariates.</p></td>
+      <td><p>the covariates. If <code>type = "average_value"</code>, then the exposure
+variable should be part of <code>X</code>, with its name provided in <code>exposure_name</code>.</p></td>
     </tr>
     <tr>
       <th>f1</th>
@@ -277,7 +281,7 @@ unobserved).</p></td>
       <td><p>either (i) NULL (the default, in which case the argument
 <code>C</code> above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to 
+role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., <code>"1"</code>).</p></td>
     </tr>
@@ -301,6 +305,30 @@ Only used if <code>C</code> is not all equal to 1.</p></td>
 Defaults to <code>TRUE</code>.</p></td>
     </tr>
     <tr>
+      <th>nuisance_estimators_full</th>
+      <td><p>(only used if <code>type = "average_value"</code>)
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.</p></td>
+    </tr>
+    <tr>
+      <th>nuisance_estimators_reduced</th>
+      <td><p>(only used if <code>type = "average_value"</code>)
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.</p></td>
+    </tr>
+    <tr>
+      <th>exposure_name</th>
+      <td><p>(only used if <code>type = "average_value"</code>) the name of
+the exposure of interest; binary, with 1 indicating presence of the exposure and
+0 indicating absence of the exposure.</p></td>
+    </tr>
+    <tr>
       <th>bootstrap</th>
       <td><p>should bootstrap-based standard error estimates be computed?
 Defaults to <code>FALSE</code> (and currently may only be used if
@@ -313,8 +341,8 @@ and <code>sample_splitting = FALSE</code>); defaults to 1000.</p></td>
     </tr>
     <tr>
       <th>boot_interval_type</th>
-      <td><p>the type of bootstrap interval (one of <code>"norm"</code>, 
-<code>"basic"</code>, <code>"stud"</code>, <code>"perc"</code>, or <code>"bca"</code>, as in 
+      <td><p>the type of bootstrap interval (one of <code>"norm"</code>,
+<code>"basic"</code>, <code>"stud"</code>, <code>"perc"</code>, or <code>"bca"</code>, as in
 <code>boot{boot.ci}</code>) if requested. Defaults to <code>"perc"</code>.</p></td>
     </tr>
     <tr>
@@ -407,7 +435,7 @@ within the <code>vim</code> object. This results in a list including:</p><dl>
 <span class='r-in'>                                       cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='va'>V</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>full_fitted</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>full_fit</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span></span>
 <span class='r-in'><span class='co'># fit the data with only X1</span></span>
-<span class='r-in'><span class='va'>full_fit_2</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y_2</span>, X <span class='op'>=</span> <span class='va'>x_2</span>, </span>
+<span class='r-in'><span class='va'>full_fit_2</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html'>SuperLearner</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y_2</span>, X <span class='op'>=</span> <span class='va'>x_2</span>,</span>
 <span class='r-in'>                                         SL.library <span class='op'>=</span> <span class='va'>learners</span>,</span>
 <span class='r-in'>                                         cvControl <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>V <span class='op'>=</span> <span class='va'>V</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>full_fitted_2</span> <span class='op'>&lt;-</span> <span class='fu'>SuperLearner</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html'>predict.SuperLearner</a></span><span class='op'>(</span><span class='va'>full_fit_2</span><span class='op'>)</span><span class='op'>$</span><span class='va'>pred</span></span>

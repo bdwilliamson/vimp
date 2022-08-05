@@ -31,8 +31,8 @@ regressing either (a) \code{f1} or (b) Y on X withholding the columns in
 \item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
 and \code{sample_splitting = FALSE}); defaults to 1000.}
 
-\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"}, 
-\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in 
+\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"},
+\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
 \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
 
 \item{alpha}{the level to compute the confidence interval at.

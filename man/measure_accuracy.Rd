@@ -17,6 +17,7 @@ measure_accuracy(
   scale = "identity",
   na.rm = FALSE,
   nuisance_estimators = NULL,
+  a = NULL,
   ...
 )
 }
@@ -60,6 +61,8 @@ apply the correction, and back-transform).}
 (defaults to \code{FALSE})}
 
 \item{nuisance_estimators}{not used; for compatibility with \code{measure_average_value}.}
+
+\item{a}{not used; for compatibility with \code{measure_average_value}.}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }

@@ -51,7 +51,7 @@
 nonparametric intrinsic variable importance based on the
 population-level contrast between the oracle predictiveness using the
 feature(s) of interest versus not." />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -83,7 +83,7 @@ feature(s) of interest versus not." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -180,6 +180,9 @@ feature(s) of interest versus not.</p>
   ipc_weights <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span><span class='op'>)</span>,
   ipc_est_type <span class='op'>=</span> <span class='st'>"aipw"</span>,
   scale_est <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  nuisance_estimators_full <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nuisance_estimators_reduced <span class='op'>=</span> <span class='cn'>NULL</span>,
+  exposure_name <span class='op'>=</span> <span class='cn'>NULL</span>,
   cross_fitted_se <span class='op'>=</span> <span class='cn'>TRUE</span>,
   bootstrap <span class='op'>=</span> <span class='cn'>FALSE</span>,
   b <span class='op'>=</span> <span class='fl'>1000</span>,
@@ -196,15 +199,17 @@ feature(s) of interest versus not.</p>
     </tr>
     <tr>
       <th>X</th>
-      <td><p>the covariates.</p></td>
+      <td><p>the covariates. If <code>type = "average_value"</code>, then the exposure
+variable should be part of <code>X</code>, with its name provided in <code>exposure_name</code>.</p></td>
     </tr>
     <tr>
       <th>cross_fitted_f1</th>
       <td><p>the predicted values on validation data from a
 flexible estimation technique regressing Y on X in the training data. Provided as
-either (a) a list of length V, where each element in the list is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.</p></td>
     </tr>
     <tr>
@@ -212,9 +217,10 @@ If sample-splitting is requested, then these must be estimated specially; see De
       <td><p>the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
 <code>cross_fitted_f1</code>, or (b) Y, on X withholding the columns in <code>indx</code>.
-Provided as either (a) a list of length V, where each object is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+Provided as either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.</p></td>
     </tr>
     <tr>
@@ -318,7 +324,7 @@ unobserved).</p></td>
       <td><p>either (i) NULL (the default, in which case the argument
 <code>C</code> above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to 
+role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., <code>"1"</code>).</p></td>
     </tr>
@@ -342,6 +348,30 @@ Only used if <code>C</code> is not all equal to 1.</p></td>
 Defaults to <code>TRUE</code>.</p></td>
     </tr>
     <tr>
+      <th>nuisance_estimators_full</th>
+      <td><p>(only used if <code>type = "average_value"</code>)
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.</p></td>
+    </tr>
+    <tr>
+      <th>nuisance_estimators_reduced</th>
+      <td><p>(only used if <code>type = "average_value"</code>)
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.</p></td>
+    </tr>
+    <tr>
+      <th>exposure_name</th>
+      <td><p>(only used if <code>type = "average_value"</code>) the name of
+the exposure of interest; binary, with 1 indicating presence of the exposure and
+0 indicating absence of the exposure.</p></td>
+    </tr>
+    <tr>
       <th>cross_fitted_se</th>
       <td><p>should we use cross-fitting to estimate the standard
 errors (<code>TRUE</code>, the default) or not (<code>FALSE</code>)?</p></td>
@@ -359,8 +389,8 @@ and <code>sample_splitting = FALSE</code>); defaults to 1000.</p></td>
     </tr>
     <tr>
       <th>boot_interval_type</th>
-      <td><p>the type of bootstrap interval (one of <code>"norm"</code>, 
-<code>"basic"</code>, <code>"stud"</code>, <code>"perc"</code>, or <code>"bca"</code>, as in 
+      <td><p>the type of bootstrap interval (one of <code>"norm"</code>,
+<code>"basic"</code>, <code>"stud"</code>, <code>"perc"</code>, or <code>"bca"</code>, as in
 <code>boot{boot.ci}</code>) if requested. Defaults to <code>"perc"</code>.</p></td>
     </tr>
     <tr>
@@ -500,17 +530,20 @@ within the <code>vim</code> object. This results in a list including:</p><dl>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>1234</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>sample_splitting_folds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='make_folds.html'>make_folds</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/unique.html'>unique</a></span><span class='op'>(</span><span class='va'>cross_fitting_folds</span><span class='op'>)</span>, V <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>full_cv_preds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='extract_sampled_split_predictions.html'>extract_sampled_split_predictions</a></span><span class='op'>(</span></span>
-<span class='r-in'>    <span class='va'>full_cv_fit</span>, sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>TRUE</span></span>
+<span class='r-in'>    <span class='va'>full_cv_fit</span>, sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>TRUE</span>, vector <span class='op'>=</span> <span class='cn'>TRUE</span></span>
 <span class='r-in'><span class='op'>)</span></span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in extract_sampled_split_predictions(full_cv_fit, sample_splitting_folds = sample_splitting_folds,     full = TRUE, vector = TRUE):</span> unused argument (vector = TRUE)</span>
 <span class='r-in'><span class='va'>reduced_cv_preds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='extract_sampled_split_predictions.html'>extract_sampled_split_predictions</a></span><span class='op'>(</span></span>
-<span class='r-in'>    <span class='va'>reduced_cv_fit</span>, sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>FALSE</span></span>
+<span class='r-in'>    <span class='va'>reduced_cv_fit</span>, sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>, full <span class='op'>=</span> <span class='cn'>FALSE</span>, vector <span class='op'>=</span> <span class='cn'>TRUE</span></span>
 <span class='r-in'><span class='op'>)</span></span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in extract_sampled_split_predictions(reduced_cv_fit, sample_splitting_folds = sample_splitting_folds,     full = FALSE, vector = TRUE):</span> unused argument (vector = TRUE)</span>
 <span class='r-in'><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>5678</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>est</span> <span class='op'>&lt;-</span> <span class='fu'>cv_vim</span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>y</span>, cross_fitted_f1 <span class='op'>=</span> <span class='va'>full_cv_preds</span>,</span>
 <span class='r-in'>cross_fitted_f2 <span class='op'>=</span> <span class='va'>reduced_cv_preds</span>, indx <span class='op'>=</span> <span class='fl'>2</span>, delta <span class='op'>=</span> <span class='fl'>0</span>, V <span class='op'>=</span> <span class='va'>V</span>, type <span class='op'>=</span> <span class='st'>"r_squared"</span>,</span>
 <span class='r-in'>cross_fitting_folds <span class='op'>=</span> <span class='va'>cross_fitting_folds</span>,</span>
 <span class='r-in'>sample_splitting_folds <span class='op'>=</span> <span class='va'>sample_splitting_folds</span>,</span>
 <span class='r-in'>run_regression <span class='op'>=</span> <span class='cn'>FALSE</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, na.rm <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in check_inputs(Y, X, cross_fitted_f1, cross_fitted_f2, indx):</span> object 'full_cv_preds' not found</span>
 <span class='r-in'></span>
 </pre>
   </div>

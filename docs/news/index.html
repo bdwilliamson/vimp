@@ -47,7 +47,7 @@
 
 
 <meta property="og:title" content="Changelog" />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -79,7 +79,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -143,20 +143,64 @@
       <small>Source: <a href='https://github.com/bdwilliamson/vimp/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="vimp-2210" class="section level1">
-<h1 class="page-header" data-toc-text="2.2.10">
-<a href="#vimp-2210" class="anchor"></a>vimp 2.2.10<small> Unreleased </small>
+    <div id="vimp-230" class="section level1">
+<h1 class="page-header" data-toc-text="2.3.0">
+<a href="#vimp-230" class="anchor"></a>vimp 2.3.0<small> Unreleased </small>
 </h1>
 <div id="major-changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes" class="anchor"></a>Major changes</h2>
 <ul>
-<li>None</li>
+<li>Predictiveness measures now have their own <code>S3</code> class,
+which makes internal code cleaner and facilitates simpler addition of
+new predictiveness measures.</li>
 </ul>
 </div>
 <div id="minor-changes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#minor-changes" class="anchor"></a>Minor changes</h2>
+<ul>
+<li>None</li>
+</ul>
+</div>
+</div>
+    <div id="vimp-2211" class="section level1">
+<h1 class="page-header" data-toc-text="2.2.11">
+<a href="#vimp-2211" class="anchor"></a>vimp 2.2.11<small> Unreleased </small>
+</h1>
+<div id="major-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
+<ul>
+<li>You can now compute variable importance using the average value
+under the optimal treatment rule. This includes functions
+<code>measure_avg_value</code> (computes the average value and efficient
+influence function) and updates to <code>vim</code>,
+<code>cv_vim</code>, and <code>sp_vim</code>.</li>
+</ul>
+</div>
+<div id="minor-changes-1" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
+<ul>
+<li>None</li>
+</ul>
+</div>
+</div>
+    <div id="vimp-2210" class="section level1">
+<h1 class="page-header" data-toc-text="2.2.10">
+<a href="#vimp-2210" class="anchor"></a>vimp 2.2.10<small> Unreleased </small>
+</h1>
+<div id="major-changes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-2" class="anchor"></a>Major changes</h2>
+<ul>
+<li>None</li>
+</ul>
+</div>
+<div id="minor-changes-2" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-2" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Specify <code>method</code> and <code>family</code> for weighted EIF
 estimation within outer functions (<code>vim</code>,
@@ -171,46 +215,6 @@ outcomes.</li>
 <h1 class="page-header" data-toc-text="2.2.9">
 <a href="#vimp-229" class="anchor"></a>vimp 2.2.9<small> Unreleased </small>
 </h1>
-<div id="major-changes-1" class="section level2">
-<h2 class="hasAnchor">
-<a href="#major-changes-1" class="anchor"></a>Major changes</h2>
-<ul>
-<li>None</li>
-</ul>
-</div>
-<div id="minor-changes-1" class="section level2">
-<h2 class="hasAnchor">
-<a href="#minor-changes-1" class="anchor"></a>Minor changes</h2>
-<ul>
-<li>Allow for unequal numbers of cross-fitting folds between full and
-reduced predictiveness</li>
-</ul>
-</div>
-</div>
-    <div id="vimp-228" class="section level1">
-<h1 class="page-header" data-toc-text="2.2.8">
-<a href="#vimp-228" class="anchor"></a>vimp 2.2.8<small> Unreleased </small>
-</h1>
-<div id="major-changes-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#major-changes-2" class="anchor"></a>Major changes</h2>
-<ul>
-<li>None</li>
-</ul>
-</div>
-<div id="minor-changes-2" class="section level2">
-<h2 class="hasAnchor">
-<a href="#minor-changes-2" class="anchor"></a>Minor changes</h2>
-<ul>
-<li>Return objects in <code>sp_vim</code> that are necessary to compute
-the test statistics</li>
-</ul>
-</div>
-</div>
-    <div id="vimp-227" class="section level1">
-<h1 class="page-header" data-toc-text="2.2.7">
-<a href="#vimp-227" class="anchor"></a>vimp 2.2.7<small> Unreleased </small>
-</h1>
 <div id="major-changes-3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#major-changes-3" class="anchor"></a>Major changes</h2>
@@ -221,6 +225,46 @@ the test statistics</li>
 <div id="minor-changes-3" class="section level2">
 <h2 class="hasAnchor">
 <a href="#minor-changes-3" class="anchor"></a>Minor changes</h2>
+<ul>
+<li>Allow for unequal numbers of cross-fitting folds between full and
+reduced predictiveness</li>
+</ul>
+</div>
+</div>
+    <div id="vimp-228" class="section level1">
+<h1 class="page-header" data-toc-text="2.2.8">
+<a href="#vimp-228" class="anchor"></a>vimp 2.2.8<small> Unreleased </small>
+</h1>
+<div id="major-changes-4" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-4" class="anchor"></a>Major changes</h2>
+<ul>
+<li>None</li>
+</ul>
+</div>
+<div id="minor-changes-4" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-4" class="anchor"></a>Minor changes</h2>
+<ul>
+<li>Return objects in <code>sp_vim</code> that are necessary to compute
+the test statistics</li>
+</ul>
+</div>
+</div>
+    <div id="vimp-227" class="section level1">
+<h1 class="page-header" data-toc-text="2.2.7">
+<a href="#vimp-227" class="anchor"></a>vimp 2.2.7<small> Unreleased </small>
+</h1>
+<div id="major-changes-5" class="section level2">
+<h2 class="hasAnchor">
+<a href="#major-changes-5" class="anchor"></a>Major changes</h2>
+<ul>
+<li>None</li>
+</ul>
+</div>
+<div id="minor-changes-5" class="section level2">
+<h2 class="hasAnchor">
+<a href="#minor-changes-5" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Allow <code>parallel</code> argument to be specified for calls to
 <code>CV.SuperLearner</code> but not for calls to
@@ -233,16 +277,16 @@ the test statistics</li>
 <h1 class="page-header" data-toc-text="2.2.6">
 <a href="#vimp-226" class="anchor"></a>vimp 2.2.6<small> Unreleased </small>
 </h1>
-<div id="major-changes-4" class="section level2">
+<div id="major-changes-6" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-4" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-6" class="anchor"></a>Major changes</h2>
 <ul>
 <li>None</li>
 </ul>
 </div>
-<div id="minor-changes-4" class="section level2">
+<div id="minor-changes-6" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-4" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-6" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Allow different types of bootstrap interval (e.g., percentile) to be
 computed</li>
@@ -266,16 +310,16 @@ externally</li>
 <h1 class="page-header" data-toc-text="2.2.5">
 <a href="#vimp-225" class="anchor"></a>vimp 2.2.5<small> 2021-08-16 </small>
 </h1>
-<div id="major-changes-5" class="section level2">
+<div id="major-changes-7" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-5" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-7" class="anchor"></a>Major changes</h2>
 <ul>
 <li>None</li>
 </ul>
 </div>
-<div id="minor-changes-5" class="section level2">
+<div id="minor-changes-7" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-5" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-7" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Update how <code>cv_vim</code> handles an odd number of outer folds
 being passed with pre-computed regression function estimates. Now, you
@@ -289,16 +333,16 @@ importance estimates.</li>
 <h1 class="page-header" data-toc-text="2.2.4">
 <a href="#vimp-224" class="anchor"></a>vimp 2.2.4<small> 2021-08-04 </small>
 </h1>
-<div id="major-changes-6" class="section level2">
+<div id="major-changes-8" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-6" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-8" class="anchor"></a>Major changes</h2>
 <ul>
 <li>None</li>
 </ul>
 </div>
-<div id="minor-changes-6" class="section level2">
+<div id="minor-changes-8" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-6" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-8" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Allow for odd number of folds in cross-fit and sampled-split VIM
 estimation</li>
@@ -311,9 +355,9 @@ estimation</li>
 <h1 class="page-header" data-toc-text="2.2.3">
 <a href="#vimp-223" class="anchor"></a>vimp 2.2.3<small> 2021-07-20 </small>
 </h1>
-<div id="major-changes-7" class="section level2">
+<div id="major-changes-9" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-7" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-9" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Updated computation of standard errors. Some of the changes in
 v2.2.0 (namely, that the efficient influence function can be estimated
@@ -326,9 +370,9 @@ larger portion of the data than in versions prior to v2.2.0 when
 cross-fitting is used.</li>
 </ul>
 </div>
-<div id="minor-changes-7" class="section level2">
+<div id="minor-changes-9" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-7" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-9" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Added explicit-value tests for point estimates throughout
 testthat/</li>
@@ -343,14 +387,14 @@ testthat/</li>
 <h1 class="page-header" data-toc-text="2.2.2">
 <a href="#vimp-222" class="anchor"></a>vimp 2.2.2<small> 2021-06-14 </small>
 </h1>
-<div id="major-changes-8" class="section level2">
+<div id="major-changes-10" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-8" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-10" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-8" class="section level2">
+<div id="minor-changes-10" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-8" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-10" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Increased tolerance for AUC vs CV-AUC</li>
 </ul>
@@ -360,18 +404,18 @@ testthat/</li>
 <h1 class="page-header" data-toc-text="2.2.1">
 <a href="#vimp-221" class="anchor"></a>vimp 2.2.1<small> 2021-06-03 </small>
 </h1>
-<div id="major-changes-9" class="section level2">
+<div id="major-changes-11" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-9" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-11" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Updated the internals of <code>measure_auc</code> to hew more
 closely to <code>ROCR</code> and <code>cvAUC</code>, using computational
 tricks to speed up weighted AUC and EIF computation.</li>
 </ul>
 </div>
-<div id="minor-changes-9" class="section level2">
+<div id="minor-changes-11" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-9" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-11" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Added tests for IPW AUC</li>
 </ul>
@@ -381,9 +425,9 @@ tricks to speed up weighted AUC and EIF computation.</li>
 <h1 class="page-header" data-toc-text="2.2.0">
 <a href="#vimp-220" class="anchor"></a>vimp 2.2.0<small> Unreleased </small>
 </h1>
-<div id="major-changes-10" class="section level2">
+<div id="major-changes-12" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-10" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-12" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Added argument <code>cross_fitted_se</code> to <code>cv_vim</code>
 and <code>sp_vim</code>; this logical option allows the standard error
@@ -428,9 +472,9 @@ affects both <code>cv_vim</code> and <code>sp_vim</code>. If
 cross-fitting.</li>
 </ul>
 </div>
-<div id="minor-changes-10" class="section level2">
+<div id="minor-changes-12" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-10" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-12" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Use <code>&gt;=</code> in computing the numerator of AUC with
 inverse probability weights</li>
@@ -445,14 +489,14 @@ mismatches)</li>
 <h1 class="page-header" data-toc-text="2.1.10">
 <a href="#vimp-2110" class="anchor"></a>vimp 2.1.10<small> Unreleased </small>
 </h1>
-<div id="major-changes-11" class="section level2">
+<div id="major-changes-13" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-11" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-13" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-11" class="section level2">
+<div id="minor-changes-13" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-11" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-13" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Automatically determine the <code>family</code> if it isn’t
 specified; use <code><a href="https://rdrr.io/r/stats/family.html">stats::binomial()</a></code> if there are only two
@@ -465,14 +509,14 @@ unique outcome values, otherwise use <code><a href="https://rdrr.io/r/stats/fami
 <h1 class="page-header" data-toc-text="2.1.9">
 <a href="#vimp-219" class="anchor"></a>vimp 2.1.9<small> 2021-03-01 </small>
 </h1>
-<div id="major-changes-12" class="section level2">
+<div id="major-changes-14" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-12" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-14" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-12" class="section level2">
+<div id="minor-changes-14" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-12" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-14" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Update sensitivity and specificity to use weak inequalities rather
 than strict inequalities (better aligns with <code>cvAUC</code>)</li>
@@ -492,14 +536,14 @@ small-sample differences)</li>
 <h1 class="page-header" data-toc-text="2.1.8">
 <a href="#vimp-218" class="anchor"></a>vimp 2.1.8<small> Unreleased </small>
 </h1>
-<div id="major-changes-13" class="section level2">
+<div id="major-changes-15" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-13" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-15" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-13" class="section level2">
+<div id="minor-changes-15" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-13" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-15" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Allow the user to specify either an augmented inverse probability of
 coarsening (AIPW, the default) estimator in coarsened-at-random
@@ -515,14 +559,14 @@ functions)</li>
 <h1 class="page-header" data-toc-text="2.1.7">
 <a href="#vimp-217" class="anchor"></a>vimp 2.1.7<small> Unreleased </small>
 </h1>
-<div id="major-changes-14" class="section level2">
+<div id="major-changes-16" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-14" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-16" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-14" class="section level2">
+<div id="minor-changes-16" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-14" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-16" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Updated internals so that stratified estimation can be performed in
 outer regression functions for binary outcomes, but that in the case of
@@ -539,14 +583,14 @@ samples)</li>
 <h1 class="page-header" data-toc-text="2.1.6">
 <a href="#vimp-216" class="anchor"></a>vimp 2.1.6<small> 2021-01-09 </small>
 </h1>
-<div id="major-changes-15" class="section level2">
+<div id="major-changes-17" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-15" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-17" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-15" class="section level2">
+<div id="minor-changes-17" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-15" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-17" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Updated links to DOIs and package vignettes throughout</li>
 <li>Updated all tests in <code>testthat/</code> to use <code>glm</code>
@@ -562,14 +606,14 @@ though the regression is now misspecified for the truth)</li>
 <h1 class="page-header" data-toc-text="2.1.5">
 <a href="#vimp-215" class="anchor"></a>vimp 2.1.5<small> Unreleased </small>
 </h1>
-<div id="major-changes-16" class="section level2">
+<div id="major-changes-18" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-16" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-18" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-16" class="section level2">
+<div id="minor-changes-18" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-16" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-18" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Fixed a bug where if the number of rows in the different folds (for
 cross-fitting or sample-splitting) differed, the matrix of fold-specific
@@ -586,14 +630,14 @@ EIFs had the wrong number of rows</li>
 <h1 class="page-header" data-toc-text="2.1.4">
 <a href="#vimp-214" class="anchor"></a>vimp 2.1.4<small> Unreleased </small>
 </h1>
-<div id="major-changes-17" class="section level2">
+<div id="major-changes-19" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-17" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-19" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-17" class="section level2">
+<div id="minor-changes-19" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-17" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-19" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Fixed a bug where if the number of rows in the different folds (for
 cross-fitting or sample-splitting) differed, the EIF had the wrong
@@ -605,14 +649,14 @@ number of rows</li>
 <h1 class="page-header" data-toc-text="2.1.3">
 <a href="#vimp-213" class="anchor"></a>vimp 2.1.3<small> Unreleased </small>
 </h1>
-<div id="major-changes-18" class="section level2">
+<div id="major-changes-20" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-18" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-20" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-18" class="section level2">
+<div id="minor-changes-20" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-18" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-20" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Compute logit transforms using <code><a href="https://rdrr.io/r/stats/Logistic.html">stats::qlogis</a></code> and
 <code><a href="https://rdrr.io/r/stats/Logistic.html">stats::plogis</a></code> rather than bespoke functions</li>
@@ -623,14 +667,14 @@ number of rows</li>
 <h1 class="page-header" data-toc-text="2.1.2">
 <a href="#vimp-212" class="anchor"></a>vimp 2.1.2<small> Unreleased </small>
 </h1>
-<div id="major-changes-19" class="section level2">
+<div id="major-changes-21" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-19" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-21" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-19" class="section level2">
+<div id="minor-changes-21" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-19" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-21" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Bugfix from 2.1.1.1: compute the correction correctly</li>
 </ul>
@@ -640,14 +684,14 @@ number of rows</li>
 <h1 class="page-header" data-toc-text="2.1.1.1">
 <a href="#vimp-2111" class="anchor"></a>vimp 2.1.1.1<small> Unreleased </small>
 </h1>
-<div id="major-changes-20" class="section level2">
+<div id="major-changes-22" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-20" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-22" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-20" class="section level2">
+<div id="minor-changes-22" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-20" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-22" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Allow confidence interval (CI) and inverse probability of coarsening
 corrections on different scales (e.g., log) to ensure that estimates and
@@ -659,9 +703,9 @@ CIs lie in the parameter space</li>
 <h1 class="page-header" data-toc-text="2.1.1">
 <a href="#vimp-211" class="anchor"></a>vimp 2.1.1<small> Unreleased </small>
 </h1>
-<div id="major-changes-21" class="section level2">
+<div id="major-changes-23" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-21" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-23" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Compute one-step estimators of variable importance if inverse
 probability of censoring weights are entered. You input the weights,
@@ -669,9 +713,9 @@ indicator of coarsening, and observed variables, and <code>vimp</code>
 will handle the rest.</li>
 </ul>
 </div>
-<div id="minor-changes-21" class="section level2">
+<div id="minor-changes-23" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-21" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-23" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Created new vignettes “Types of VIMs” and “Using precomputed
 regression function estimates in <code>vimp</code>”</li>
@@ -708,16 +752,16 @@ probability of coarsening (e.g., censoring) weights</li>
 <h1 class="page-header" data-toc-text="2.1.0">
 <a href="#vimp-210" class="anchor"></a>vimp 2.1.0<small> 2020-06-18 </small>
 </h1>
-<div id="major-changes-22" class="section level2">
+<div id="major-changes-24" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-22" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-24" class="anchor"></a>Major changes</h2>
 <p>Added functions <code>sp_vim</code>, <code>sample_subsets</code>,
 <code>spvim_ics</code>, <code>spvim_se</code>; these allow computation
 of Shapely Population Variable Importance (SPVIM)</p>
 </div>
-<div id="minor-changes-22" class="section level2">
+<div id="minor-changes-24" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-22" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-24" class="anchor"></a>Minor changes</h2>
 <p>None</p>
 </div>
 </div>
@@ -725,9 +769,9 @@ of Shapely Population Variable Importance (SPVIM)</p>
 <h1 class="page-header" data-toc-text="2.0.2">
 <a href="#vimp-202" class="anchor"></a>vimp 2.0.2<small> 2020-04-27 </small>
 </h1>
-<div id="major-changes-23" class="section level2">
+<div id="major-changes-25" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-23" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-25" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Removed functions <code>sp_vim</code> and helper functions
 <code>run_sl</code>, <code>sample_subsets</code>,
@@ -737,9 +781,9 @@ future release</li>
 <code>cv_vim</code> supersedes this function</li>
 </ul>
 </div>
-<div id="minor-changes-23" class="section level2">
+<div id="minor-changes-25" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-23" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-25" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Modify examples to pass all CRAN checks</li>
 </ul>
@@ -749,9 +793,9 @@ future release</li>
 <h1 class="page-header" data-toc-text="2.0.1">
 <a href="#vimp-201" class="anchor"></a>vimp 2.0.1<small> 2020-04-11 </small>
 </h1>
-<div id="major-changes-24" class="section level2">
+<div id="major-changes-26" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-24" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-26" class="anchor"></a>Major changes</h2>
 <ul>
 <li>Added new function <code>sp_vim</code> and helper functions
 <code>run_sl</code>, <code>sample_subsets</code>,
@@ -783,9 +827,9 @@ cross-validated measures of predictiveness), along with their influence
 functions</li>
 </ul>
 </div>
-<div id="minor-changes-24" class="section level2">
+<div id="minor-changes-26" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-24" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-26" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Return tibbles in cv_vim, vim, merge_vim, and average_vim</li>
 </ul>
@@ -795,14 +839,14 @@ functions</li>
 <h1 class="page-header" data-toc-text="1.1.6">
 <a href="#vimp-116" class="anchor"></a>vimp 1.1.6<small> 2019-08-26 </small>
 </h1>
-<div id="major-changes-25" class="section level2">
+<div id="major-changes-27" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-25" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-27" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-25" class="section level2">
+<div id="minor-changes-27" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-25" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-27" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Changed tests to handle <code>gam</code> package update by switching
 library to <code>SL.xgboost</code>, <code>SL.step</code>, and
@@ -816,14 +860,14 @@ library to <code>SL.xgboost</code>, <code>SL.step</code>, and
 <h1 class="page-header" data-toc-text="1.1.5">
 <a href="#vimp-115" class="anchor"></a>vimp 1.1.5<small> 2019-08-09 </small>
 </h1>
-<div id="major-changes-26" class="section level2">
+<div id="major-changes-28" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-26" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-28" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-26" class="section level2">
+<div id="minor-changes-28" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-26" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-28" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>Attempt to handle <code>gam</code> package update in unit tests</li>
 </ul>
@@ -833,14 +877,14 @@ library to <code>SL.xgboost</code>, <code>SL.step</code>, and
 <h1 class="page-header" data-toc-text="1.1.4">
 <a href="#vimp-114" class="anchor"></a>vimp 1.1.4<small> 2018-10-14 </small>
 </h1>
-<div id="major-changes-27" class="section level2">
+<div id="major-changes-29" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-27" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-29" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-27" class="section level2">
+<div id="minor-changes-29" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-27" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-29" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>
 <code>cv_vim</code> and<code>cv_vim_nodonsker</code> now return the
@@ -852,14 +896,14 @@ cross-validation folds used within the function</li>
 <h1 class="page-header" data-toc-text="1.1.3">
 <a href="#vimp-113" class="anchor"></a>vimp 1.1.3<small> 2018-10-02 </small>
 </h1>
-<div id="major-changes-28" class="section level2">
+<div id="major-changes-30" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-28" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-30" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-28" class="section level2">
+<div id="minor-changes-30" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-28" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-30" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>users may now only specify a <code>family</code> for the top-level
 SuperLearner if <code>run_regression = TRUE</code>; in call cases, the
@@ -874,9 +918,9 @@ outcome, rather than the first-stage fitted values</li>
 <h1 class="page-header" data-toc-text="1.1.2">
 <a href="#vimp-112" class="anchor"></a>vimp 1.1.2<small> 2018-09-20 </small>
 </h1>
-<div id="major-changes-29" class="section level2">
+<div id="major-changes-31" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-29" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-31" class="anchor"></a>Major changes</h2>
 <ul>
 <li>added function <code>cv_vim_nodonsker</code>, which computes the
 cross-validated naive estimator and the update on the same, single,
@@ -884,9 +928,9 @@ validation fold. This does not allow for relaxation of the Donsker class
 conditions.</li>
 </ul>
 </div>
-<div id="minor-changes-29" class="section level2">
+<div id="minor-changes-31" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-29" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-31" class="anchor"></a>Minor changes</h2>
 <p>None</p>
 </div>
 </div>
@@ -894,9 +938,9 @@ conditions.</li>
 <h1 class="page-header" data-toc-text="1.1.1">
 <a href="#vimp-111" class="anchor"></a>vimp 1.1.1<small> Unreleased </small>
 </h1>
-<div id="major-changes-30" class="section level2">
+<div id="major-changes-32" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-30" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-32" class="anchor"></a>Major changes</h2>
 <ul>
 <li>added function <code>two_validation_set_cv</code>, which sets up
 folds for V-fold cross-validation with two validation sets per fold</li>
@@ -911,9 +955,9 @@ estimator is not biased high (due to a higher R^2 on the training
 data)</li>
 </ul>
 </div>
-<div id="minor-changes-30" class="section level2">
+<div id="minor-changes-32" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-30" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-32" class="anchor"></a>Minor changes</h2>
 <p>None</p>
 </div>
 </div>
@@ -921,14 +965,14 @@ data)</li>
 <h1 class="page-header" data-toc-text="1.1.0">
 <a href="#vimp-110" class="anchor"></a>vimp 1.1.0<small> 2018-08-09 </small>
 </h1>
-<div id="major-changes-31" class="section level2">
+<div id="major-changes-33" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-31" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-33" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-31" class="section level2">
+<div id="minor-changes-33" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-31" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-33" class="anchor"></a>Minor changes</h2>
 <ul>
 <li>changed the functionality of <code>cv_vim</code>: now, the
 cross-validated naive estimator is computed on the training data for
@@ -943,9 +987,9 @@ corrected estimator</li>
 <h1 class="page-header" data-toc-text="1.0.0">
 <a href="#vimp-100" class="anchor"></a>vimp 1.0.0<small> 2018-06-24 </small>
 </h1>
-<div id="major-changes-32" class="section level2">
+<div id="major-changes-34" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-32" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-34" class="anchor"></a>Major changes</h2>
 <ul>
 <li>removed function <code>vim</code>, replaced with
 individual-parameter functions</li>
@@ -966,14 +1010,14 @@ package</li>
 <h1 class="page-header" data-toc-text="0.0.3">
 <a href="#vimp-003" class="anchor"></a>vimp 0.0.3<small> Unreleased </small>
 </h1>
-<div id="major-changes-33" class="section level2">
+<div id="major-changes-35" class="section level2">
 <h2 class="hasAnchor">
-<a href="#major-changes-33" class="anchor"></a>Major changes</h2>
+<a href="#major-changes-35" class="anchor"></a>Major changes</h2>
 <p>None</p>
 </div>
-<div id="minor-changes-32" class="section level2">
+<div id="minor-changes-34" class="section level2">
 <h2 class="hasAnchor">
-<a href="#minor-changes-32" class="anchor"></a>Minor changes</h2>
+<a href="#minor-changes-34" class="anchor"></a>Minor changes</h2>
 <p>Bugfixes etc.</p>
 </div>
 </div>

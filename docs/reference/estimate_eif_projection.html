@@ -48,7 +48,7 @@
 
 <meta property="og:title" content="Estimate projection of EIF on fully-observed variables — estimate_eif_projection" />
 <meta property="og:description" content="Estimate projection of EIF on fully-observed variables" />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -149,7 +149,14 @@
     <p>Estimate projection of EIF on fully-observed variables</p>
     </div>
 
-    <pre class="usage"><span class='fu'>estimate_eif_projection</span><span class='op'>(</span><span class='va'>obs_grad</span>, <span class='va'>C</span>, <span class='va'>Z</span>, <span class='va'>ipc_fit_type</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>estimate_eif_projection</span><span class='op'>(</span>
+  obs_grad <span class='op'>=</span> <span class='cn'>NULL</span>,
+  C <span class='op'>=</span> <span class='cn'>NULL</span>,
+  Z <span class='op'>=</span> <span class='cn'>NULL</span>,
+  ipc_fit_type <span class='op'>=</span> <span class='cn'>NULL</span>,
+  ipc_eif_preds <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
