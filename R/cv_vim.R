@@ -216,7 +216,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     Y_cc <- cc_lst$Y
     X_cc <- X[C == 1, ]
     if (is.null(exposure_name)) {
-      A_cc <- rep(1, nrow(X_cc))
+      A_cc <- rep(1, length(Y_cc))
     } else {
       A_cc <- X_cc[, exposure_name] 
     }
@@ -259,7 +259,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = 1,
                               verbose = FALSE, weights = weights_cc,
-                              cross_fitted_se = cross_fitted_se, ...)
+                              cross_fitted_se = cross_fitted_se, 
+                              vector = TRUE, ...)
         red_split <- switch((sample_splitting) + 1, 1, 2)
         red_Y <- Y_cc
         if (full_type == "r_squared" || full_type == "anova") {
@@ -270,7 +271,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                         sample_splitting = FALSE,
                                         ss_folds = non_ss_folds, split = 2,
                                         verbose = FALSE, weights = weights_cc,
-                                        cross_fitted_se = FALSE, ...)
+                                        cross_fitted_se = FALSE, 
+                                        vector = TRUE, ...)
                 red_Y <- matrix(full_sl_lst_2$preds, ncol = 1)
             } else {
                 full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1,
@@ -279,7 +281,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                         ss_folds = rep(2, nrow(Y_cc)), split = 2,
                                         cv_folds = cross_fitting_folds_cc,
                                         verbose = FALSE, weights = weights_cc,
-                                        cross_fitted_se = FALSE, ...)
+                                        cross_fitted_se = FALSE, 
+                                        vector = TRUE, ...)
                 red_Y <- matrix(full_sl_lst_2$preds, ncol = 1)
             }
             if (length(unique(red_Y)) == 1) {
@@ -292,7 +295,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = red_split,
                               verbose = FALSE, weights = weights_cc,
-                              cross_fitted_se = cross_fitted_se, ...)
+                              cross_fitted_se = cross_fitted_se, 
+                              vector = TRUE, ...)
         full <- full_sl_lst$fit
         reduced <- redu_sl_lst$fit
         full_preds <- full_sl_lst$preds

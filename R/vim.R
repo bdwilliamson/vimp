@@ -206,7 +206,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     Y_cc <- cc_lst$Y
     X_cc <- X[C == 1, ]
     if (is.null(exposure_name)) {
-      A_cc <- rep(1, nrow(X_cc))
+      A_cc <- rep(1, length(Y_cc))
     } else {
       A_cc <- X_cc[, exposure_name] 
     }
