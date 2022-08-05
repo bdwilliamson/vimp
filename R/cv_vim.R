@@ -8,16 +8,18 @@
 #' @inheritParams vim
 #' @param cross_fitted_f1 the predicted values on validation data from a
 #'   flexible estimation technique regressing Y on X in the training data. Provided as
-#'   either (a) a list of length V, where each element in the list is a set of predictions on the
-#'   corresponding validation data fold; or (b) a vector, where each element is
-#'   the predicted value when that observation is part of the validation fold.
+#'   either (a) a vector, where each element is
+#'   the predicted value when that observation is part of the validation fold; 
+#'   or (b) a list of length V, where each element in the list is a set of predictions on the
+#'   corresponding validation data fold.
 #'   If sample-splitting is requested, then these must be estimated specially; see Details.
 #' @param cross_fitted_f2 the predicted values on validation data from a
 #'   flexible estimation technique regressing either (a) the fitted values in
 #'   \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}.
-#'   Provided as either (a) a list of length V, where each object is a set of predictions on the
-#'   corresponding validation data fold; or (b) a vector, where each element is
-#'   the predicted value when that observation is part of the validation fold.
+#'   Provided as either (a) a vector, where each element is
+#'   the predicted value when that observation is part of the validation fold; 
+#'   or (b) a list of length V, where each element in the list is a set of predictions on the
+#'   corresponding validation data fold.
 #'   If sample-splitting is requested, then these must be estimated specially; see Details.
 #' @param f1 the fitted values from a flexible estimation technique
 #'   regressing Y on X. If sample-splitting is requested, then these must be
@@ -419,6 +421,10 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         cf_folds_redu_cc <- cf_folds_redu[C[redu_test] == 1]
         full_test_cc <- full_test[C == 1]
         redu_test_cc <- redu_test[C == 1]
+        if (length(full_preds) > length(Y_cc[full_test_cc])) {
+          full_preds <- full_preds[full_test_cc]
+          redu_preds <- redu_preds[redu_test_cc]
+        }
         predictiveness_full_object <- predictiveness_measure(
           type = full_type, y = Y_cc[full_test_cc], full_y = Y_cc,
           a = A_cc[full_test_cc], fitted_values = full_preds,
@@ -437,10 +443,10 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
           a = A_cc[redu_test_cc], fitted_values = redu_preds,
           cross_fitting_folds = cf_folds_redu_cc, C = C[redu_test],
           Z = Z_in[redu_test, , drop = FALSE],
-          folds_Z = cf_folds_full, ipc_weights = ipc_weights[redu_test],
+          folds_Z = cf_folds_redu, ipc_weights = ipc_weights[redu_test],
           ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
           na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
-            nuisance_estimators_full, function(l) {
+            nuisance_estimators_reduced, function(l) {
               l[redu_test_cc]
             }
           )
