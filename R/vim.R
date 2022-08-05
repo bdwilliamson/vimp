@@ -236,7 +236,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
                               s = full_feature_vec, sample_splitting = sample_splitting,
                               ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE,
-                              weights = weights_cc, cross_fitted_se = FALSE, ...)
+                              weights = weights_cc, cross_fitted_se = FALSE, 
+                              vector = TRUE, ...)
         red_split <- switch((sample_splitting) + 1, 1, 2)
         red_Y <- Y_cc
         if (full_type == "r_squared" || full_type == "anova") {
@@ -244,7 +245,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
                                         s = full_feature_vec, sample_splitting = sample_splitting,
                                         ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE,
-                                        weights = weights_cc, cross_fitted_se = FALSE, ...)
+                                        weights = weights_cc, cross_fitted_se = FALSE, 
+                                        vector = TRUE, ...)
                 red_Y <- matrix(NA, ncol = 1, nrow = nrow(Y_cc))
                 red_Y[sample_splitting_folds_cc == 2, ] <- full_sl_lst_2$preds
             } else {
@@ -257,7 +259,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 1, SL.library = SL.library,
                               s = full_feature_vec[-indx], sample_splitting = sample_splitting,
                               ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE,
-                              weights = weights_cc, cross_fitted_se = FALSE, ...)
+                              weights = weights_cc, cross_fitted_se = FALSE, 
+                              vector = TRUE, ...)
         full <- full_sl_lst$fit
         reduced <- redu_sl_lst$fit
         full_preds <- full_sl_lst$preds

@@ -480,6 +480,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     if (V == 1) {
       fit <- NA
       preds <- NA
+      preds_vector <- NA
     } else {
       pred_indx <- 1
       for (v in seq_len(V)) {
@@ -504,6 +505,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     # once again, don't do anything; will fit at end
     fit <- NA
     preds <- NA
+    preds_vector <- NA
   } else {
     # fit a cross-validated Super Learner
     fit <- do.call(SuperLearner::CV.SuperLearner, full_arg_lst_cv)
