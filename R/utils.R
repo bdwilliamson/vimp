@@ -532,7 +532,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   # if cross_fitted_se, we're done; otherwise, re-fit to the entire dataset
   if (!cross_fitted_se) {
     # refit to the entire dataset
-    bool <- switch(as.numeric(sample_splitting) + 1, rep(1, length(Y)), ss_folds == split)
+    bool <- switch(as.numeric(sample_splitting) + 1, rep(TRUE, length(Y)), ss_folds == split)
     if (!is.character(this_sl_lib)) {
       fit_se <- this_sl_lib(Y = Y[bool, ],
                             X = red_X[bool, , drop = FALSE],
