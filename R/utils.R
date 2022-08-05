@@ -368,6 +368,10 @@ get_test_set <- function(arg_lst, k) {
   test_lst$Z <- arg_lst$Z[folds_Z == k, , drop = FALSE]
   test_lst$ipc_weights <- arg_lst$ipc_weights[folds_Z == k]
   test_lst$ipc_eif_preds <- arg_lst$ipc_eif_preds[folds_Z == k]
+  test_lst$nuisance_estimators <- lapply(arg_lst$nuisance_estimators, function(l) {
+    l[folds == k]
+  })
+  test_lst$a <- arg_lst$a[folds == k]
   return(test_lst)
 }
 
