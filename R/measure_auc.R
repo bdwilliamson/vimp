@@ -54,7 +54,7 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
         # if IPC EIF preds aren't entered, estimate the regression
         ipc_eif_preds <- estimate_eif_projection(obs_grad = obs_grad, C = C,
                                                  Z = Z, ipc_fit_type = ipc_fit_type,
-                                                 ...)
+                                                 ipc_eif_preds = ipc_eif_preds, ...)
         weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds

@@ -13,9 +13,12 @@ estimate.predictiveness_measure <- function(x) {
   arg_lst$scale <- attr(x, "scale")
   arg_lst$na.rm <- attr(x, "na.rm")
   type <- attr(x, "type")
+  unhelpful_objects <- c("cross_fitting_folds", "K", "point_est", "eif",
+                         "folds_Z")
+  unhelpful_indices <- which(names(arg_lst) %in% unhelpful_objects)
   if (arg_lst$K == 1) {
     # apply the measure function to all observations
-    est_lst <- estimate_type_predictiveness(arg_lst, type)
+    est_lst <- estimate_type_predictiveness(arg_lst[-unhelpful_indices], type)
     x$point_est <- est_lst$point_est
     x$eif <- est_lst$eif
     x$ipc_eif_preds <- est_lst$ipc_eif_preds
@@ -43,7 +46,7 @@ estimate.predictiveness_measure <- function(x) {
     predictiveness_measures <- vector("list", length = arg_lst$K)
     for (k in seq_len(arg_lst$K)) {
       this_arg_lst <- get_test_set(arg_lst, k = k)
-      this_est_lst <- estimate_type_predictiveness(this_arg_lst, type)
+      this_est_lst <- estimate_type_predictiveness(this_arg_lst[-unhelpful_indices], type)
       predictiveness_measures[[k]] <- this_est_lst
       eifs[[k]] <- this_est_lst$eif
       eif[arg_lst$folds_Z == k] <- this_est_lst$eif
@@ -64,9 +67,9 @@ estimate.predictiveness_measure <- function(x) {
       this_arg_lst$fitted_values <- rep(mn_y, length(arg_lst$y))
       this_arg_lst$C <- switch(do_ipcw + 1, rep(1, length(arg_lst$C)), arg_lst$C)
       if (grepl("r_squared", full_type)) {
-        denominator <- do.call(measure_mse, this_arg_lst)
+        denominator <- do.call(measure_mse, this_arg_lst[-unhelpful_indices])
       } else {
-        denominator <- do.call(measure_cross_entropy, this_arg_lst)
+        denominator <- do.call(measure_cross_entropy, this_arg_lst[-unhelpful_indices])
       }
       eif <- (-1) * as.vector(
         matrix(

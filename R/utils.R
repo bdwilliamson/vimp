@@ -217,10 +217,11 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 #' @inheritParams vim
 #'
 #' @return the projection of the EIF onto the fully-observed variables
-estimate_eif_projection <- function(obs_grad, C, Z, ipc_fit_type, ...) {
+estimate_eif_projection <- function(obs_grad = NULL, C = NULL, Z = NULL, 
+                                    ipc_fit_type = NULL, ipc_eif_preds = NULL, ...) {
   if (ipc_fit_type != "external") {
     ipc_eif_mod <- SuperLearner::SuperLearner(
-      Y = obs_grad, X = Z[C == 1, drop = FALSE], ...
+      Y = obs_grad, X = Z[C == 1, , drop = FALSE], ...
     )
     ipc_eif_preds <- SuperLearner::predict.SuperLearner(
       ipc_eif_mod, newdata = Z, onlySL = TRUE

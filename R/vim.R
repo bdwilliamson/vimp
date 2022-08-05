@@ -344,30 +344,30 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         ss_folds_redu <- switch((sample_splitting) + 1,
                                 rep(2, length(sample_splitting_folds_cc)),
                                 sample_splitting_folds_cc)
-        predictiveness_full_object <- predictiveness_measure(
-          type = full_type, y = Y_cc[ss_folds_full == 1, , drop = FALSE],
-          a = A_cc[ss_folds_full == 1], fitted_values = full_preds,
-          full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_full, function(l) {
-            l[ss_folds_full == 1]
-          }), C = C[sample_splitting_folds == 1],
-          Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
-          ipc_weights = ipc_weights[sample_splitting_folds == 1],
-          ipc_fit_type = "SL", scale = scale,
-          ipc_est_type = ipc_est_type, na.rm = na.rm,
-          SL.library = SL.library
-        )
-        predictiveness_reduced_object <- predictiveness_measure(
-          type = full_type, y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
-          a = A_cc[ss_folds_redu == 2], fitted_values = redu_preds,
-          full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_reduced, function(l) {
-            l[ss_folds_redu == 2]
-          }), C = C[sample_splitting_folds == 2],
-          Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
-          ipc_weights = ipc_weights[sample_splitting_folds == 2],
-          ipc_fit_type = "SL", scale = scale,
-          ipc_est_type = ipc_est_type, na.rm = na.rm,
-          SL.library = SL.library
-        )
+        predictiveness_full_object <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc[ss_folds_full == 1, , drop = FALSE],
+               a = A_cc[ss_folds_full == 1], fitted_values = full_preds,
+               full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_full, function(l) {
+                 l[ss_folds_full == 1]
+               }), C = C[sample_splitting_folds == 1],
+               Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
+               ipc_weights = ipc_weights[sample_splitting_folds == 1],
+               ipc_fit_type = "SL", scale = scale,
+               ipc_est_type = ipc_est_type, na.rm = na.rm,
+               SL.library = SL.library), arg_lst 
+        ))
+        predictiveness_reduced_object <- do.call(predictiveness_measure, c(
+         list(type = full_type, y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
+              a = A_cc[ss_folds_redu == 2], fitted_values = redu_preds,
+              full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_reduced, function(l) {
+                l[ss_folds_redu == 2]
+              }), C = C[sample_splitting_folds == 2],
+              Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
+              ipc_weights = ipc_weights[sample_splitting_folds == 2],
+              ipc_fit_type = "SL", scale = scale,
+              ipc_est_type = ipc_est_type, na.rm = na.rm,
+              SL.library = SL.library), arg_lst 
+        ))
         predictiveness_full_lst <- estimate(predictiveness_full_object)
         predictiveness_redu_lst <- estimate(predictiveness_reduced_object)
         # compute the point estimates of predictiveness and variable importance
