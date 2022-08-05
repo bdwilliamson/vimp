@@ -57,7 +57,12 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
   for (v in 1:V) {
     lst[[v]] <- all_preds[cross_fitting_folds == these_cf_folds[[v]]]
   }
-  lst
+  if (vector) {
+    preds <- all_preds[cross_fitting_folds %in% these_cf_folds]
+    return(preds)
+  } else {
+    return(lst)
+  }
 }
 
 #' Get a numeric vector with cross-validation fold IDs from CV.SuperLearner
