@@ -79,7 +79,7 @@ test_that("IPW AUC estimation with a better learner works", {
 set.seed(5678)
 test_that("CV-VIM with inverse probability of coarsening weights works", {
   est_cv <- cv_vim(Y = y, X = x_df, indx = 1, type = "r_squared", V = 2, 
-                   run_regression = TRUE, SL.library = learners, method = "method.CC_LS",
+                   run_regression = TRUE, SL.library = learners[1], method = "method.CC_LS",
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
              cvControl = list(V = V), env = environment())
   expect_equal(est_cv$est, r2_one, tolerance = 0.3, scale = 1)
