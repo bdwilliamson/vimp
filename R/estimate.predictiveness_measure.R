@@ -79,7 +79,7 @@ estimate.predictiveness_measure <- function(x) {
           matrix(
             c(1 / denominator$point_est, (-1) * point_ests[i] / (denominator$point_est ^ 2)),
             nrow = 1
-          ) %*% t(cbind(eifs[[i]], denominator$eif))
+          ) %*% t(cbind(eifs[[i]], denominator$eif[arg_lst$folds_Z == i]))
         )
       })
       point_ests <- 1 - point_ests / denominator$point_est
