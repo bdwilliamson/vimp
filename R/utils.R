@@ -477,7 +477,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       this_sl_lib <- eval(parse(text = this_sl_lib))
     }
     preds <- list()
-    preds_vector <- vector("numeric", length = length(Y))
+    preds_vector <- rep(NA, length = length(Y))
     if (V == 1) {
       fit <- NA
       preds <- NA
@@ -488,16 +488,17 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
         train_v <- (cv_folds != v)
         test_v <- (cv_folds == v)
         if (ss_folds[v] == split | !sample_splitting) {
-        fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE],
-                           X = red_X[train_v, , drop = FALSE],
-                           newX = red_X[test_v, , drop = FALSE],
-                           family = full_arg_lst_cv$family,
-                           obsWeights = full_arg_lst_cv$obsWeights[train_v])
+          fit <- this_sl_lib(Y = Y[train_v, , drop = FALSE],
+                             X = red_X[train_v, , drop = FALSE],
+                             newX = red_X[test_v, , drop = FALSE],
+                             family = full_arg_lst_cv$family,
+                             obsWeights = full_arg_lst_cv$obsWeights[train_v])
           preds[[pred_indx]] <- fit$pred
           preds_vector[test_v] <- fit$pred
           pred_indx <- pred_indx + 1
         }
       }
+      preds_vector <- preds_vector[!is.na(preds_vector)]
     }
     if (vector) {
       preds <- preds_vector
@@ -527,19 +528,20 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
   # if cross_fitted_se, we're done; otherwise, re-fit to the entire dataset
   if (!cross_fitted_se) {
     # refit to the entire dataset
+    bool <- switch(as.numeric(sample_splitting) + 1, rep(1, length(Y)), ss_folds == split)
     if (!is.character(this_sl_lib)) {
-      fit_se <- this_sl_lib(Y = Y[ss_folds == split, ],
-                            X = red_X[ss_folds == split, , drop = FALSE],
-                            newX = red_X[ss_folds == split, , drop = FALSE],
+      fit_se <- this_sl_lib(Y = Y[bool, ],
+                            X = red_X[bool, , drop = FALSE],
+                            newX = red_X[bool, , drop = FALSE],
                             family = arg_lst$family,
-                            obsWeights = arg_lst$obsWeights[ss_folds == split])
+                            obsWeights = arg_lst$obsWeights[bool])
       preds_se <- fit_se$pred
       if (all(is.na(preds))) {
         preds <- preds_se
         fit <- fit_se
       }
     } else {
-      arg_lst$obsWeights <- weights[ss_folds == split]
+      arg_lst$obsWeights <- weights[bool]
       if (any(grepl("parallel", names(arg_lst)))) {
         # remove it for SL calls
         arg_lst$parallel <- NULL
@@ -547,7 +549,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       fit_se <- do.call(
         SuperLearner::SuperLearner,
         args = c(arg_lst, list(
-          Y = Y[ss_folds == split, ], X = red_X[ss_folds == split, , drop = FALSE],
+          Y = Y[bool, ], X = red_X[bool, , drop = FALSE],
           SL.library = this_sl_lib
         ))
       )
