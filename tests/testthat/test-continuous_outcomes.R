@@ -30,7 +30,7 @@ test_that("ANOVA-based R^2 with old function name works", {
 })
 set.seed(5678)
 test_that("ANOVA-based R^2 with new function name works", {
-  expect_message(est <- vimp_anova(Y = y, X = x, run_regression = TRUE,
+  expect_warning(est <- vimp_anova(Y = y, X = x, run_regression = TRUE,
                                    SL.library = learners,
                                    cvControl = list(V = V), indx = 2, V = V,
                                    env = environment()))
