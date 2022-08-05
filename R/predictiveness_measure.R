@@ -159,8 +159,8 @@ validate_predictiveness_measure <- function(x) {
            call. = FALSE)
     }
   }
-  if (length(input_data$ipc_weights) != length(input_data$y)) {
-    stop("The outcome data must have the same dimension as the inverse probability weights",
+  if (length(input_data$ipc_weights) != length(input_data$C)) {
+    stop("The full dataset must have the same dimension as the inverse probability weights",
          call. = FALSE)
   }
   if (!is.null(input_data$Z)) {

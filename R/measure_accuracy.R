@@ -30,6 +30,7 @@
 #' @param na.rm logical; should \code{NA}s be removed in computation?
 #'   (defaults to \code{FALSE})
 #' @param nuisance_estimators not used; for compatibility with \code{measure_average_value}.
+#' @param a not used; for compatibility with \code{measure_average_value}.
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated classification accuracy of the
@@ -43,7 +44,8 @@ measure_accuracy <- function(fitted_values, y, full_y = NULL,
                              ipc_fit_type = "external",
                              ipc_eif_preds = rep(1, length(y)),
                              ipc_est_type = "aipw", scale = "identity",
-                             na.rm = FALSE, nuisance_estimators = NULL, ...) {
+                             na.rm = FALSE, nuisance_estimators = NULL,
+                             a = NULL, ...) {
   # compute the EIF: if there is coarsening, do a correction
   if (!all(ipc_weights == 1)) {
     obs_grad <- ((fitted_values > 1/2) == y) -
