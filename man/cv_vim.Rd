@@ -29,6 +29,9 @@ cv_vim(
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
   scale_est = TRUE,
+  nuisance_estimators_full = NULL,
+  nuisance_estimators_reduced = NULL,
+  exposure_name = NULL,
   cross_fitted_se = TRUE,
   bootstrap = FALSE,
   b = 1000,
@@ -39,21 +42,24 @@ cv_vim(
 \arguments{
 \item{Y}{the outcome.}
 
-\item{X}{the covariates.}
+\item{X}{the covariates. If \code{type = "average_value"}, then the exposure
+variable should be part of \code{X}, with its name provided in \code{exposure_name}.}
 
 \item{cross_fitted_f1}{the predicted values on validation data from a
 flexible estimation technique regressing Y on X in the training data. Provided as
-either (a) a list of length V, where each element in the list is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.}
 
 \item{cross_fitted_f2}{the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
 \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}.
-Provided as either (a) a list of length V, where each object is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+Provided as either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.}
 
 \item{f1}{the fitted values from a flexible estimation technique
@@ -123,7 +129,7 @@ unobserved).}
 \item{Z}{either (i) NULL (the default, in which case the argument
 \code{C} above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to 
+role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., \code{"1"}).}
 
@@ -140,6 +146,24 @@ Only used if \code{C} is not all equal to 1.}
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
 
+\item{nuisance_estimators_full}{(only used if \code{type = "average_value"})
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
+\item{nuisance_estimators_reduced}{(only used if \code{type = "average_value"})
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
+\item{exposure_name}{(only used if \code{type = "average_value"}) the name of
+the exposure of interest; binary, with 1 indicating presence of the exposure and
+0 indicating absence of the exposure.}
+
 \item{cross_fitted_se}{should we use cross-fitting to estimate the standard
 errors (\code{TRUE}, the default) or not (\code{FALSE})?}
 
@@ -150,8 +174,8 @@ Defaults to \code{FALSE} (and currently may only be used if
 \item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
 and \code{sample_splitting = FALSE}); defaults to 1000.}
 
-\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"}, 
-\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in 
+\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"},
+\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
 \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
@@ -292,10 +316,10 @@ cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 set.seed(1234)
 sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 full_cv_preds <- extract_sampled_split_predictions(
-    full_cv_fit, sample_splitting_folds = sample_splitting_folds, full = TRUE
+    full_cv_fit, sample_splitting_folds = sample_splitting_folds, full = TRUE, vector = TRUE
 )
 reduced_cv_preds <- extract_sampled_split_predictions(
-    reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE
+    reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE, vector = TRUE
 )
 set.seed(5678)
 est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds,

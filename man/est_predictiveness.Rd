@@ -17,55 +17,66 @@ est_predictiveness(
   ipc_est_type = "aipw",
   scale = "identity",
   na.rm = FALSE,
+  nuisance_estimators = NULL,
   ...
 )
 }
 \arguments{
-\item{fitted_values}{fitted values from a regression function using the 
+\item{fitted_values}{fitted values from a regression function using the
 observed data.}
 
 \item{y}{the observed outcome.}
 
-\item{full_y}{the observed outcome (from the entire dataset, for 
+\item{full_y}{the observed outcome (from the entire dataset, for
 cross-fitted estimates).}
 
-\item{type}{which parameter are you estimating (defaults to \code{r_squared}, 
+\item{type}{which parameter are you estimating (defaults to \code{r_squared},
 for R-squared-based variable importance)?}
 
-\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes 
+\item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}
 
-\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object 
+\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object
 containing the fully observed data.}
 
-\item{ipc_weights}{weights for inverse probability of coarsening (e.g., 
-inverse weights from a two-phase sample) weighted estimation. Assumed to 
+\item{ipc_weights}{weights for inverse probability of coarsening (e.g.,
+inverse weights from a two-phase sample) weighted estimation. Assumed to
 be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
 
-\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL", 
-fit a SuperLearner to determine the correction to the efficient influence 
+\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL",
+fit a SuperLearner to determine the correction to the efficient influence
 function.}
 
-\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values 
-from a regression of the full-data EIF on the fully observed 
+\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values
+from a regression of the full-data EIF on the fully observed
 covariates/outcome; otherwise, not used.}
 
-\item{ipc_est_type}{IPC correction, either \code{"ipw"} (for classical 
+\item{ipc_est_type}{IPC correction, either \code{"ipw"} (for classical
 inverse probability weighting) or \code{"aipw"} (for augmented inverse
 probability weighting; the default).}
 
-\item{scale}{if doing an IPC correction, then the scale that the correction 
-should be computed on (e.g., "identity"; or "logit" to logit-transform, 
+\item{scale}{if doing an IPC correction, then the scale that the correction
+should be computed on (e.g., "identity"; or "logit" to logit-transform,
 apply the correction, and back-transform).}
 
-\item{na.rm}{logical; should NA's be removed in computation? 
+\item{na.rm}{logical; should NA's be removed in computation?
 (defaults to \code{FALSE})}
 
+\item{nuisance_estimators}{(only used if \code{type = "average_value"})
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
+
+\item{a}{the observed treatment assignment (may be within a specified fold,
+for cross-fitted estimates). Only used if \code{type = "average_value"}.}
 }
 \value{
-A list, with: the estimated predictiveness; the estimated efficient 
-  influence function; and the predictions of the EIF based on inverse 
+A list, with: the estimated predictiveness; the estimated efficient
+  influence function; and the predictions of the EIF based on inverse
   probability of censoring.
 }
 \description{
@@ -73,6 +84,6 @@ Compute nonparametric estimates of the chosen measure of predictiveness.
 }
 \details{
 See the paper by Williamson, Gilbert, Simon, and Carone for more
-  details on the mathematics behind this function and the definition of the 
+  details on the mathematics behind this function and the definition of the
   parameter of interest.
 }

@@ -1,3 +1,24 @@
+# vimp 2.3.0
+
+## Major changes
+
+* Predictiveness measures now have their own `S3` class, which makes internal code cleaner and facilitates simpler addition of new predictiveness measures.
+* In this version, the default return value of `extract_sampled_split_predictions` is a vector, not a list. This facilitates proper use in the new version of the package.
+
+## Minor changes
+
+* None
+
+# vimp 2.2.11
+
+## Major changes
+
+* You can now compute variable importance using the average value under the optimal treatment rule. This includes functions `measure_avg_value` (computes the average value and efficient influence function) and updates to `vim`, `cv_vim`, and `sp_vim`.
+
+## Minor changes
+
+* None
+
 # vimp 2.2.10
 
 ## Major changes

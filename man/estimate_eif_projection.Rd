@@ -4,7 +4,14 @@
 \alias{estimate_eif_projection}
 \title{Estimate projection of EIF on fully-observed variables}
 \usage{
-estimate_eif_projection(obs_grad, C, Z, ipc_fit_type, ...)
+estimate_eif_projection(
+  obs_grad = NULL,
+  C = NULL,
+  Z = NULL,
+  ipc_fit_type = NULL,
+  ipc_eif_preds = NULL,
+  ...
+)
 }
 \arguments{
 \item{obs_grad}{the estimated (observed) EIF}

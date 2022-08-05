@@ -34,21 +34,24 @@ vimp_rsquared(
 \arguments{
 \item{Y}{the outcome.}
 
-\item{X}{the covariates.}
+\item{X}{the covariates. If \code{type = "average_value"}, then the exposure
+variable should be part of \code{X}, with its name provided in \code{exposure_name}.}
 
 \item{cross_fitted_f1}{the predicted values on validation data from a
 flexible estimation technique regressing Y on X in the training data. Provided as
-either (a) a list of length V, where each element in the list is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.}
 
 \item{cross_fitted_f2}{the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
 \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}.
-Provided as either (a) a list of length V, where each object is a set of predictions on the
-corresponding validation data fold; or (b) a vector, where each element is
-the predicted value when that observation is part of the validation fold.
+Provided as either (a) a vector, where each element is
+the predicted value when that observation is part of the validation fold;
+or (b) a list of length V, where each element in the list is a set of predictions on the
+corresponding validation data fold.
 If sample-splitting is requested, then these must be estimated specially; see Details.}
 
 \item{f1}{the fitted values from a flexible estimation technique
@@ -106,7 +109,7 @@ unobserved).}
 \item{Z}{either (i) NULL (the default, in which case the argument
 \code{C} above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to 
+role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., \code{"1"}).}
 

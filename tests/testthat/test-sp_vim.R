@@ -56,6 +56,15 @@ test_that("Estimating SPVIMs without sample-splitting works", {
   # check that the estimate is approximately correct
   expect_equal(as.numeric(est_no_ss$est[2]), shapley_val_1, tolerance = 0.2)
 })
+set.seed(1234)
+test_that("Estimating SPVIMs without cross-fitted SEs works", {
+  est_no_ss <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
+                      SL.library = learners, gamma = .1, alpha = 0.05, delta = 0,
+                      sample_splitting = FALSE, cross_fitted_se = FALSE,
+                      cvControl = list(V = V), env = environment())
+  # check that the estimate is approximately correct
+  expect_equal(as.numeric(est_no_ss$est[2]), shapley_val_1, tolerance = 0.2)
+})
 set.seed(5678)
 test_that("Estimating SPVIMs with special univariate library works", {
   est_uni <- sp_vim(Y = y, X = x, V = V, type = "r_squared",

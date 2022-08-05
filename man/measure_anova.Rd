@@ -17,6 +17,8 @@ measure_anova(
   ipc_est_type = "aipw",
   scale = "identity",
   na.rm = FALSE,
+  nuisance_estimators = NULL,
+  a = NULL,
   ...
 )
 }
@@ -27,7 +29,8 @@ on the full set of covariates.}
 \item{reduced}{fitted values from a regression on the reduced set of observed
 covariates.}
 
-\item{y}{the observed outcome.}
+\item{y}{the observed outcome (may be within a specified fold, for
+cross-fitted estimates).}
 
 \item{full_y}{the observed outcome (not used, defaults to \code{NULL}).}
 
@@ -37,17 +40,18 @@ unobserved).}
 \item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object
 containing the fully observed data.}
 
-\item{ipc_weights}{weights for inverse probability of coarsening (e.g.,
-inverse weights from a two-phase sample) weighted estimation. Assumed to
-be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).}
+\item{ipc_weights}{weights for inverse probability of coarsening (IPC)
+(e.g., inverse weights from a two-phase sample) weighted estimation.
+Assumed to be already inverted.
+(i.e., ipc_weights = 1 / [estimated probability weights]).}
 
 \item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL",
-fit a SuperLearner to determine the correction to the efficient influence
-function.}
+fit a SuperLearner to determine the IPC correction to the efficient
+influence function.}
 
 \item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values
-from a regression of the full-data EIF on the fully observed covariates
-/outcome; otherwise, not used.}
+from a regression of the full-data EIF on the fully observed
+covariates/outcome; otherwise, not used.}
 
 \item{ipc_est_type}{IPC correction, either \code{"ipw"} (for classical
 inverse probability weighting) or \code{"aipw"} (for augmented inverse
@@ -55,10 +59,14 @@ probability weighting; the default).}
 
 \item{scale}{if doing an IPC correction, then the scale that the correction
 should be computed on (e.g., "identity"; or "logit" to logit-transform,
-apply the correction, and back-transform)}
+apply the correction, and back-transform).}
 
 \item{na.rm}{logical; should \code{NA}s be removed in computation?
 (defaults to \code{FALSE})}
+
+\item{nuisance_estimators}{not used; for compatibility with \code{measure_average_value}.}
+
+\item{a}{not used; for compatibility with \code{measure_average_value}.}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }

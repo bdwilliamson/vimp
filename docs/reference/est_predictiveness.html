@@ -48,7 +48,7 @@
 
 <meta property="og:title" content="Estimate a nonparametric predictiveness functional — est_predictiveness" />
 <meta property="og:description" content="Compute nonparametric estimates of the chosen measure of predictiveness." />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -162,6 +162,7 @@
   ipc_est_type <span class='op'>=</span> <span class='st'>"aipw"</span>,
   scale <span class='op'>=</span> <span class='st'>"identity"</span>,
   na.rm <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  nuisance_estimators <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -170,7 +171,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>fitted_values</th>
-      <td><p>fitted values from a regression function using the 
+      <td><p>fitted values from a regression function using the
 observed data.</p></td>
     </tr>
     <tr>
@@ -179,74 +180,88 @@ observed data.</p></td>
     </tr>
     <tr>
       <th>full_y</th>
-      <td><p>the observed outcome (from the entire dataset, for 
+      <td><p>the observed outcome (from the entire dataset, for
 cross-fitted estimates).</p></td>
     </tr>
     <tr>
       <th>type</th>
-      <td><p>which parameter are you estimating (defaults to <code>r_squared</code>, 
+      <td><p>which parameter are you estimating (defaults to <code>r_squared</code>,
 for R-squared-based variable importance)?</p></td>
     </tr>
     <tr>
       <th>C</th>
-      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes 
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).</p></td>
     </tr>
     <tr>
       <th>Z</th>
-      <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object 
+      <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object
 containing the fully observed data.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for inverse probability of coarsening (e.g., 
-inverse weights from a two-phase sample) weighted estimation. Assumed to 
+      <td><p>weights for inverse probability of coarsening (e.g.,
+inverse weights from a two-phase sample) weighted estimation. Assumed to
 be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
     </tr>
     <tr>
       <th>ipc_fit_type</th>
-      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL", 
-fit a SuperLearner to determine the correction to the efficient influence 
+      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL",
+fit a SuperLearner to determine the correction to the efficient influence
 function.</p></td>
     </tr>
     <tr>
       <th>ipc_eif_preds</th>
-      <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values 
-from a regression of the full-data EIF on the fully observed 
+      <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values
+from a regression of the full-data EIF on the fully observed
 covariates/outcome; otherwise, not used.</p></td>
     </tr>
     <tr>
       <th>ipc_est_type</th>
-      <td><p>IPC correction, either <code>"ipw"</code> (for classical 
+      <td><p>IPC correction, either <code>"ipw"</code> (for classical
 inverse probability weighting) or <code>"aipw"</code> (for augmented inverse
 probability weighting; the default).</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>if doing an IPC correction, then the scale that the correction 
-should be computed on (e.g., "identity"; or "logit" to logit-transform, 
+      <td><p>if doing an IPC correction, then the scale that the correction
+should be computed on (e.g., "identity"; or "logit" to logit-transform,
 apply the correction, and back-transform).</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>logical; should NA's be removed in computation? 
+      <td><p>logical; should NA's be removed in computation?
 (defaults to <code>FALSE</code>)</p></td>
+    </tr>
+    <tr>
+      <th>nuisance_estimators</th>
+      <td><p>(only used if <code>type = "average_value"</code>)
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>other arguments to SuperLearner, if <code>ipc_fit_type = "SL"</code>.</p></td>
     </tr>
+    <tr>
+      <th>a</th>
+      <td><p>the observed treatment assignment (may be within a specified fold,
+for cross-fitted estimates). Only used if <code>type = "average_value"</code>.</p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list, with: the estimated predictiveness; the estimated efficient 
-  influence function; and the predictions of the EIF based on inverse 
+    <p>A list, with: the estimated predictiveness; the estimated efficient
+  influence function; and the predictions of the EIF based on inverse
   probability of censoring.</p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>See the paper by Williamson, Gilbert, Simon, and Carone for more
-  details on the mathematics behind this function and the definition of the 
+  details on the mathematics behind this function and the definition of the
   parameter of interest.</p>
 
   </div>

@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.vim.R
 \name{print.vim}
 \alias{print.vim}
-\title{Print a \code{vim} object}
+\title{Print \code{vim} objects}
 \usage{
 \method{print}{vim}(x, ...)
 }

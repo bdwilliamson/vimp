@@ -48,7 +48,7 @@
 
 <meta property="og:title" content="Shapley Population Variable Importance Measure (SPVIM) Estimates and Inference — sp_vim" />
 <meta property="og:description" content="Compute estimates and confidence intervals for the SPVIMs, using cross-fitting." />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -182,7 +182,8 @@
     </tr>
     <tr>
       <th>X</th>
-      <td><p>the covariates.</p></td>
+      <td><p>the covariates. If <code>type = "average_value"</code>, then the exposure
+variable should be part of <code>X</code>, with its name provided in <code>exposure_name</code>.</p></td>
     </tr>
     <tr>
       <th>V</th>
@@ -258,7 +259,7 @@ unobserved).</p></td>
       <td><p>either (i) NULL (the default, in which case the argument
 <code>C</code> above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to 
+role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., <code>"1"</code>).</p></td>
     </tr>

@@ -31,7 +31,8 @@ sp_vim(
 \arguments{
 \item{Y}{the outcome.}
 
-\item{X}{the covariates.}
+\item{X}{the covariates. If \code{type = "average_value"}, then the exposure
+variable should be part of \code{X}, with its name provided in \code{exposure_name}.}
 
 \item{V}{the number of folds for cross-fitting, defaults to 5. If
 \code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
@@ -81,7 +82,7 @@ unobserved).}
 \item{Z}{either (i) NULL (the default, in which case the argument
 \code{C} above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to 
+role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., \code{"1"}).}
 

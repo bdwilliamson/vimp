@@ -25,6 +25,9 @@ vim(
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
   scale_est = TRUE,
+  nuisance_estimators_full = NULL,
+  nuisance_estimators_reduced = NULL,
+  exposure_name = NULL,
   bootstrap = FALSE,
   b = 1000,
   boot_interval_type = "perc",
@@ -34,7 +37,8 @@ vim(
 \arguments{
 \item{Y}{the outcome.}
 
-\item{X}{the covariates.}
+\item{X}{the covariates. If \code{type = "average_value"}, then the exposure
+variable should be part of \code{X}, with its name provided in \code{exposure_name}.}
 
 \item{f1}{the fitted values from a flexible estimation technique
 regressing Y on X.}
@@ -92,7 +96,7 @@ unobserved).}
 \item{Z}{either (i) NULL (the default, in which case the argument
 \code{C} above must be all ones), or (ii) a character vector
 specifying the variable(s) among Y and X that are thought to play a
-role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to 
+role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., \code{"1"}).}
 
@@ -109,6 +113,24 @@ Only used if \code{C} is not all equal to 1.}
 \item{scale_est}{should the point estimate be scaled to be greater than 0?
 Defaults to \code{TRUE}.}
 
+\item{nuisance_estimators_full}{(only used if \code{type = "average_value"})
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
+\item{nuisance_estimators_reduced}{(only used if \code{type = "average_value"})
+a list of nuisance function estimators on the
+observed data (may be within a specified fold, for cross-fitted estimates).
+Specifically: an estimator of the optimal treatment rule; an estimator of the
+propensity score under the estimated optimal treatment rule; and an estimator
+of the outcome regression when treatment is assigned according to the estimated optimal rule.}
+
+\item{exposure_name}{(only used if \code{type = "average_value"}) the name of
+the exposure of interest; binary, with 1 indicating presence of the exposure and
+0 indicating absence of the exposure.}
+
 \item{bootstrap}{should bootstrap-based standard error estimates be computed?
 Defaults to \code{FALSE} (and currently may only be used if
 \code{sample_splitting = FALSE}).}
@@ -116,8 +138,8 @@ Defaults to \code{FALSE} (and currently may only be used if
 \item{b}{the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
 and \code{sample_splitting = FALSE}); defaults to 1000.}
 
-\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"}, 
-\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in 
+\item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"},
+\code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
 \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
@@ -206,7 +228,7 @@ full_fit <- SuperLearner::SuperLearner(Y = y_1, X = x_1,
                                        cvControl = list(V = V))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 # fit the data with only X1
-full_fit_2 <- SuperLearner::SuperLearner(Y = y_2, X = x_2, 
+full_fit_2 <- SuperLearner::SuperLearner(Y = y_2, X = x_2,
                                          SL.library = learners,
                                          cvControl = list(V = V))
 full_fitted_2 <- SuperLearner::predict.SuperLearner(full_fit_2)$pred

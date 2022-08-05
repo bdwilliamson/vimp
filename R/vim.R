@@ -5,7 +5,8 @@
 #' predictiveness using the feature(s) of interest versus not.
 #'
 #' @param Y the outcome.
-#' @param X the covariates.
+#' @param X the covariates. If \code{type = "average_value"}, then the exposure
+#'   variable should be part of \code{X}, with its name provided in \code{exposure_name}. 
 #' @param f1 the fitted values from a flexible estimation technique
 #'   regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique
@@ -48,7 +49,7 @@
 #' @param Z either (i) NULL (the default, in which case the argument
 #'   \code{C} above must be all ones), or (ii) a character vector
 #'   specifying the variable(s) among Y and X that are thought to play a
-#'   role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to 
+#'   role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 #'   specify covariates, use a character number corresponding to the desired
 #'   position in X (e.g., \code{"1"}).
 #' @param ipc_weights weights for the computed influence curve (i.e.,
@@ -61,13 +62,28 @@
 #'   Only used if \code{C} is not all equal to 1.
 #' @param scale_est should the point estimate be scaled to be greater than 0?
 #'   Defaults to \code{TRUE}.
+#' @param nuisance_estimators_full (only used if \code{type = "average_value"})
+#'   a list of nuisance function estimators on the
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#'   Specifically: an estimator of the optimal treatment rule; an estimator of the
+#'   propensity score under the estimated optimal treatment rule; and an estimator
+#'   of the outcome regression when treatment is assigned according to the estimated optimal rule.
+#' @param nuisance_estimators_reduced (only used if \code{type = "average_value"})
+#'   a list of nuisance function estimators on the
+#'   observed data (may be within a specified fold, for cross-fitted estimates).
+#'   Specifically: an estimator of the optimal treatment rule; an estimator of the
+#'   propensity score under the estimated optimal treatment rule; and an estimator
+#'   of the outcome regression when treatment is assigned according to the estimated optimal rule.
+#' @param exposure_name (only used if \code{type = "average_value"}) the name of
+#'   the exposure of interest; binary, with 1 indicating presence of the exposure and
+#'   0 indicating absence of the exposure.
 #' @param bootstrap should bootstrap-based standard error estimates be computed?
 #'   Defaults to \code{FALSE} (and currently may only be used if
 #'   \code{sample_splitting = FALSE}).
 #' @param b the number of bootstrap replicates (only used if \code{bootstrap = TRUE}
 #'   and \code{sample_splitting = FALSE}); defaults to 1000.
-#' @param boot_interval_type the type of bootstrap interval (one of \code{"norm"}, 
-#'   \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in 
+#' @param boot_interval_type the type of bootstrap interval (one of \code{"norm"},
+#'   \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
 #'   \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
@@ -148,7 +164,7 @@
 #'                                        cvControl = list(V = V))
 #' full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 #' # fit the data with only X1
-#' full_fit_2 <- SuperLearner::SuperLearner(Y = y_2, X = x_2, 
+#' full_fit_2 <- SuperLearner::SuperLearner(Y = y_2, X = x_2,
 #'                                          SL.library = learners,
 #'                                          cvControl = list(V = V))
 #' full_fitted_2 <- SuperLearner::predict.SuperLearner(full_fit_2)$pred
@@ -172,8 +188,9 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE,
                 sample_splitting = TRUE, sample_splitting_folds = NULL, stratified = FALSE,
                 C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
-                ipc_est_type = "aipw", scale_est = TRUE, bootstrap = FALSE,
-                b = 1000, boot_interval_type = "perc", ...) {
+                ipc_est_type = "aipw", scale_est = TRUE, nuisance_estimators_full = NULL,
+                nuisance_estimators_reduced = NULL, exposure_name = NULL,
+                bootstrap = FALSE, b = 1000, boot_interval_type = "perc", ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -187,7 +204,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     # set up internal data -- based on complete cases only
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
-    X_cc <- subset(X, C == 1)
+    X_cc <- X[C == 1, ]
+    if (is.null(exposure_name)) {
+      A_cc <- rep(1, length(Y_cc))
+    } else {
+      A_cc <- X_cc[, exposure_name] 
+    }
+    X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
 
@@ -213,7 +236,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
                               s = full_feature_vec, sample_splitting = sample_splitting,
                               ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE,
-                              weights = weights_cc, cross_fitted_se = FALSE, ...)
+                              weights = weights_cc, cross_fitted_se = FALSE, 
+                              vector = TRUE, ...)
         red_split <- switch((sample_splitting) + 1, 1, 2)
         red_Y <- Y_cc
         if (full_type == "r_squared" || full_type == "anova") {
@@ -221,7 +245,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
                                         s = full_feature_vec, sample_splitting = sample_splitting,
                                         ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE,
-                                        weights = weights_cc, cross_fitted_se = FALSE, ...)
+                                        weights = weights_cc, cross_fitted_se = FALSE, 
+                                        vector = TRUE, ...)
                 red_Y <- matrix(NA, ncol = 1, nrow = nrow(Y_cc))
                 red_Y[sample_splitting_folds_cc == 2, ] <- full_sl_lst_2$preds
             } else {
@@ -234,11 +259,33 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 1, SL.library = SL.library,
                               s = full_feature_vec[-indx], sample_splitting = sample_splitting,
                               ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE,
-                              weights = weights_cc, cross_fitted_se = FALSE, ...)
+                              weights = weights_cc, cross_fitted_se = FALSE, 
+                              vector = TRUE, ...)
         full <- full_sl_lst$fit
         reduced <- redu_sl_lst$fit
         full_preds <- full_sl_lst$preds
         redu_preds <- redu_sl_lst$preds
+        # if variable importance based on the average value under the optimal rule is requested,
+        # create a list with the necessary nuisance function estimators
+        if (grepl("average_value", full_type)) {
+            nuisance_estimators_full <- estimate_nuisances(fit = full, X = X_cc,
+                                                           exposure_name = exposure_name,
+                                                           V = 1, SL.library = SL.library,
+                                                           sample_splitting = sample_splitting,
+                                                           sample_splitting_folds = sample_splitting_folds_cc,
+                                                           verbose = FALSE, weights = weights_cc,
+                                                           cross_fitted_se = FALSE, split = 1, ...)
+            nuisance_estimators_reduced <- estimate_nuisances(fit = reduced, X = X_cc %>% select(-!!exposure_name),
+                                                              exposure_name = exposure_name,
+                                                              V = 1, SL.library = SL.library,
+                                                              sample_splitting = sample_splitting,
+                                                              sample_splitting_folds = sample_splitting_folds_cc,
+                                                              verbose = FALSE, weights = weights_cc,
+                                                              cross_fitted_se = FALSE, split = red_split, ...)
+        } else {
+            nuisance_estimators_full <- NULL
+            nuisance_estimators_reduced <- NULL
+        }
     } else { # otherwise they are fitted values
         # check to make sure that the fitted values, folds are what we expect
         check_fitted_values(Y = Y, f1 = f1, f2 = f2,
@@ -282,7 +329,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_redu <- NA
         if (bootstrap) {
             boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
-                                         type = full_type, b = b, 
+                                         type = full_type, b = b,
                                          boot_interval_type = boot_interval_type,
                                          alpha = alpha)
             se <- boot_results$se
@@ -297,32 +344,32 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         ss_folds_redu <- switch((sample_splitting) + 1,
                                 rep(2, length(sample_splitting_folds_cc)),
                                 sample_splitting_folds_cc)
-        predictiveness_full_lst <- do.call(
-            est_predictiveness,
-            args = c(list(fitted_values = full_preds,
-                          y = Y_cc[ss_folds_full == 1, , drop = FALSE],
-                          full_y = Y_cc,
-                          type = full_type, C = C[sample_splitting_folds == 1],
-                          Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
-                          ipc_weights = ipc_weights[sample_splitting_folds == 1],
-                          ipc_fit_type = "SL", scale = scale,
-                          ipc_est_type = ipc_est_type, na.rm = na.rm,
-                          SL.library = SL.library),
-                     arg_lst)
-        )
-        predictiveness_redu_lst <- do.call(
-            est_predictiveness,
-            args = c(list(fitted_values = redu_preds,
-                          y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
-                          full_y = Y_cc,
-                          type = full_type, C = C[sample_splitting_folds == 2],
-                          Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
-                          ipc_weights = ipc_weights[sample_splitting_folds == 2],
-                          ipc_fit_type = "SL", scale = scale,
-                          ipc_est_type = ipc_est_type, na.rm = na.rm,
-                          SL.library = SL.library),
-                     arg_lst)
-        )
+        predictiveness_full_object <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc[ss_folds_full == 1, , drop = FALSE],
+               a = A_cc[ss_folds_full == 1], fitted_values = full_preds,
+               full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_full, function(l) {
+                 l[ss_folds_full == 1]
+               }), C = C[sample_splitting_folds == 1],
+               Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
+               ipc_weights = ipc_weights[sample_splitting_folds == 1],
+               ipc_fit_type = "SL", scale = scale,
+               ipc_est_type = ipc_est_type, na.rm = na.rm,
+               SL.library = SL.library), arg_lst 
+        ))
+        predictiveness_reduced_object <- do.call(predictiveness_measure, c(
+         list(type = full_type, y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
+              a = A_cc[ss_folds_redu == 2], fitted_values = redu_preds,
+              full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_reduced, function(l) {
+                l[ss_folds_redu == 2]
+              }), C = C[sample_splitting_folds == 2],
+              Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
+              ipc_weights = ipc_weights[sample_splitting_folds == 2],
+              ipc_fit_type = "SL", scale = scale,
+              ipc_est_type = ipc_est_type, na.rm = na.rm,
+              SL.library = SL.library), arg_lst 
+        ))
+        predictiveness_full_lst <- estimate(predictiveness_full_object)
+        predictiveness_redu_lst <- estimate(predictiveness_reduced_object)
         # compute the point estimates of predictiveness and variable importance
         predictiveness_full <- predictiveness_full_lst$point_est
         predictiveness_redu <- predictiveness_redu_lst$point_est
@@ -334,8 +381,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         se_full <- sqrt(mean(eif_full ^ 2) / length(eif_full))
         se_redu <- sqrt(mean(eif_redu ^ 2) / length(eif_redu))
         if (bootstrap & !sample_splitting) {
-            boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds, 
-                                         type = full_type, b = b, 
+            boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
+                                         type = full_type, b = b,
                                          boot_interval_type = boot_interval_type,
                                          alpha = alpha)
             se <- boot_results$se
@@ -396,7 +443,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         if (length(eif_full) != length(eif_redu)) {
             max_len <- max(c(length(eif_full), length(eif_redu)))
             eif_full <- c(eif_full, rep(NA, max_len - length(eif_full)))
-            eif_redu <- c(eif_redu, rep(NA, max_len - length(eif_redu)))    
+            eif_redu <- c(eif_redu, rep(NA, max_len - length(eif_redu)))
         }
         final_eif <- eif_full - eif_redu
     }

@@ -144,11 +144,11 @@ set.seed(1234)
 sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 full_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = full_cv_fit, sample_splitting = TRUE, 
-  sample_splitting_folds = sample_splitting_folds, full = TRUE
+  sample_splitting_folds = sample_splitting_folds, full = TRUE, vector = TRUE
 )
 reduced_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = reduced_cv_fit, sample_splitting = TRUE, 
-  sample_splitting_folds = sample_splitting_folds, full = FALSE
+  sample_splitting_folds = sample_splitting_folds, full = FALSE, vector = TRUE
 )
 set.seed(5678)
 # refit without cross-fitting (for non-cross-fitted SE estimation)
@@ -268,10 +268,14 @@ test_that("Cross-validated variable importance using externally-computed regress
 })
 
 # measures of predictiveness ---------------------------------------------------
+full_cv_preds_list <- extract_sampled_split_predictions(
+  cvsl_obj = full_cv_fit, sample_splitting = TRUE, 
+  sample_splitting_folds = sample_splitting_folds, full = TRUE, vector = FALSE
+)
 test_that("Measures of predictiveness work", {
   k_fold_lst <- make_kfold(cross_fitting_folds, sample_splitting_folds)    
   full_test <- (k_fold_lst$sample_splitting_folds == 1)
-  full_rsquared <- est_predictiveness_cv(fitted_values = full_cv_preds, 
+  full_rsquared <- est_predictiveness_cv(fitted_values = full_cv_preds_list, 
                                          y = y[full_test],
                                          full_y = y,
                                          folds = k_fold_lst$full, 
@@ -315,11 +319,11 @@ set.seed(1234)
 sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 full_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = full_cv_fit, sample_splitting = TRUE, 
-  sample_splitting_folds = sample_splitting_folds, full = TRUE
+  sample_splitting_folds = sample_splitting_folds, full = TRUE, vector = TRUE
 )
 reduced_cv_preds <- extract_sampled_split_predictions(
   cvsl_obj = reduced_cv_fit, sample_splitting = TRUE, 
-  sample_splitting_folds = sample_splitting_folds, full = FALSE
+  sample_splitting_folds = sample_splitting_folds, full = FALSE, vector = TRUE
 )
 test_that("Cross-validated VIM works with externally-computed regressions and an odd number of folds", {
   est_prefit <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds, 

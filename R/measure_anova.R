@@ -1,33 +1,10 @@
 #' Estimate ANOVA decomposition-based variable importance.
 #'
+#' @inheritParams measure_accuracy
 #' @param full fitted values from a regression function of the observed outcome
 #'   on the full set of covariates.
 #' @param reduced fitted values from a regression on the reduced set of observed
 #'   covariates.
-#' @param y the observed outcome.
-#' @param full_y the observed outcome (not used, defaults to \code{NULL}).
-#' @param C the indicator of coarsening (1 denotes observed, 0 denotes
-#'   unobserved).
-#' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
-#'   containing the fully observed data.
-#' @param ipc_weights weights for inverse probability of coarsening (e.g.,
-#'   inverse weights from a two-phase sample) weighted estimation. Assumed to
-#'   be already inverted (i.e., ipc_weights = 1 / [estimated probability weights]).
-#' @param ipc_fit_type if "external", then use \code{ipc_eif_preds}; if "SL",
-#'   fit a SuperLearner to determine the correction to the efficient influence
-#'   function.
-#' @param ipc_eif_preds if \code{ipc_fit_type = "external"}, the fitted values
-#'   from a regression of the full-data EIF on the fully observed covariates
-#'   /outcome; otherwise, not used.
-#' @param ipc_est_type IPC correction, either \code{"ipw"} (for classical
-#'   inverse probability weighting) or \code{"aipw"} (for augmented inverse
-#'   probability weighting; the default).
-#' @param scale if doing an IPC correction, then the scale that the correction
-#'   should be computed on (e.g., "identity"; or "logit" to logit-transform,
-#'   apply the correction, and back-transform)
-#' @param na.rm logical; should \code{NA}s be removed in computation?
-#'   (defaults to \code{FALSE})
-#' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated ANOVA (based on a one-step
 #'   correction) of the fitted regression functions; (2) the estimated
@@ -35,13 +12,14 @@
 #'   predictions.
 #' @importFrom SuperLearner predict.SuperLearner SuperLearner
 #' @export
-measure_anova <- function(full, reduced, y, full_y = NULL, 
+measure_anova <- function(full, reduced, y, full_y = NULL,
                           C = rep(1, length(y)), Z = NULL,
                           ipc_weights = rep(1, length(y)),
                           ipc_fit_type = "external",
                           ipc_eif_preds = rep(1, length(y)),
                           ipc_est_type = "aipw", scale = "identity",
-                          na.rm = FALSE, ...) {
+                          na.rm = FALSE, nuisance_estimators = NULL,
+                          a = NULL, ...) {
     if (is.null(full_y)) {
         obs_mn_y <- mean(y, na.rm = na.rm)
     } else {
@@ -68,7 +46,7 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
         # if IPC EIF preds aren't entered, estimate the regression
         ipc_eif_preds <- estimate_eif_projection(obs_grad = obs_grad, C = C,
                                                  Z = Z, ipc_fit_type = ipc_fit_type,
-                                                 ...)
+                                                 ipc_eif_preds = ipc_eif_preds, ...)
         weighted_obs_grad <- rep(0, length(C))
         weighted_obs_grad[C == 1] <- obs_grad * ipc_weights
         grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
@@ -84,7 +62,7 @@ measure_anova <- function(full, reduced, y, full_y = NULL,
         }
     } else {
         num <- mean((full - reduced) ^ 2, na.rm = na.rm)
-        var <- measure_mse(fitted_values = rep(obs_mn_y, length(y)), y, 
+        var <- measure_mse(fitted_values = rep(obs_mn_y, length(y)), y,
                            na.rm = na.rm)
         num_eif <- 2 * (y - full) * (full - reduced) +
             (full - reduced) ^ 2 - num

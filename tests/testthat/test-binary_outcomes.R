@@ -139,11 +139,11 @@ full_cv_mean_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
 ))
 full_cv_preds <- extract_sampled_split_predictions(
   full_cv_fit, sample_splitting_folds = rep(1, V), full = TRUE,
-  sample_splitting = FALSE
+  sample_splitting = FALSE, vector = FALSE
 )
 full_cv_mean_preds <- extract_sampled_split_predictions(
   full_cv_mean_fit, sample_splitting_folds = rep(1, V), full = TRUE,
-  sample_splitting = FALSE
+  sample_splitting = FALSE, vector = FALSE
 )
 cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 test_that("vimp and cvAUC agree", {

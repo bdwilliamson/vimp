@@ -12,19 +12,21 @@
 #' @param sample_splitting_folds A vector of folds to use for sample splitting
 #' @param full logical; is this the fit to all covariates (\code{TRUE}) or not
 #'   (\code{FALSE})?
+#' @param vector logical; should we return a vector (where each element is
+#'   the prediction when the corresponding row is in the validation fold) or a
+#'   list?
 #'
 #' @seealso \code{\link[SuperLearner]{CV.SuperLearner}} for usage of the
 #'   \code{CV.SuperLearner} function.
-#' @return The predictions on validation data in each split-sample fold; a
-#'   list of length two, each element of which is a list with the predictions
-#'   on the split-sample cross-validation data.
+#' @return The predictions on validation data in each split-sample fold.
 #' @export
 extract_sampled_split_predictions <- function(cvsl_obj = NULL,
                                               sample_splitting = TRUE,
                                               sample_splitting_folds = NULL,
                                               full = TRUE,
                                               preds = NULL,
-                                              cross_fitting_folds = NULL) {
+                                              cross_fitting_folds = NULL,
+                                              vector = TRUE) {
   if ((is.null(cvsl_obj) | !(class(cvsl_obj) == "CV.SuperLearner")) & is.null(preds)) {
     stop("Please enter a CV.SuperLearner object or the predictions and folds from such an object.")
   } else if (!is.null(preds) & is.null(cross_fitting_folds)) {
@@ -55,7 +57,12 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
   for (v in 1:V) {
     lst[[v]] <- all_preds[cross_fitting_folds == these_cf_folds[[v]]]
   }
-  lst
+  if (vector) {
+    preds <- all_preds[cross_fitting_folds %in% these_cf_folds]
+    return(preds)
+  } else {
+    return(lst)
+  }
 }
 
 #' Get a numeric vector with cross-validation fold IDs from CV.SuperLearner

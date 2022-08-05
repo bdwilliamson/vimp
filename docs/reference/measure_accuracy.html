@@ -48,7 +48,7 @@
 
 <meta property="og:title" content="Estimate the classification accuracy — measure_accuracy" />
 <meta property="og:description" content="Compute nonparametric estimate of classification accuracy." />
-<meta property="og:image" content="https://bdwilliamson.github.io/vimp/logo.png" />
+<meta property="og:image" content="http://bdwilliamson.github.io/vimp/logo.png" />
 
 
 
@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
       </span>
     </div>
 
@@ -161,6 +161,8 @@
   ipc_est_type <span class='op'>=</span> <span class='st'>"aipw"</span>,
   scale <span class='op'>=</span> <span class='st'>"identity"</span>,
   na.rm <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  nuisance_estimators <span class='op'>=</span> <span class='cn'>NULL</span>,
+  a <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
@@ -174,7 +176,7 @@ observed data (may be within a specified fold, for cross-fitted estimates).</p><
     </tr>
     <tr>
       <th>y</th>
-      <td><p>the observed outcome (may be within a specified fold, for 
+      <td><p>the observed outcome (may be within a specified fold, for
 cross-fitted estimates).</p></td>
     </tr>
     <tr>
@@ -183,49 +185,57 @@ cross-fitted estimates).</p></td>
     </tr>
     <tr>
       <th>C</th>
-      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes 
+      <td><p>the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).</p></td>
     </tr>
     <tr>
       <th>Z</th>
-      <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object 
+      <td><p>either <code>NULL</code> (if no coarsening) or a matrix-like object
 containing the fully observed data.</p></td>
     </tr>
     <tr>
       <th>ipc_weights</th>
-      <td><p>weights for inverse probability of coarsening (IPC) 
-(e.g., inverse weights from a two-phase sample) weighted estimation. 
-Assumed to be already inverted. 
+      <td><p>weights for inverse probability of coarsening (IPC)
+(e.g., inverse weights from a two-phase sample) weighted estimation.
+Assumed to be already inverted.
 (i.e., ipc_weights = 1 / [estimated probability weights]).</p></td>
     </tr>
     <tr>
       <th>ipc_fit_type</th>
-      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL", 
-fit a SuperLearner to determine the IPC correction to the efficient 
+      <td><p>if "external", then use <code>ipc_eif_preds</code>; if "SL",
+fit a SuperLearner to determine the IPC correction to the efficient
 influence function.</p></td>
     </tr>
     <tr>
       <th>ipc_eif_preds</th>
-      <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values 
-from a regression of the full-data EIF on the fully observed 
+      <td><p>if <code>ipc_fit_type = "external"</code>, the fitted values
+from a regression of the full-data EIF on the fully observed
 covariates/outcome; otherwise, not used.</p></td>
     </tr>
     <tr>
       <th>ipc_est_type</th>
-      <td><p>IPC correction, either <code>"ipw"</code> (for classical 
+      <td><p>IPC correction, either <code>"ipw"</code> (for classical
 inverse probability weighting) or <code>"aipw"</code> (for augmented inverse
 probability weighting; the default).</p></td>
     </tr>
     <tr>
       <th>scale</th>
-      <td><p>if doing an IPC correction, then the scale that the correction 
-should be computed on (e.g., "identity"; or "logit" to logit-transform, 
+      <td><p>if doing an IPC correction, then the scale that the correction
+should be computed on (e.g., "identity"; or "logit" to logit-transform,
 apply the correction, and back-transform).</p></td>
     </tr>
     <tr>
       <th>na.rm</th>
-      <td><p>logical; should <code>NA</code>s be removed in computation? 
+      <td><p>logical; should <code>NA</code>s be removed in computation?
 (defaults to <code>FALSE</code>)</p></td>
+    </tr>
+    <tr>
+      <th>nuisance_estimators</th>
+      <td><p>not used; for compatibility with <code>measure_average_value</code>.</p></td>
+    </tr>
+    <tr>
+      <th>a</th>
+      <td><p>not used; for compatibility with <code>measure_average_value</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -235,8 +245,8 @@ apply the correction, and back-transform).</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A named list of: (1) the estimated classification accuracy of the 
-  fitted regression function; (2) the estimated influence function; and 
+    <p>A named list of: (1) the estimated classification accuracy of the
+  fitted regression function; (2) the estimated influence function; and
   (3) the IPC EIF predictions.</p>
 
   </div>
