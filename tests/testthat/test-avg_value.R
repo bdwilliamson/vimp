@@ -113,19 +113,26 @@ test_that("Estimating the difference in average values works", {
   expect_equal(est_avg_value$point_est - est_avg_value2$point_est, avg_value_2, tol = 0.1, scale = 1)
 })
 
+set.seed(1234)
 test_that("Average-value-based VIM works", {
-  vim_avg_value <- vim(Y = y, X = cbind.data.frame(a = a, x), f1 = f_n, f2 = f_n1, indx = 1, type = "average_value",
-                       run_regression = FALSE, exposure_name = "a",
-                       nuisance_estimators_full = nuisances, 
-                       nuisance_estimators_reduced = nuisances1)
+  expect_warning(
+    vim_avg_value <- vim(Y = y, X = cbind.data.frame(a = a, x), f1 = f_n, f2 = f_n1, indx = 1, type = "average_value",
+                         run_regression = FALSE, exposure_name = "a",
+                         nuisance_estimators_full = nuisances, 
+                         nuisance_estimators_reduced = nuisances1)
+  )
   expect_equal(vim_avg_value$est, avg_value_1, tol = 0.1, scale = 1)
 })
 
+set.seed(5678)
 test_that("Average-value-based VIM with cross-fitting works", {
-  vim_avg_value_cv <- cv_vim(Y = y, X = cbind.data.frame(a = a, x), cross_fitted_f1 = f_n_cv,
-                             cross_fitted_f2 = f_n_cv1, indx = 1, type = "average_value",
-                             run_regression = FALSE, exposure_name = "a",
-                             nuisance_estimators_full = nuisances_cv,
-                             nuisance_estimators_reduced = nuisances_cv1,
-                             cross_fitting_folds = cross_fitting_folds)
+  expect_warning(
+    vim_avg_value_cv <- cv_vim(Y = y, X = cbind.data.frame(a = a, x), cross_fitted_f1 = f_n_cv,
+                               cross_fitted_f2 = f_n_cv1, indx = 1, type = "average_value",
+                               run_regression = FALSE, exposure_name = "a",
+                               nuisance_estimators_full = nuisances_cv,
+                               nuisance_estimators_reduced = nuisances_cv1,
+                               cross_fitting_folds = cross_fitting_folds, V = V)
+  )
+  expect_equal(vim_avg_value_cv$est, avg_value_1, tol = 0.1, scale = 1)
 })
