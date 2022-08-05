@@ -166,10 +166,10 @@
 #' set.seed(1234)
 #' sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
 #' full_cv_preds <- extract_sampled_split_predictions(
-#'     full_cv_fit, sample_splitting_folds = sample_splitting_folds, full = TRUE
+#'     full_cv_fit, sample_splitting_folds = sample_splitting_folds, full = TRUE, vector = TRUE
 #' )
 #' reduced_cv_preds <- extract_sampled_split_predictions(
-#'     reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE
+#'     reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE, vector = TRUE
 #' )
 #' set.seed(5678)
 #' est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds,
