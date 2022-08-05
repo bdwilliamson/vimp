@@ -397,6 +397,7 @@ get_test_set <- function(arg_lst, k) {
 #'   If \code{NULL} (the default), this is determined automatically; a full
 #'   regression corresponds to \code{s} being equal to the full covariate vector.
 #'   For SPVIMs, can be entered manually.
+#' @param vector should we return a vector (\code{TRUE}) or a list (\code{FALSE})?
 #' @param ... other arguments to Super Learner
 #'
 #' @return a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
@@ -405,7 +406,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
                    univariate_SL.library = NULL, s = 1, cv_folds = NULL,
                    sample_splitting = TRUE, ss_folds = NULL, split = 1, verbose = FALSE,
                    progress_bar = NULL, indx = 1, weights = rep(1, nrow(X)),
-                   cross_fitted_se = TRUE, full = NULL, ...) {
+                   cross_fitted_se = TRUE, full = NULL, vector = TRUE, ...) {
   # if verbose, print what we're doing and make sure that SL is verbose;
   # set up the argument list for the Super Learner / CV.SuperLearner
   arg_lst <- list(...)
@@ -475,6 +476,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
       this_sl_lib <- eval(parse(text = this_sl_lib))
     }
     preds <- list()
+    preds_vector <- vector("numeric", length = length(Y))
     if (V == 1) {
       fit <- NA
       preds <- NA
@@ -490,9 +492,13 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
                            family = full_arg_lst_cv$family,
                            obsWeights = full_arg_lst_cv$obsWeights[train_v])
           preds[[pred_indx]] <- fit$pred
+          preds_vector[test_v] <- fit$pred
           pred_indx <- pred_indx + 1
         }
       }
+    }
+    if (vector) {
+      preds <- preds_vector
     }
   } else if (V == 1) {
     # once again, don't do anything; will fit at end
@@ -511,7 +517,8 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     }
     preds <- extract_sampled_split_predictions(
       cvsl_obj = fit, sample_splitting = sample_splitting, full = is_full,
-      sample_splitting_folds = switch((sample_splitting) + 1, rep(1, V), ss_folds)
+      sample_splitting_folds = switch((sample_splitting) + 1, rep(1, V), ss_folds),
+      vector = vector
     )
   }
   # if cross_fitted_se, we're done; otherwise, re-fit to the entire dataset
