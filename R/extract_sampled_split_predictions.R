@@ -12,8 +12,8 @@
 #' @param sample_splitting_folds A vector of folds to use for sample splitting
 #' @param full logical; is this the fit to all covariates (\code{TRUE}) or not
 #'   (\code{FALSE})?
-#' @param vector logical; should we return a vector (where each element is 
-#'   the prediction when the corresponding row is in the validation fold) or a 
+#' @param vector logical; should we return a vector (where each element is
+#'   the prediction when the corresponding row is in the validation fold) or a
 #'   list?
 #'
 #' @seealso \code{\link[SuperLearner]{CV.SuperLearner}} for usage of the
@@ -26,7 +26,7 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
                                               full = TRUE,
                                               preds = NULL,
                                               cross_fitting_folds = NULL,
-                                              vector = TRUE) {
+                                              vector = FALSE) {
   if ((is.null(cvsl_obj) | !(class(cvsl_obj) == "CV.SuperLearner")) & is.null(preds)) {
     stop("Please enter a CV.SuperLearner object or the predictions and folds from such an object.")
   } else if (!is.null(preds) & is.null(cross_fitting_folds)) {

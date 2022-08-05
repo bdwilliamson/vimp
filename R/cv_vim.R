@@ -9,7 +9,7 @@
 #' @param cross_fitted_f1 the predicted values on validation data from a
 #'   flexible estimation technique regressing Y on X in the training data. Provided as
 #'   either (a) a vector, where each element is
-#'   the predicted value when that observation is part of the validation fold; 
+#'   the predicted value when that observation is part of the validation fold;
 #'   or (b) a list of length V, where each element in the list is a set of predictions on the
 #'   corresponding validation data fold.
 #'   If sample-splitting is requested, then these must be estimated specially; see Details.
@@ -17,7 +17,7 @@
 #'   flexible estimation technique regressing either (a) the fitted values in
 #'   \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}.
 #'   Provided as either (a) a vector, where each element is
-#'   the predicted value when that observation is part of the validation fold; 
+#'   the predicted value when that observation is part of the validation fold;
 #'   or (b) a list of length V, where each element in the list is a set of predictions on the
 #'   corresponding validation data fold.
 #'   If sample-splitting is requested, then these must be estimated specially; see Details.
@@ -193,7 +193,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL,
                    ipc_weights = rep(1, length(Y)),
                    ipc_est_type = "aipw", scale_est = TRUE,
-                   nuisance_estimators_full = NULL, 
+                   nuisance_estimators_full = NULL,
                    nuisance_estimators_reduced = NULL, exposure_name = NULL,
                    cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000,
                    boot_interval_type = "perc", ...) {
@@ -220,7 +220,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     if (is.null(exposure_name)) {
       A_cc <- rep(1, length(Y_cc))
     } else {
-      A_cc <- X_cc[, exposure_name] 
+      A_cc <- X_cc[, exposure_name]
     }
     X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
     weights_cc <- cc_lst$weights
@@ -261,7 +261,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = 1,
                               verbose = FALSE, weights = weights_cc,
-                              cross_fitted_se = cross_fitted_se, 
+                              cross_fitted_se = cross_fitted_se,
                               vector = TRUE, ...)
         red_split <- switch((sample_splitting) + 1, 1, 2)
         red_Y <- Y_cc
@@ -273,7 +273,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                         sample_splitting = FALSE,
                                         ss_folds = non_ss_folds, split = 2,
                                         verbose = FALSE, weights = weights_cc,
-                                        cross_fitted_se = FALSE, 
+                                        cross_fitted_se = FALSE,
                                         vector = TRUE, ...)
                 red_Y <- matrix(full_sl_lst_2$preds, ncol = 1)
             } else {
@@ -283,7 +283,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                                         ss_folds = rep(2, nrow(Y_cc)), split = 2,
                                         cv_folds = cross_fitting_folds_cc,
                                         verbose = FALSE, weights = weights_cc,
-                                        cross_fitted_se = FALSE, 
+                                        cross_fitted_se = FALSE,
                                         vector = TRUE, ...)
                 red_Y <- matrix(full_sl_lst_2$preds, ncol = 1)
             }
@@ -297,7 +297,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               cv_folds = cross_fitting_folds_cc,
                               ss_folds = sample_splitting_folds, split = red_split,
                               verbose = FALSE, weights = weights_cc,
-                              cross_fitted_se = cross_fitted_se, 
+                              cross_fitted_se = cross_fitted_se,
                               vector = TRUE, ...)
         full <- full_sl_lst$fit
         reduced <- redu_sl_lst$fit
