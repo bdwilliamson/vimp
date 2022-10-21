@@ -7,7 +7,7 @@
 
 ## Minor changes
 
-* None
+* You can now specify `truncate = FALSE` in `vimp_ci`
 
 # vimp 2.2.11
 
