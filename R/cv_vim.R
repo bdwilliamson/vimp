@@ -222,7 +222,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     } else {
       A_cc <- X_cc[, exposure_name]
     }
-    X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
+    X_cc <- X_cc[, !(names(X_cc) %in% exposure_name), drop = FALSE]
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
 

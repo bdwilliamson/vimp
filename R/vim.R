@@ -210,7 +210,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     } else {
       A_cc <- X_cc[, exposure_name]
     }
-    X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
+    X_cc <- X_cc[, !(names(X_cc) %in% exposure_name), drop = FALSE]
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
 
