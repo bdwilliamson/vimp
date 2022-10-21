@@ -6,7 +6,7 @@
 #'
 #' @param Y the outcome.
 #' @param X the covariates. If \code{type = "average_value"}, then the exposure
-#'   variable should be part of \code{X}, with its name provided in \code{exposure_name}. 
+#'   variable should be part of \code{X}, with its name provided in \code{exposure_name}.
 #' @param f1 the fitted values from a flexible estimation technique
 #'   regressing Y on X.
 #' @param f2 the fitted values from a flexible estimation technique
@@ -204,11 +204,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     # set up internal data -- based on complete cases only
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
-    X_cc <- X[C == 1, ]
+    X_cc <- X[C == 1, , drop = FALSE]
     if (is.null(exposure_name)) {
       A_cc <- rep(1, length(Y_cc))
     } else {
-      A_cc <- X_cc[, exposure_name] 
+      A_cc <- X_cc[, exposure_name]
     }
     X_cc <- X_cc[, !(names(X_cc) %in% exposure_name)]
     weights_cc <- cc_lst$weights
@@ -236,7 +236,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
                               s = full_feature_vec, sample_splitting = sample_splitting,
                               ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE,
-                              weights = weights_cc, cross_fitted_se = FALSE, 
+                              weights = weights_cc, cross_fitted_se = FALSE,
                               vector = TRUE, ...)
         red_split <- switch((sample_splitting) + 1, 1, 2)
         red_Y <- Y_cc
@@ -245,7 +245,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
                                         s = full_feature_vec, sample_splitting = sample_splitting,
                                         ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE,
-                                        weights = weights_cc, cross_fitted_se = FALSE, 
+                                        weights = weights_cc, cross_fitted_se = FALSE,
                                         vector = TRUE, ...)
                 red_Y <- matrix(NA, ncol = 1, nrow = nrow(Y_cc))
                 red_Y[sample_splitting_folds_cc == 2, ] <- full_sl_lst_2$preds
@@ -259,7 +259,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 1, SL.library = SL.library,
                               s = full_feature_vec[-indx], sample_splitting = sample_splitting,
                               ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE,
-                              weights = weights_cc, cross_fitted_se = FALSE, 
+                              weights = weights_cc, cross_fitted_se = FALSE,
                               vector = TRUE, ...)
         full <- full_sl_lst$fit
         reduced <- redu_sl_lst$fit
@@ -354,7 +354,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                ipc_weights = ipc_weights[sample_splitting_folds == 1],
                ipc_fit_type = "SL", scale = scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
-               SL.library = SL.library), arg_lst 
+               SL.library = SL.library), arg_lst
         ))
         predictiveness_reduced_object <- do.call(predictiveness_measure, c(
          list(type = full_type, y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
@@ -366,7 +366,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
               ipc_weights = ipc_weights[sample_splitting_folds == 2],
               ipc_fit_type = "SL", scale = scale,
               ipc_est_type = ipc_est_type, na.rm = na.rm,
-              SL.library = SL.library), arg_lst 
+              SL.library = SL.library), arg_lst
         ))
         predictiveness_full_lst <- estimate(predictiveness_full_object)
         predictiveness_redu_lst <- estimate(predictiveness_reduced_object)

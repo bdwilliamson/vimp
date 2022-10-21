@@ -216,7 +216,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     # set up internal data -- based on complete cases only
     cc_lst <- create_z(Y, C, Z, X, ipc_weights)
     Y_cc <- cc_lst$Y
-    X_cc <- X[C == 1, ]
+    X_cc <- X[C == 1, , drop = FALSE]
     if (is.null(exposure_name)) {
       A_cc <- rep(1, length(Y_cc))
     } else {

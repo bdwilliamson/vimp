@@ -115,7 +115,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     Y_cc <- cc_lst$Y
     weights_cc <- cc_lst$weights
     Z_in <- cc_lst$Z
-    X_cc <- subset(X, C == 1)
+    X_cc <- X[C == 1, , drop = FALSE]
 
     # get the correct measure function; if not one of the supported ones, say so
     full_type <- get_full_type(type)
@@ -349,13 +349,13 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
     } else {
         var_none_0 <- mean(ic_none_0 ^ 2, na.rm = na.rm)
     }
-    se_none_0 <- sqrt(var_none_0 / sum(redu_test_cc)) 
+    se_none_0 <- sqrt(var_none_0 / sum(redu_test_cc))
     # get shapley vals + null predictiveness
     shapley_vals_plus <- est + est[1]
     ses_one <- sqrt((var_v_contribs * n_for_v + var_s_contribs) / sum(full_test_cc) +
                         se_none_0 ^ 2)
     # save objects necessary to compute the test statistics
-    test_stat_lst <- list(ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0, 
+    test_stat_lst <- list(ests = shapley_vals_plus, ses = ses_one, est_0 = v_none_0,
                           se_0 = se_none_0, n_for_v = n_for_v)
     test_statistics <- unlist(lapply(
         as.list(2:length(est)),
