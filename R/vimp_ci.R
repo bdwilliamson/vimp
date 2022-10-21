@@ -6,6 +6,7 @@
 #' @param se estimate of the standard error of \code{est}, e.g., from a call to \code{vimp_se}.
 #' @param scale scale to compute interval estimate on (defaults to "identity": compute Wald-type CI).
 #' @param level confidence interval type (defaults to 0.95).
+#' @param truncate truncate CIs to have lower limit at (or above) zero?
 #'
 #' @return The Wald-based confidence interval for the true importance of the given group of left-out covariates.
 #'
@@ -13,7 +14,7 @@
 #' details on the mathematics behind this function and the definition of the parameter of interest.
 #' @importFrom stats qlogis plogis
 #' @export
-vimp_ci <- function(est, se, scale = "identity", level = 0.95) {
+vimp_ci <- function(est, se, scale = "identity", level = 0.95, truncate = TRUE) {
     # set up the level
     a <- (1 - level)/2
     a <- c(a, 1 - a)
