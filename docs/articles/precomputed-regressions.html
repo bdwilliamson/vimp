@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,23 +40,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,7 +76,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/bdwilliamson/vimp/">
+  <a href="https://github.com/bdwilliamson/vimp/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -95,17 +91,18 @@
 
       
 
-      </header><script src="precomputed-regressions_files/header-attrs-2.11/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Using precomputed regression function estimates
 in <code>vimp</code>
 </h1>
-                        <h4 class="author">Brian D. Williamson</h4>
+                        <h4 data-toc-skip class="author">Brian D.
+Williamson</h4>
             
-            <h4 class="date">2022-08-05</h4>
+            <h4 data-toc-skip class="date">2022-10-21</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/precomputed-regressions.Rmd"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/HEAD/vignettes/precomputed-regressions.Rmd" class="external-link"><code>vignettes/precomputed-regressions.Rmd</code></a></small>
       <div class="hidden name"><code>precomputed-regressions.Rmd</code></div>
 
     </div>
@@ -113,115 +110,115 @@ in <code>vimp</code>
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/">"vimp"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner">"SuperLearner"</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: package 'SuperLearner' was built under R version 4.0.5</span>
-<span class="co">#&gt; Warning: package 'nnls' was built under R version 4.0.3</span>
-<span class="co">#&gt; Warning: package 'gam' was built under R version 4.0.5</span>
-<span class="co">#&gt; Warning: package 'foreach' was built under R version 4.0.5</span></code></pre></div>
-<div id="introduction" class="section level2">
-<h2 class="hasAnchor">
-<a href="#introduction" class="anchor"></a>Introduction</h2>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/" class="external-link">"vimp"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'SuperLearner' was built under R version 4.0.5</span></span>
+<span><span class="co">#&gt; Warning: package 'nnls' was built under R version 4.0.3</span></span>
+<span><span class="co">#&gt; Warning: package 'gam' was built under R version 4.0.5</span></span>
+<span><span class="co">#&gt; Warning: package 'foreach' was built under R version 4.0.5</span></span></code></pre></div>
+<div class="section level2">
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
 <p>In the <a href="introduction-to-vimp.html">main vignette</a>, we
 analyzed the VRC01 data <span class="citation">(Magaret, Benkeser,
 Williamson, et al. 2019)</span>, a subset of the data freely available
 from the Los Alamos National Laboratory’s Compile, Neutralize, and Tally
 Neutralizing Antibody Panels database. Information about these data is
-available <a href="https://doi.org/10.1371/journal.pcbi.1006952">here</a>. In each of
+available <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">here</a>. In each of
 the analyses, I used <code>run_regression = TRUE</code>. In this
 vignette, I discuss how to use precomputed regression function estimates
 with <code>vimp</code>. The results of this analysis replicate the
 analysis in the <a href="introduction-to-vimp.html">main
 vignette</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># read in the data</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vrc01"</span><span class="op">)</span>
-<span class="co"># subset to the columns of interest for this analysis</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org">"dplyr"</a></span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyselect.r-lib.org">"tidyselect"</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: package 'tidyselect' was built under R version 4.0.5</span>
-<span class="co"># retain only the columns of interest for this analysis</span>
-<span class="va">y</span> <span class="op">&lt;-</span> <span class="va">vrc01</span><span class="op">$</span><span class="va">ic50.censored</span>
-<span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
-<span class="va">vrc01_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_folds.html">make_folds</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">y</span>, V <span class="op">=</span> <span class="fl">2</span>, stratified <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># read in the data</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"vrc01"</span><span class="op">)</span></span>
+<span><span class="co"># subset to the columns of interest for this analysis</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://dplyr.tidyverse.org" class="external-link">"dplyr"</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyselect.r-lib.org" class="external-link">"tidyselect"</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'tidyselect' was built under R version 4.0.5</span></span>
+<span><span class="co"># retain only the columns of interest for this analysis</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">vrc01</span><span class="op">$</span><span class="va">ic50.censored</span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="va">vrc01_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_folds.html">make_folds</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">y</span>, V <span class="op">=</span> <span class="fl">2</span>, stratified <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div id="using-precomputed-regression-function-estimates-without-cross-fitting" class="section level2">
-<h2 class="hasAnchor">
-<a href="#using-precomputed-regression-function-estimates-without-cross-fitting" class="anchor"></a>Using precomputed regression function estimates without
-cross-fitting</h2>
-<div id="a-first-approach-linear-regression" class="section level3">
-<h3 class="hasAnchor">
-<a href="#a-first-approach-linear-regression" class="anchor"></a>A first approach: linear regression</h3>
+<div class="section level2">
+<h2 id="using-precomputed-regression-function-estimates-without-cross-fitting">Using precomputed regression function estimates without
+cross-fitting<a class="anchor" aria-label="anchor" href="#using-precomputed-regression-function-estimates-without-cross-fitting"></a>
+</h2>
+<div class="section level3">
+<h3 id="a-first-approach-linear-regression">A first approach: linear regression<a class="anchor" aria-label="anchor" href="#a-first-approach-linear-regression"></a>
+</h3>
 <p>As in the <a href="introduction-to-vimp.html">main vignette</a>, we
 first start by fitting only linear regression models. In this section,
 we use the function <code><a href="../reference/vim.html">vim()</a></code>; this function does not use
 cross-fitting to estimate variable importance, and greatly simplifies
 the code for precomputed regression models.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://rlang.r-lib.org">"rlang"</a></span><span class="op">)</span>
-<span class="va">vrc01_subset</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">ic50.censored</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">ic50.censored</span><span class="op">)</span>
-<span class="va">vrc01_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">vrc01_subset</span>, <span class="va">vrc01_folds</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>
-<span class="va">full_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">vrc01_1</span><span class="op">)</span>
-<span class="va">full_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">full_mod</span><span class="op">)</span>
-
-<span class="co"># estimate the reduced conditional means for each of the individual variables</span>
-<span class="co"># remove the outcome for the predictor matrix</span>
-<span class="va">vrc01_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">vrc01_subset</span>, <span class="va">vrc01_folds</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span>
-<span class="va">X_2</span> <span class="op">&lt;-</span> <span class="va">vrc01_2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">y</span><span class="op">)</span>
-<span class="co"># get the full regression fit and use as outcome for reduced regressions; this may provide some stability in this analysis</span>
-<span class="va">full_fit_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">vrc01_2</span><span class="op">)</span><span class="op">)</span>
-<span class="va">geog_indx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"geog"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">X_2</span><span class="op">)</span> <span class="op">-</span> <span class="va">geog_indx</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">this_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">X_2</span><span class="op">)</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="va">geog_indx</span><span class="op">]</span>
-  <span class="va">red_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">full_fit_2</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">X_2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="op">!</span><span class="op">!</span><span class="va">this_name</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-  <span class="va">this_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, f1 <span class="op">=</span> <span class="va">full_fit</span>, f2 <span class="op">=</span> <span class="va">red_fit</span>, indx <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="va">geog_indx</span>,
-                  run_regression <span class="op">=</span> <span class="cn">FALSE</span>, type <span class="op">=</span> <span class="st">"r_squared"</span>,
-                  sample_splitting_folds <span class="op">=</span> <span class="va">vrc01_folds</span><span class="op">)</span>
-  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="va">this_vim</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span>
-    <span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">lm_mat</span>, <span class="va">this_vim</span><span class="op">)</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-<span class="co"># print out the matrix</span>
-<span class="va">lm_mat</span>
-<span class="co">#&gt; Variable importance estimates:</span>
-<span class="co">#&gt;        Estimate   SE         95% CI         VIMP &gt; 0 p-value  </span>
-<span class="co">#&gt; s = 18 0.01356494 0.06297042 [0, 0.1369847] FALSE    0.4147208</span>
-<span class="co">#&gt; s = 5  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 6  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 7  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 8  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 9  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 10 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 11 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 12 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 13 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 14 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 15 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span>
-<span class="co">#&gt; s = 16 0.00000000 0.06532748 [0, 0.1280395] FALSE    0.5994422</span>
-<span class="co">#&gt; s = 17 0.00000000 0.06488640 [0, 0.1271750] FALSE    0.6001570</span>
-<span class="co">#&gt; s = 19 0.00000000 0.06416641 [0, 0.1257639] FALSE    0.5181977</span>
-<span class="co">#&gt; s = 20 0.00000000 0.06520175 [0, 0.1277931] FALSE    0.6016557</span>
-<span class="co">#&gt; s = 21 0.00000000 0.06483849 [0, 0.1270811] FALSE    0.5806067</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://rlang.r-lib.org" class="external-link">"rlang"</a></span><span class="op">)</span></span>
+<span><span class="va">vrc01_subset</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">ic50.censored</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">ic50.censored</span><span class="op">)</span></span>
+<span><span class="va">vrc01_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">vrc01_subset</span>, <span class="va">vrc01_folds</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">full_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">vrc01_1</span><span class="op">)</span></span>
+<span><span class="va">full_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">full_mod</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># estimate the reduced conditional means for each of the individual variables</span></span>
+<span><span class="co"># remove the outcome for the predictor matrix</span></span>
+<span><span class="va">vrc01_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">vrc01_subset</span>, <span class="va">vrc01_folds</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">X_2</span> <span class="op">&lt;-</span> <span class="va">vrc01_2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">y</span><span class="op">)</span></span>
+<span><span class="co"># get the full regression fit and use as outcome for reduced regressions; this may provide some stability in this analysis</span></span>
+<span><span class="va">full_fit_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">vrc01_2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">geog_indx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"geog"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">X_2</span><span class="op">)</span> <span class="op">-</span> <span class="va">geog_indx</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">this_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">X_2</span><span class="op">)</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="va">geog_indx</span><span class="op">]</span></span>
+<span>  <span class="va">red_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">full_fit_2</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">X_2</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="op">!</span><span class="op">!</span><span class="va">this_name</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">this_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vim.html">vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, f1 <span class="op">=</span> <span class="va">full_fit</span>, f2 <span class="op">=</span> <span class="va">red_fit</span>, indx <span class="op">=</span> <span class="va">i</span> <span class="op">+</span> <span class="va">geog_indx</span>,</span>
+<span>                  run_regression <span class="op">=</span> <span class="cn">FALSE</span>, type <span class="op">=</span> <span class="st">"r_squared"</span>,</span>
+<span>                  sample_splitting_folds <span class="op">=</span> <span class="va">vrc01_folds</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="va">this_vim</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="va">lm_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">lm_mat</span>, <span class="va">this_vim</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co"># print out the matrix</span></span>
+<span><span class="va">lm_mat</span></span>
+<span><span class="co">#&gt; Variable importance estimates:</span></span>
+<span><span class="co">#&gt;        Estimate   SE         95% CI         VIMP &gt; 0 p-value  </span></span>
+<span><span class="co">#&gt; s = 18 0.01356494 0.06297042 [0, 0.1369847] FALSE    0.4147208</span></span>
+<span><span class="co">#&gt; s = 5  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 6  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 7  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 8  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 9  0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 10 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 11 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 12 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 13 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 14 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 15 0.00000000 0.06521531 [0, 0.1278197] FALSE    0.6089115</span></span>
+<span><span class="co">#&gt; s = 16 0.00000000 0.06532748 [0, 0.1280395] FALSE    0.5994422</span></span>
+<span><span class="co">#&gt; s = 17 0.00000000 0.06488640 [0, 0.1271750] FALSE    0.6001570</span></span>
+<span><span class="co">#&gt; s = 19 0.00000000 0.06416641 [0, 0.1257639] FALSE    0.5181977</span></span>
+<span><span class="co">#&gt; s = 20 0.00000000 0.06520175 [0, 0.1277931] FALSE    0.6016557</span></span>
+<span><span class="co">#&gt; s = 21 0.00000000 0.06483849 [0, 0.1270811] FALSE    0.5806067</span></span></code></pre></div>
 </div>
 </div>
-<div id="estimating-variable-importance-for-a-single-variable-using-precomputed-regression-function-estimates" class="section level2">
-<h2 class="hasAnchor">
-<a href="#estimating-variable-importance-for-a-single-variable-using-precomputed-regression-function-estimates" class="anchor"></a>Estimating variable importance for a single variable using
-precomputed regression function estimates</h2>
+<div class="section level2">
+<h2 id="estimating-variable-importance-for-a-single-variable-using-precomputed-regression-function-estimates">Estimating variable importance for a single variable using
+precomputed regression function estimates<a class="anchor" aria-label="anchor" href="#estimating-variable-importance-for-a-single-variable-using-precomputed-regression-function-estimates"></a>
+</h2>
 <p>In this section, we will use cross-fitting and pre-computed estimates
 of the regression functions. This can be especially useful if you have
 already run a call to <code>CV.SuperLearner</code> – that function
@@ -238,196 +235,195 @@ entails running <code>CV.SuperLearner</code> with <span class="math inline">\(2V
 <p>First, we estimate the regression function based on all
 variables:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">learners</span> <span class="op">&lt;-</span> <span class="st">"SL.ranger"</span>
-<span class="co"># estimate the full regression function</span>
-<span class="va">V</span> <span class="op">&lt;-</span> <span class="fl">2</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">4747</span><span class="op">)</span>
-<span class="va">full_cv_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html">CV.SuperLearner</a></span><span class="op">(</span>
-  Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, SL.library <span class="op">=</span> <span class="va">learners</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">V</span><span class="op">)</span>,
-  innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="co"># get a numeric vector of cross-fitting folds</span>
-<span class="va">cross_fitting_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cv_sl_folds.html">get_cv_sl_folds</a></span><span class="op">(</span><span class="va">full_cv_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span>
-<span class="co"># get sample splitting folds</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
-<span class="va">sample_splitting_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_folds.html">make_folds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">cross_fitting_folds</span><span class="op">)</span>, V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-<span class="co"># extract the predictions on split portions of the data, for hypothesis testing</span>
-<span class="va">full_cv_preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_sampled_split_predictions.html">extract_sampled_split_predictions</a></span><span class="op">(</span>
-  cvsl_obj <span class="op">=</span> <span class="va">full_cv_fit</span>, sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,
-  sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>, full <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">learners</span> <span class="op">&lt;-</span> <span class="st">"SL.ranger"</span></span>
+<span><span class="co"># estimate the full regression function</span></span>
+<span><span class="va">V</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">4747</span><span class="op">)</span></span>
+<span><span class="va">full_cv_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html" class="external-link">CV.SuperLearner</a></span><span class="op">(</span></span>
+<span>  Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, SL.library <span class="op">=</span> <span class="va">learners</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">V</span><span class="op">)</span>,</span>
+<span>  innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># get a numeric vector of cross-fitting folds</span></span>
+<span><span class="va">cross_fitting_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_cv_sl_folds.html">get_cv_sl_folds</a></span><span class="op">(</span><span class="va">full_cv_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span></span>
+<span><span class="co"># get sample splitting folds</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="va">sample_splitting_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_folds.html">make_folds</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">cross_fitting_folds</span><span class="op">)</span>, V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co"># extract the predictions on split portions of the data, for hypothesis testing</span></span>
+<span><span class="va">full_cv_preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_sampled_split_predictions.html">extract_sampled_split_predictions</a></span><span class="op">(</span></span>
+<span>  cvsl_obj <span class="op">=</span> <span class="va">full_cv_fit</span>, sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>, full <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Next, to estimate the importance of each variable, we need to
 estimate the reduced regression function for each variable:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">[</span><span class="op">(</span><span class="va">geog_indx</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">]</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="co"># use "eval" and "parse" to assign the objects of interest to avoid duplicating code</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_fit &lt;- SuperLearner::CV.SuperLearner(
-  Y = y, X = X[, -(geog_indx + i), drop = FALSE], SL.library = learners,
-  cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),
-  innerCvControl = list(list(V = V))
-)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_preds &lt;- extract_sampled_split_predictions(
-  cvsl_obj = reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_fit, sample_splitting = TRUE,
-  sample_splitting_folds = sample_splitting_folds, full = FALSE
-)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">[</span><span class="op">(</span><span class="va">geog_indx</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># use "eval" and "parse" to assign the objects of interest to avoid duplicating code</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html" class="external-link">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_fit &lt;- SuperLearner::CV.SuperLearner(</span></span>
+<span><span class="st">  Y = y, X = X[, -(geog_indx + i), drop = FALSE], SL.library = learners,</span></span>
+<span><span class="st">  cvControl = SuperLearner::SuperLearner.CV.control(V = 2 * V, validRows = full_cv_fit$folds),</span></span>
+<span><span class="st">  innerCvControl = list(list(V = V))</span></span>
+<span><span class="st">)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html" class="external-link">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_preds &lt;- extract_sampled_split_predictions(</span></span>
+<span><span class="st">  cvsl_obj = reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_fit, sample_splitting = TRUE,</span></span>
+<span><span class="st">  sample_splitting_folds = sample_splitting_folds, full = FALSE</span></span>
+<span><span class="st">)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>Then we can plug these values into <code><a href="../reference/vimp_rsquared.html">vimp_rsquared()</a></code> (or
 equivalently, <code><a href="../reference/cv_vim.html">cv_vim()</a></code> with
 <code>type = "r_squared"</code>) as follows:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="co"># again, use "eval" and "parse" to assign the objects of interest to avoid duplicating code</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/eval.html">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"cf_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_vim &lt;- vimp_rsquared(Y = y,
-  cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_preds,
-  indx = (geog_indx + i), cross_fitting_folds = cross_fitting_folds,
-  sample_splitting_folds = sample_splitting_folds, run_regression = FALSE, alpha = 0.05,
-  V = V, na.rm = TRUE)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-
-<span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span>
-<span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span>
-<span class="va">cf_ests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">cf_subtype.is.01_AE_vim</span>,
-                     <span class="va">cf_subtype.is.02_AG_vim</span>, <span class="va">cf_subtype.is.07_BC_vim</span>,
-                     <span class="va">cf_subtype.is.A1_vim</span>, <span class="va">cf_subtype.is.A1C_vim</span>,
-                     <span class="va">cf_subtype.is.A1D_vim</span>, <span class="va">cf_subtype.is.B_vim</span>,
-                     <span class="va">cf_subtype.is.C_vim</span>, <span class="va">cf_subtype.is.D_vim</span>,
-                     <span class="va">cf_subtype.is.O_vim</span>, <span class="va">cf_subtype.is.Other_vim</span>,
-                     <span class="va">cf_length.env_vim</span>, <span class="va">cf_length.gp120_vim</span>, <span class="va">cf_length.loop.e_vim</span>,
-                     <span class="va">cf_length.loop.e.outliers_vim</span>, <span class="va">cf_length.v5_vim</span>,
-                     <span class="va">cf_length.v5.outliers_vim</span><span class="op">)</span>
-<span class="va">all_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Subtype is "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"01_AE"</span>, <span class="st">"02_AG"</span>, <span class="st">"07_BC"</span>, <span class="st">"A1"</span>, <span class="st">"A1C"</span>, <span class="st">"A1D"</span>,
-                                      <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"O"</span>, <span class="st">"Other"</span><span class="op">)</span><span class="op">)</span>,
-              <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Length of "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Env"</span>, <span class="st">"gp120"</span>, <span class="st">"V5"</span>, <span class="st">"V5 outliers"</span>, <span class="st">"Loop E"</span>,
-                                     <span class="st">"Loop E outliers"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># again, use "eval" and "parse" to assign the objects of interest to avoid duplicating code</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/parse.html" class="external-link">parse</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"cf_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_vim &lt;- vimp_rsquared(Y = y,</span></span>
+<span><span class="st">  cross_fitted_f1 = full_cv_preds, cross_fitted_f2 = reduced_"</span>, <span class="va">vars</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="st">"_cv_preds,</span></span>
+<span><span class="st">  indx = (geog_indx + i), cross_fitting_folds = cross_fitting_folds,</span></span>
+<span><span class="st">  sample_splitting_folds = sample_splitting_folds, run_regression = FALSE, alpha = 0.05,</span></span>
+<span><span class="st">  V = V, na.rm = TRUE)"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span></span>
+<span><span class="co">#&gt; Warning in cv_vim(type = "r_squared", Y = Y, X = X, cross_fitted_f1 =</span></span>
+<span><span class="co">#&gt; cross_fitted_f1, : Original estimate &lt; 0; returning zero.</span></span>
+<span><span class="va">cf_ests</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">cf_subtype.is.01_AE_vim</span>,</span>
+<span>                     <span class="va">cf_subtype.is.02_AG_vim</span>, <span class="va">cf_subtype.is.07_BC_vim</span>,</span>
+<span>                     <span class="va">cf_subtype.is.A1_vim</span>, <span class="va">cf_subtype.is.A1C_vim</span>,</span>
+<span>                     <span class="va">cf_subtype.is.A1D_vim</span>, <span class="va">cf_subtype.is.B_vim</span>,</span>
+<span>                     <span class="va">cf_subtype.is.C_vim</span>, <span class="va">cf_subtype.is.D_vim</span>,</span>
+<span>                     <span class="va">cf_subtype.is.O_vim</span>, <span class="va">cf_subtype.is.Other_vim</span>,</span>
+<span>                     <span class="va">cf_length.env_vim</span>, <span class="va">cf_length.gp120_vim</span>, <span class="va">cf_length.loop.e_vim</span>,</span>
+<span>                     <span class="va">cf_length.loop.e.outliers_vim</span>, <span class="va">cf_length.v5_vim</span>,</span>
+<span>                     <span class="va">cf_length.v5.outliers_vim</span><span class="op">)</span></span>
+<span><span class="va">all_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Subtype is "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01_AE"</span>, <span class="st">"02_AG"</span>, <span class="st">"07_BC"</span>, <span class="st">"A1"</span>, <span class="st">"A1C"</span>, <span class="st">"A1D"</span>,</span>
+<span>                                      <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>, <span class="st">"O"</span>, <span class="st">"Other"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"Length of "</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Env"</span>, <span class="st">"gp120"</span>, <span class="st">"V5"</span>, <span class="st">"V5 outliers"</span>, <span class="st">"Loop E"</span>,</span>
+<span>                                     <span class="st">"Loop E outliers"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>And we can view them all simultaneously by plotting:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org">"ggplot2"</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: package 'ggplot2' was built under R version 4.0.5</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://wilkelab.org/cowplot/">"cowplot"</a></span><span class="op">)</span>
-<span class="co">#&gt; Warning: package 'cowplot' was built under R version 4.0.5</span>
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="va">cf_est_plot_tib</span> <span class="op">&lt;-</span> <span class="va">cf_ests</span><span class="op">$</span><span class="va">mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
-    var_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">s</span>, levels <span class="op">=</span> <span class="va">cf_ests</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">s</span>,
-                     labels <span class="op">=</span> <span class="va">all_vars</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">cf_ests</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">s</span><span class="op">)</span> <span class="op">-</span> <span class="va">geog_indx</span><span class="op">]</span>,
-                     ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">)</span>
-
-<span class="co"># plot</span>
-<span class="va">cf_est_plot_tib</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">est</span>, y <span class="op">=</span> <span class="va">var_fct</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html">geom_errorbarh</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">cil</span>, xmax <span class="op">=</span> <span class="va">ciu</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated individual feature importance"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://ggplot2.tidyverse.org" class="external-link">"ggplot2"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://wilkelab.org/cowplot/" class="external-link">"cowplot"</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'cowplot' was built under R version 4.0.5</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/theme_cowplot.html" class="external-link">theme_cowplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cf_est_plot_tib</span> <span class="op">&lt;-</span> <span class="va">cf_ests</span><span class="op">$</span><span class="va">mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    var_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">s</span>, levels <span class="op">=</span> <span class="va">cf_ests</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">s</span>,</span>
+<span>                     labels <span class="op">=</span> <span class="va">all_vars</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">cf_ests</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">s</span><span class="op">)</span> <span class="op">-</span> <span class="va">geog_indx</span><span class="op">]</span>,</span>
+<span>                     ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># plot</span></span>
+<span><span class="va">cf_est_plot_tib</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">est</span>, y <span class="op">=</span> <span class="va">var_fct</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html" class="external-link">geom_errorbarh</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">cil</span>, xmax <span class="op">=</span> <span class="va">ciu</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated individual feature importance"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="precomputed-regressions_files/figure-html/plot-cf-vim-1.png" width="816"></p>
 </div>
-<div id="estimating-variable-importance-for-a-group-of-variables-using-precomputed-regression-function-estimates" class="section level2">
-<h2 class="hasAnchor">
-<a href="#estimating-variable-importance-for-a-group-of-variables-using-precomputed-regression-function-estimates" class="anchor"></a>Estimating variable importance for a group of variables using
-precomputed regression function estimates</h2>
+<div class="section level2">
+<h2 id="estimating-variable-importance-for-a-group-of-variables-using-precomputed-regression-function-estimates">Estimating variable importance for a group of variables using
+precomputed regression function estimates<a class="anchor" aria-label="anchor" href="#estimating-variable-importance-for-a-group-of-variables-using-precomputed-regression-function-estimates"></a>
+</h2>
 <p>Finally, we can estimate and plot group importance:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">91011</span><span class="op">)</span>
-<span class="va">reduced_subtype_cv_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html">CV.SuperLearner</a></span><span class="op">(</span>
-  Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, SL.library <span class="op">=</span> <span class="va">learners</span>,
-  cvControl <span class="op">=</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.CV.control.html">SuperLearner.CV.control</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">V</span>, validRows <span class="op">=</span> <span class="va">full_cv_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span>,
-  innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">reduced_subtype_cv_preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_sampled_split_predictions.html">extract_sampled_split_predictions</a></span><span class="op">(</span>
-  cvsl_obj <span class="op">=</span> <span class="va">reduced_subtype_cv_fit</span>, sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,
-  sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>, full <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span>
-<span class="va">reduced_geometry_cv_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html">CV.SuperLearner</a></span><span class="op">(</span>
-  Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">16</span><span class="op">:</span><span class="fl">21</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, SL.library <span class="op">=</span> <span class="va">learners</span>,
-  cvControl <span class="op">=</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.CV.control.html">SuperLearner.CV.control</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">V</span>, validRows <span class="op">=</span> <span class="va">full_cv_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span>,
-  innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="va">reduced_geometry_cv_preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_sampled_split_predictions.html">extract_sampled_split_predictions</a></span><span class="op">(</span>
-  cvsl_obj <span class="op">=</span> <span class="va">reduced_geometry_cv_fit</span>, sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,
-  sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>, full <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span>
-<span class="va">cf_subtype_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>
-  Y <span class="op">=</span> <span class="va">y</span>, cross_fitted_f1 <span class="op">=</span> <span class="va">full_cv_preds</span>, cross_fitted_f2 <span class="op">=</span> <span class="va">reduced_subtype_cv_preds</span>,
-  indx <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">15</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span>, V <span class="op">=</span> <span class="va">V</span>,
-  cross_fitting_folds <span class="op">=</span> <span class="va">cross_fitting_folds</span>, sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>
-<span class="op">)</span>
-<span class="va">cf_geometry_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>
-  Y <span class="op">=</span> <span class="va">y</span>, cross_fitted_f1 <span class="op">=</span> <span class="va">full_cv_preds</span>, cross_fitted_f2 <span class="op">=</span> <span class="va">reduced_geometry_cv_preds</span>,
-  indx <span class="op">=</span> <span class="fl">16</span><span class="op">:</span><span class="fl">21</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span>, V <span class="op">=</span> <span class="va">V</span>,
-  cross_fitting_folds <span class="op">=</span> <span class="va">cross_fitting_folds</span>, sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>
-<span class="op">)</span>
-<span class="va">cf_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">cf_subtype_vim</span>, <span class="va">cf_geometry_vim</span><span class="op">)</span>
-<span class="va">all_grp_nms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Viral subtype"</span>, <span class="st">"Viral geometry"</span><span class="op">)</span>
-
-<span class="va">grp_plot_tib</span> <span class="op">&lt;-</span> <span class="va">cf_groups</span><span class="op">$</span><span class="va">mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
-    grp_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html">case_when</a></span><span class="op">(</span>
-      <span class="va">s</span> <span class="op">==</span> <span class="st">"5,6,7,8,9,10,11,12,13,14,15"</span> <span class="op">~</span> <span class="st">"1"</span>,
-      <span class="va">s</span> <span class="op">==</span> <span class="st">"16,17,18,19,20,21"</span> <span class="op">~</span> <span class="st">"2"</span>
-    <span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span>,  labels <span class="op">=</span> <span class="va">all_grp_nms</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-  <span class="op">)</span>
-<span class="va">grp_plot_tib</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">est</span>, y <span class="op">=</span> <span class="va">grp_fct</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html">geom_errorbarh</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">cil</span>, xmax <span class="op">=</span> <span class="va">ciu</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated feature group importance"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">91011</span><span class="op">)</span></span>
+<span><span class="va">reduced_subtype_cv_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html" class="external-link">CV.SuperLearner</a></span><span class="op">(</span></span>
+<span>  Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span><span class="op">:</span><span class="fl">15</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, SL.library <span class="op">=</span> <span class="va">learners</span>,</span>
+<span>  cvControl <span class="op">=</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.CV.control.html" class="external-link">SuperLearner.CV.control</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">V</span>, validRows <span class="op">=</span> <span class="va">full_cv_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span>,</span>
+<span>  innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">reduced_subtype_cv_preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_sampled_split_predictions.html">extract_sampled_split_predictions</a></span><span class="op">(</span></span>
+<span>  cvsl_obj <span class="op">=</span> <span class="va">reduced_subtype_cv_fit</span>, sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>, full <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">reduced_geometry_cv_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html" class="external-link">CV.SuperLearner</a></span><span class="op">(</span></span>
+<span>  Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span><span class="op">[</span>, <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span><span class="op">:</span><span class="fl">21</span><span class="op">)</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, SL.library <span class="op">=</span> <span class="va">learners</span>,</span>
+<span>  cvControl <span class="op">=</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.CV.control.html" class="external-link">SuperLearner.CV.control</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">V</span>, validRows <span class="op">=</span> <span class="va">full_cv_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span>,</span>
+<span>  innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">reduced_geometry_cv_preds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/extract_sampled_split_predictions.html">extract_sampled_split_predictions</a></span><span class="op">(</span></span>
+<span>  cvsl_obj <span class="op">=</span> <span class="va">reduced_geometry_cv_fit</span>, sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span>, full <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">cf_subtype_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span></span>
+<span>  Y <span class="op">=</span> <span class="va">y</span>, cross_fitted_f1 <span class="op">=</span> <span class="va">full_cv_preds</span>, cross_fitted_f2 <span class="op">=</span> <span class="va">reduced_subtype_cv_preds</span>,</span>
+<span>  indx <span class="op">=</span> <span class="fl">5</span><span class="op">:</span><span class="fl">15</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span>, V <span class="op">=</span> <span class="va">V</span>,</span>
+<span>  cross_fitting_folds <span class="op">=</span> <span class="va">cross_fitting_folds</span>, sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">cf_geometry_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span></span>
+<span>  Y <span class="op">=</span> <span class="va">y</span>, cross_fitted_f1 <span class="op">=</span> <span class="va">full_cv_preds</span>, cross_fitted_f2 <span class="op">=</span> <span class="va">reduced_geometry_cv_preds</span>,</span>
+<span>  indx <span class="op">=</span> <span class="fl">16</span><span class="op">:</span><span class="fl">21</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span>, V <span class="op">=</span> <span class="va">V</span>,</span>
+<span>  cross_fitting_folds <span class="op">=</span> <span class="va">cross_fitting_folds</span>, sample_splitting_folds <span class="op">=</span> <span class="va">sample_splitting_folds</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">cf_groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_vim.html">merge_vim</a></span><span class="op">(</span><span class="va">cf_subtype_vim</span>, <span class="va">cf_geometry_vim</span><span class="op">)</span></span>
+<span><span class="va">all_grp_nms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Viral subtype"</span>, <span class="st">"Viral geometry"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">grp_plot_tib</span> <span class="op">&lt;-</span> <span class="va">cf_groups</span><span class="op">$</span><span class="va">mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    grp_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>      <span class="va">s</span> <span class="op">==</span> <span class="st">"5,6,7,8,9,10,11,12,13,14,15"</span> <span class="op">~</span> <span class="st">"1"</span>,</span>
+<span>      <span class="va">s</span> <span class="op">==</span> <span class="st">"16,17,18,19,20,21"</span> <span class="op">~</span> <span class="st">"2"</span></span>
+<span>    <span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span>,  labels <span class="op">=</span> <span class="va">all_grp_nms</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">grp_plot_tib</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">est</span>, y <span class="op">=</span> <span class="va">grp_fct</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_errorbarh.html" class="external-link">geom_errorbarh</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>xmin <span class="op">=</span> <span class="va">cil</span>, xmax <span class="op">=</span> <span class="va">ciu</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/expression.html" class="external-link">expression</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Variable importance estimates: "</span>, <span class="va">R</span><span class="op">^</span><span class="fl">2</span>, sep <span class="op">=</span> <span class="st">""</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated feature group importance"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="precomputed-regressions_files/figure-html/cf-group-vim-1.png" width="816"></p>
 </div>
-<div id="conclusion" class="section level2">
-<h2 class="hasAnchor">
-<a href="#conclusion" class="anchor"></a>Conclusion</h2>
+<div class="section level2">
+<h2 id="conclusion">Conclusion<a class="anchor" aria-label="anchor" href="#conclusion"></a>
+</h2>
 <p>In this document, we learned a second method for computing variable
 importance estimates: rather than having <code>vimp</code> run all
 regression functions for you, you can compute your own regressions and
@@ -438,14 +434,14 @@ correctly computing the regressions. Additionally, this task is more
 difficult when using cross-fitted variable importance, which I recommend
 in nearly all cases when using flexible machine learning tools.</p>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-magaret2019" class="csl-entry">
 Magaret, CA, DC Benkeser, BD Williamson, et al. 2019. <span>“Prediction
 of <span>Vrc01</span> Neutralization Sensitivity by <span>HIV</span>-1
-Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952">https://doi.org/10.1371/journal.pcbi.1006952</a>.
+Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">https://doi.org/10.1371/journal.pcbi.1006952</a>.
 </div>
 </div>
 </div>
@@ -462,11 +458,13 @@ Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href=
 
 
       <footer><div class="copyright">
-  <p>Developed by Brian D. Williamson.</p>
+  <p></p>
+<p>Developed by Brian D. Williamson.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -474,6 +472,8 @@ Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href=
 
   
 
+
+  
 
   </body>
 </html>

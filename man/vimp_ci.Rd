@@ -4,7 +4,7 @@
 \alias{vimp_ci}
 \title{Confidence intervals for variable importance}
 \usage{
-vimp_ci(est, se, scale = "identity", level = 0.95)
+vimp_ci(est, se, scale = "identity", level = 0.95, truncate = TRUE)
 }
 \arguments{
 \item{est}{estimate of variable importance, e.g., from a call to \code{vimp_point_est}.}
@@ -14,6 +14,8 @@ vimp_ci(est, se, scale = "identity", level = 0.95)
 \item{scale}{scale to compute interval estimate on (defaults to "identity": compute Wald-type CI).}
 
 \item{level}{confidence interval type (defaults to 0.95).}
+
+\item{truncate}{truncate CIs to have lower limit at (or above) zero?}
 }
 \value{
 The Wald-based confidence interval for the true importance of the given group of left-out covariates.

@@ -1,13 +1,13 @@
 pandoc: '2.18'
-pkgdown: 1.6.1
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   introduction-to-vimp: introduction-to-vimp.html
   ipcw-vim: ipcw-vim.html
   precomputed-regressions: precomputed-regressions.html
   types-of-vims: types-of-vims.html
-last_built: 2022-08-06T00:19Z
+last_built: 2022-10-21T23:55Z
 urls:
-  reference: http://bdwilliamson.github.io/vimp//reference
-  article: http://bdwilliamson.github.io/vimp//articles
+  reference: http://bdwilliamson.github.io/vimp/reference
+  article: http://bdwilliamson.github.io/vimp/articles
 
