@@ -72,7 +72,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vimp_ci</span><span class="op">(</span><span class="va">est</span>, <span class="va">se</span>, scale <span class="op">=</span> <span class="st">"identity"</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vimp_ci</span><span class="op">(</span><span class="va">est</span>, <span class="va">se</span>, scale <span class="op">=</span> <span class="st">"identity"</span>, level <span class="op">=</span> <span class="fl">0.95</span>, truncate <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -91,6 +91,10 @@
 
 <dt>level</dt>
 <dd><p>confidence interval type (defaults to 0.95).</p></dd>
+
+
+<dt>truncate</dt>
+<dd><p>truncate CIs to have lower limit at (or above) zero?</p></dd>
 
 </dl></div>
     <div id="value">
