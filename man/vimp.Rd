@@ -14,7 +14,7 @@ choose a variable importance measure, and specify variable(s) of interest;
 \section{Author(s)}{
 
 \bold{Maintainer}: Brian Williamson \url{https://bdwilliamson.github.io/}
-\bold{Contributor}: Jean Feng \url{http://www.jeanfeng.com}
+\bold{Contributor}: Jean Feng \url{https://www.jeanfeng.com}
 
 Methodology authors:
 \itemize{
@@ -30,10 +30,10 @@ Methodology authors:
 
 Manuscripts:
 \itemize{
-  \item{\url{https://onlinelibrary.wiley.com/doi/epdf/10.1111/biom.13392} (R-squared-based variable importance)}
-  \item{\url{https://onlinelibrary.wiley.com/doi/epdf/10.1111/biom.13389} (Rejoinder to discussion on R-squared-based variable importance article)}
+  \item{\url{https://onlinelibrary.wiley.com/doi/ftr/10.1111/biom.13392} (R-squared-based variable importance)}
+  \item{\url{https://onlinelibrary.wiley.com/doi/ftr/10.1111/biom.13389} (Rejoinder to discussion on R-squared-based variable importance article)}
   \item{\url{http://proceedings.mlr.press/v119/williamson20a.html} (general Shapley-based variable importance)}
-  \item{\url{https://doi.org/10.1080/01621459.2021.2003200} (general variable importance)}
+  \item{\doi{10.1080/01621459.2021.2003200} (general variable importance)}
 }
 
 Other useful links:
