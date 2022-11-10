@@ -29,7 +29,7 @@ extract_sampled_split_predictions <- function(cvsl_obj = NULL,
                                               preds = NULL,
                                               cross_fitting_folds = NULL,
                                               vector = TRUE) {
-  if ((is.null(cvsl_obj) | !(class(cvsl_obj) == "CV.SuperLearner")) & is.null(preds)) {
+  if ((is.null(cvsl_obj) | !inherits(cvsl_obj, "CV.SuperLearner")) & is.null(preds)) {
     stop("Please enter a CV.SuperLearner object or the predictions and folds from such an object.")
   } else if (!is.null(preds) & is.null(cross_fitting_folds)) {
     stop("You must enter cross-fitting folds if you choose to enter predicted values rather than a CV.SuperLearner object.")
