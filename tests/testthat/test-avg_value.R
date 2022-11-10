@@ -37,11 +37,11 @@ q_n1 <- SuperLearner::SuperLearner(Y = q_n$SL.predict, X = cbind.data.frame(a = 
 q_n2 <- SuperLearner::SuperLearner(Y = q_n$SL.predict, X = cbind.data.frame(a = a, x[, -2, drop = FALSE]), SL.library = learners,
                                    cvControl = list(V = V))
 # estimate the optimal rule
-f_n <- as.numeric(predict(q_n, newdata = cbind.data.frame(a = 1, x))$pred > 
+f_n <- as.numeric(predict(q_n, newdata = cbind.data.frame(a = 1, x))$pred >
                     predict(q_n, newdata = cbind.data.frame(a = 0, x))$pred)
-f_n1 <- as.numeric(predict(q_n1, newdata = cbind.data.frame(a = 1, x[, -1, drop = FALSE]))$pred > 
+f_n1 <- as.numeric(predict(q_n1, newdata = cbind.data.frame(a = 1, x[, -1, drop = FALSE]))$pred >
                      predict(q_n1, newdata = cbind.data.frame(a = 0, x[, -1, drop = FALSE]))$pred)
-f_n2 <- as.numeric(predict(q_n2, newdata = cbind.data.frame(a = 1, x[, -2, drop = FALSE]))$pred > 
+f_n2 <- as.numeric(predict(q_n2, newdata = cbind.data.frame(a = 1, x[, -2, drop = FALSE]))$pred >
                      predict(q_n2, newdata = cbind.data.frame(a = 0, x[, -2, drop = FALSE]))$pred)
 # estimate the propensity score
 g_n <- SuperLearner::SuperLearner(Y = f_n, X = x, SL.library = learners, cvControl = list(V = V))
@@ -55,7 +55,7 @@ q_n_cv <- SuperLearner::CV.SuperLearner(Y = y, X = cbind.data.frame(a = a, x),
                                         saveAll = TRUE, control = list(saveFitLibrary = TRUE))
 cross_fitting_folds <- get_cv_sl_folds(q_n_cv$folds)
 q_n_cv_preds_lst <- lapply(as.list(seq_len(length(q_n_cv$AllSL))), function(l) {
-  as.numeric(predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 1, x[cross_fitting_folds == l, ]))$pred > 
+  as.numeric(predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 1, x[cross_fitting_folds == l, ]))$pred >
                predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 0, x[cross_fitting_folds == l, ]))$pred)
 })
 f_n_cv <- unlist(q_n_cv_preds_lst)[unlist(q_n_cv$folds)]
@@ -75,7 +75,7 @@ q_n_cv1 <- SuperLearner::CV.SuperLearner(Y = y, X = cbind.data.frame(a = a, x[, 
                                         innerCvControl = list(list(V = V)),
                                         saveAll = TRUE, control = list(saveFitLibrary = TRUE))
 q_n_cv_preds_lst1 <- lapply(as.list(seq_len(length(q_n_cv1$AllSL))), function(l) {
-  as.numeric(predict(q_n_cv1$AllSL[[l]], newdata = cbind.data.frame(a = 1, x[cross_fitting_folds == l, -1, drop = FALSE]))$pred > 
+  as.numeric(predict(q_n_cv1$AllSL[[l]], newdata = cbind.data.frame(a = 1, x[cross_fitting_folds == l, -1, drop = FALSE]))$pred >
                predict(q_n_cv1$AllSL[[l]], newdata = cbind.data.frame(a = 0, x[cross_fitting_folds == l, -1, drop = FALSE]))$pred)
 })
 f_n_cv1 <- unlist(q_n_cv_preds_lst1)[unlist(q_n_cv1$folds)]
@@ -118,7 +118,7 @@ test_that("Average-value-based VIM works", {
   expect_warning(
     vim_avg_value <- vim(Y = y, X = cbind.data.frame(a = a, x), f1 = f_n, f2 = f_n1, indx = 1, type = "average_value",
                          run_regression = FALSE, exposure_name = "a",
-                         nuisance_estimators_full = nuisances, 
+                         nuisance_estimators_full = nuisances,
                          nuisance_estimators_reduced = nuisances1)
   )
   expect_equal(vim_avg_value$est, avg_value_1, tol = 0.1, scale = 1)
