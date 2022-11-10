@@ -576,6 +576,8 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
 #' Estimate nuisance functions for average value-based VIMs
 #'
 #' @inheritParams cv_vim
+#' @inheritParams run_sl
+#' @param fit the fitted nuisance function estimator
 #' @param split the sample split to use
 #'
 #' @return nuisance function estimators for use in the average value VIM:

@@ -20,6 +20,8 @@ estimate_nuisances(
 )
 }
 \arguments{
+\item{fit}{the fitted nuisance function estimator}
+
 \item{X}{the covariates. If \code{type = "average_value"}, then the exposure
 variable should be part of \code{X}, with its name provided in \code{exposure_name}.}
 
@@ -45,6 +47,10 @@ importance.}
 these identify the observations that should be used to evaluate
 predictiveness based on the full and reduced sets of covariates, respectively.
 Only used if \code{run_regression = FALSE}.}
+
+\item{verbose}{should we print progress? defaults to FALSE}
+
+\item{weights}{weights to pass to estimation procedure}
 
 \item{cross_fitted_se}{should we use cross-fitting to estimate the standard
 errors (\code{TRUE}, the default) or not (\code{FALSE})?}
