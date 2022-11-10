@@ -18,8 +18,6 @@ using all covariates}
 using the reduced set of covariates}
 
 \item{indx}{the index or indices of the covariate(s) of interest}
-
-\item{cv}{is cross-fitted VIM desired?}
 }
 \value{
 None. Called for the side effect of stopping the algorithm if

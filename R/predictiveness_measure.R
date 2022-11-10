@@ -17,6 +17,8 @@
 #'   unobserved).
 #' @param Z either \code{NULL} (if no coarsening) or a matrix-like object
 #'   containing the fully observed data.
+#' @param folds_Z either the cross-validation folds for the observed data 
+#'   (no coarsening) or a vector of folds for the fully observed data Z.
 #' @param ipc_weights weights for inverse probability of coarsening (IPC)
 #'   (e.g., inverse weights from a two-phase sample) weighted estimation.
 #'   Assumed to be already inverted.

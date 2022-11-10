@@ -19,9 +19,18 @@ estimate_eif_projection(
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).}
 
-\item{Z}{a matrix (or data.frame) with the fully-observed variables}
+\item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object
+containing the fully observed data.}
 
-\item{...}{other arguments to the estimation tool, see "See also".}
+\item{ipc_fit_type}{if "external", then use \code{ipc_eif_preds}; if "SL",
+fit a SuperLearner to determine the IPC correction to the efficient
+influence function.}
+
+\item{ipc_eif_preds}{if \code{ipc_fit_type = "external"}, the fitted values
+from a regression of the full-data EIF on the fully observed
+covariates/outcome; otherwise, not used.}
+
+\item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }
 \value{
 the projection of the EIF onto the fully-observed variables

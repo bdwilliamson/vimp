@@ -48,7 +48,7 @@
 #'   details on the mathematics behind this function and the definition of the
 #'   parameter of interest.
 #' @export
-est_predictiveness <- function(fitted_values, y, full_y = NULL, 
+est_predictiveness <- function(fitted_values, y, a = NULL, full_y = NULL,
                                type = "r_squared",
                                C = rep(1, length(y)), Z = NULL,
                                ipc_weights = rep(1, length(C)),

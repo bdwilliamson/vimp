@@ -7,6 +7,7 @@
 est_predictiveness(
   fitted_values,
   y,
+  a = NULL,
   full_y = NULL,
   type = "r_squared",
   C = rep(1, length(y)),
@@ -26,6 +27,9 @@ est_predictiveness(
 observed data.}
 
 \item{y}{the observed outcome.}
+
+\item{a}{the observed treatment assignment (may be within a specified fold,
+for cross-fitted estimates). Only used if \code{type = "average_value"}.}
 
 \item{full_y}{the observed outcome (from the entire dataset, for
 cross-fitted estimates).}
@@ -70,9 +74,6 @@ propensity score under the estimated optimal treatment rule; and an estimator
 of the outcome regression when treatment is assigned according to the estimated optimal rule.}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
-
-\item{a}{the observed treatment assignment (may be within a specified fold,
-for cross-fitted estimates). Only used if \code{type = "average_value"}.}
 }
 \value{
 A list, with: the estimated predictiveness; the estimated efficient

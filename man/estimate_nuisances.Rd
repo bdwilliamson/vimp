@@ -27,6 +27,10 @@ variable should be part of \code{X}, with its name provided in \code{exposure_na
 the exposure of interest; binary, with 1 indicating presence of the exposure and
 0 indicating absence of the exposure.}
 
+\item{V}{the number of folds for cross-fitting, defaults to 5. If
+\code{sample_splitting = TRUE}, then a special type of \code{V}-fold cross-fitting
+is done. See Details for a more detailed explanation.}
+
 \item{SL.library}{a character vector of learners to pass to
 \code{SuperLearner}, if \code{f1} and \code{f2} are Y and X,
 respectively. Defaults to \code{SL.glmnet}, \code{SL.xgboost},
@@ -41,6 +45,11 @@ importance.}
 these identify the observations that should be used to evaluate
 predictiveness based on the full and reduced sets of covariates, respectively.
 Only used if \code{run_regression = FALSE}.}
+
+\item{cross_fitted_se}{should we use cross-fitting to estimate the standard
+errors (\code{TRUE}, the default) or not (\code{FALSE})?}
+
+\item{split}{the sample split to use}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

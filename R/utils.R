@@ -212,8 +212,7 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 #' Estimate projection of EIF on fully-observed variables
 #'
 #' @param obs_grad the estimated (observed) EIF
-#' @param Z a matrix (or data.frame) with the fully-observed variables
-#' @inheritParams vim
+#' @inheritParams measure_accuracy
 #'
 #' @return the projection of the EIF onto the fully-observed variables
 estimate_eif_projection <- function(obs_grad = NULL, C = NULL, Z = NULL,
@@ -576,7 +575,9 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
 # estimate nuisance functions (for average value) ------------------------------
 #' Estimate nuisance functions for average value-based VIMs
 #'
-#' @inheritParams vim
+#' @inheritParams cv_vim
+#' @param split the sample split to use
+#'
 #' @return nuisance function estimators for use in the average value VIM:
 #'  the treatment assignment based on the estimated optimal rule
 #'  (based on the estimated outcome regression); the expected outcome under the

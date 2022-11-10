@@ -15,7 +15,7 @@ extract_sampled_split_predictions(
 )
 }
 \arguments{
-\item{cvsl_obj}{An object of class \code{"CV.SuperLearner"}}
+\item{cvsl_obj}{An object of class \code{"CV.SuperLearner"}; must be entered unless \code{preds} is specified.}
 
 \item{sample_splitting}{logical; should we use sample-splitting or not?
 Defaults to \code{TRUE}.}
@@ -24,6 +24,10 @@ Defaults to \code{TRUE}.}
 
 \item{full}{logical; is this the fit to all covariates (\code{TRUE}) or not
 (\code{FALSE})?}
+
+\item{preds}{a vector of predictions; must be entered unless \code{cvsl_obj} is specified.}
+
+\item{cross_fitting_folds}{a vector of folds that were used in cross-fitting.}
 
 \item{vector}{logical; should we return a vector (where each element is
 the prediction when the corresponding row is in the validation fold) or a

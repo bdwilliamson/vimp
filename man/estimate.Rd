@@ -2,10 +2,15 @@
 % Please edit documentation in R/estimate.R
 \name{estimate}
 \alias{estimate}
-\title{Estimate a predictiveness measure}
+\title{Estimate a Predictiveness Measure}
 \usage{
 estimate(x, ...)
 }
+\arguments{
+\item{x}{An R object. Currently, there are methods for \code{predictiveness_measure} objects only.}
+
+\item{...}{further arguments passed to or from other methods.}
+}
 \description{
-Estimate a predictiveness measure
+Generic function for estimating a predictiveness measure (e.g., R-squared or classification accuracy).
 }

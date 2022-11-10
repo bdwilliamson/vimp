@@ -6,12 +6,14 @@
 #' and want to use the fitted values to compute variable importance without having
 #' to re-fit. The number of folds used in the CV.SuperLearner must be even.
 #'
-#' @param cvsl_obj An object of class \code{"CV.SuperLearner"}
+#' @param cvsl_obj An object of class \code{"CV.SuperLearner"}; must be entered unless \code{preds} is specified.
 #' @param sample_splitting logical; should we use sample-splitting or not?
 #'   Defaults to \code{TRUE}.
 #' @param sample_splitting_folds A vector of folds to use for sample splitting
 #' @param full logical; is this the fit to all covariates (\code{TRUE}) or not
 #'   (\code{FALSE})?
+#' @param preds a vector of predictions; must be entered unless \code{cvsl_obj} is specified.
+#' @param cross_fitting_folds a vector of folds that were used in cross-fitting.
 #' @param vector logical; should we return a vector (where each element is
 #'   the prediction when the corresponding row is in the validation fold) or a
 #'   list?
