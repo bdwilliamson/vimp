@@ -4,10 +4,12 @@
 \alias{estimate.predictiveness_measure}
 \title{Obtain a Point Estimate and Efficient Influence Function Estimate for a Given Predictiveness Measure}
 \usage{
-\method{estimate}{predictiveness_measure}(x)
+\method{estimate}{predictiveness_measure}(x, ...)
 }
 \arguments{
 \item{x}{an object of class \code{"predictiveness_measure"}}
+
+\item{...}{other arguments to type-specific predictiveness measures (currently unused)}
 }
 \value{
 A list with the point estimate, naive point estimate (for ANOVA only),
