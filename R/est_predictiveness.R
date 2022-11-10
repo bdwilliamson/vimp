@@ -76,7 +76,8 @@ est_predictiveness <- function(fitted_values, y, a = NULL, full_y = NULL,
             fitted_values = fitted_values, y = y, full_y = full_y, C = C, Z = Z,
             ipc_weights = ipc_weights, ipc_fit_type = ipc_fit_type,
             ipc_eif_preds = ipc_eif_preds, ipc_est_type = ipc_est_type,
-            scale = scale, na.rm = na.rm, nuisance_estimators = nuisance_estimators, ...
+            scale = scale, na.rm = na.rm, nuisance_estimators = nuisance_estimators,
+            a = a, ...
         )
     } else { # if type is anova, no plug-in from predictiveness
         est_lst <- list(point_est = NA, ic = NA,
