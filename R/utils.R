@@ -594,7 +594,7 @@ estimate_nuisances <- function(fit, X, exposure_name, V = 1, SL.library, sample_
   A_0 <- cbind.data.frame(A = 0, W)
   names(A_1)[1] <- exposure_name
   names(A_0)[1] <- exposure_name
-  f_n <- as.numeric(predict(fit, newdata = A_1)$pred > stats::predict(fit, newdata = A_0)$pred)
+  f_n <- as.numeric(stats::predict(fit, newdata = A_1)$pred > stats::predict(fit, newdata = A_0)$pred)
   # estimate the propensity score
   g_n <- run_sl(Y = f_n, X = W, V = V, SL.library = SL.library,
                 s = 1:ncol(W), sample_splitting = sample_splitting,
