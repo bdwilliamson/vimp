@@ -30,7 +30,6 @@ reference:
     compute point estimates and confidence intervals for predictiveness.
   contents:
   - predictiveness_measure
-  - eif
   - estimate.predictiveness_measure
   - estimate_type_predictiveness
   - measure_accuracy
