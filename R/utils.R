@@ -12,7 +12,6 @@
 #' @param f2 estimator of the population-optimal prediction function
 #'   using the reduced set of covariates
 #' @param indx the index or indices of the covariate(s) of interest
-#' @param cv is cross-fitted VIM desired?
 #'
 #' @return None. Called for the side effect of stopping the algorithm if
 #'   any inputs are in an unexpected format.
@@ -217,7 +216,7 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 #' @inheritParams vim
 #'
 #' @return the projection of the EIF onto the fully-observed variables
-estimate_eif_projection <- function(obs_grad = NULL, C = NULL, Z = NULL, 
+estimate_eif_projection <- function(obs_grad = NULL, C = NULL, Z = NULL,
                                     ipc_fit_type = NULL, ipc_eif_preds = NULL, ...) {
   if (ipc_fit_type != "external") {
     ipc_eif_mod <- SuperLearner::SuperLearner(
@@ -582,18 +581,19 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
 #'  the treatment assignment based on the estimated optimal rule
 #'  (based on the estimated outcome regression); the expected outcome under the
 #'  estimated optimal rule; and the estimated propensity score.
+#'
 #' @export
 estimate_nuisances <- function(fit, X, exposure_name, V = 1, SL.library, sample_splitting,
                                sample_splitting_folds, verbose, weights, cross_fitted_se,
                                split = 1, ...) {
-  A <- X %>% pull(!!exposure_name)
-  W <- X %>% select(-!!exposure_name)
+  A <- X %>% dplyr::pull(!!exposure_name)
+  W <- X %>% dplyr::select(-!!exposure_name)
   # estimate the optimal rule
   A_1 <- cbind.data.frame(A = 1, W)
   A_0 <- cbind.data.frame(A = 0, W)
   names(A_1)[1] <- exposure_name
   names(A_0)[1] <- exposure_name
-  f_n <- as.numeric(predict(fit, newdata = A_1)$pred > predict(fit, newdata = A_0)$pred)
+  f_n <- as.numeric(predict(fit, newdata = A_1)$pred > stats::predict(fit, newdata = A_0)$pred)
   # estimate the propensity score
   g_n <- run_sl(Y = f_n, X = W, V = V, SL.library = SL.library,
                 s = 1:ncol(W), sample_splitting = sample_splitting,
@@ -602,8 +602,8 @@ estimate_nuisances <- function(fit, X, exposure_name, V = 1, SL.library, sample_
   # set up data based on f_n, f_n_reduced
   A_f <- cbind.data.frame(A = f_n, W)
   names(A_f)[1] <- exposure_name
-  nuisance_estimators <- list(f_n = f_n, q_n = predict(full, newdata = A_f)$pred,
-                              g_n = predict(g_n, A_f)$pred)
+  nuisance_estimators <- list(f_n = f_n, q_n = stats::predict(fit, newdata = A_f)$pred,
+                              g_n = stats::predict(g_n, A_f)$pred)
   return(nuisance_estimators)
 }
 
