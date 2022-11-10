@@ -275,7 +275,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                                                            sample_splitting_folds = sample_splitting_folds_cc,
                                                            verbose = FALSE, weights = weights_cc,
                                                            cross_fitted_se = FALSE, split = 1, ...)
-            nuisance_estimators_reduced <- estimate_nuisances(fit = reduced, X = X_cc %>% select(-!!exposure_name),
+            nuisance_estimators_reduced <- estimate_nuisances(fit = reduced, X = X_cc %>% dplyr::select(-!!exposure_name),
                                                               exposure_name = exposure_name,
                                                               V = 1, SL.library = SL.library,
                                                               sample_splitting = sample_splitting,
