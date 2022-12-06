@@ -4,13 +4,13 @@ library("SuperLearner")
 
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
-p <- 2
+p <- 3
 n <- 5e4
 x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the covariates
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
 true_var <- 1 + .5 ^ 2 + .75 ^ 2
-# note that true difference in R-squareds for variable j, under independence, is 
+# note that true difference in R-squareds for variable j, under independence, is
 # beta_j^2 * var(x_j) / var(y)
 r2_one <- 0.5 ^ 2 * 1 / true_var
 r2_two <- 0.75 ^ 2 * 1 / true_var
@@ -61,27 +61,22 @@ test_that("General variable importance estimates using internally-computed fitte
 })
 
 # fit nuisance regressions -----------------------------------------------------
-# fit the data with all covariates and sample-splitting
+# fit the data with all covariates and sample-splitting (note V = 2 in CV.SL)
 set.seed(4747)
-full_fit <- SuperLearner::SuperLearner(Y = y[folds == 1], X = x[folds == 1, ], 
-                                       SL.library = learners, 
-                                       cvControl = list(V = V))
+full_fit <- SuperLearner::CV.SuperLearner(Y = y, X = x, SL.library = learners,
+                                          cvControl = list(V = 2), innerCvControl = list(list(V = V)))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
 # fit the data with only X1
-full_fit_2 <- SuperLearner::SuperLearner(Y = y[folds == 2], X = x[folds == 2, ], 
-                                         SL.library = learners, 
-                                         cvControl = list(V = V))
-full_fitted_2 <- SuperLearner::predict.SuperLearner(full_fit_2, onlySL = TRUE)$pred
-reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted_2, 
-                                          X = x[folds == 2, -2, drop = FALSE], 
-                                          SL.library = learners, 
-                                          cvControl = list(V = V))
+reduced_fit <- SuperLearner::CV.SuperLearner(Y = full_fitted,
+                                             X = x[, -2, drop = FALSE],
+                                             SL.library = learners,
+                                             cvControl = list(V = 2), innerCvControl = list(list(V = V)))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 
 # test VIM with pre-computed nuisance estimates --------------------------------
 test_that("General variable importance estimates using externally-computed fitted values work", {
     # provide folds
-    est <- vim(Y = y, X = x, indx = 2, type = "r_squared", 
+    est <- vim(Y = y, X = x, indx = 2, type = "r_squared",
                run_regression = FALSE,
                f1 = full_fitted, f2 = reduced_fitted,
                sample_splitting_folds = folds)
@@ -95,10 +90,27 @@ test_that("General variable importance estimates using externally-computed fitte
     expect_length(ci_log, 2)
     expect_length(ci_logit, 2)
 })
+test_that("VIM estimates using externally-computed fitted values with different folds for estimation and inference work", {
+  # provide folds
+  est_average <- vim(Y = y, X = x, indx = 2, type = "r_squared",
+                     run_regression = FALSE,
+                     f1 = full_fitted, f2 = reduced_fitted,
+                     sample_splitting_folds = folds,
+                     final_point_estimate = "average")
+  est_full <- vim(Y = y, X = x, indx = 2, type = "r_squared",
+                  run_regression = FALSE,
+                  f1 = full_fitted, f2 = reduced_fitted,
+                  sample_splitting_folds = folds,
+                  final_point_estimate = "full")
+  # check that estimate worked
+  expect_equal(est_average$est, r2_two, tolerance = 0.15, scale = 1)
+  expect_equal(est_full$est, r2_two, tolerance = 0.15, scale = 1)
+})
+
 
 # measures of predictiveness ---------------------------------------------------
 test_that("Measures of predictiveness work", {
-  full_rsquared <- est_predictiveness(full_fitted, y[folds == 1], 
+  full_rsquared <- est_predictiveness(full_fitted, y[folds == 1],
                                       type = "r_squared")
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
   expect_length(full_rsquared$eif, sum(folds == 1))
