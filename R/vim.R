@@ -8,10 +8,14 @@
 #' @param X the covariates. If \code{type = "average_value"}, then the exposure
 #'   variable should be part of \code{X}, with its name provided in \code{exposure_name}.
 #' @param f1 the fitted values from a flexible estimation technique
-#'   regressing Y on X.
+#'   regressing Y on X. A vector of the same length as \code{Y}; if sample-splitting
+#'   is desired, then the value of \code{f1} at each position should be the result
+#'   of predicting from a model trained without that observation.
 #' @param f2 the fitted values from a flexible estimation technique
 #'   regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-#'   \code{indx}.
+#'   \code{indx}. A vector of the same length as \code{Y}; if sample-splitting
+#'   is desired, then the value of \code{f2} at each position should be the result
+#'   of predicting from a model trained without that observation.
 #' @param indx the indices of the covariate(s) to calculate variable
 #'   importance for; defaults to 1.
 #' @param type the type of importance to compute; defaults to
@@ -30,17 +34,22 @@
 #' @param delta the value of the \eqn{\delta}-null (i.e., testing if
 #'   importance < \eqn{\delta}); defaults to 0.
 #' @param scale should CIs be computed on original ("identity") or
-#'   logit ("logit") scale?
+#'   another scale? (options are "log" and "logit")
 #' @param na.rm should we remove NAs in the outcome and fitted values
 #'   in computation? (defaults to \code{FALSE})
 #' @param sample_splitting should we use sample-splitting to estimate the full and
 #'   reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
-#'   \code{sample_splitting = FALSE} will be invalid for variable with truly zero
+#'   \code{sample_splitting = FALSE} will be invalid for variables with truly zero
 #'   importance.
 #' @param sample_splitting_folds the folds used for sample-splitting;
 #'   these identify the observations that should be used to evaluate
 #'   predictiveness based on the full and reduced sets of covariates, respectively.
 #'   Only used if \code{run_regression = FALSE}.
+#' @param final_point_estimate if sample splitting is used, should the final point estimates
+#'   be based on only the sample-split folds used for inference (\code{"split"}, the default),
+#'   or should they instead be based on the full dataset (\code{"full"}) or the average
+#'   across the point estimates from each sample split (\code{"average"})? All three
+#'   options result in valid point estimates -- sample-splitting is only required for valid inference.
 #' @param stratified if run_regression = TRUE, then should the generated
 #'   folds be stratified based on the outcome (helps to ensure class balance
 #'   across cross-validation folds)
@@ -60,7 +69,7 @@
 #'   settings; options are "ipw" (for inverse probability weighting) or
 #'   "aipw" (for augmented inverse probability weighting).
 #'   Only used if \code{C} is not all equal to 1.
-#' @param scale_est should the point estimate be scaled to be greater than 0?
+#' @param scale_est should the point estimate be scaled to be greater than or equal to 0?
 #'   Defaults to \code{TRUE}.
 #' @param nuisance_estimators_full (only used if \code{type = "average_value"})
 #'   a list of nuisance function estimators on the
@@ -186,7 +195,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 type = "r_squared", run_regression = TRUE,
                 SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                 alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE,
-                sample_splitting = TRUE, sample_splitting_folds = NULL, stratified = FALSE,
+                sample_splitting = TRUE, sample_splitting_folds = NULL,
+                final_point_estimate = "split", stratified = FALSE,
                 C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
                 ipc_est_type = "aipw", scale_est = TRUE, nuisance_estimators_full = NULL,
                 nuisance_estimators_reduced = NULL, exposure_name = NULL,
@@ -233,8 +243,9 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     # if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
         full_feature_vec <- 1:ncol(X_cc)
-        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
+        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 2, SL.library = SL.library,
                               s = full_feature_vec, sample_splitting = sample_splitting,
+                              cv_folds = sample_splitting_folds_cc,
                               ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE,
                               weights = weights_cc, cross_fitted_se = FALSE,
                               vector = TRUE, ...)
@@ -242,13 +253,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         red_Y <- Y_cc
         if (full_type == "r_squared" || full_type == "anova") {
             if (sample_splitting) {
-                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 1, SL.library = SL.library,
+                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 2, SL.library = SL.library,
                                         s = full_feature_vec, sample_splitting = sample_splitting,
+                                        cv_folds = sample_splitting_folds_cc,
                                         ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE,
                                         weights = weights_cc, cross_fitted_se = FALSE,
                                         vector = TRUE, ...)
-                red_Y <- matrix(NA, ncol = 1, nrow = nrow(Y_cc))
-                red_Y[sample_splitting_folds_cc == 2, ] <- full_sl_lst_2$preds
+                red_Y <- matrix(full_sl_lst_2$preds)
             } else {
                 red_Y <- matrix(full_sl_lst$preds, ncol = 1)
             }
@@ -256,8 +267,9 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 red_Y <- Y_cc
             }
         }
-        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 1, SL.library = SL.library,
+        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 2, SL.library = SL.library,
                               s = full_feature_vec[-indx], sample_splitting = sample_splitting,
+                              cv_folds = sample_splitting_folds_cc,
                               ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE,
                               weights = weights_cc, cross_fitted_se = FALSE,
                               vector = TRUE, ...)
@@ -346,7 +358,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                                 sample_splitting_folds_cc)
         predictiveness_full_object <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[ss_folds_full == 1, , drop = FALSE],
-               a = A_cc[ss_folds_full == 1], fitted_values = full_preds,
+               a = A_cc[ss_folds_full == 1], fitted_values = full_preds[ss_folds_full == 1],
                full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_full, function(l) {
                  l[ss_folds_full == 1]
                }), C = C[sample_splitting_folds == 1],
@@ -358,7 +370,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         ))
         predictiveness_reduced_object <- do.call(predictiveness_measure, c(
          list(type = full_type, y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
-              a = A_cc[ss_folds_redu == 2], fitted_values = redu_preds,
+              a = A_cc[ss_folds_redu == 2], fitted_values = redu_preds[ss_folds_redu == 2],
               full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_reduced, function(l) {
                 l[ss_folds_redu == 2]
               }), C = C[sample_splitting_folds == 2],
@@ -400,6 +412,72 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                           na.rm = na.rm)
         }
     }
+    est_for_inference <- est
+    predictiveness_full_for_inference <- predictiveness_full
+    predictiveness_reduced_for_inference <- predictiveness_redu
+    # if sample-splitting was requested and final_point_estimate isn't "split", estimate
+    # the required quantities
+    if (sample_splitting & (final_point_estimate != "split")) {
+      if (final_point_estimate == "full") {
+        est_pred_full <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc,
+               a = A_cc, fitted_values = full_preds,
+               full_y = Y_cc, nuisance_estimators = nuisance_estimators_full, C = C,
+               Z = Z_in,
+               ipc_weights = ipc_weights,
+               ipc_fit_type = "SL", scale = scale,
+               ipc_est_type = ipc_est_type, na.rm = na.rm,
+               SL.library = SL.library), arg_lst
+        ))
+        est_pred_reduced <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc,
+               a = A_cc, fitted_values = redu_preds,
+               full_y = Y_cc, nuisance_estimators = nuisance_estimators_reduced, C = C,
+               Z = Z_in,
+               ipc_weights = ipc_weights,
+               ipc_fit_type = "SL", scale = scale,
+               ipc_est_type = ipc_est_type, na.rm = na.rm,
+               SL.library = SL.library), arg_lst
+        ))
+        est_pred_full_lst <- estimate(est_pred_full)
+        est_pred_reduced_lst <- estimate(est_pred_reduced)
+        # compute the point estimates of predictiveness and variable importance
+        predictiveness_full <- est_pred_full_lst$point_est
+        predictiveness_redu <- est_pred_reduced_lst$point_est
+        est <- predictiveness_full - predictiveness_redu
+      } else {
+        est_pred_full <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc[ss_folds_full == 2, , drop = FALSE],
+               a = A_cc[ss_folds_full == 2], fitted_values = full_preds[ss_folds_full == 2],
+               full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_full, function(l) {
+                 l[ss_folds_full == 2]
+               }), C = C[sample_splitting_folds == 2],
+               Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
+               ipc_weights = ipc_weights[sample_splitting_folds == 2],
+               ipc_fit_type = "SL", scale = scale,
+               ipc_est_type = ipc_est_type, na.rm = na.rm,
+               SL.library = SL.library), arg_lst
+        ))
+        est_pred_reduced <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc[ss_folds_redu == 1, , drop = FALSE],
+               a = A_cc[ss_folds_redu == 1], fitted_values = redu_preds[ss_folds_redu == 1],
+               full_y = Y_cc, nuisance_estimators = lapply(nuisance_estimators_reduced, function(l) {
+                 l[ss_folds_redu == 1]
+               }), C = C[sample_splitting_folds == 1],
+               Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
+               ipc_weights = ipc_weights[sample_splitting_folds == 1],
+               ipc_fit_type = "SL", scale = scale,
+               ipc_est_type = ipc_est_type, na.rm = na.rm,
+               SL.library = SL.library), arg_lst
+        ))
+        est_pred_full_lst <- estimate(est_pred_full)
+        est_pred_reduced_lst <- estimate(est_pred_reduced)
+        # compute the point estimates of predictiveness and variable importance
+        predictiveness_full <- mean(c(predictiveness_full, est_pred_full_lst$point_est))
+        predictiveness_redu <- mean(c(predictiveness_redu, est_pred_reduced_lst$point_est))
+        est <- predictiveness_full - predictiveness_redu
+      }
+    }
 
     # if est < 0, set to zero and print warning
     if (est < 0 && !is.na(est) & scale_est) {
@@ -410,15 +488,15 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     }
 
     # compute the confidence intervals
-    ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
+    ci <- vimp_ci(est_for_inference, se, scale = scale, level = 1 - alpha)
     if (bootstrap) {
         ci <- boot_results$ci
     }
     predictiveness_ci_full <- vimp_ci(
-        predictiveness_full, se = se_full, scale = scale, level = 1 - alpha
+        predictiveness_full_for_inference, se = se_full, scale = scale, level = 1 - alpha
     )
     predictiveness_ci_redu <- vimp_ci(
-        predictiveness_redu, se = se_redu, scale = scale, level = 1 - alpha
+        predictiveness_reduced_for_inference, se = se_redu, scale = scale, level = 1 - alpha
     )
 
     # perform a hypothesis test against the null of zero importance
@@ -426,8 +504,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         hyp_test <- list(test = NA, p_value = NA, test_statistics = NA)
     } else {
         hyp_test <- vimp_hypothesis_test(
-            predictiveness_full = predictiveness_full,
-            predictiveness_reduced = predictiveness_redu,
+            predictiveness_full = predictiveness_full_for_inference,
+            predictiveness_reduced = predictiveness_reduced_for_inference,
             se = se, delta = delta, alpha = alpha
         )
     }
@@ -456,8 +534,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                  eif_full = eif_full,
                  eif_reduced = eif_redu,
                  se = se, ci = ci,
+                 est_for_inference = est_for_inference,
                  predictiveness_full = predictiveness_full,
                  predictiveness_reduced = predictiveness_redu,
+                 predictiveness_full_for_inference = predictiveness_full_for_inference,
+                 predictiveness_reduced_for_inference = predictiveness_reduced_for_inference,
                  predictiveness_ci_full = predictiveness_ci_full,
                  predictiveness_ci_reduced = predictiveness_ci_redu,
                  test = hyp_test$test,
