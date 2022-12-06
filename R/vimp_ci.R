@@ -31,7 +31,7 @@ vimp_ci <- function(est, se, scale = "identity", level = 0.95, truncate = TRUE) 
         tmp <- suppressWarnings(log(est))
         is_zero <- FALSE
         if ((is.na(tmp) & est <= 0 & !is.na(est))| is.infinite(tmp)) {
-            tmp <- log(1e-300)
+            tmp <- 0
             is_zero <- TRUE
         }
         grad <- 1 / est
@@ -43,7 +43,7 @@ vimp_ci <- function(est, se, scale = "identity", level = 0.95, truncate = TRUE) 
         tmp <- suppressWarnings(qlogis(est))
         is_zero <- FALSE
         if ((is.na(tmp) & est <= 0 & !is.na(est)) | is.infinite(tmp)) {
-            tmp <- qlogis(1e-300)
+            tmp <- 0
             is_zero <- TRUE
         }
         grad <- 1 / (est - est ^ 2)
