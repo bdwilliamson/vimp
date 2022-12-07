@@ -110,10 +110,10 @@ test_that("VIM estimates using externally-computed fitted values with different 
 
 # measures of predictiveness ---------------------------------------------------
 test_that("Measures of predictiveness work", {
-  full_rsquared <- est_predictiveness(full_fitted, y[folds == 1],
+  full_rsquared <- est_predictiveness(full_fitted, y,
                                       type = "r_squared")
   expect_equal(full_rsquared$point_est, 0.44, tolerance = 0.1)
-  expect_length(full_rsquared$eif, sum(folds == 1))
+  expect_length(full_rsquared$eif, length(y))
 })
 
 # error messages ---------------------------------------------------------------

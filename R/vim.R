@@ -243,7 +243,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     # if run_regression = TRUE, then fit SuperLearner
     if (run_regression) {
         full_feature_vec <- 1:ncol(X_cc)
-        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = 2, SL.library = SL.library,
+        full_sl_lst <- run_sl(Y = Y_cc, X = X_cc, V = ifelse(sample_splitting, 2, 1),
+                              SL.library = SL.library,
                               s = full_feature_vec, sample_splitting = sample_splitting,
                               cv_folds = sample_splitting_folds_cc,
                               ss_folds = sample_splitting_folds_cc, split = 1, verbose = FALSE,
@@ -253,7 +254,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         red_Y <- Y_cc
         if (full_type == "r_squared" || full_type == "anova") {
             if (sample_splitting) {
-                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = 2, SL.library = SL.library,
+                full_sl_lst_2 <- run_sl(Y = Y_cc, X = X_cc, V = ifelse(sample_splitting, 2, 1),
+                                        SL.library = SL.library,
                                         s = full_feature_vec, sample_splitting = sample_splitting,
                                         cv_folds = sample_splitting_folds_cc,
                                         ss_folds = sample_splitting_folds_cc, split = 2, verbose = FALSE,
@@ -267,7 +269,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 red_Y <- Y_cc
             }
         }
-        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = 2, SL.library = SL.library,
+        redu_sl_lst <- run_sl(Y = red_Y, X = X_cc, V = ifelse(sample_splitting, 2, 1),
+                              SL.library = SL.library,
                               s = full_feature_vec[-indx], sample_splitting = sample_splitting,
                               cv_folds = sample_splitting_folds_cc,
                               ss_folds = sample_splitting_folds_cc, split = red_split, verbose = FALSE,
@@ -282,14 +285,16 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         if (grepl("average_value", full_type)) {
             nuisance_estimators_full <- estimate_nuisances(fit = full, X = X_cc,
                                                            exposure_name = exposure_name,
-                                                           V = 1, SL.library = SL.library,
+                                                           V = ifelse(sample_splitting, 2, 1),
+                                                           SL.library = SL.library,
                                                            sample_splitting = sample_splitting,
                                                            sample_splitting_folds = sample_splitting_folds_cc,
                                                            verbose = FALSE, weights = weights_cc,
                                                            cross_fitted_se = FALSE, split = 1, ...)
             nuisance_estimators_reduced <- estimate_nuisances(fit = reduced, X = X_cc %>% dplyr::select(-!!exposure_name),
                                                               exposure_name = exposure_name,
-                                                              V = 1, SL.library = SL.library,
+                                                              V = ifelse(sample_splitting, 2, 1),
+                                                              SL.library = SL.library,
                                                               sample_splitting = sample_splitting,
                                                               sample_splitting_folds = sample_splitting_folds_cc,
                                                               verbose = FALSE, weights = weights_cc,
