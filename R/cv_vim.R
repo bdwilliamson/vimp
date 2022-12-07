@@ -192,7 +192,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    SL.library = c("SL.glmnet", "SL.xgboost", "SL.mean"),
                    alpha = 0.05, delta = 0, scale = "identity",
                    na.rm = FALSE, C = rep(1, length(Y)), Z = NULL,
-                   ipc_weights = rep(1, length(Y)),
+                   ipc_scale = "identity", ipc_weights = rep(1, length(Y)),
                    ipc_est_type = "aipw", scale_est = TRUE,
                    nuisance_estimators_full = NULL,
                    nuisance_estimators_reduced = NULL, exposure_name = NULL,
@@ -365,7 +365,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                              folds_Z = cross_fitting_folds,
                              ipc_weights = ipc_weights[cross_fitting_folds == v],
                              ipc_fit_type = "SL", na.rm = na.rm,
-                             ipc_est_type = ipc_est_type, scale = scale,
+                             ipc_est_type = ipc_est_type, scale = ipc_scale,
                              SL.library = SL.library),
                         arg_lst
                     )
@@ -428,7 +428,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                cross_fitting_folds = cf_folds_full_cc, C = C[full_test],
                Z = Z_in[full_test, , drop = FALSE],
                folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
-               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
                  nuisance_estimators_full, function(l) {
                    l[full_test_cc]
@@ -441,7 +441,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                cross_fitting_folds = cf_folds_redu_cc, C = C[redu_test],
                Z = Z_in[redu_test, , drop = FALSE],
                folds_Z = cf_folds_redu, ipc_weights = ipc_weights[redu_test],
-               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
                  nuisance_estimators_reduced, function(l) {
                    l[redu_test_cc]
@@ -460,7 +460,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               y = Y_cc[full_test_cc], full_y = Y_cc, folds = cf_folds_full_cc,
                               type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_full,
                               ipc_weights = ipc_weights,
-                              ipc_fit_type = "SL", scale = scale,
+                              ipc_fit_type = "SL", scale = ipc_scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
                               SL.library = SL.library),
                          arg_lst), quote = TRUE
@@ -472,7 +472,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               y = Y_cc[redu_test_cc], full_y = Y_cc, folds = cf_folds_redu_cc,
                               type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_redu,
                               ipc_weights = ipc_weights,
-                              ipc_fit_type = "SL", scale = scale,
+                              ipc_fit_type = "SL", scale = ipc_scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
                               SL.library = SL.library),
                          arg_lst), quote = TRUE
@@ -539,7 +539,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                a = A_cc, fitted_values = full_preds,
                cross_fitting_folds = cf_folds_for_est_cc, C = C,
                Z = Z_in, folds_Z = cf_folds_for_est, ipc_weights = ipc_weights,
-               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library,
                nuisance_estimators = nuisance_estimators_full), arg_lst
         ))
@@ -548,7 +548,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                a = A_cc, fitted_values = redu_preds,
                cross_fitting_folds = cf_folds_for_est_cc, C = C,
                Z = Z_in, folds_Z = cf_folds_for_est, ipc_weights = ipc_weights,
-               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library,
                nuisance_estimators = nuisance_estimators_reduced), arg_lst
         ))
@@ -569,7 +569,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                cross_fitting_folds = cf_folds_full_cc, C = C[full_test_for_est],
                Z = Z_in[full_test_for_est, , drop = FALSE],
                folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
-               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
                  nuisance_estimators_full, function(l) {
                    l[full_test_cc_for_est]
@@ -582,7 +582,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                cross_fitting_folds = cf_folds_redu_cc, C = C[redu_test],
                Z = Z_in[redu_test_for_est, , drop = FALSE],
                folds_Z = cf_folds_redu, ipc_weights = ipc_weights[redu_test_for_est],
-               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
                  nuisance_estimators_reduced, function(l) {
                    l[redu_test_cc_for_est]

@@ -61,6 +61,8 @@
 #'   role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 #'   specify covariates, use a character number corresponding to the desired
 #'   position in X (e.g., \code{"1"}).
+#' @param ipc_scale what scale should the inverse probability weight correction be applied on (if any)? 
+#'   Defaults to "identity". (other options are "log" and "logit")
 #' @param ipc_weights weights for the computed influence curve (i.e.,
 #'   inverse probability weights for coarsened-at-random settings).
 #'   Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated
@@ -191,7 +193,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 alpha = 0.05, delta = 0, scale = "identity", na.rm = FALSE,
                 sample_splitting = TRUE, sample_splitting_folds = NULL,
                 final_point_estimate = "split", stratified = FALSE,
-                C = rep(1, length(Y)), Z = NULL, ipc_weights = rep(1, length(Y)),
+                C = rep(1, length(Y)), Z = NULL, ipc_scale = "identity", 
+                ipc_weights = rep(1, length(Y)),
                 ipc_est_type = "aipw", scale_est = TRUE, nuisance_estimators_full = NULL,
                 nuisance_estimators_reduced = NULL, exposure_name = NULL,
                 bootstrap = FALSE, b = 1000, boot_interval_type = "perc", ...) {
@@ -363,7 +366,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                }), C = C[sample_splitting_folds == 1],
                Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
                ipc_weights = ipc_weights[sample_splitting_folds == 1],
-               ipc_fit_type = "SL", scale = scale,
+               ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
                SL.library = SL.library), arg_lst
         ))
@@ -375,7 +378,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
               }), C = C[sample_splitting_folds == 2],
               Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
               ipc_weights = ipc_weights[sample_splitting_folds == 2],
-              ipc_fit_type = "SL", scale = scale,
+              ipc_fit_type = "SL", scale = ipc_scale,
               ipc_est_type = ipc_est_type, na.rm = na.rm,
               SL.library = SL.library), arg_lst
         ))
@@ -424,7 +427,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                full_y = Y_cc, nuisance_estimators = nuisance_estimators_full, C = C,
                Z = Z_in,
                ipc_weights = ipc_weights,
-               ipc_fit_type = "SL", scale = scale,
+               ipc_fit_type = "SL", scale = ipc_ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
                SL.library = SL.library), arg_lst
         ))
@@ -453,7 +456,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                }), C = C[sample_splitting_folds == 2],
                Z = Z_in[sample_splitting_folds == 2, , drop = FALSE],
                ipc_weights = ipc_weights[sample_splitting_folds == 2],
-               ipc_fit_type = "SL", scale = scale,
+               ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
                SL.library = SL.library), arg_lst
         ))
@@ -465,7 +468,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                }), C = C[sample_splitting_folds == 1],
                Z = Z_in[sample_splitting_folds == 1, , drop = FALSE],
                ipc_weights = ipc_weights[sample_splitting_folds == 1],
-               ipc_fit_type = "SL", scale = scale,
+               ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
                SL.library = SL.library), arg_lst
         ))
@@ -550,6 +553,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                  y = Y,
                  sample_splitting_folds = sample_splitting_folds,
                  ipc_weights = ipc_weights,
+                 ipc_scale = ipc_scale,
                  scale = scale,
                  mat = mat)
 
