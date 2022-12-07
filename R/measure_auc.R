@@ -15,7 +15,7 @@ measure_auc <- function(fitted_values, y, full_y = NULL,
                         ipc_weights = rep(1, length(y)),
                         ipc_fit_type = "external",
                         ipc_eif_preds = rep(1, length(y)),
-                        ipc_est_type = "aipw", scale = "identity",
+                        ipc_est_type = "aipw", scale = "logit",
                         na.rm = FALSE, nuisance_estimators = NULL,
                         a = NULL, ...) {
     # bind "global vars" to pass R CMD check

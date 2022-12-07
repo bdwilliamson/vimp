@@ -65,7 +65,7 @@ vimp_anova <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                        alpha = 0.05, delta = 0, na.rm = FALSE,
                        cross_fitting_folds = NULL,
                        stratified = FALSE, C = rep(1, length(Y)), Z = NULL,
-                       ipc_weights = rep(1, length(Y)), scale = "identity",
+                       ipc_weights = rep(1, length(Y)), scale = "logit",
                        ipc_est_type = "aipw", scale_est = TRUE,
                        cross_fitted_se = TRUE, ...) {
   cv_vim(type = "anova", Y = Y, X = X, cross_fitted_f1 = cross_fitted_f1,
