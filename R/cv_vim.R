@@ -158,6 +158,7 @@
 #' Y = Y, X = x, SL.library = learners, cvControl = list(V = 2 * V),
 #' innerCvControl = list(list(V = V))
 #' ))
+#' full_cv_preds <- full_cv_fit$SL.predict
 #' # use the same cross-fitting folds for reduced
 #' reduced_cv_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
 #'     Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners,
@@ -166,17 +167,11 @@
 #'     ),
 #'     innerCvControl = list(list(V = V))
 #' ))
-#' # extract the predictions on split portions of the data,
+#' reduced_cv_preds <- reduced_cv_fit$SL.predict
 #' # for hypothesis testing
 #' cross_fitting_folds <- get_cv_sl_folds(full_cv_fit$folds)
 #' set.seed(1234)
 #' sample_splitting_folds <- make_folds(unique(cross_fitting_folds), V = 2)
-#' full_cv_preds <- extract_sampled_split_predictions(
-#'     full_cv_fit, sample_splitting_folds = sample_splitting_folds, full = TRUE, vector = TRUE
-#' )
-#' reduced_cv_preds <- extract_sampled_split_predictions(
-#'     reduced_cv_fit, sample_splitting_folds = sample_splitting_folds, full = FALSE, vector = TRUE
-#' )
 #' set.seed(5678)
 #' est <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds,
 #' cross_fitted_f2 = reduced_cv_preds, indx = 2, delta = 0, V = V, type = "r_squared",

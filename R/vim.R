@@ -164,29 +164,23 @@
 #' # using pre-computed fitted values
 #' set.seed(4747)
 #' V <- 2
-#' y_1 <- y[est_1$sample_splitting_folds == 1]
-#' y_2 <- y[est_1$sample_splitting_folds == 2]
-#' x_1 <- subset(x, est_1$sample_splitting_folds == 1)
-#' x_2 <- subset(x, est_1$sample_splitting_folds == 2)
-#' full_fit <- SuperLearner::SuperLearner(Y = y_1, X = x_1,
-#'                                        SL.library = learners,
-#'                                        cvControl = list(V = V))
+#' full_fit <- SuperLearner::CV.SuperLearner(Y = y, X = x,
+#'                                           SL.library = learners,
+#'                                           cvControl = list(V = 2),
+#'                                           innerCvControl = list(list(V = V)))
 #' full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 #' # fit the data with only X1
-#' full_fit_2 <- SuperLearner::SuperLearner(Y = y_2, X = x_2,
-#'                                          SL.library = learners,
-#'                                          cvControl = list(V = V))
-#' full_fitted_2 <- SuperLearner::predict.SuperLearner(full_fit_2)$pred
-#' reduced_fit <- SuperLearner::SuperLearner(Y = full_fitted_2,
-#'                                           X = x_2[, -2, drop = FALSE],
-#'                                           SL.library = learners,
-#'                                           cvControl = list(V = V))
+#' reduced_fit <- SuperLearner::CV.SuperLearner(Y = full_fitted,
+#'                                              X = x[, -2, drop = FALSE],
+#'                                              SL.library = learners,
+#'                                              cvControl = list(V = 2, validRows = full_fit$folds),
+#'                                              innerCvControl = list(list(V = V)))
 #' reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 #'
 #' est_2 <- vim(Y = y, f1 = full_fitted, f2 = reduced_fitted,
 #'             indx = 2, run_regression = FALSE, alpha = 0.05,
 #'             stratified = TRUE, type = "accuracy",
-#'             sample_splitting_folds = est_1$sample_splitting_folds)
+#'             sample_splitting_folds = get_cv_sl_folds(full_fit$folds))
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the
 #'   \code{SuperLearner} function and package.

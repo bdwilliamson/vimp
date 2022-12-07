@@ -40,7 +40,10 @@ either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.}
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as \code{Y}; if using a list, then the summed
+length of each element across the list should be the same length as \code{Y} (i.e.,
+each observation is included in the predictions).}
 
 \item{cross_fitted_f2}{the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
@@ -49,7 +52,10 @@ Provided as either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.}
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as \code{Y}; if using a list, then the summed
+length of each element across the list should be the same length as \code{Y} (i.e.,
+each observation is included in the predictions).}
 
 \item{indx}{the indices of the covariate(s) to calculate variable
 importance for; defaults to 1.}

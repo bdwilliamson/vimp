@@ -44,7 +44,10 @@ either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.}
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as \code{Y}; if using a list, then the summed
+length of each element across the list should be the same length as \code{Y} (i.e.,
+each observation is included in the predictions).}
 
 \item{cross_fitted_f2}{the predicted values on validation data from a
 flexible estimation technique regressing either (a) the fitted values in
@@ -53,7 +56,10 @@ Provided as either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.}
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as \code{Y}; if using a list, then the summed
+length of each element across the list should be the same length as \code{Y} (i.e.,
+each observation is included in the predictions).}
 
 \item{f1}{the fitted values from a flexible estimation technique
 regressing Y on X. If sample-splitting is requested, then these must be
@@ -91,6 +97,12 @@ importance < \eqn{\delta}); defaults to 0.}
 
 \item{na.rm}{should we remove NAs in the outcome and fitted values
 in computation? (defaults to \code{FALSE})}
+
+\item{final_point_estimate}{if sample splitting is used, should the final point estimates
+be based on only the sample-split folds used for inference (\code{"split"}, the default),
+or should they instead be based on the full dataset (\code{"full"}) or the average
+across the point estimates from each sample split (\code{"average"})? All three
+options result in valid point estimates -- sample-splitting is only required for valid inference.}
 
 \item{cross_fitting_folds}{the folds for cross-fitting. Only used if
 \code{run_regression = FALSE}.}

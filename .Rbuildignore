@@ -14,3 +14,4 @@ docs/*
 ^\.github$
 ^doc$
 ^Meta$
+^CRAN-SUBMISSION$
