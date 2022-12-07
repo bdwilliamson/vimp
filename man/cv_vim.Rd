@@ -27,6 +27,7 @@ cv_vim(
   na.rm = FALSE,
   C = rep(1, length(Y)),
   Z = NULL,
+  ipc_scale = "identity",
   ipc_weights = rep(1, length(Y)),
   ipc_est_type = "aipw",
   scale_est = TRUE,
@@ -145,6 +146,9 @@ specifying the variable(s) among Y and X that are thought to play a
 role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., \code{"1"}).}
+
+\item{ipc_scale}{what scale should the inverse probability weight correction be applied on (if any)? 
+Defaults to "identity". (other options are "log" and "logit")}
 
 \item{ipc_weights}{weights for the computed influence curve (i.e.,
 inverse probability weights for coarsened-at-random settings).
