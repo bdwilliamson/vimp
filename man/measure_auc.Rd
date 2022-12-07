@@ -14,7 +14,7 @@ measure_auc(
   ipc_fit_type = "external",
   ipc_eif_preds = rep(1, length(y)),
   ipc_est_type = "aipw",
-  scale = "identity",
+  scale = "logit",
   na.rm = FALSE,
   nuisance_estimators = NULL,
   a = NULL,

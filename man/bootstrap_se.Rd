@@ -18,11 +18,15 @@ bootstrap_se(
 \item{Y}{the outcome.}
 
 \item{f1}{the fitted values from a flexible estimation technique
-regressing Y on X.}
+regressing Y on X. A vector of the same length as \code{Y}; if sample-splitting
+is desired, then the value of \code{f1} at each position should be the result
+of predicting from a model trained without that observation.}
 
 \item{f2}{the fitted values from a flexible estimation technique
 regressing either (a) \code{f1} or (b) Y on X withholding the columns in
-\code{indx}.}
+\code{indx}. A vector of the same length as \code{Y}; if sample-splitting
+is desired, then the value of \code{f2} at each position should be the result
+of predicting from a model trained without that observation.}
 
 \item{type}{the type of importance to compute; defaults to
 \code{r_squared}, but other supported options are \code{auc},

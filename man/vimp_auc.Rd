@@ -18,13 +18,14 @@ vimp_auc(
   alpha = 0.05,
   delta = 0,
   na.rm = FALSE,
+  final_point_estimate = "split",
   cross_fitting_folds = NULL,
   sample_splitting_folds = NULL,
   stratified = TRUE,
   C = rep(1, length(Y)),
   Z = NULL,
   ipc_weights = rep(1, length(Y)),
-  scale = "identity",
+  scale = "logit",
   ipc_est_type = "aipw",
   scale_est = TRUE,
   cross_fitted_se = TRUE,
@@ -119,14 +120,14 @@ Assumed to be already inverted (i.e., ipc_weights = 1 / [estimated
 probability weights]).}
 
 \item{scale}{should CIs be computed on original ("identity") or
-logit ("logit") scale?}
+another scale? (options are "log" and "logit")}
 
 \item{ipc_est_type}{the type of procedure used for coarsened-at-random
 settings; options are "ipw" (for inverse probability weighting) or
 "aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
 
-\item{scale_est}{should the point estimate be scaled to be greater than 0?
+\item{scale_est}{should the point estimate be scaled to be greater than or equal to 0?
 Defaults to \code{TRUE}.}
 
 \item{cross_fitted_se}{should we use cross-fitting to estimate the standard

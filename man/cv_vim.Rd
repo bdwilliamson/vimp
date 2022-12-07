@@ -82,7 +82,7 @@ is done. See Details for a more detailed explanation.}
 
 \item{sample_splitting}{should we use sample-splitting to estimate the full and
 reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
-\code{sample_splitting = FALSE} will be invalid for variable with truly zero
+\code{sample_splitting = FALSE} will be invalid for variables with truly zero
 importance.}
 
 \item{sample_splitting_folds}{the folds used for sample-splitting;
@@ -118,7 +118,7 @@ Defaults to 0.05, corresponding to a 95\% confidence interval.}
 importance < \eqn{\delta}); defaults to 0.}
 
 \item{scale}{should CIs be computed on original ("identity") or
-logit ("logit") scale?}
+another scale? (options are "log" and "logit")}
 
 \item{na.rm}{should we remove NAs in the outcome and fitted values
 in computation? (defaults to \code{FALSE})}
@@ -143,7 +143,7 @@ settings; options are "ipw" (for inverse probability weighting) or
 "aipw" (for augmented inverse probability weighting).
 Only used if \code{C} is not all equal to 1.}
 
-\item{scale_est}{should the point estimate be scaled to be greater than 0?
+\item{scale_est}{should the point estimate be scaled to be greater than or equal to 0?
 Defaults to \code{TRUE}.}
 
 \item{nuisance_estimators_full}{(only used if \code{type = "average_value"})

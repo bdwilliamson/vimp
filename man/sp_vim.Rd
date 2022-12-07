@@ -73,7 +73,7 @@ progress? (defaults to \code{FALSE})}
 
 \item{sample_splitting}{should we use sample-splitting to estimate the full and
 reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
-\code{sample_splitting = FALSE} will be invalid for variable with truly zero
+\code{sample_splitting = FALSE} will be invalid for variables with truly zero
 importance.}
 
 \item{C}{the indicator of coarsening (1 denotes observed, 0 denotes
@@ -97,9 +97,9 @@ settings; options are "ipw" (for inverse probability weighting) or
 Only used if \code{C} is not all equal to 1.}
 
 \item{scale}{should CIs be computed on original ("identity") or
-logit ("logit") scale?}
+another scale? (options are "log" and "logit")}
 
-\item{scale_est}{should the point estimate be scaled to be greater than 0?
+\item{scale_est}{should the point estimate be scaled to be greater than or equal to 0?
 Defaults to \code{TRUE}.}
 
 \item{cross_fitted_se}{should we use cross-fitting to estimate the standard

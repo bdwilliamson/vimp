@@ -40,7 +40,7 @@ and \code{SL.mean}.}
 
 \item{sample_splitting}{should we use sample-splitting to estimate the full and
 reduced predictiveness? Defaults to \code{TRUE}, since inferences made using
-\code{sample_splitting = FALSE} will be invalid for variable with truly zero
+\code{sample_splitting = FALSE} will be invalid for variables with truly zero
 importance.}
 
 \item{sample_splitting_folds}{the folds used for sample-splitting;
