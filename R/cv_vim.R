@@ -12,7 +12,10 @@
 #'   the predicted value when that observation is part of the validation fold;
 #'   or (b) a list of length V, where each element in the list is a set of predictions on the
 #'   corresponding validation data fold.
-#'   If sample-splitting is requested, then these must be estimated specially; see Details.
+#'   If sample-splitting is requested, then these must be estimated specially; see Details. However,
+#'   the resulting vector should be the same length as \code{Y}; if using a list, then the summed
+#'   length of each element across the list should be the same length as \code{Y} (i.e.,
+#'   each observation is included in the predictions).
 #' @param cross_fitted_f2 the predicted values on validation data from a
 #'   flexible estimation technique regressing either (a) the fitted values in
 #'   \code{cross_fitted_f1}, or (b) Y, on X withholding the columns in \code{indx}.
@@ -20,7 +23,10 @@
 #'   the predicted value when that observation is part of the validation fold;
 #'   or (b) a list of length V, where each element in the list is a set of predictions on the
 #'   corresponding validation data fold.
-#'   If sample-splitting is requested, then these must be estimated specially; see Details.
+#'   If sample-splitting is requested, then these must be estimated specially; see Details. However,
+#'   the resulting vector should be the same length as \code{Y}; if using a list, then the summed
+#'   length of each element across the list should be the same length as \code{Y} (i.e.,
+#'   each observation is included in the predictions).
 #' @param f1 the fitted values from a flexible estimation technique
 #'   regressing Y on X. If sample-splitting is requested, then these must be
 #'   estimated specially; see Details. If \code{cross_fitted_se = TRUE},
@@ -184,7 +190,7 @@
 cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    cross_fitted_f2 = NULL, f1 = NULL, f2 = NULL, indx = 1,
                    V = ifelse(is.null(cross_fitting_folds), 5, length(unique(cross_fitting_folds))),
-                   sample_splitting = TRUE,
+                   sample_splitting = TRUE, final_point_estimate = "split",
                    sample_splitting_folds = NULL, cross_fitting_folds = NULL,
                    stratified = FALSE, type = "r_squared",
                    run_regression = TRUE,
@@ -421,13 +427,9 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         cf_folds_redu_cc <- cf_folds_redu[C[redu_test] == 1]
         full_test_cc <- full_test[C == 1]
         redu_test_cc <- redu_test[C == 1]
-        if (length(full_preds) > length(Y_cc[full_test_cc])) {
-          full_preds <- full_preds[full_test_cc]
-          redu_preds <- redu_preds[redu_test_cc]
-        }
         predictiveness_full_object <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[full_test_cc], full_y = Y_cc,
-               a = A_cc[full_test_cc], fitted_values = full_preds,
+               a = A_cc[full_test_cc], fitted_values = full_preds[full_test_cc],
                cross_fitting_folds = cf_folds_full_cc, C = C[full_test],
                Z = Z_in[full_test, , drop = FALSE],
                folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
@@ -440,7 +442,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         ))
         predictiveness_reduced_object <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[redu_test_cc], full_y = Y_cc,
-               a = A_cc[redu_test_cc], fitted_values = redu_preds,
+               a = A_cc[redu_test_cc], fitted_values = redu_preds[redu_test_cc],
                cross_fitting_folds = cf_folds_redu_cc, C = C[redu_test],
                Z = Z_in[redu_test, , drop = FALSE],
                folds_Z = cf_folds_redu, ipc_weights = ipc_weights[redu_test],
@@ -459,7 +461,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         if (!cross_fitted_se) {
             eif_full_lst <- do.call(
                 est_predictiveness,
-                args = c(list(fitted_values = non_cf_full_preds,
+                args = c(list(fitted_values = non_cf_full_preds[full_test_cc],
                               y = Y_cc[full_test_cc], full_y = Y_cc, folds = cf_folds_full_cc,
                               type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_full,
                               ipc_weights = ipc_weights,
@@ -471,7 +473,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             eif_full <- eif_full_lst$eif
             eif_redu_lst <- do.call(
                 est_predictiveness,
-                args = c(list(fitted_values = non_cf_redu_preds,
+                args = c(list(fitted_values = non_cf_redu_preds[full_test_cc],
                               y = Y_cc[redu_test_cc], full_y = Y_cc, folds = cf_folds_redu_cc,
                               type = full_type, C = C, Z = Z_in, folds_Z = cf_folds_redu,
                               ipc_weights = ipc_weights,
@@ -525,6 +527,81 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             }
         }
     }
+    est_for_inference <- est
+    predictiveness_full_for_inference <- predictiveness_full
+    predictiveness_reduced_for_inference <- predictiveness_redu
+    # if sample-splitting was requested and final_point_estimate isn't "split", estimate
+    # the required quantities
+    if (sample_splitting & (final_point_estimate != "split")) {
+      k_fold_lst_for_est <- list(
+        full = cross_fitting_folds, reduced = cross_fitting_folds
+      )
+      cf_folds_for_est <- k_fold_lst_for_est$full
+      cf_folds_for_est_cc <- k_fold_lst_for_est$full[C == 1]
+      if (final_point_estimate == "full") {
+        est_pred_full <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc, full_y = Y_cc,
+               a = A_cc, fitted_values = full_preds,
+               cross_fitting_folds = cf_folds_for_est_cc, C = C,
+               Z = Z_in, folds_Z = cf_folds_for_est, ipc_weights = ipc_weights,
+               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               na.rm = na.rm, SL.library = SL.library,
+               nuisance_estimators = nuisance_estimators_full), arg_lst
+        ))
+        est_pred_reduced <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc, full_y = Y_cc,
+               a = A_cc, fitted_values = redu_preds,
+               cross_fitting_folds = cf_folds_for_est_cc, C = C,
+               Z = Z_in, folds_Z = cf_folds_for_est, ipc_weights = ipc_weights,
+               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               na.rm = na.rm, SL.library = SL.library,
+               nuisance_estimators = nuisance_estimators_reduced), arg_lst
+        ))
+        est_pred_full_lst <- estimate(est_pred_full)
+        est_pred_reduced_lst <- estimate(est_pred_reduced)
+        predictiveness_full <- est_pred_full_lst$point_est
+        predictiveness_redu <- est_pred_reduced_lst$point_est
+        est <- predictiveness_full - predictiveness_redu
+      } else {
+        # swap the roles of the folds
+        full_test_for_est <- (k_fold_lst$sample_splitting_folds == 2)
+        redu_test_for_est <- (k_fold_lst$sample_splitting_folds == 1)
+        full_test_cc_for_est <- full_test_for_est[C == 1]
+        redu_test_cc_for_est <- full_test_for_est[C == 1]
+        est_pred_full <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc[full_test_cc_for_est], full_y = Y_cc,
+               a = A_cc[full_test_cc_for_est], fitted_values = full_preds[full_test_cc_for_est],
+               cross_fitting_folds = cf_folds_full_cc, C = C[full_test_for_est],
+               Z = Z_in[full_test_for_est, , drop = FALSE],
+               folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
+               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
+                 nuisance_estimators_full, function(l) {
+                   l[full_test_cc_for_est]
+                 }
+               )), arg_lst
+        ))
+        est_pred_reduced <- do.call(predictiveness_measure, c(
+          list(type = full_type, y = Y_cc[redu_test_cc_for_est], full_y = Y_cc,
+               a = A_cc[redu_test_cc_for_est], fitted_values = redu_preds[redu_test_cc_for_est],
+               cross_fitting_folds = cf_folds_redu_cc, C = C[redu_test],
+               Z = Z_in[redu_test_for_est, , drop = FALSE],
+               folds_Z = cf_folds_redu, ipc_weights = ipc_weights[redu_test_for_est],
+               ipc_fit_type = "SL", scale = scale, ipc_est_type = ipc_est_type,
+               na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
+                 nuisance_estimators_reduced, function(l) {
+                   l[redu_test_cc_for_est]
+                 }
+               )), arg_lst
+        ))
+        est_pred_full_lst <- estimate(est_pred_full)
+        est_pred_reduced_lst <- estimate(est_pred_reduced)
+        # compute the point estimates of predictiveness and variable importance
+        predictiveness_full <- mean(c(predictiveness_full, est_pred_full_lst$point_est))
+        predictiveness_redu <- mean(c(predictiveness_redu, est_pred_reduced_lst$point_est))
+        est <- predictiveness_full - predictiveness_redu
+      }
+    }
     # if est < 0, set to zero and print warning
     if (est < 0 && !is.na(est) & scale_est) {
         est <- 0
@@ -534,15 +611,15 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     }
 
     # calculate the confidence interval
-    ci <- vimp_ci(est, se, scale = scale, level = 1 - alpha)
+    ci <- vimp_ci(est_for_inference, se, scale = scale, level = 1 - alpha)
     if (bootstrap) {
         ci <- boot_results$ci
     }
     predictiveness_ci_full <- vimp_ci(
-        predictiveness_full, se = se_full, scale = scale, level = 1 - alpha
+        predictiveness_full_for_inference, se = se_full, scale = scale, level = 1 - alpha
     )
     predictiveness_ci_redu <- vimp_ci(
-        predictiveness_redu, se = se_redu, scale = scale, level = 1 - alpha
+        predictiveness_reduced_for_inference, se = se_redu, scale = scale, level = 1 - alpha
     )
 
     # perform a hypothesis test against the null of zero importance
@@ -550,8 +627,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         hyp_test <- list(test = NA, p_value = NA, test_statistics = NA)
     } else {
         hyp_test <- vimp_hypothesis_test(
-            predictiveness_full = predictiveness_full,
-            predictiveness_reduced = predictiveness_redu,
+            predictiveness_full = predictiveness_full_for_inference,
+            predictiveness_reduced = predictiveness_reduced_for_inference,
             se = se, delta = delta, alpha = alpha
         )
     }
@@ -585,8 +662,11 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    eif_full = eif_full, eif_redu = eif_redu,
                    all_eifs_full = eifs_full, all_eifs_redu = eifs_redu,
                    se = se, ci = ci,
+                   est_for_inference = est_for_inference,
                    predictiveness_full = predictiveness_full,
                    predictiveness_reduced = predictiveness_redu,
+                   predictiveness_full_for_inference = predictiveness_full_for_inference,
+                   predictiveness_reduced_for_inference = predictiveness_reduced_for_inference,
                    predictiveness_ci_full = predictiveness_ci_full,
                    predictiveness_ci_reduced = predictiveness_ci_redu,
                    se_full = se_full, se_reduced = se_redu,

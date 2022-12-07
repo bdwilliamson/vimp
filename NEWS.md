@@ -1,3 +1,13 @@
+# vimp 2.3.1
+
+## Major changes
+
+* In cases where sample-splitting is used (which is required for valid inference under the null hypothesis of zero variable importance), there is now the option to report a point estimate that is based on the entire dataset, rather than only the split on which inference (confidence intervals and p-values) is performed. The point estimator (using either the single split, the full dataset, or the average of the two split-specific point estimates) is valid regardless of whether the null holds or not. If this option is chosen, there may be a discrepancy between the point estimate and the interval estimate; this is likely to occur only in small-sample (or small effective sample-size, for binary outcomes) settings.
+
+## Minor changes
+
+* For predictiveness measures that lie in [0, 1] by definition (accuracy, ANOVA, R-squared, deviance, AUC), the default is now to compute confidence intervals on the logit scale, which guarantees that the interval will also lie in [0, 1]. Note that this means the interval will not be centered at the point estimate; however, it retains the desired level of coverage.
+
 # vimp 2.3.0
 
 ## Major changes
