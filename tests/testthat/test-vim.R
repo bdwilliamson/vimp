@@ -15,6 +15,7 @@ true_var <- 1 + .5 ^ 2 + .75 ^ 2
 r2_one <- 0.5 ^ 2 * 1 / true_var
 r2_two <- 0.75 ^ 2 * 1 / true_var
 folds <- sample(rep(seq_len(2), length = length(y)))
+folds_lst <- lapply(as.list(seq_len(2)), function(i) which(folds == i))
 
 # set up a library for SuperLearner
 learners <- c("SL.glm", "SL.mean")
@@ -64,13 +65,15 @@ test_that("General variable importance estimates using internally-computed fitte
 # fit the data with all covariates and sample-splitting (note V = 2 in CV.SL)
 set.seed(4747)
 full_fit <- SuperLearner::CV.SuperLearner(Y = y, X = x, SL.library = learners,
-                                          cvControl = list(V = 2), innerCvControl = list(list(V = V)))
+                                          cvControl = list(V = 2, validRows = folds_lst),
+                                          innerCvControl = list(list(V = V)))
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
 # fit the data with only X1
 reduced_fit <- SuperLearner::CV.SuperLearner(Y = full_fitted,
                                              X = x[, -2, drop = FALSE],
                                              SL.library = learners,
-                                             cvControl = list(V = 2), innerCvControl = list(list(V = V)))
+                                             cvControl = list(V = 2, validRows = full_fit$folds),
+                                             innerCvControl = list(list(V = V)))
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 
 # test VIM with pre-computed nuisance estimates --------------------------------
