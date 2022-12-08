@@ -1,6 +1,6 @@
 # load required functions and packages
 library("testthat")
-library("SuperLearner")
+suppressWarnings(library("SuperLearner"))
 
 # generate the data ------------------------------------------------------------
 make_y <- function(b, p) rbinom(b, 1, p)

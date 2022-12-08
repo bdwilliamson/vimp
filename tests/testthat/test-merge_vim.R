@@ -1,6 +1,6 @@
 # load required functions and packages
 library("testthat")
-library("SuperLearner")
+suppressWarnings(library("SuperLearner"))
 
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
