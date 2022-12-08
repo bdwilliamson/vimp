@@ -39,7 +39,7 @@ V <- 2
 set.seed(1234)
 # test that VIM with inverse probability of coarsening weights works
 test_that("VIM with inverse probability of coarsening weights works", {
-  est <- vim(Y = y, X = x_df, indx = 1, type = "r_squared", run_regression = TRUE, 
+  est <- vim(Y = y, X = x_df, indx = 1, type = "r_squared", run_regression = TRUE,
              SL.library = learners, method = "method.CC_LS",
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
              cvControl = list(V = V), env = environment())
@@ -55,7 +55,7 @@ test_that("IPW AUC estimation with the mean works", {
   sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
                          SL.library = "SL.mean", obsWeights = weights_cc)
   est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin), 
+                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
                          ipc_est_type = "ipw",
                          ipc_weights = ipc_weights, ipc_fit_type = "SL",
                          SL.library = "SL.glm", method = "method.CC_LS",)
@@ -67,7 +67,7 @@ test_that("IPW AUC estimation with a better learner works", {
   expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
                                         SL.library = "SL.glm", obsWeights = weights_cc))
   est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin), 
+                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
                          ipc_est_type = "ipw",
                          ipc_weights = ipc_weights, ipc_fit_type = "SL",
                          SL.library = "SL.glm", method = "method.CC_LS",)
@@ -78,7 +78,7 @@ test_that("IPW AUC estimation with a better learner works", {
 # test that VIM with inverse probability of coarsening weights and cross-fitting works
 set.seed(5678)
 test_that("CV-VIM with inverse probability of coarsening weights works", {
-  est_cv <- cv_vim(Y = y, X = x_df, indx = 1, type = "r_squared", V = 2, 
+  est_cv <- cv_vim(Y = y, X = x_df, indx = 1, type = "r_squared", V = 2,
                    run_regression = TRUE, SL.library = learners[1], method = "method.CC_LS",
              alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
              cvControl = list(V = V), env = environment())
@@ -91,10 +91,10 @@ set.seed(91011)
 # test IPW SPVIM ---------------------------------------------------------------
 # test that SPVIM with inverse probability of coarsening weights works
 test_that("SPVIM with inverse probability of coarsening weights works", {
-  expect_warning(est_spvim <- sp_vim(Y = y, X = x_df, type = "r_squared", V = 2, 
+  expect_warning(est_spvim <- sp_vim(Y = y, X = x_df, type = "r_squared", V = 2,
                       SL.library = learners, method = "method.CC_LS",
                       univariate_SL.library = univariate_learners, gamma = 0.1,
-                      alpha = 0.05, delta = 0, C = C, Z = "Y", 
+                      alpha = 0.05, delta = 0, C = C, Z = "Y",
                       ipc_weights = ipc_weights,
                       cvControl = list(V = 2), env = environment()))
   expect_equal(est_spvim$est[3], shapley_val_2, tolerance = 0.3, scale = 1)
@@ -113,10 +113,11 @@ X_for_vim <- data.frame(X1 = W, X2=A)
 
 set.seed(5678)
 test_that("SPVIM with IPW and binary outcome works", {
-  expect_warning(est <- sp_vim(Y = Y, X = X_for_vim, V = 2, type = "auc", 
+  expect_warning(est <- sp_vim(Y = Y, X = X_for_vim, V = 2, type = "auc",
                                SL.library = learners,
                                univariate_SL.library = univariate_learners, gamma = 0.1,
                                stratified = TRUE, C = rep(1,nrow(X_for_vim)),
+                               cvControl = list(V = 2),
                                ipc_weights = propW*censoringW, ipc_est_type = "ipw",
                                Z = c("Y","X1","X2")))
   expect_equal(est$est[2], 0.1, tolerance = 0.05, scale = 1)

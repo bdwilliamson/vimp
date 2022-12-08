@@ -436,7 +436,7 @@ run_sl <- function(Y = NULL, X = NULL, V = 5, SL.library = "SL.glm",
     ifelse(!is.null(arg_lst$cvControl), arg_lst$cvControl$V != V, FALSE)
   if (arg_lst_bool) {
     if (V > 1) {
-      arg_lst$innerCvControl <- list(list(V = arg_lst$cvControl$V,
+      arg_lst$innerCvControl <- list(list(V = switch(as.numeric(!is.null(arg_lst$cvControl$V)) + 1, 5, arg_lst$cvControl$V),
                                           stratifyCV = switch(as.numeric(!is.null(arg_lst$cvControl$stratifyCV)) + 1,
                                                               FALSE, arg_lst$cvControl$stratifyCV)))
     }
