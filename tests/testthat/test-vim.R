@@ -64,16 +64,20 @@ test_that("General variable importance estimates using internally-computed fitte
 # fit nuisance regressions -----------------------------------------------------
 # fit the data with all covariates and sample-splitting (note V = 2 in CV.SL)
 set.seed(4747)
-full_fit <- SuperLearner::CV.SuperLearner(Y = y, X = x, SL.library = learners,
+full_fit <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = y, X = x, SL.library = learners,
                                           cvControl = list(V = 2, validRows = folds_lst),
                                           innerCvControl = list(list(V = V)))
+)
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
 # fit the data with only X1
-reduced_fit <- SuperLearner::CV.SuperLearner(Y = full_fitted,
+reduced_fit <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = full_fitted,
                                              X = x[, -2, drop = FALSE],
                                              SL.library = learners,
                                              cvControl = list(V = 2, validRows = full_fit$folds),
                                              innerCvControl = list(list(V = V)))
+)
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
 
 # test VIM with pre-computed nuisance estimates --------------------------------

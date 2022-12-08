@@ -49,10 +49,12 @@ g_n1 <- SuperLearner::SuperLearner(Y = f_n1, X = x[, -1, drop = FALSE], SL.libra
 g_n2 <- SuperLearner::SuperLearner(Y = f_n2, X = x[, -2, drop = FALSE], SL.library = learners, cvControl = list(V = V))
 
 # also get cross-fitted versions
-q_n_cv <- SuperLearner::CV.SuperLearner(Y = y, X = cbind.data.frame(a = a, x),
+q_n_cv <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = y, X = cbind.data.frame(a = a, x),
                                         SL.library = learners, cvControl = list(V = 2 * V),
                                         innerCvControl = list(list(V = V)),
                                         saveAll = TRUE, control = list(saveFitLibrary = TRUE))
+)
 cross_fitting_folds <- get_cv_sl_folds(q_n_cv$folds)
 q_n_cv_preds_lst <- lapply(as.list(seq_len(length(q_n_cv$AllSL))), function(l) {
   as.numeric(predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 1, x[cross_fitting_folds == l, ]))$pred >
@@ -70,18 +72,22 @@ opt_g_n_cv <- unlist(lapply(as.list(seq_len(length(g_n_cv$AllSL))), function(l) 
 }))[unlist(q_n_cv$folds)]
 nuisances_cv <- list(f_n = f_n_cv, q_n = opt_q_n_cv, g_n = opt_g_n_cv)
 
-q_n_cv1 <- SuperLearner::CV.SuperLearner(Y = y, X = cbind.data.frame(a = a, x[, -1, drop = FALSE]),
+q_n_cv1 <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = y, X = cbind.data.frame(a = a, x[, -1, drop = FALSE]),
                                         SL.library = learners, cvControl = list(V = 2 * V, validRows = q_n_cv$folds),
                                         innerCvControl = list(list(V = V)),
                                         saveAll = TRUE, control = list(saveFitLibrary = TRUE))
+)
 q_n_cv_preds_lst1 <- lapply(as.list(seq_len(length(q_n_cv1$AllSL))), function(l) {
   as.numeric(predict(q_n_cv1$AllSL[[l]], newdata = cbind.data.frame(a = 1, x[cross_fitting_folds == l, -1, drop = FALSE]))$pred >
                predict(q_n_cv1$AllSL[[l]], newdata = cbind.data.frame(a = 0, x[cross_fitting_folds == l, -1, drop = FALSE]))$pred)
 })
 f_n_cv1 <- unlist(q_n_cv_preds_lst1)[unlist(q_n_cv1$folds)]
-g_n_cv1 <- SuperLearner::CV.SuperLearner(Y = f_n_cv, X = x[, -1, drop = FALSE], SL.library = learners,
+g_n_cv1 <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = f_n_cv, X = x[, -1, drop = FALSE], SL.library = learners,
                                         cvControl = list(V = 2 * V, validRows = q_n_cv$folds), innerCvControl = list(list(V = V)),
                                         saveAll = TRUE, control = list(saveFitLibrary = TRUE))
+)
 opt_q_n_cv1 <- unlist(lapply(as.list(seq_len(length(q_n_cv1$AllSL))), function(l) {
   predict(q_n_cv1$AllSL[[l]], newdata = cbind.data.frame(a = f_n_cv1, x[, -1, drop = FALSE]))$pred
 }))[unlist(q_n_cv1$folds)]

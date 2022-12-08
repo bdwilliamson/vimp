@@ -46,19 +46,23 @@ V <- 2
 
 # fit the data with all covariates
 set.seed(5678)
-full_fit <- SuperLearner::CV.SuperLearner(Y = y, X = x,
+full_fit <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = y, X = x,
                                           SL.library = learners,
                                           family = "binomial",
                                           cvControl = list(V = 2, validRows = folds_lst),
                                           innerCvControl = list(list(V = V)))
+)
 full_fitted <- SuperLearner::predict.SuperLearner(full_fit)$pred
 
 # fit the data with only X1
-reduced_fit <- SuperLearner::CV.SuperLearner(Y = y, X = x[, -indx, drop = FALSE],
+reduced_fit <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = y, X = x[, -indx, drop = FALSE],
                                              SL.library = learners,
                                              family = "binomial",
                                              cvControl = list(V = 2, validRows = folds_lst),
                                              innerCvControl = list(list(V = V)))
+)
 reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit)$pred
 
 # test accuracy ----------------------------------------------------------------

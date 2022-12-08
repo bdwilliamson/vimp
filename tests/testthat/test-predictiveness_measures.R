@@ -89,10 +89,12 @@ full_fit_c <- SuperLearner::SuperLearner(Y = y_continuous, X = x,
                                          cvControl = list(V = V))
 full_fitted_c <- SuperLearner::predict.SuperLearner(full_fit_c, onlySL = TRUE)$pred
 # also a cross-fitted version
-full_fit_c_cv <- SuperLearner::CV.SuperLearner(Y = y_continuous, X = x,
+full_fit_c_cv <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = y_continuous, X = x,
                                                SL.library = learners,
                                                cvControl = list(validRows = sl_folds_c, V = 2),
                                                innerCvControl = list(list(V = V)))
+)
 full_fitted_c_cv <- full_fit_c_cv$SL.predict
 # for binary y
 set.seed(4747)
@@ -102,11 +104,13 @@ full_fit_b <- SuperLearner::SuperLearner(Y = y_binary, X = x_binary,
                                          family = "binomial")
 full_fitted_b <- SuperLearner::predict.SuperLearner(full_fit_b, onlySL = TRUE)$pred
 # also a cross-fitted version
-full_fit_b_cv <- SuperLearner::CV.SuperLearner(Y = y_binary, X = x_binary,
+full_fit_b_cv <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = y_binary, X = x_binary,
                                                SL.library = learners,
                                                cvControl = list(validRows = sl_folds_b, V = 2),
                                                innerCvControl = list(list(V = V)),
                                                family = "binomial")
+)
 full_fitted_b_cv <- full_fit_b_cv$SL.predict
 
 # for the average value
