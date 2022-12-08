@@ -676,6 +676,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    cross_fitting_folds = cross_fitting_folds,
                    y = Y,
                    ipc_weights = ipc_weights,
+                   ipc_scale = ipc_scale,
                    scale = scale,
                    mat = mat)
 
