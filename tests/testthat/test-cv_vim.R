@@ -163,14 +163,18 @@ set.seed(5678)
 # but fit using CV.SL, V = 2
 unique_cf_folds <- sort(unique(cross_fitting_folds))
 ss_folds_lst <- lapply(as.list(seq_len(2)), function(i) which(cross_fitting_folds %in% unique_cf_folds[sample_splitting_folds == i]))
-full_fit_2 <- SuperLearner::CV.SuperLearner(
+full_fit_2 <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(
   Y = Y, X = x, SL.library = learners, cvControl = list(V = 2, validRows = ss_folds_lst),
   innerCvControl = list(list(V = V)),
 )
+)
 fhat_ful <- SuperLearner::predict.SuperLearner(full_fit_2, onlySL = TRUE)$pred
-reduced_fit_2 <- SuperLearner::CV.SuperLearner(
+reduced_fit_2 <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(
   Y = Y, X = x[, -indx, drop = FALSE], SL.library = learners, cvControl = list(V = 2, validRows = ss_folds_lst),
   innerCvControl = list(list(V = V)),
+)
 )
 fhat_red <- SuperLearner::predict.SuperLearner(reduced_fit_2, onlySL = TRUE)$pred
 test_that("Cross-validated variable importance using externally-computed regressions works", {

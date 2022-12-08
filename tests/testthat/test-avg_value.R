@@ -61,9 +61,11 @@ q_n_cv_preds_lst <- lapply(as.list(seq_len(length(q_n_cv$AllSL))), function(l) {
                predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = 0, x[cross_fitting_folds == l, ]))$pred)
 })
 f_n_cv <- unlist(q_n_cv_preds_lst)[unlist(q_n_cv$folds)]
-g_n_cv <- SuperLearner::CV.SuperLearner(Y = f_n_cv, X = x, SL.library = learners,
+g_n_cv <- suppressWarnings(
+  SuperLearner::CV.SuperLearner(Y = f_n_cv, X = x, SL.library = learners,
                                         cvControl = list(V = 2 * V, validRows = q_n_cv$folds), innerCvControl = list(list(V = V)),
                                         saveAll = TRUE, control = list(saveFitLibrary = TRUE))
+)
 opt_q_n_cv <- unlist(lapply(as.list(seq_len(length(q_n_cv$AllSL))), function(l) {
   predict(q_n_cv$AllSL[[l]], newdata = cbind.data.frame(a = f_n_cv, x))$pred
 }))[unlist(q_n_cv$folds)]
