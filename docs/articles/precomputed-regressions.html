@@ -149,7 +149,7 @@ vignette</a>.</p>
 <span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
-<span><span class="va">vrc01_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_folds.html">make_folds</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">y</span>, V <span class="op">=</span> <span class="fl">2</span>, stratified <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">vrc01_folds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_folds.html">make_folds</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">y</span>, V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="using-precomputed-regression-function-estimates-without-cross-fitting">Using precomputed regression function estimates without
@@ -203,24 +203,24 @@ the code for precomputed regression models.</p>
 <span><span class="co"># print out the matrix</span></span>
 <span><span class="va">lm_mat</span></span>
 <span><span class="co">#&gt; Variable importance estimates:</span></span>
-<span><span class="co">#&gt;        Estimate    SE         95% CI                    VIMP &gt; 0 p-value  </span></span>
-<span><span class="co">#&gt; s = 18 0.042010704 0.07898457 [9.355428e-04, 0.6725241] FALSE    0.2974028</span></span>
-<span><span class="co">#&gt; s = 21 0.025431044 0.07765874 [5.615472e-05, 0.9238113] FALSE    0.3716555</span></span>
-<span><span class="co">#&gt; s = 19 0.022426226 0.07910540 [1.946361e-05, 0.9643347] FALSE    0.3883975</span></span>
-<span><span class="co">#&gt; s = 14 0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 12 0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 9  0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 10 0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 6  0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 13 0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 15 0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 7  0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 8  0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 11 0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 5  0.017987306 0.07895106 [2.872528e-06, 0.9915108] FALSE    0.4098898</span></span>
-<span><span class="co">#&gt; s = 16 0.007529974 0.07831021 [9.132486e-12, 0.9999998] FALSE    0.4616984</span></span>
-<span><span class="co">#&gt; s = 17 0.006967064 0.07783384 [1.862144e-12, 1.0000000] FALSE    0.4643375</span></span>
-<span><span class="co">#&gt; s = 20 0.000000000 0.07641262 [0.000000e+00, 1.0000000] FALSE    0.5307970</span></span></code></pre></div>
+<span><span class="co">#&gt;        Estimate  SE         95% CI                  VIMP &gt; 0 p-value   </span></span>
+<span><span class="co">#&gt; s = 21 0.1709232 0.07644511 [0.06683172, 0.3724340] TRUE     0.01267934</span></span>
+<span><span class="co">#&gt; s = 17 0.1662249 0.07767087 [0.06232601, 0.3742047] TRUE     0.01617256</span></span>
+<span><span class="co">#&gt; s = 14 0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 9  0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 12 0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 5  0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 15 0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 8  0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 13 0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 11 0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 6  0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 10 0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 7  0.1641874 0.07765390 [0.06085506, 0.3732460] TRUE     0.01724274</span></span>
+<span><span class="co">#&gt; s = 20 0.1638964 0.07774146 [0.06057232, 0.3734127] TRUE     0.01750584</span></span>
+<span><span class="co">#&gt; s = 19 0.1626376 0.07934585 [0.05837835, 0.3782914] TRUE     0.02019537</span></span>
+<span><span class="co">#&gt; s = 16 0.1597680 0.07730619 [0.05794103, 0.3702210] TRUE     0.01938165</span></span>
+<span><span class="co">#&gt; s = 18 0.1542358 0.07595770 [0.05504322, 0.3634327] TRUE     0.02115043</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
