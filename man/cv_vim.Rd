@@ -147,7 +147,7 @@ role in the coarsening mechanism. To specify the outcome, use \code{"Y"}; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., \code{"1"}).}
 
-\item{ipc_scale}{what scale should the inverse probability weight correction be applied on (if any)? 
+\item{ipc_scale}{what scale should the inverse probability weight correction be applied on (if any)?
 Defaults to "identity". (other options are "log" and "logit")}
 
 \item{ipc_weights}{weights for the computed influence curve (i.e.,
