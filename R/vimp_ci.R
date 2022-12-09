@@ -57,7 +57,7 @@ vimp_ci <- function(est, se, scale = "identity", level = 0.95, truncate = TRUE) 
             ci[ci[, 1] < 0, 1] <- 0
         }
     }
-    if (any(ci[, 2]) < 0 & truncate) {
+    if (any(ci[, 2] < 0) & truncate) {
         ci[ci[, 2] < 0, 2] <- 0
     }
     return(ci)
