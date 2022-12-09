@@ -38,7 +38,7 @@ y <- vrc01$ic50.censored
 X <- vrc01 %>%
   select(starts_with("geog"), starts_with("subtype"), starts_with("length"))
 set.seed(1234)
-vrc01_folds <- make_folds(y = y, V = 2, stratified = TRUE)
+vrc01_folds <- make_folds(y = y, V = 2)
 ```
 
 ## Using precomputed regression function estimates without cross-fitting
@@ -57,7 +57,7 @@ full_fit <- vector("numeric", length = nrow(vrc01))
 for (v in 1:2) {
   train_v <- subset(vrc01_subset, vrc01_folds != v)
   test_v <- subset(vrc01_subset, vrc01_folds == v)
-  full_mod <- glm(y ~ ., data = train_v, family = binomial())
+  full_mod <- glm(y ~ ., data = train_v)
   full_fit[vrc01_folds == v] <- predict(full_mod, newdata = test_v)
 }
 
@@ -71,8 +71,8 @@ for (i in seq_len(ncol(X) - geog_indx)) {
     train_v <- subset(vrc01_subset, vrc01_folds != v)
     test_v <- subset(vrc01_subset, vrc01_folds == v)
     red_fit[vrc01_folds == v] <- suppressWarnings(
-      predict(glm( ~ .,  data = train_v %>% select(-!!this_name)), 
-              newdata = test_v, family = binomial())  
+      predict(glm(y ~ .,  data = train_v %>% select(-!!this_name)), 
+              newdata = test_v)  
     )
   }
   this_vim <- vim(Y = y, f1 = full_fit, f2 = red_fit, indx = i + geog_indx,

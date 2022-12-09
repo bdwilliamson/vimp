@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.1</span>
       </span>
     </div>
 
@@ -91,13 +91,17 @@
 
 <dt>f1</dt>
 <dd><p>the fitted values from a flexible estimation technique
-regressing Y on X.</p></dd>
+regressing Y on X. A vector of the same length as <code>Y</code>; if sample-splitting
+is desired, then the value of <code>f1</code> at each position should be the result
+of predicting from a model trained without that observation.</p></dd>
 
 
 <dt>f2</dt>
 <dd><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>.</p></dd>
+<code>indx</code>. A vector of the same length as <code>Y</code>; if sample-splitting
+is desired, then the value of <code>f2</code> at each position should be the result
+of predicting from a model trained without that observation.</p></dd>
 
 
 <dt>type</dt>

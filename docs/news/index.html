@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.1</span>
       </span>
     </div>
 
@@ -67,7 +67,18 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.3.0" id="vimp-230">vimp 2.3.0<a class="anchor" aria-label="anchor" href="#vimp-230"></a></h2>
+<h2 class="page-header" data-toc-text="2.3.1" id="vimp-231">vimp 2.3.1<a class="anchor" aria-label="anchor" href="#vimp-231"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-2-3-1">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-1"></a></h3>
+<ul><li>In cases where sample-splitting is used (which is required for valid inference under the null hypothesis of zero variable importance), there is now the option to report a point estimate that is based on the entire dataset, rather than only the split on which inference (confidence intervals and p-values) is performed. The point estimator (using either the single split, the full dataset, or the average of the two split-specific point estimates) is valid regardless of whether the null holds or not. If this option is chosen, there may be a discrepancy between the point estimate and the interval estimate; this is likely to occur only in small-sample (or small effective sample-size, for binary outcomes) settings.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-2-3-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-3-1"></a></h3>
+<ul><li>For predictiveness measures that lie in [0, 1] by definition (accuracy, ANOVA, R-squared, deviance, AUC), the default is now to compute confidence intervals on the logit scale, which guarantees that the interval will also lie in [0, 1]. Note that this means the interval will not be centered at the point estimate; however, it retains the desired level of coverage.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.3.0" id="vimp-230">vimp 2.3.0<small>2022-11-14</small><a class="anchor" aria-label="anchor" href="#vimp-230"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-3-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-0"></a></h3>
 <ul><li>Predictiveness measures now have their own <code>S3</code> class, which makes internal code cleaner and facilitates simpler addition of new predictiveness measures.</li>
