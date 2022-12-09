@@ -63,19 +63,16 @@ for (v in 1:2) {
 
 # estimate the reduced conditional means for each of the individual variables
 # remove the outcome for the predictor matrix
-X <- vrc01_subset %>% select(-y)
 geog_indx <- max(which(grepl("geog", names(X))))
 for (i in seq_len(ncol(X) - geog_indx)) {
   this_name <- names(X)[i + geog_indx]
   red_fit <- vector("numeric", length = nrow(vrc01))
   for (v in 1:2) {
-    train_v <- subset(X, vrc01_folds != v)
-    test_v <- subset(X, vrc01_folds == v)
+    train_v <- subset(vrc01_subset, vrc01_folds != v)
+    test_v <- subset(vrc01_subset, vrc01_folds == v)
     red_fit[vrc01_folds == v] <- suppressWarnings(
-      predict(glm(full_fit[vrc01_folds != v] ~ ., 
-                                            data = train_v %>% 
-                                              select(-!!this_name), family = binomial()),
-                                         newdata = test_v)  
+      predict(glm( ~ .,  data = train_v %>% select(-!!this_name)), 
+              newdata = test_v, family = binomial())  
     )
   }
   this_vim <- vim(Y = y, f1 = full_fit, f2 = red_fit, indx = i + geog_indx,
