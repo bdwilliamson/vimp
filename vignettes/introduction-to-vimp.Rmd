@@ -157,7 +157,7 @@ geog_indx <- max(which(grepl("geog", names(X))))
 set.seed(1234)
 for (i in seq_len(ncol(X) - geog_indx)) {
   # note that we're using a small number of cross-fitting folds for speed
-  lm_vim <- vim(Y = y, X = X, indx = geog_indx + i, run_regression = TRUE, SL.library = "SL.lm", type = "r_squared", cvControl = list(V = 2))
+  lm_vim <- vim(Y = y, X = X, indx = geog_indx + i, run_regression = TRUE, SL.library = "SL.glm", type = "r_squared", cvControl = list(V = 2), scale = "logit", family = binomial())
   if (i == 1) {
     lm_mat <- lm_vim
   } else {
@@ -245,7 +245,7 @@ means that:
 The call to `vimp_rsquared()` looks like this:
 ```{r vimp-with-sl-1, eval = FALSE}
 vimp_rsquared(Y = y, X = X,
-    indx = 5, run_regression = TRUE, SL.library = learners, V = 5)
+    indx = 5, run_regression = TRUE, SL.library = learners, V = 5, family = binomial())
 ```
 
 While this is the preferred method for estimating variable importance, using a large library of learners may cause the function to take time to run. Usually this is okay --- in general, you took a long time to collect the data, so letting an algorithm run for a few hours should not be an issue.
@@ -327,8 +327,8 @@ The only difference between estimating variable importance for a group of featur
 ```{r vrc01-group-vim, fig.width = 8.5, fig.height = 8}
 # get the estimates
 set.seed(91011)
-subtype_vim <- vimp_rsquared(Y = y, X = X, indx = 5:15, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
-geometry_vim <- vimp_rsquared(Y = y, X = X, indx = 16:21, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol)
+subtype_vim <- vimp_rsquared(Y = y, X = X, indx = 5:15, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol, family = binomial())
+geometry_vim <- vimp_rsquared(Y = y, X = X, indx = 16:21, SL.library = learners.2, na.rm = TRUE, env = environment(), V = V, cvControl = sl_cvcontrol, family = binomial())
 
 # combine and plot
 groups <- merge_vim(subtype_vim, geometry_vim)
