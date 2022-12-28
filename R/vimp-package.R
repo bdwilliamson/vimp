@@ -44,7 +44,7 @@
 #' We suggest several other packages: xgboost, ranger, gam, glmnet, polspline,
 #' and quadprog allow a flexible library of candidate learners in the Super
 #' Learner; ggplot2 and cowplot help with plotting variable
-#' importance estimates; testthat and covr help with unit tests; and
+#' importance estimates; testthat, WeightedROC, cvAUC, and covr help with unit tests; and
 #' knitr, rmarkdown, and tidyselect help with the vignettes and examples.
 #'
 #' @docType package

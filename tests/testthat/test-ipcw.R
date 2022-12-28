@@ -1,6 +1,7 @@
 # load required functions and packages
 library("testthat")
 suppressWarnings(library("SuperLearner"))
+library("WeightedROC")
 
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
@@ -58,8 +59,12 @@ test_that("IPW AUC estimation with the mean works", {
                          full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
                          ipc_est_type = "ipw",
                          ipc_weights = ipc_weights, ipc_fit_type = "SL",
-                         SL.library = "SL.glm", method = "method.CC_LS",)
+                         SL.library = "SL.glm", method = "method.CC_LS")
+  est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+    guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
+  ))
   expect_equal(est_auc$point_est, 0.5, tolerance = 0.001, scale = 1)
+  expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
 })
 set.seed(121314)
 # test that AUC estimation with a better learner works
@@ -70,8 +75,12 @@ test_that("IPW AUC estimation with a better learner works", {
                          full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
                          ipc_est_type = "ipw",
                          ipc_weights = ipc_weights, ipc_fit_type = "SL",
-                         SL.library = "SL.glm", method = "method.CC_LS",)
+                         SL.library = "SL.glm", method = "method.CC_LS")
   expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
+  est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+    guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
+  ))
+  expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
 })
 
 # test IPW CV-VIM --------------------------------------------------------------

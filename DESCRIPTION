@@ -50,7 +50,8 @@ Suggests:
     ggplot2,
     cowplot,
     cvAUC,
-    tidyselect
+    tidyselect,
+    WeightedROC
 License: MIT + file LICENSE
 URL: https://bdwilliamson.github.io/vimp/,
     https://github.com/bdwilliamson/vimp,
