@@ -347,13 +347,15 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
       } else {
         # swap the roles for the folds
         full_test_for_est <- (k_fold_lst$sample_splitting_folds == 2)
+        cf_folds_full_for_est <- k_fold_lst$reduced
+        cf_folds_full_cc_for_est <- cf_folds_full_for_est[C[full_test_for_est] == 1]
         full_test_cc_for_est <- full_test_for_est[C == 1]
         v_none_pred_object_for_est <- do.call(predictiveness_measure, c(
           list(type = full_type, fitted_values = preds_none[full_test_cc_for_est],
                y = Y_cc[full_test_cc_for_est], full_y = Y_cc,
-               cross_fitting_folds = cf_folds_full_cc, C = C[full_test_for_est],
+               cross_fitting_folds = cf_folds_full_cc_for_est, C = C[full_test_for_est],
                Z = Z_in[full_test_for_est, , drop = FALSE],
-               folds_Z = cf_folds_full,
+               folds_Z = cf_folds_full_for_est,
                ipc_weights = ipc_weights[full_test_for_est],
                ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
@@ -365,9 +367,9 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
           do.call(predictiveness_measure, c(
             list(fitted_values = l$preds[full_test_cc_for_est],
                  y = Y_cc[full_test_cc_for_est], full_y = Y_cc,
-                 cross_fitting_folds = cf_folds_full_cc, C = C[full_test_for_est],
+                 cross_fitting_folds = cf_folds_full_cc_for_est, C = C[full_test_for_est],
                  Z = Z_in[full_test_for_est, , drop = FALSE],
-                 folds_Z = cf_folds_full,
+                 folds_Z = cf_folds_full_for_est,
                  ipc_weights = ipc_weights[full_test_for_est],
                  type = full_type, ipc_fit_type = "SL", scale = ipc_scale,
                  ipc_est_type = ipc_est_type, na.rm = na.rm,
