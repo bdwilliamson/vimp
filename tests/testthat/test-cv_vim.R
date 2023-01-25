@@ -114,8 +114,18 @@ test_that("Cross-validated variable importance with odd number of outer folds wo
                 run_regression = TRUE, SL.library = learners,
                 alpha = 0.05, delta = 0, cvControl = list(V = V),
                 env = environment(), na.rm = TRUE)
+  est_full <- cv_vim(Y = y, X = x, indx = 2, V = 3, type = "r_squared",
+                     run_regression = TRUE, SL.library = learners,
+                     alpha = 0.05, delta = 0, cvControl = list(V = V),
+                     env = environment(), na.rm = TRUE, final_point_estimate = "full")
+  est_avg <- cv_vim(Y = y, X = x, indx = 2, V = 3, type = "r_squared",
+                    run_regression = TRUE, SL.library = learners,
+                    alpha = 0.05, delta = 0, cvControl = list(V = V),
+                    env = environment(), na.rm = TRUE, final_point_estimate = "average")
   # check variable importance estimate
   expect_equal(est$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(est_full$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(est_avg$est, r2_two, tolerance = 0.1, scale = 1)
   # check full predictiveness estimate
   expect_equal(est$predictiveness_full, 0.44, tolerance = 0.1, scale = 1)
   # check that the SE, CI work
@@ -352,8 +362,20 @@ test_that("Cross-validated VIM works with externally-computed regressions and an
                        type = "r_squared", cross_fitting_folds = cross_fitting_folds,
                        sample_splitting_folds = sample_splitting_folds,
                        run_regression = FALSE, alpha = 0.05, na.rm = TRUE)
+  est_prefit_full <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds,
+                            cross_fitted_f2 = reduced_cv_preds, indx = 2, delta = 0, V = 2,
+                            type = "r_squared", cross_fitting_folds = cross_fitting_folds,
+                            sample_splitting_folds = sample_splitting_folds,
+                            run_regression = FALSE, alpha = 0.05, na.rm = TRUE, final_point_estimate = "full")
+  est_prefit_avg <- cv_vim(Y = y, cross_fitted_f1 = full_cv_preds,
+                           cross_fitted_f2 = reduced_cv_preds, indx = 2, delta = 0, V = 2,
+                           type = "r_squared", cross_fitting_folds = cross_fitting_folds,
+                           sample_splitting_folds = sample_splitting_folds,
+                           run_regression = FALSE, alpha = 0.05, na.rm = TRUE, final_point_estimate = "average")
   # check variable importance estimate
   expect_equal(est_prefit$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(est_prefit_full$est, r2_two, tolerance = 0.1, scale = 1)
+  expect_equal(est_prefit_avg$est, r2_two, tolerance = 0.1, scale = 1)
   # check full predictiveness estimate
   expect_equal(est_prefit$predictiveness_full, 0.44, tolerance = 0.1, scale = 1)
   # check that the SE, CI work
