@@ -1,7 +1,7 @@
 Package: vimp
 Type: Package
 Title: Perform Inference on Algorithm-Agnostic Variable Importance
-Version: 2.3.1
+Version: 2.3.2
 Authors@R:
     c(person(given = "Brian D.",
              family = "Williamson",

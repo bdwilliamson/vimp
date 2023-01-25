@@ -1,3 +1,9 @@
+# vimp 2.3.2
+
+## Major changes
+
+* Fixed bugs introduced in 2.3.1 for `final_point_estimate = "average"`
+
 # vimp 2.3.1
 
 ## Major changes
