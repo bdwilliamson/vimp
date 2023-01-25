@@ -561,14 +561,18 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         # swap the roles of the folds
         full_test_for_est <- (k_fold_lst$sample_splitting_folds == 2)
         redu_test_for_est <- (k_fold_lst$sample_splitting_folds == 1)
+        cf_folds_full_for_est <- k_fold_lst$reduced
+        cf_folds_redu_for_est <- k_fold_lst$full
+        cf_folds_full_cc_for_est <- cf_folds_full_for_est[C[full_test_for_est] == 1]
+        cf_folds_redu_cc_for_est <- cf_folds_redu_for_est[C[redu_test_for_est] == 1]
         full_test_cc_for_est <- full_test_for_est[C == 1]
-        redu_test_cc_for_est <- full_test_for_est[C == 1]
+        redu_test_cc_for_est <- redu_test_for_est[C == 1]
         est_pred_full <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[full_test_cc_for_est], full_y = Y_cc,
                a = A_cc[full_test_cc_for_est], fitted_values = full_preds[full_test_cc_for_est],
-               cross_fitting_folds = cf_folds_full_cc, C = C[full_test_for_est],
+               cross_fitting_folds = cf_folds_full_cc_for_est, C = C[full_test_for_est],
                Z = Z_in[full_test_for_est, , drop = FALSE],
-               folds_Z = cf_folds_full, ipc_weights = ipc_weights[full_test],
+               folds_Z = cf_folds_full_for_est, ipc_weights = ipc_weights[full_test_for_est],
                ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
                  nuisance_estimators_full, function(l) {
@@ -579,9 +583,9 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         est_pred_reduced <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[redu_test_cc_for_est], full_y = Y_cc,
                a = A_cc[redu_test_cc_for_est], fitted_values = redu_preds[redu_test_cc_for_est],
-               cross_fitting_folds = cf_folds_redu_cc, C = C[redu_test],
+               cross_fitting_folds = cf_folds_redu_cc_for_est, C = C[redu_test_for_est],
                Z = Z_in[redu_test_for_est, , drop = FALSE],
-               folds_Z = cf_folds_redu, ipc_weights = ipc_weights[redu_test_for_est],
+               folds_Z = cf_folds_redu_for_est, ipc_weights = ipc_weights[redu_test_for_est],
                ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library, nuisance_estimators = lapply(
                  nuisance_estimators_reduced, function(l) {
