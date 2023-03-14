@@ -57,6 +57,6 @@ URL: https://bdwilliamson.github.io/vimp/,
     https://github.com/bdwilliamson/vimp,
     http://bdwilliamson.github.io/vimp/
 BugReports: https://github.com/bdwilliamson/vimp/issues
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 LazyData: true
