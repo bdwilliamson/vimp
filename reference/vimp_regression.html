@@ -20,7 +20,7 @@ This function is deprecated in vimp version 2.0.0.'><meta property="og:image" co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -121,7 +121,10 @@ either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.</p></dd>
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as <code>Y</code>; if using a list, then the summed
+length of each element across the list should be the same length as <code>Y</code> (i.e.,
+each observation is included in the predictions).</p></dd>
 
 
 <dt>cross_fitted_f2</dt>
@@ -132,7 +135,10 @@ Provided as either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.</p></dd>
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as <code>Y</code>; if using a list, then the summed
+length of each element across the list should be the same length as <code>Y</code> (i.e.,
+each observation is included in the predictions).</p></dd>
 
 
 <dt>indx</dt>
@@ -209,7 +215,7 @@ probability weights]).</p></dd>
 
 <dt>scale</dt>
 <dd><p>should CIs be computed on original ("identity") or
-logit ("logit") scale?</p></dd>
+another scale? (options are "log" and "logit")</p></dd>
 
 
 <dt>ipc_est_type</dt>
@@ -220,7 +226,7 @@ Only used if <code>C</code> is not all equal to 1.</p></dd>
 
 
 <dt>scale_est</dt>
-<dd><p>should the point estimate be scaled to be greater than 0?
+<dd><p>should the point estimate be scaled to be greater than or equal to 0?
 Defaults to <code>TRUE</code>.</p></dd>
 
 
@@ -288,7 +294,6 @@ details on the mathematics behind this function.</p>
 <span class="r-in"><span>           SL.library <span class="op">=</span> <span class="va">learners</span>, V <span class="op">=</span> <span class="fl">2</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Original estimate &lt; 0; returning zero.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -304,7 +309,7 @@ details on the mathematics behind this function.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

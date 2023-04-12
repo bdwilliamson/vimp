@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -67,7 +67,26 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.3.0" id="vimp-230">vimp 2.3.0<a class="anchor" aria-label="anchor" href="#vimp-230"></a></h2>
+<h2 class="page-header" data-toc-text="2.3.2" id="vimp-232">vimp 2.3.2<a class="anchor" aria-label="anchor" href="#vimp-232"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-2-3-2">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-2"></a></h3>
+<ul><li>Fixed bugs introduced in 2.3.1 for <code>final_point_estimate = "average"</code>
+</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.3.1" id="vimp-231">vimp 2.3.1<small>2022-12-09</small><a class="anchor" aria-label="anchor" href="#vimp-231"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-2-3-1">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-1"></a></h3>
+<ul><li>In cases where sample-splitting is used (which is required for valid inference under the null hypothesis of zero variable importance), there is now the option to report a point estimate that is based on the entire dataset, rather than only the split on which inference (confidence intervals and p-values) is performed. The point estimator (using either the single split, the full dataset, or the average of the two split-specific point estimates) is valid regardless of whether the null holds or not. If this option is chosen, there may be a discrepancy between the point estimate and the interval estimate; this is likely to occur only in small-sample (or small effective sample-size, for binary outcomes) settings.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-2-3-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-3-1"></a></h3>
+<ul><li>For predictiveness measures that lie in [0, 1] by definition (accuracy, ANOVA, R-squared, deviance, AUC), the default is now to compute confidence intervals on the logit scale, which guarantees that the interval will also lie in [0, 1]. Note that this means the interval will not be centered at the point estimate; however, it retains the desired level of coverage.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.3.0" id="vimp-230">vimp 2.3.0<small>2022-11-14</small><a class="anchor" aria-label="anchor" href="#vimp-230"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-3-0">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-0"></a></h3>
 <ul><li>Predictiveness measures now have their own <code>S3</code> class, which makes internal code cleaner and facilitates simpler addition of new predictiveness measures.</li>
@@ -76,22 +95,26 @@
 <div class="section level3">
 <h3 id="minor-changes-2-3-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-3-0"></a></h3>
 <ul><li>You can now specify <code>truncate = FALSE</code> in <code>vimp_ci</code>
-</li></ul></div>
+</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.11" id="vimp-2211">vimp 2.2.11<a class="anchor" aria-label="anchor" href="#vimp-2211"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-11">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-11"></a></h3>
-<ul><li>You can now compute variable importance using the average value under the optimal treatment rule. This includes functions <code>measure_avg_value</code> (computes the average value and efficient influence function) and updates to <code>vim</code>, <code>cv_vim</code>, and <code>sp_vim</code>.</li></ul></div>
+<ul><li>You can now compute variable importance using the average value under the optimal treatment rule. This includes functions <code>measure_avg_value</code> (computes the average value and efficient influence function) and updates to <code>vim</code>, <code>cv_vim</code>, and <code>sp_vim</code>.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-11">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-11"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.10" id="vimp-2210">vimp 2.2.10<a class="anchor" aria-label="anchor" href="#vimp-2210"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-10">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-10"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-10">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-10"></a></h3>
 <ul><li>Specify <code>method</code> and <code>family</code> for weighted EIF estimation within outer functions (<code>vim</code>, <code>cv_vim</code>, <code>sp_vim</code>) rather than the <code>measure*</code> functions. This allows compatibility for binary outcomes.</li>
@@ -102,35 +125,42 @@
 <h2 class="page-header" data-toc-text="2.2.9" id="vimp-229">vimp 2.2.9<a class="anchor" aria-label="anchor" href="#vimp-229"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-9">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-9"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-9">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-9"></a></h3>
-<ul><li>Allow for unequal numbers of cross-fitting folds between full and reduced predictiveness</li></ul></div>
+<ul><li>Allow for unequal numbers of cross-fitting folds between full and reduced predictiveness</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.8" id="vimp-228">vimp 2.2.8<a class="anchor" aria-label="anchor" href="#vimp-228"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-8">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-8"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-8">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-8"></a></h3>
-<ul><li>Return objects in <code>sp_vim</code> that are necessary to compute the test statistics</li></ul></div>
+<ul><li>Return objects in <code>sp_vim</code> that are necessary to compute the test statistics</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.7" id="vimp-227">vimp 2.2.7<a class="anchor" aria-label="anchor" href="#vimp-227"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-7">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-7"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-7">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-7"></a></h3>
 <ul><li>Allow <code>parallel</code> argument to be specified for calls to <code>CV.SuperLearner</code> but not for calls to <code>SuperLearner</code>
-</li></ul></div>
+</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.6" id="vimp-226">vimp 2.2.6<a class="anchor" aria-label="anchor" href="#vimp-226"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-6">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-6"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-6">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-6"></a></h3>
 <ul><li>Allow different types of bootstrap interval (e.g., percentile) to be computed</li>
@@ -148,16 +178,19 @@
 <h2 class="page-header" data-toc-text="2.2.5" id="vimp-225">vimp 2.2.5<small>2021-08-16</small><a class="anchor" aria-label="anchor" href="#vimp-225"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-5">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-5"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-5">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-5"></a></h3>
-<ul><li>Update how <code>cv_vim</code> handles an odd number of outer folds being passed with pre-computed regression function estimates. Now, you can use an odd number of folds (e.g., 5) to estimate the full and reduced regression functions and still obtain cross-validated variable importance estimates.</li></ul></div>
+<ul><li>Update how <code>cv_vim</code> handles an odd number of outer folds being passed with pre-computed regression function estimates. Now, you can use an odd number of folds (e.g., 5) to estimate the full and reduced regression functions and still obtain cross-validated variable importance estimates.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.4" id="vimp-224">vimp 2.2.4<small>2021-08-04</small><a class="anchor" aria-label="anchor" href="#vimp-224"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-4">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-4"></a></h3>
-<ul><li>None</li></ul></div>
+<ul><li>None</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-4">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-4"></a></h3>
 <ul><li>Allow for odd number of folds in cross-fit and sampled-split VIM estimation</li>
@@ -169,7 +202,8 @@
 <h2 class="page-header" data-toc-text="2.2.3" id="vimp-223">vimp 2.2.3<small>2021-07-20</small><a class="anchor" aria-label="anchor" href="#vimp-223"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-3">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-3"></a></h3>
-<ul><li>Updated computation of standard errors. Some of the changes in v2.2.0 (namely, that the efficient influence function can be estimated on the entire dataset regardless of whether or not sample-splitting was requested) do not match with the form of the standard error estimator that we use. In this update, we ensure that independent data are used to estimate both the predictiveness <em>and</em> the efficient influence function; however, the nuisance functions may still be estimated on a larger portion of the data than in versions prior to v2.2.0 when cross-fitting is used.</li></ul></div>
+<ul><li>Updated computation of standard errors. Some of the changes in v2.2.0 (namely, that the efficient influence function can be estimated on the entire dataset regardless of whether or not sample-splitting was requested) do not match with the form of the standard error estimator that we use. In this update, we ensure that independent data are used to estimate both the predictiveness <em>and</em> the efficient influence function; however, the nuisance functions may still be estimated on a larger portion of the data than in versions prior to v2.2.0 when cross-fitting is used.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-3">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-3"></a></h3>
 <ul><li>Added explicit-value tests for point estimates throughout testthat/</li>
@@ -186,16 +220,19 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-2">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-2"></a></h3>
-<ul><li>Increased tolerance for AUC vs CV-AUC</li></ul></div>
+<ul><li>Increased tolerance for AUC vs CV-AUC</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.1" id="vimp-221">vimp 2.2.1<small>2021-06-03</small><a class="anchor" aria-label="anchor" href="#vimp-221"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-2-1">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-2-1"></a></h3>
-<ul><li>Updated the internals of <code>measure_auc</code> to hew more closely to <code>ROCR</code> and <code>cvAUC</code>, using computational tricks to speed up weighted AUC and EIF computation.</li></ul></div>
+<ul><li>Updated the internals of <code>measure_auc</code> to hew more closely to <code>ROCR</code> and <code>cvAUC</code>, using computational tricks to speed up weighted AUC and EIF computation.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-1"></a></h3>
-<ul><li>Added tests for IPW AUC</li></ul></div>
+<ul><li>Added tests for IPW AUC</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.2.0" id="vimp-220">vimp 2.2.0<a class="anchor" aria-label="anchor" href="#vimp-220"></a></h2>
@@ -205,7 +242,7 @@
 <li>Added bootstrap-based standard error estimates as an option to both <code>vim</code> and <code>cv_vim</code>; currently, this option is only available for non-sampled-split calls (i.e., with <code>sample_splitting = FALSE</code>)</li>
 <li>Updated sample-splitting behavior to match more closely with theoretical results (and improve power!): namely, that since estimation of the nuisance regression functions (i.e., the regression of outcome on all covariates and outcome on the reduced set of covariates) can be treated as fixed in making inference, sample-splitting is only necessary for evaluating predictiveness. Thus, the final regression functions from a call to <code>vim</code> are based on the entire dataset, while the full and reduced predictiveness (<code>predictiveness_full</code> and <code>predictiveness_reduced</code>, along with the corresponding confidence intervals) is evaluated using separate portions of the data for the full and reduced regressions.</li>
 <li>Added argument <code>sample_splitting</code> to <code>vim</code>, <code>cv_vim</code> and <code>sp_vim</code>; if <code>FALSE</code>, sample-splitting is not used to estimate predictiveness. Note that we recommend using the default, <code>TRUE</code>, in all cases, since inference using <code>sample_splitting = FALSE</code> will be invalid for variables with truly null variable importance.</li>
-<li>Updated cross-fitting (also referred to as cross-validation) behavior within <code>sample_splitting = TRUE</code> to match more closely with theoretical results (and improve power!). In this case, we first split the data into <span class="math inline">2<em>K</em></span> cross-fitting folds, and split these folds equally into two sample-splitting folds. For the nuisance regression using all covariates, for each <span class="math inline"><em>k</em> ∈ {1, …, <em>K</em>}</span> we set aside the data in sample-splitting fold 1 and cross-fitting fold <span class="math inline"><em>k</em></span> [this comprises <span class="math inline">1/(2<em>K</em>)</span> of the data]. We train using the remaining observations [comprising <span class="math inline">(2<em>K</em> − 1)/(2<em>K</em>)</span> of the data] not in this testing fold, and we test on the originally withheld data. We repeat for the nuisance regression using the reduced set of covariates, but withhold data in sample-splitting fold 2. This update affects both <code>cv_vim</code> and <code>sp_vim</code>. If <code>sample_splitting = FALSE</code>, then we use standard cross-fitting.</li>
+<li>Updated cross-fitting (also referred to as cross-validation) behavior within <code>sample_splitting = TRUE</code> to match more closely with theoretical results (and improve power!). In this case, we first split the data into <span class="math inline">2<em>K</em></span> cross-fitting folds, and split these folds equally into two sample-splitting folds. For the nuisance regression using all covariates, for each <span class="math inline"><em>k</em> ∈ {1, …, <em>K</em>}</span> we set aside the data in sample-splitting fold 1 and cross-fitting fold <span class="math inline"><em>k</em></span> [this comprises <span class="math inline">1/(2<em>K</em>)</span> of the data]. We train using the remaining observations [comprising <span class="math inline">(2<em>K</em>−1)/(2<em>K</em>)</span> of the data] not in this testing fold, and we test on the originally withheld data. We repeat for the nuisance regression using the reduced set of covariates, but withhold data in sample-splitting fold 2. This update affects both <code>cv_vim</code> and <code>sp_vim</code>. If <code>sample_splitting = FALSE</code>, then we use standard cross-fitting.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-0"></a></h3>
@@ -222,7 +259,8 @@
 <div class="section level3">
 <h3 id="minor-changes-2-1-10">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-1-10"></a></h3>
 <ul><li>Automatically determine the <code>family</code> if it isn’t specified; use <code><a href="https://rdrr.io/r/stats/family.html" class="external-link">stats::binomial()</a></code> if there are only two unique outcome values, otherwise use <code><a href="https://rdrr.io/r/stats/family.html" class="external-link">stats::gaussian()</a></code>
-</li></ul></div>
+</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.1.9" id="vimp-219">vimp 2.1.9<small>2021-03-01</small><a class="anchor" aria-label="anchor" href="#vimp-219"></a></h2>
@@ -247,7 +285,8 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-2-1-8">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-1-8"></a></h3>
-<ul><li>Allow the user to specify either an augmented inverse probability of coarsening (AIPW, the default) estimator in coarsened-at-random settings, or specify an IPW estimator, using new argument <code>ipc_est_type</code> (available in <code>vim</code>, <code>cv_vim</code>, and <code>sp_vim</code>; also corresponding wrapper functions for each VIM and corresponding internal estimation functions)</li></ul></div>
+<ul><li>Allow the user to specify either an augmented inverse probability of coarsening (AIPW, the default) estimator in coarsened-at-random settings, or specify an IPW estimator, using new argument <code>ipc_est_type</code> (available in <code>vim</code>, <code>cv_vim</code>, and <code>sp_vim</code>; also corresponding wrapper functions for each VIM and corresponding internal estimation functions)</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.1.7" id="vimp-217">vimp 2.1.7<a class="anchor" aria-label="anchor" href="#vimp-217"></a></h2>
@@ -297,7 +336,8 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-2-1-4">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-1-4"></a></h3>
-<ul><li>Fixed a bug where if the number of rows in the different folds (for cross-fitting or sample-splitting) differed, the EIF had the wrong number of rows</li></ul></div>
+<ul><li>Fixed a bug where if the number of rows in the different folds (for cross-fitting or sample-splitting) differed, the EIF had the wrong number of rows</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.1.3" id="vimp-213">vimp 2.1.3<a class="anchor" aria-label="anchor" href="#vimp-213"></a></h2>
@@ -307,7 +347,8 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-2-1-3">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-1-3"></a></h3>
-<ul><li>Compute logit transforms using <code><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">stats::qlogis</a></code> and <code><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">stats::plogis</a></code> rather than bespoke functions</li></ul></div>
+<ul><li>Compute logit transforms using <code><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">stats::qlogis</a></code> and <code><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">stats::plogis</a></code> rather than bespoke functions</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.1.2" id="vimp-212">vimp 2.1.2<a class="anchor" aria-label="anchor" href="#vimp-212"></a></h2>
@@ -317,7 +358,8 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-2-1-2">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-1-2"></a></h3>
-<ul><li>Bugfix from 2.1.1.1: compute the correction correctly</li></ul></div>
+<ul><li>Bugfix from 2.1.1.1: compute the correction correctly</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.1.1.1" id="vimp-2111">vimp 2.1.1.1<a class="anchor" aria-label="anchor" href="#vimp-2111"></a></h2>
@@ -327,13 +369,15 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-2-1-1-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-1-1-1"></a></h3>
-<ul><li>Allow confidence interval (CI) and inverse probability of coarsening corrections on different scales (e.g., log) to ensure that estimates and CIs lie in the parameter space</li></ul></div>
+<ul><li>Allow confidence interval (CI) and inverse probability of coarsening corrections on different scales (e.g., log) to ensure that estimates and CIs lie in the parameter space</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.1.1" id="vimp-211">vimp 2.1.1<a class="anchor" aria-label="anchor" href="#vimp-211"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-1-1">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-1-1"></a></h3>
-<ul><li>Compute one-step estimators of variable importance if inverse probability of censoring weights are entered. You input the weights, indicator of coarsening, and observed variables, and <code>vimp</code> will handle the rest.</li></ul></div>
+<ul><li>Compute one-step estimators of variable importance if inverse probability of censoring weights are entered. You input the weights, indicator of coarsening, and observed variables, and <code>vimp</code> will handle the rest.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-1-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-1-1"></a></h3>
 <ul><li>Created new vignettes “Types of VIMs” and “Using precomputed regression function estimates in <code>vimp</code>”</li>
@@ -366,7 +410,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-0-2">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-0-2"></a></h3>
-<ul><li>Modify examples to pass all CRAN checks</li></ul></div>
+<ul><li>Modify examples to pass all CRAN checks</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.0.1" id="vimp-201">vimp 2.0.1<small>2020-04-11</small><a class="anchor" aria-label="anchor" href="#vimp-201"></a></h2>
@@ -387,7 +432,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-0-1">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-0-1"></a></h3>
-<ul><li>Return tibbles in cv_vim, vim, merge_vim, and average_vim</li></ul></div>
+<ul><li>Return tibbles in cv_vim, vim, merge_vim, and average_vim</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.1.6" id="vimp-116">vimp 1.1.6<small>2019-08-26</small><a class="anchor" aria-label="anchor" href="#vimp-116"></a></h2>
@@ -410,7 +456,8 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-1-1-5">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-1-1-5"></a></h3>
-<ul><li>Attempt to handle <code>gam</code> package update in unit tests</li></ul></div>
+<ul><li>Attempt to handle <code>gam</code> package update in unit tests</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.1.4" id="vimp-114">vimp 1.1.4<small>2018-10-14</small><a class="anchor" aria-label="anchor" href="#vimp-114"></a></h2>
@@ -421,7 +468,8 @@
 <div class="section level3">
 <h3 id="minor-changes-1-1-4">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-1-1-4"></a></h3>
 <ul><li>
-<code>cv_vim</code> and<code>cv_vim_nodonsker</code> now return the cross-validation folds used within the function</li></ul></div>
+<code>cv_vim</code> and<code>cv_vim_nodonsker</code> now return the cross-validation folds used within the function</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.1.3" id="vimp-113">vimp 1.1.3<small>2018-10-02</small><a class="anchor" aria-label="anchor" href="#vimp-113"></a></h2>
@@ -439,7 +487,8 @@
 <h2 class="page-header" data-toc-text="1.1.2" id="vimp-112">vimp 1.1.2<small>2018-09-20</small><a class="anchor" aria-label="anchor" href="#vimp-112"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-1-1-2">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-1-1-2"></a></h3>
-<ul><li>added function <code>cv_vim_nodonsker</code>, which computes the cross-validated naive estimator and the update on the same, single, validation fold. This does not allow for relaxation of the Donsker class conditions.</li></ul></div>
+<ul><li>added function <code>cv_vim_nodonsker</code>, which computes the cross-validated naive estimator and the update on the same, single, validation fold. This does not allow for relaxation of the Donsker class conditions.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="minor-changes-1-1-2">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-1-1-2"></a></h3>
 <p>None</p>
@@ -465,7 +514,8 @@
 </div>
 <div class="section level3">
 <h3 id="minor-changes-1-1-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-1-1-0"></a></h3>
-<ul><li>changed the functionality of <code>cv_vim</code>: now, the cross-validated naive estimator is computed on the training data for each fold, while the update for the corrected cross-validated estimator is computed using the test data; this allows for relaxation of the Donsker class conditions necessary for asymptotic convergence of the corrected estimator</li></ul></div>
+<ul><li>changed the functionality of <code>cv_vim</code>: now, the cross-validated naive estimator is computed on the training data for each fold, while the update for the corrected cross-validated estimator is computed using the test data; this allows for relaxation of the Donsker class conditions necessary for asymptotic convergence of the corrected estimator</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.0" id="vimp-100">vimp 1.0.0<small>2018-06-24</small><a class="anchor" aria-label="anchor" href="#vimp-100"></a></h2>
@@ -506,7 +556,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -25,7 +25,7 @@ vimp_rsquared instead.'><meta property="og:image" content="http://bdwilliamson.g
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@ on an equivalent population parameter, use
 <span>  C <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  Z <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ipc_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  scale <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>  scale <span class="op">=</span> <span class="st">"logit"</span>,</span>
 <span>  ipc_est_type <span class="op">=</span> <span class="st">"aipw"</span>,</span>
 <span>  scale_est <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cross_fitted_se <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -131,7 +131,10 @@ either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.</p></dd>
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as <code>Y</code>; if using a list, then the summed
+length of each element across the list should be the same length as <code>Y</code> (i.e.,
+each observation is included in the predictions).</p></dd>
 
 
 <dt>cross_fitted_f2</dt>
@@ -142,7 +145,10 @@ Provided as either (a) a vector, where each element is
 the predicted value when that observation is part of the validation fold;
 or (b) a list of length V, where each element in the list is a set of predictions on the
 corresponding validation data fold.
-If sample-splitting is requested, then these must be estimated specially; see Details.</p></dd>
+If sample-splitting is requested, then these must be estimated specially; see Details. However,
+the resulting vector should be the same length as <code>Y</code>; if using a list, then the summed
+length of each element across the list should be the same length as <code>Y</code> (i.e.,
+each observation is included in the predictions).</p></dd>
 
 
 <dt>indx</dt>
@@ -219,7 +225,7 @@ probability weights]).</p></dd>
 
 <dt>scale</dt>
 <dd><p>should CIs be computed on original ("identity") or
-logit ("logit") scale?</p></dd>
+another scale? (options are "log" and "logit")</p></dd>
 
 
 <dt>ipc_est_type</dt>
@@ -230,7 +236,7 @@ Only used if <code>C</code> is not all equal to 1.</p></dd>
 
 
 <dt>scale_est</dt>
-<dd><p>should the point estimate be scaled to be greater than 0?
+<dd><p>should the point estimate be scaled to be greater than or equal to 0?
 Defaults to <code>TRUE</code>.</p></dd>
 
 
@@ -313,7 +319,7 @@ details on the mathematics behind this function.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

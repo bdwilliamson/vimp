@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -94,11 +94,24 @@ unobserved).</p></dd>
 
 
 <dt>Z</dt>
-<dd><p>a matrix (or data.frame) with the fully-observed variables</p></dd>
+<dd><p>either <code>NULL</code> (if no coarsening) or a matrix-like object
+containing the fully observed data.</p></dd>
+
+
+<dt>ipc_fit_type</dt>
+<dd><p>if "external", then use <code>ipc_eif_preds</code>; if "SL",
+fit a SuperLearner to determine the IPC correction to the efficient
+influence function.</p></dd>
+
+
+<dt>ipc_eif_preds</dt>
+<dd><p>if <code>ipc_fit_type = "external"</code>, the fitted values
+from a regression of the full-data EIF on the fully observed
+covariates/outcome; otherwise, not used.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>other arguments to the estimation tool, see "See also".</p></dd>
+<dd><p>other arguments to SuperLearner, if <code>ipc_fit_type = "SL"</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -120,7 +133,7 @@ unobserved).</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

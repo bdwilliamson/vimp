@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -86,8 +86,10 @@
 <span>  stratified <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  final_point_estimate <span class="op">=</span> <span class="st">"split"</span>,</span>
 <span>  C <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  Z <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ipc_scale <span class="op">=</span> <span class="st">"identity"</span>,</span>
 <span>  ipc_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  ipc_est_type <span class="op">=</span> <span class="st">"aipw"</span>,</span>
 <span>  scale <span class="op">=</span> <span class="st">"identity"</span>,</span>
@@ -168,8 +170,16 @@ progress? (defaults to <code>FALSE</code>)</p></dd>
 <dt>sample_splitting</dt>
 <dd><p>should we use sample-splitting to estimate the full and
 reduced predictiveness? Defaults to <code>TRUE</code>, since inferences made using
-<code>sample_splitting = FALSE</code> will be invalid for variable with truly zero
+<code>sample_splitting = FALSE</code> will be invalid for variables with truly zero
 importance.</p></dd>
+
+
+<dt>final_point_estimate</dt>
+<dd><p>if sample splitting is used, should the final point estimates
+be based on only the sample-split folds used for inference (<code>"split"</code>, the default),
+or should they instead be based on the full dataset (<code>"full"</code>) or the average
+across the point estimates from each sample split (<code>"average"</code>)? All three
+options result in valid point estimates -- sample-splitting is only required for valid inference.</p></dd>
 
 
 <dt>C</dt>
@@ -184,6 +194,11 @@ specifying the variable(s) among Y and X that are thought to play a
 role in the coarsening mechanism. To specify the outcome, use <code>"Y"</code>; to
 specify covariates, use a character number corresponding to the desired
 position in X (e.g., <code>"1"</code>).</p></dd>
+
+
+<dt>ipc_scale</dt>
+<dd><p>what scale should the inverse probability weight correction be applied on (if any)?
+Defaults to "identity". (other options are "log" and "logit")</p></dd>
 
 
 <dt>ipc_weights</dt>
@@ -202,11 +217,11 @@ Only used if <code>C</code> is not all equal to 1.</p></dd>
 
 <dt>scale</dt>
 <dd><p>should CIs be computed on original ("identity") or
-logit ("logit") scale?</p></dd>
+another scale? (options are "log" and "logit")</p></dd>
 
 
 <dt>scale_est</dt>
-<dd><p>should the point estimate be scaled to be greater than 0?
+<dd><p>should the point estimate be scaled to be greater than or equal to 0?
 Defaults to <code>TRUE</code>.</p></dd>
 
 
@@ -352,7 +367,7 @@ within the <code>vim</code> object. This results in a list containing:</p><dl><d
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

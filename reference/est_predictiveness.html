@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -75,6 +75,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">est_predictiveness</span><span class="op">(</span></span>
 <span>  <span class="va">fitted_values</span>,</span>
 <span>  <span class="va">y</span>,</span>
+<span>  a <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  full_y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"r_squared"</span>,</span>
 <span>  C <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -99,6 +100,11 @@ observed data.</p></dd>
 
 <dt>y</dt>
 <dd><p>the observed outcome.</p></dd>
+
+
+<dt>a</dt>
+<dd><p>the observed treatment assignment (may be within a specified fold,
+for cross-fitted estimates). Only used if <code>type = "average_value"</code>.</p></dd>
 
 
 <dt>full_y</dt>
@@ -168,11 +174,6 @@ of the outcome regression when treatment is assigned according to the estimated 
 <dt>...</dt>
 <dd><p>other arguments to SuperLearner, if <code>ipc_fit_type = "SL"</code>.</p></dd>
 
-
-<dt>a</dt>
-<dd><p>the observed treatment assignment (may be within a specified fold,
-for cross-fitted estimates). Only used if <code>type = "average_value"</code>.</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -201,7 +202,7 @@ for cross-fitted estimates). Only used if <code>type = "average_value"</code>.</
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

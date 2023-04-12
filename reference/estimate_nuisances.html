@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -90,7 +90,11 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>X</dt>
+    <dl><dt>fit</dt>
+<dd><p>the fitted nuisance function estimator</p></dd>
+
+
+<dt>X</dt>
 <dd><p>the covariates. If <code>type = "average_value"</code>, then the exposure
 variable should be part of <code>X</code>, with its name provided in <code>exposure_name</code>.</p></dd>
 
@@ -99,6 +103,12 @@ variable should be part of <code>X</code>, with its name provided in <code>expos
 <dd><p>(only used if <code>type = "average_value"</code>) the name of
 the exposure of interest; binary, with 1 indicating presence of the exposure and
 0 indicating absence of the exposure.</p></dd>
+
+
+<dt>V</dt>
+<dd><p>the number of folds for cross-fitting, defaults to 5. If
+<code>sample_splitting = TRUE</code>, then a special type of <code>V</code>-fold cross-fitting
+is done. See Details for a more detailed explanation.</p></dd>
 
 
 <dt>SL.library</dt>
@@ -111,7 +121,7 @@ and <code>SL.mean</code>.</p></dd>
 <dt>sample_splitting</dt>
 <dd><p>should we use sample-splitting to estimate the full and
 reduced predictiveness? Defaults to <code>TRUE</code>, since inferences made using
-<code>sample_splitting = FALSE</code> will be invalid for variable with truly zero
+<code>sample_splitting = FALSE</code> will be invalid for variables with truly zero
 importance.</p></dd>
 
 
@@ -120,6 +130,23 @@ importance.</p></dd>
 these identify the observations that should be used to evaluate
 predictiveness based on the full and reduced sets of covariates, respectively.
 Only used if <code>run_regression = FALSE</code>.</p></dd>
+
+
+<dt>verbose</dt>
+<dd><p>should we print progress? defaults to FALSE</p></dd>
+
+
+<dt>weights</dt>
+<dd><p>weights to pass to estimation procedure</p></dd>
+
+
+<dt>cross_fitted_se</dt>
+<dd><p>should we use cross-fitting to estimate the standard
+errors (<code>TRUE</code>, the default) or not (<code>FALSE</code>)?</p></dd>
+
+
+<dt>split</dt>
+<dd><p>the sample split to use</p></dd>
 
 
 <dt>...</dt>
@@ -148,7 +175,7 @@ Only used if <code>run_regression = FALSE</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

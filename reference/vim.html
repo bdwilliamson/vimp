@@ -19,7 +19,7 @@ predictiveness using the feature(s) of interest versus not."><meta property="og:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -91,9 +91,11 @@ predictiveness using the feature(s) of interest versus not.</p>
 <span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sample_splitting_folds <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  final_point_estimate <span class="op">=</span> <span class="st">"split"</span>,</span>
 <span>  stratified <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  C <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  Z <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ipc_scale <span class="op">=</span> <span class="st">"identity"</span>,</span>
 <span>  ipc_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  ipc_est_type <span class="op">=</span> <span class="st">"aipw"</span>,</span>
 <span>  scale_est <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -120,13 +122,17 @@ variable should be part of <code>X</code>, with its name provided in <code>expos
 
 <dt>f1</dt>
 <dd><p>the fitted values from a flexible estimation technique
-regressing Y on X.</p></dd>
+regressing Y on X. A vector of the same length as <code>Y</code>; if sample-splitting
+is desired, then the value of <code>f1</code> at each position should be the result
+of predicting from a model trained without that observation.</p></dd>
 
 
 <dt>f2</dt>
 <dd><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
-<code>indx</code>.</p></dd>
+<code>indx</code>. A vector of the same length as <code>Y</code>; if sample-splitting
+is desired, then the value of <code>f2</code> at each position should be the result
+of predicting from a model trained without that observation.</p></dd>
 
 
 <dt>indx</dt>
@@ -166,7 +172,7 @@ importance &lt; \(\delta\)); defaults to 0.</p></dd>
 
 <dt>scale</dt>
 <dd><p>should CIs be computed on original ("identity") or
-logit ("logit") scale?</p></dd>
+another scale? (options are "log" and "logit")</p></dd>
 
 
 <dt>na.rm</dt>
@@ -177,7 +183,7 @@ in computation? (defaults to <code>FALSE</code>)</p></dd>
 <dt>sample_splitting</dt>
 <dd><p>should we use sample-splitting to estimate the full and
 reduced predictiveness? Defaults to <code>TRUE</code>, since inferences made using
-<code>sample_splitting = FALSE</code> will be invalid for variable with truly zero
+<code>sample_splitting = FALSE</code> will be invalid for variables with truly zero
 importance.</p></dd>
 
 
@@ -186,6 +192,14 @@ importance.</p></dd>
 these identify the observations that should be used to evaluate
 predictiveness based on the full and reduced sets of covariates, respectively.
 Only used if <code>run_regression = FALSE</code>.</p></dd>
+
+
+<dt>final_point_estimate</dt>
+<dd><p>if sample splitting is used, should the final point estimates
+be based on only the sample-split folds used for inference (<code>"split"</code>, the default),
+or should they instead be based on the full dataset (<code>"full"</code>) or the average
+across the point estimates from each sample split (<code>"average"</code>)? All three
+options result in valid point estimates -- sample-splitting is only required for valid inference.</p></dd>
 
 
 <dt>stratified</dt>
@@ -208,6 +222,11 @@ specify covariates, use a character number corresponding to the desired
 position in X (e.g., <code>"1"</code>).</p></dd>
 
 
+<dt>ipc_scale</dt>
+<dd><p>what scale should the inverse probability weight correction be applied on (if any)?
+Defaults to "identity". (other options are "log" and "logit")</p></dd>
+
+
 <dt>ipc_weights</dt>
 <dd><p>weights for the computed influence curve (i.e.,
 inverse probability weights for coarsened-at-random settings).
@@ -223,7 +242,7 @@ Only used if <code>C</code> is not all equal to 1.</p></dd>
 
 
 <dt>scale_est</dt>
-<dd><p>should the point estimate be scaled to be greater than 0?
+<dd><p>should the point estimate be scaled to be greater than or equal to 0?
 Defaults to <code>TRUE</code>.</p></dd>
 
 
@@ -392,29 +411,25 @@ within the <code>vim</code> object. This results in a list including:</p><dl><dt
 <span class="r-in"><span><span class="co"># using pre-computed fitted values</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">4747</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">V</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
-<span class="r-in"><span><span class="va">y_1</span> <span class="op">&lt;-</span> <span class="va">y</span><span class="op">[</span><span class="va">est_1</span><span class="op">$</span><span class="va">sample_splitting_folds</span> <span class="op">==</span> <span class="fl">1</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">y_2</span> <span class="op">&lt;-</span> <span class="va">y</span><span class="op">[</span><span class="va">est_1</span><span class="op">$</span><span class="va">sample_splitting_folds</span> <span class="op">==</span> <span class="fl">2</span><span class="op">]</span></span></span>
-<span class="r-in"><span><span class="va">x_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">est_1</span><span class="op">$</span><span class="va">sample_splitting_folds</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">x_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">est_1</span><span class="op">$</span><span class="va">sample_splitting_folds</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">full_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y_1</span>, X <span class="op">=</span> <span class="va">x_1</span>,</span></span>
-<span class="r-in"><span>                                       SL.library <span class="op">=</span> <span class="va">learners</span>,</span></span>
-<span class="r-in"><span>                                       cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">full_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html" class="external-link">CV.SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">x</span>,</span></span>
+<span class="r-in"><span>                                          SL.library <span class="op">=</span> <span class="va">learners</span>,</span></span>
+<span class="r-in"><span>                                          cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                                          innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Only a single innerCvControl is given, will be replicated across all cross-validation split calls to SuperLearner</span>
 <span class="r-in"><span><span class="va">full_fitted</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html" class="external-link">predict.SuperLearner</a></span><span class="op">(</span><span class="va">full_fit</span><span class="op">)</span><span class="op">$</span><span class="va">pred</span></span></span>
 <span class="r-in"><span><span class="co"># fit the data with only X1</span></span></span>
-<span class="r-in"><span><span class="va">full_fit_2</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y_2</span>, X <span class="op">=</span> <span class="va">x_2</span>,</span></span>
-<span class="r-in"><span>                                         SL.library <span class="op">=</span> <span class="va">learners</span>,</span></span>
-<span class="r-in"><span>                                         cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">full_fitted_2</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html" class="external-link">predict.SuperLearner</a></span><span class="op">(</span><span class="va">full_fit_2</span><span class="op">)</span><span class="op">$</span><span class="va">pred</span></span></span>
-<span class="r-in"><span><span class="va">reduced_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">full_fitted_2</span>,</span></span>
-<span class="r-in"><span>                                          X <span class="op">=</span> <span class="va">x_2</span><span class="op">[</span>, <span class="op">-</span><span class="fl">2</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span></span>
-<span class="r-in"><span>                                          SL.library <span class="op">=</span> <span class="va">learners</span>,</span></span>
-<span class="r-in"><span>                                          cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">reduced_fit</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/CV.SuperLearner.html" class="external-link">CV.SuperLearner</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">full_fitted</span>,</span></span>
+<span class="r-in"><span>                                             X <span class="op">=</span> <span class="va">x</span><span class="op">[</span>, <span class="op">-</span><span class="fl">2</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>                                             SL.library <span class="op">=</span> <span class="va">learners</span>,</span></span>
+<span class="r-in"><span>                                             cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span>, validRows <span class="op">=</span> <span class="va">full_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                                             innerCvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="va">V</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Only a single innerCvControl is given, will be replicated across all cross-validation split calls to SuperLearner</span>
 <span class="r-in"><span><span class="va">reduced_fitted</span> <span class="op">&lt;-</span> <span class="fu">SuperLearner</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/SuperLearner/man/predict.superlearner.html" class="external-link">predict.SuperLearner</a></span><span class="op">(</span><span class="va">reduced_fit</span><span class="op">)</span><span class="op">$</span><span class="va">pred</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">est_2</span> <span class="op">&lt;-</span> <span class="fu">vim</span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, f1 <span class="op">=</span> <span class="va">full_fitted</span>, f2 <span class="op">=</span> <span class="va">reduced_fitted</span>,</span></span>
 <span class="r-in"><span>            indx <span class="op">=</span> <span class="fl">2</span>, run_regression <span class="op">=</span> <span class="cn">FALSE</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
 <span class="r-in"><span>            stratified <span class="op">=</span> <span class="cn">TRUE</span>, type <span class="op">=</span> <span class="st">"accuracy"</span>,</span></span>
-<span class="r-in"><span>            sample_splitting_folds <span class="op">=</span> <span class="va">est_1</span><span class="op">$</span><span class="va">sample_splitting_folds</span><span class="op">)</span></span></span>
+<span class="r-in"><span>            sample_splitting_folds <span class="op">=</span> <span class="fu"><a href="get_cv_sl_folds.html">get_cv_sl_folds</a></span><span class="op">(</span><span class="va">full_fit</span><span class="op">$</span><span class="va">folds</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -430,7 +445,7 @@ within the <code>vim</code> object. This results in a list including:</p><dl><dt
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
