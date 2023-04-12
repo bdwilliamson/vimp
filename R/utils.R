@@ -84,13 +84,13 @@ check_fitted_values <- function(Y = NULL, f1 = NULL, f2 = NULL,
                   "regression on the reduced set of covariates, or (b) ",
                   "a regression of Y on the reduced set of covariates."))
     }
-    if (is.numeric(f1)) {
-      if (length(f1) != length(Y)) {
+    if (is.numeric(cross_fitted_f1)) {
+      if (length(cross_fitted_f1) != length(Y)) {
         stop(paste0("There must be a predicted value for each observation ",
                     "in the dataset."))
       }
     } else {
-      if (length(f1) != V) {
+      if (length(cross_fitted_f1) != V) {
         stop(paste0("There must be a predicted value for each observation ",
                     "in the dataset, in a list of length equal to the number ",
                     "of cross-fitting folds."))
