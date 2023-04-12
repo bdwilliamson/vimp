@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -72,79 +72,56 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_fitted_values</span><span class="op">(</span></span>
-<span>  Y <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  f1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  f2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cross_fitted_f1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cross_fitted_f2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sample_splitting_folds <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cross_fitting_folds <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cross_fitted_se <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  V <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ss_V <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cv <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">check_fitted_values</span><span class="op">(</span>
+  Y <span class="op">=</span> <span class="cn">NULL</span>,
+  f1 <span class="op">=</span> <span class="cn">NULL</span>,
+  f2 <span class="op">=</span> <span class="cn">NULL</span>,
+  cross_fitted_f1 <span class="op">=</span> <span class="cn">NULL</span>,
+  cross_fitted_f2 <span class="op">=</span> <span class="cn">NULL</span>,
+  sample_splitting_folds <span class="op">=</span> <span class="cn">NULL</span>,
+  cross_fitting_folds <span class="op">=</span> <span class="cn">NULL</span>,
+  cross_fitted_se <span class="op">=</span> <span class="cn">TRUE</span>,
+  V <span class="op">=</span> <span class="cn">NULL</span>,
+  ss_V <span class="op">=</span> <span class="cn">NULL</span>,
+  cv <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Y</dt>
 <dd><p>the outcome</p></dd>
-
-
 <dt>f1</dt>
 <dd><p>estimator of the population-optimal prediction function
 using all covariates</p></dd>
-
-
 <dt>f2</dt>
 <dd><p>estimator of the population-optimal prediction function
 using the reduced set of covariates</p></dd>
-
-
 <dt>cross_fitted_f1</dt>
 <dd><p>cross-fitted estimator of the population-optimal
 prediction function using all covariates</p></dd>
-
-
 <dt>cross_fitted_f2</dt>
 <dd><p>cross-fitted estimator of the population-optimal
 prediction function using the reduced set of covariates</p></dd>
-
-
 <dt>sample_splitting_folds</dt>
 <dd><p>the folds for sample-splitting (used for
 hypothesis testing)</p></dd>
-
-
 <dt>cross_fitting_folds</dt>
 <dd><p>the folds for cross-fitting (used for point
 estimates of variable importance in <code>cv_vim</code> and <code>sp_vim</code>)</p></dd>
-
-
 <dt>cross_fitted_se</dt>
 <dd><p>logical; should cross-fitting be used to estimate
 standard errors?</p></dd>
-
-
 <dt>V</dt>
 <dd><p>the number of cross-fitting folds</p></dd>
-
-
 <dt>ss_V</dt>
 <dd><p>the number of folds for CV (if sample_splitting is TRUE)</p></dd>
-
-
 <dt>cv</dt>
 <dd><p>a logical flag indicating whether or not to use cross-fitting</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>None. Called for the side effect of stopping the algorithm if
+    <p>None. Called for the side effect of stopping the algorithm if
   any inputs are in an unexpected format.</p>
     </div>
     <div id="details">
@@ -165,7 +142,7 @@ standard errors?</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer></div>

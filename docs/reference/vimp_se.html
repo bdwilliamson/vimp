@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -72,13 +72,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vimp_se</span><span class="op">(</span></span>
-<span>  <span class="va">eif_full</span>,</span>
-<span>  <span class="va">eif_reduced</span>,</span>
-<span>  cross_fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  sample_split <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">vimp_se</span><span class="op">(</span>
+  <span class="va">eif_full</span>,
+  <span class="va">eif_reduced</span>,
+  cross_fit <span class="op">=</span> <span class="cn">TRUE</span>,
+  sample_split <span class="op">=</span> <span class="cn">TRUE</span>,
+  na.rm <span class="op">=</span> <span class="cn">FALSE</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -86,31 +86,20 @@
     <dl><dt>eif_full</dt>
 <dd><p>the estimated efficient influence function (EIF) based on
 the full set of covariates.</p></dd>
-
-
 <dt>eif_reduced</dt>
 <dd><p>the estimated EIF based on the reduced set of covariates.</p></dd>
-
-
 <dt>cross_fit</dt>
 <dd><p>logical; was cross-fitting used to compute the EIFs?
 (defaults to <code>TRUE</code>)</p></dd>
-
-
 <dt>sample_split</dt>
 <dd><p>logical; was sample-splitting used? (defaults to <code>TRUE</code>)</p></dd>
-
-
 <dt>na.rm</dt>
 <dd><p>logical; should NA's be removed in computation?
 (defaults to <code>FALSE</code>).</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>The standard error for the estimated variable importance for the
+    <p>The standard error for the estimated variable importance for the
   given group of left-out covariates.</p>
     </div>
     <div id="details">
@@ -132,7 +121,7 @@ the full set of covariates.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer></div>

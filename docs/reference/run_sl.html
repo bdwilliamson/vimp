@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -72,115 +72,78 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_sl</span><span class="op">(</span></span>
-<span>  Y <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  X <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  V <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  SL.library <span class="op">=</span> <span class="st">"SL.glm"</span>,</span>
-<span>  univariate_SL.library <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  s <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  cv_folds <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  ss_folds <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  split <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  progress_bar <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  indx <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  cross_fitted_se <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  full <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  vector <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">run_sl</span><span class="op">(</span>
+  Y <span class="op">=</span> <span class="cn">NULL</span>,
+  X <span class="op">=</span> <span class="cn">NULL</span>,
+  V <span class="op">=</span> <span class="fl">5</span>,
+  SL.library <span class="op">=</span> <span class="st">"SL.glm"</span>,
+  univariate_SL.library <span class="op">=</span> <span class="cn">NULL</span>,
+  s <span class="op">=</span> <span class="fl">1</span>,
+  cv_folds <span class="op">=</span> <span class="cn">NULL</span>,
+  sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,
+  ss_folds <span class="op">=</span> <span class="cn">NULL</span>,
+  split <span class="op">=</span> <span class="fl">1</span>,
+  verbose <span class="op">=</span> <span class="cn">FALSE</span>,
+  progress_bar <span class="op">=</span> <span class="cn">NULL</span>,
+  indx <span class="op">=</span> <span class="fl">1</span>,
+  weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span><span class="op">)</span>,
+  cross_fitted_se <span class="op">=</span> <span class="cn">TRUE</span>,
+  full <span class="op">=</span> <span class="cn">NULL</span>,
+  vector <span class="op">=</span> <span class="cn">TRUE</span>,
+  <span class="va">...</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Y</dt>
 <dd><p>the outcome</p></dd>
-
-
 <dt>X</dt>
 <dd><p>the covariates</p></dd>
-
-
 <dt>V</dt>
 <dd><p>the number of folds</p></dd>
-
-
 <dt>SL.library</dt>
 <dd><p>the library of candidate learners</p></dd>
-
-
 <dt>univariate_SL.library</dt>
 <dd><p>the library of candidate learners for
 single-covariate regressions</p></dd>
-
-
 <dt>s</dt>
 <dd><p>the subset of interest</p></dd>
-
-
 <dt>cv_folds</dt>
 <dd><p>the CV folds</p></dd>
-
-
 <dt>sample_splitting</dt>
 <dd><p>logical; should we use sample-splitting for
 predictiveness estimation?</p></dd>
-
-
 <dt>ss_folds</dt>
 <dd><p>the sample-splitting folds; only used if
 <code>sample_splitting = TRUE</code></p></dd>
-
-
 <dt>split</dt>
 <dd><p>the split to use for sample-splitting; only used if
 <code>sample_splitting = TRUE</code></p></dd>
-
-
 <dt>verbose</dt>
 <dd><p>should we print progress? defaults to FALSE</p></dd>
-
-
 <dt>progress_bar</dt>
 <dd><p>the progress bar to print to (only if verbose = TRUE)</p></dd>
-
-
 <dt>indx</dt>
 <dd><p>the index to pass to progress bar (only if verbose = TRUE)</p></dd>
-
-
 <dt>weights</dt>
 <dd><p>weights to pass to estimation procedure</p></dd>
-
-
 <dt>cross_fitted_se</dt>
 <dd><p>if <code>TRUE</code>, uses a cross-fitted estimator of
 the standard error; otherwise, uses the entire dataset</p></dd>
-
-
 <dt>full</dt>
 <dd><p>should this be considered a "full" or "reduced" regression?
 If <code>NULL</code> (the default), this is determined automatically; a full
 regression corresponds to <code>s</code> being equal to the full covariate vector.
 For SPVIMs, can be entered manually.</p></dd>
-
-
 <dt>vector</dt>
 <dd><p>should we return a vector (<code>TRUE</code>) or a list (<code>FALSE</code>)?</p></dd>
-
-
 <dt>...</dt>
 <dd><p>other arguments to Super Learner</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>a list of length V, with the results of predicting on the hold-out data for each v in 1 through V</p>
+    <p>a list of length V, with the results of predicting on the hold-out data for each v in 1 through V</p>
     </div>
 
   </div>
@@ -195,7 +158,7 @@ For SPVIMs, can be entered manually.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer></div>

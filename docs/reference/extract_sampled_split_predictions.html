@@ -21,7 +21,7 @@ to re-fit. The number of folds used in the CV.SuperLearner must be even."><meta 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
       </span>
     </div>
 
@@ -30,7 +30,7 @@ to re-fit. The number of folds used in the CV.SuperLearner must be even."><meta 
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -80,56 +80,41 @@ to re-fit. The number of folds used in the CV.SuperLearner must be even.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">extract_sampled_split_predictions</span><span class="op">(</span></span>
-<span>  cvsl_obj <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  sample_splitting_folds <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  full <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  preds <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  cross_fitting_folds <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  vector <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">extract_sampled_split_predictions</span><span class="op">(</span>
+  cvsl_obj <span class="op">=</span> <span class="cn">NULL</span>,
+  sample_splitting <span class="op">=</span> <span class="cn">TRUE</span>,
+  sample_splitting_folds <span class="op">=</span> <span class="cn">NULL</span>,
+  full <span class="op">=</span> <span class="cn">TRUE</span>,
+  preds <span class="op">=</span> <span class="cn">NULL</span>,
+  cross_fitting_folds <span class="op">=</span> <span class="cn">NULL</span>,
+  vector <span class="op">=</span> <span class="cn">TRUE</span>
+<span class="op">)</span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>cvsl_obj</dt>
 <dd><p>An object of class <code>"CV.SuperLearner"</code>; must be entered unless <code>preds</code> is specified.</p></dd>
-
-
 <dt>sample_splitting</dt>
 <dd><p>logical; should we use sample-splitting or not?
 Defaults to <code>TRUE</code>.</p></dd>
-
-
 <dt>sample_splitting_folds</dt>
 <dd><p>A vector of folds to use for sample splitting</p></dd>
-
-
 <dt>full</dt>
 <dd><p>logical; is this the fit to all covariates (<code>TRUE</code>) or not
 (<code>FALSE</code>)?</p></dd>
-
-
 <dt>preds</dt>
 <dd><p>a vector of predictions; must be entered unless <code>cvsl_obj</code> is specified.</p></dd>
-
-
 <dt>cross_fitting_folds</dt>
 <dd><p>a vector of folds that were used in cross-fitting.</p></dd>
-
-
 <dt>vector</dt>
 <dd><p>logical; should we return a vector (where each element is
 the prediction when the corresponding row is in the validation fold) or a
 list?</p></dd>
-
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>The predictions on validation data in each split-sample fold.</p>
+    <p>The predictions on validation data in each split-sample fold.</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
@@ -149,7 +134,7 @@ list?</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer></div>
