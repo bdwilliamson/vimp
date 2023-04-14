@@ -51,7 +51,8 @@ Suggests:
     cowplot,
     cvAUC,
     tidyselect,
-    WeightedROC
+    WeightedROC,
+    purrr
 License: MIT + file LICENSE
 URL: https://bdwilliamson.github.io/vimp/,
     https://github.com/bdwilliamson/vimp,
