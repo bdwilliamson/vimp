@@ -2,6 +2,8 @@
 library("testthat")
 suppressWarnings(library("SuperLearner"))
 library("WeightedROC")
+library("dplyr")
+library("purrr")
 
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
@@ -94,10 +96,105 @@ test_that("CV-VIM with inverse probability of coarsening weights works", {
   expect_equal(est_cv$est, r2_one, tolerance = 0.3, scale = 1)
 })
 
-univariate_learners <- "SL.glm"
-set.seed(91011)
+# test that CV-VIM with IPW and fully-observed data works
+set.seed(20230414)
+n2 <- 1000
+n_splits <- 10
+df2 <- dplyr::tibble(
+  id = 1:n2,
+  x1 = rnorm(n2),
+  x2 = rnorm(n2),
+  x3 = runif(n2),
+  y = x1 + 5 * x3 * (x3 <= 0.95) + rnorm(n2),
+  split_id = sample(n_splits, n2, replace = TRUE),
+  w = 1 + 10 * (x3 > 0.95),
+  w2 = 1
+)
+
+x_df2 <- select(df2, x1, x2, x3)
+
+validRows <- purrr::map(sort(unique(df2$split_id)), ~which(.x == df2$split_id))
+cv_ctl <- SuperLearner::SuperLearner.CV.control(V = n_splits, validRows = validRows)
+inner_cv_ctl <- list(list(V = n_splits / 2))
+
+full_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = df2$y,
+  X = x_df2,
+  SL.library = c("SL.glm", "SL.mean"),
+  cvControl = cv_ctl,
+  innerCvControl = inner_cv_ctl,
+  obsWeights = df2$w
+))
+cross_fitted_f1 <- full_fit$SL.predict
+idx <- 3
+red_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = full_fit$SL.predict,
+  X = x_df2[, -idx, drop = FALSE],
+  SL.library = c("SL.glm", "SL.mean"),
+  cvControl = cv_ctl,
+  innerCvControl = inner_cv_ctl,
+  obsWeights = df2$w
+))
+cross_fitted_f2 <- red_fit$SL.predict
+ss_folds <- vimp::make_folds(unique(df2$split_id), V = 2)
+test_that("CV-VIM with IPW and fully-observed data works", {
+  result <- vimp::cv_vim(
+    Y = df2$y,
+    type = "r_squared",
+    indx = idx,
+    cross_fitted_f1 = cross_fitted_f1,
+    cross_fitted_f2 = cross_fitted_f2,
+    SL.library = c("SL.mean"),
+    cross_fitting_folds = df2$split_id,
+    sample_splitting_folds = ss_folds,
+    run_regression = FALSE,
+    V = n_splits / 2,
+    ipc_weights = df2$w,
+    Z = "Y"
+  )
+  expect_equal(result$p_value < 0.05, FALSE)
+})
+
+full_fit2 <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = df2$y,
+  X = x_df2,
+  SL.library = c("SL.glm", "SL.mean"),
+  cvControl = cv_ctl,
+  innerCvControl = inner_cv_ctl,
+  obsWeights = df2$w2
+))
+cross_fitted_f12 <- full_fit2$SL.predict
+red_fit2 <- suppressWarnings(SuperLearner::CV.SuperLearner(
+  Y = full_fit2$SL.predict,
+  X = x_df2[, -idx, drop = FALSE],
+  SL.library = c("SL.glm", "SL.mean"),
+  cvControl = cv_ctl,
+  innerCvControl = inner_cv_ctl,
+  obsWeights = df2$w2
+))
+cross_fitted_f22 <- red_fit2$SL.predict
+test_that("CV-VIM with no IPW and fully-observed data works", {
+  result <- vimp::cv_vim(
+    Y = df2$y,
+    type = "r_squared",
+    indx = idx,
+    cross_fitted_f1 = cross_fitted_f12,
+    cross_fitted_f2 = cross_fitted_f22,
+    SL.library = c("SL.mean"),
+    cross_fitting_folds = df2$split_id,
+    sample_splitting_folds = ss_folds,
+    run_regression = FALSE,
+    V = n_splits / 2,
+    ipc_weights = df2$w2,
+    Z = "Y"
+  )
+  expect_equal(result$p_value < 0.05, TRUE)
+})
+
 
 # test IPW SPVIM ---------------------------------------------------------------
+univariate_learners <- "SL.glm"
+set.seed(91011)
 # test that SPVIM with inverse probability of coarsening weights works
 test_that("SPVIM with inverse probability of coarsening weights works", {
   expect_warning(est_spvim <- sp_vim(Y = y, X = x_df, type = "r_squared", V = 2,
