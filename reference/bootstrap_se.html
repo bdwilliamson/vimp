@@ -76,6 +76,8 @@
 <span>  Y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  f1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  f2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cluster_id <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  clustered <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"r_squared"</span>,</span>
 <span>  b <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  boot_interval_type <span class="op">=</span> <span class="st">"perc"</span>,</span>
@@ -102,6 +104,16 @@ regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
 <code>indx</code>. A vector of the same length as <code>Y</code>; if sample-splitting
 is desired, then the value of <code>f2</code> at each position should be the result
 of predicting from a model trained without that observation.</p></dd>
+
+
+<dt>cluster_id</dt>
+<dd><p>vector of the same length as <code>Y</code> giving the cluster IDs
+used for the clustered bootstrap, if <code>clustered</code> is <code>TRUE</code>.</p></dd>
+
+
+<dt>clustered</dt>
+<dd><p>should the bootstrap resamples be performed on clusters
+rather than individual observations? Defaults to <code>FALSE</code>.</p></dd>
 
 
 <dt>type</dt>
