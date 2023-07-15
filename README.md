@@ -8,7 +8,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Software authors:** [Brian Williamson](https://bdwilliamson.github.io/) and [Jean Feng](https://jeanfeng.com/)
+**Software authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Jean Feng](https://jeanfeng.com/), and [Charlie Wolock](https://cwolock.github.io/)
 
 **Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Peter Gilbert](https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html), [Noah Simon](http://faculty.washington.edu/nrsimon/), [Marco Carone](http://faculty.washington.edu/mcarone/about.html), [Jean Feng](http://www.jeanfeng.com/)
 
