@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -72,50 +72,65 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">bootstrap_se</span><span class="op">(</span>
-  Y <span class="op">=</span> <span class="cn">NULL</span>,
-  f1 <span class="op">=</span> <span class="cn">NULL</span>,
-  f2 <span class="op">=</span> <span class="cn">NULL</span>,
-  type <span class="op">=</span> <span class="st">"r_squared"</span>,
-  b <span class="op">=</span> <span class="fl">1000</span>,
-  boot_interval_type <span class="op">=</span> <span class="st">"perc"</span>,
-  alpha <span class="op">=</span> <span class="fl">0.05</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bootstrap_se</span><span class="op">(</span></span>
+<span>  Y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  f1 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  f2 <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"r_squared"</span>,</span>
+<span>  b <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  boot_interval_type <span class="op">=</span> <span class="st">"perc"</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Y</dt>
 <dd><p>the outcome.</p></dd>
+
+
 <dt>f1</dt>
 <dd><p>the fitted values from a flexible estimation technique
 regressing Y on X. A vector of the same length as <code>Y</code>; if sample-splitting
 is desired, then the value of <code>f1</code> at each position should be the result
 of predicting from a model trained without that observation.</p></dd>
+
+
 <dt>f2</dt>
 <dd><p>the fitted values from a flexible estimation technique
 regressing either (a) <code>f1</code> or (b) Y on X withholding the columns in
 <code>indx</code>. A vector of the same length as <code>Y</code>; if sample-splitting
 is desired, then the value of <code>f2</code> at each position should be the result
 of predicting from a model trained without that observation.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>the type of importance to compute; defaults to
 <code>r_squared</code>, but other supported options are <code>auc</code>,
 <code>accuracy</code>, <code>deviance</code>, and <code>anova</code>.</p></dd>
+
+
 <dt>b</dt>
 <dd><p>the number of bootstrap replicates (only used if <code>bootstrap = TRUE</code>
 and <code>sample_splitting = FALSE</code>); defaults to 1000.</p></dd>
+
+
 <dt>boot_interval_type</dt>
 <dd><p>the type of bootstrap interval (one of <code>"norm"</code>,
 <code>"basic"</code>, <code>"stud"</code>, <code>"perc"</code>, or <code>"bca"</code>, as in
 <code>boot{boot.ci}</code>) if requested. Defaults to <code>"perc"</code>.</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>the level to compute the confidence interval at.
 Defaults to 0.05, corresponding to a 95% confidence interval.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a bootstrap-based standard error estimate</p>
+    
+
+<p>a bootstrap-based standard error estimate</p>
     </div>
 
   </div>
@@ -130,7 +145,7 @@ Defaults to 0.05, corresponding to a 95% confidence interval.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -72,22 +72,22 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">measure_deviance</span><span class="op">(</span>
-  <span class="va">fitted_values</span>,
-  <span class="va">y</span>,
-  full_y <span class="op">=</span> <span class="cn">NULL</span>,
-  C <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,
-  Z <span class="op">=</span> <span class="cn">NULL</span>,
-  ipc_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,
-  ipc_fit_type <span class="op">=</span> <span class="st">"external"</span>,
-  ipc_eif_preds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,
-  ipc_est_type <span class="op">=</span> <span class="st">"aipw"</span>,
-  scale <span class="op">=</span> <span class="st">"logit"</span>,
-  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,
-  nuisance_estimators <span class="op">=</span> <span class="cn">NULL</span>,
-  a <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">measure_deviance</span><span class="op">(</span></span>
+<span>  <span class="va">fitted_values</span>,</span>
+<span>  <span class="va">y</span>,</span>
+<span>  full_y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  C <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Z <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ipc_weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  ipc_fit_type <span class="op">=</span> <span class="st">"external"</span>,</span>
+<span>  ipc_eif_preds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  ipc_est_type <span class="op">=</span> <span class="st">"aipw"</span>,</span>
+<span>  scale <span class="op">=</span> <span class="st">"logit"</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  nuisance_estimators <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  a <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -95,51 +95,80 @@
     <dl><dt>fitted_values</dt>
 <dd><p>fitted values from a regression function using the
 observed data (may be within a specified fold, for cross-fitted estimates).</p></dd>
+
+
 <dt>y</dt>
 <dd><p>the observed outcome (may be within a specified fold, for
 cross-fitted estimates).</p></dd>
+
+
 <dt>full_y</dt>
 <dd><p>the observed outcome (not used, defaults to <code>NULL</code>).</p></dd>
+
+
 <dt>C</dt>
 <dd><p>the indicator of coarsening (1 denotes observed, 0 denotes
 unobserved).</p></dd>
+
+
 <dt>Z</dt>
 <dd><p>either <code>NULL</code> (if no coarsening) or a matrix-like object
 containing the fully observed data.</p></dd>
+
+
 <dt>ipc_weights</dt>
 <dd><p>weights for inverse probability of coarsening (IPC)
 (e.g., inverse weights from a two-phase sample) weighted estimation.
 Assumed to be already inverted.
 (i.e., ipc_weights = 1 / [estimated probability weights]).</p></dd>
+
+
 <dt>ipc_fit_type</dt>
 <dd><p>if "external", then use <code>ipc_eif_preds</code>; if "SL",
 fit a SuperLearner to determine the IPC correction to the efficient
 influence function.</p></dd>
+
+
 <dt>ipc_eif_preds</dt>
 <dd><p>if <code>ipc_fit_type = "external"</code>, the fitted values
 from a regression of the full-data EIF on the fully observed
 covariates/outcome; otherwise, not used.</p></dd>
+
+
 <dt>ipc_est_type</dt>
 <dd><p>IPC correction, either <code>"ipw"</code> (for classical
 inverse probability weighting) or <code>"aipw"</code> (for augmented inverse
 probability weighting; the default).</p></dd>
+
+
 <dt>scale</dt>
 <dd><p>if doing an IPC correction, then the scale that the correction
 should be computed on (e.g., "identity"; or "logit" to logit-transform,
 apply the correction, and back-transform).</p></dd>
+
+
 <dt>na.rm</dt>
 <dd><p>logical; should <code>NA</code>s be removed in computation?
 (defaults to <code>FALSE</code>)</p></dd>
+
+
 <dt>nuisance_estimators</dt>
 <dd><p>not used; for compatibility with <code>measure_average_value</code>.</p></dd>
+
+
 <dt>a</dt>
 <dd><p>not used; for compatibility with <code>measure_average_value</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>other arguments to SuperLearner, if <code>ipc_fit_type = "SL"</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A named list of: (1) the estimated deviance of the fitted regression
+    
+
+<p>A named list of: (1) the estimated deviance of the fitted regression
   function; (2) the estimated influence function; and
   (3) the IPC EIF predictions.</p>
     </div>
@@ -156,7 +185,7 @@ apply the correction, and back-transform).</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -8,7 +8,7 @@
 #'
 #' @section Author(s):
 #' \bold{Maintainer}: Brian Williamson \url{https://bdwilliamson.github.io/}
-#' \bold{Contributor}: Jean Feng \url{https://www.jeanfeng.com}
+#' \bold{Contributors}: Jean Feng \url{https://www.jeanfeng.com}, Charlie Wolock \url{https://cwolock.github.io/}
 #'
 #' Methodology authors:
 #' \itemize{
@@ -49,4 +49,5 @@
 #'
 #' @docType package
 #' @name vimp
-NULL
+#' @keywords internal
+"_PACKAGE"

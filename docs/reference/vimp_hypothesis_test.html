@@ -19,7 +19,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
       </span>
     </div>
 
@@ -28,7 +28,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -76,31 +76,42 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">vimp_hypothesis_test</span><span class="op">(</span>
-  <span class="va">predictiveness_full</span>,
-  <span class="va">predictiveness_reduced</span>,
-  <span class="va">se</span>,
-  delta <span class="op">=</span> <span class="fl">0</span>,
-  alpha <span class="op">=</span> <span class="fl">0.05</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">vimp_hypothesis_test</span><span class="op">(</span></span>
+<span>  <span class="va">predictiveness_full</span>,</span>
+<span>  <span class="va">predictiveness_reduced</span>,</span>
+<span>  <span class="va">se</span>,</span>
+<span>  delta <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  alpha <span class="op">=</span> <span class="fl">0.05</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>predictiveness_full</dt>
 <dd><p>the estimated predictiveness of the regression including the covariate(s) of interest.</p></dd>
+
+
 <dt>predictiveness_reduced</dt>
 <dd><p>the estimated predictiveness of the regression excluding the covariate(s) of interest.</p></dd>
+
+
 <dt>se</dt>
 <dd><p>the estimated standard error of the variable importance estimator</p></dd>
+
+
 <dt>delta</dt>
 <dd><p>the value of the \(\delta\)-null (i.e., testing if importance &lt; \(\delta\)); defaults to 0.</p></dd>
+
+
 <dt>alpha</dt>
 <dd><p>the desired type I error rate (defaults to 0.05).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a list, with: the hypothesis testing decision (<code>TRUE</code> if the null hypothesis is rejected, <code>FALSE</code> otherwise); the p-value from the hypothesis test; and the test statistic from the hypothesis test.</p>
+    
+
+<p>a list, with: the hypothesis testing decision (<code>TRUE</code> if the null hypothesis is rejected, <code>FALSE</code> otherwise); the p-value from the hypothesis test; and the test statistic from the hypothesis test.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -120,7 +131,7 @@ details on the mathematics behind this function and the definition of the parame
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -72,25 +72,36 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">create_z</span><span class="op">(</span><span class="va">Y</span>, <span class="va">C</span>, <span class="va">Z</span>, <span class="va">X</span>, <span class="va">ipc_weights</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_z</span><span class="op">(</span><span class="va">Y</span>, <span class="va">C</span>, <span class="va">Z</span>, <span class="va">X</span>, <span class="va">ipc_weights</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>Y</dt>
 <dd><p>the outcome</p></dd>
+
+
 <dt>C</dt>
 <dd><p>indicator of missing or observed</p></dd>
+
+
 <dt>Z</dt>
 <dd><p>the covariates observed in phase 1 and 2 data</p></dd>
+
+
 <dt>X</dt>
 <dd><p>all covariates</p></dd>
+
+
 <dt>ipc_weights</dt>
 <dd><p>the weights</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a list, with the complete-case outcome, weights, and Z matrix</p>
+    
+
+<p>a list, with the complete-case outcome, weights, and Z matrix</p>
     </div>
 
   </div>
@@ -105,7 +116,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

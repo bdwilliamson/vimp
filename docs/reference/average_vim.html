@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -72,19 +72,24 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">average_vim</span><span class="op">(</span><span class="va">...</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">average_vim</span><span class="op">(</span><span class="va">...</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>...</dt>
 <dd><p>an arbitrary number of <code>vim</code> objects.</p></dd>
+
+
 <dt>weights</dt>
 <dd><p>how to average the vims together, and must sum to 1; defaults to 1/(number of vims) for each vim, corresponding to the arithmetic mean</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>an object of class <code>vim</code> containing the (weighted) average of the individual importance estimates, as well as the appropriate standard error and confidence interval.
+    
+
+<p>an object of class <code>vim</code> containing the (weighted) average of the individual importance estimates, as well as the appropriate standard error and confidence interval.
 This results in a list containing:</p><ul><li><p>s - a list of the column(s) to calculate variable importance for</p></li>
 <li><p>SL.library - a list of the libraries of learners passed to <code>SuperLearner</code></p></li>
 <li><p>full_fit - a list of the fitted values of the chosen method fit to the full data</p></li>
@@ -101,53 +106,48 @@ This results in a list containing:</p><ul><li><p>s - a list of the column(s) to 
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># generate the data</span></span>
-<span class="r-in"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
-<span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
-<span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="va">p</span>, <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># apply the function to the x's</span></span>
-<span class="r-in"><span class="va">smooth</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">+</span><span class="fl">7</span><span class="op">)</span><span class="op">/</span><span class="fl">5</span> <span class="op">+</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># generate Y ~ Normal (smooth, 1)</span></span>
-<span class="r-in"><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">smooth</span> <span class="op">+</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># set up a library for SuperLearner; note simple library for speed</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'SuperLearner' was built under R version 4.0.5</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># generate the data</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">replicate</a></span><span class="op">(</span><span class="va">p</span>, <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n</span>, <span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># apply the function to the x's</span></span></span>
+<span class="r-in"><span><span class="va">smooth</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">/</span><span class="fl">5</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span><span class="op">+</span><span class="fl">7</span><span class="op">)</span><span class="op">/</span><span class="fl">5</span> <span class="op">+</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># generate Y ~ Normal (smooth, 1)</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">smooth</span> <span class="op">+</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># set up a library for SuperLearner; note simple library for speed</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: nnls</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'nnls' was built under R version 4.0.3</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: gam</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'gam' was built under R version 4.0.5</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: splines</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Loading required package: foreach</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>package 'foreach' was built under R version 4.0.5</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Loaded gam 1.20.1</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Loaded gam 1.22-2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Super Learner</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Version: 2.0-28</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Version: 2.0-28.1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Package created on 2021-05-04</span>
-<span class="r-in"><span class="va">learners</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SL.glm"</span>, <span class="st">"SL.mean"</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># get estimates on independent splits of the data</span></span>
-<span class="r-in"><span class="va">samp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="va">n</span><span class="op">/</span><span class="fl">2</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># using Super Learner (with a small number of folds, for illustration only)</span></span>
-<span class="r-in"><span class="va">est_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="vimp_regression.html">vimp_regression</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span><span class="op">[</span><span class="va">samp</span><span class="op">]</span>, X <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="va">samp</span>, <span class="op">]</span>, indx <span class="op">=</span> <span class="fl">2</span>, V <span class="op">=</span> <span class="fl">2</span>,</span>
-<span class="r-in">           run_regression <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span class="r-in">           SL.library <span class="op">=</span> <span class="va">learners</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="va">learners</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SL.glm"</span>, <span class="st">"SL.mean"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># get estimates on independent splits of the data</span></span></span>
+<span class="r-in"><span><span class="va">samp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="va">n</span>, <span class="va">n</span><span class="op">/</span><span class="fl">2</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># using Super Learner (with a small number of folds, for illustration only)</span></span></span>
+<span class="r-in"><span><span class="va">est_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="vimp_regression.html">vimp_regression</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span><span class="op">[</span><span class="va">samp</span><span class="op">]</span>, X <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="va">samp</span>, <span class="op">]</span>, indx <span class="op">=</span> <span class="fl">2</span>, V <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>           run_regression <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
+<span class="r-in"><span>           SL.library <span class="op">=</span> <span class="va">learners</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Original estimate &lt; 0; returning zero.</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">est_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="vimp_regression.html">vimp_regression</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span><span class="op">[</span><span class="op">-</span><span class="va">samp</span><span class="op">]</span>, X <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="op">-</span><span class="va">samp</span>, <span class="op">]</span>, indx <span class="op">=</span> <span class="fl">2</span>, V <span class="op">=</span> <span class="fl">2</span>,</span>
-<span class="r-in">           run_regression <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
-<span class="r-in">           SL.library <span class="op">=</span> <span class="va">learners</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">est_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="vimp_regression.html">vimp_regression</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span><span class="op">[</span><span class="op">-</span><span class="va">samp</span><span class="op">]</span>, X <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="op">-</span><span class="va">samp</span>, <span class="op">]</span>, indx <span class="op">=</span> <span class="fl">2</span>, V <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>           run_regression <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="fl">0.05</span>,</span></span>
+<span class="r-in"><span>           SL.library <span class="op">=</span> <span class="va">learners</span>, cvControl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>vimp_anova now performs all functionality of vimp_regression; please update any code to reflect this change!</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Hypothesis testing is not available for type = 'anova'. If you want an R-squared-based hypothesis test, please enter type = 'r_squared'.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Original estimate &lt; 0; returning zero.</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">ests</span> <span class="op">&lt;-</span> <span class="fu">average_vim</span><span class="op">(</span><span class="va">est_1</span>, <span class="va">est_2</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">ests</span> <span class="op">&lt;-</span> <span class="fu">average_vim</span><span class="op">(</span><span class="va">est_1</span>, <span class="va">est_2</span>, weights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -162,7 +162,7 @@ This results in a list containing:</p><ul><li><p>s - a list of the column(s) to 
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

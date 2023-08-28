@@ -227,11 +227,12 @@ scale_est <- function(obs_est = NULL, grad = NULL, scale = "identity") {
 #' @inheritParams measure_accuracy
 #'
 #' @return the projection of the EIF onto the fully-observed variables
+#' @importFrom stats rnorm
 estimate_eif_projection <- function(obs_grad = NULL, C = NULL, Z = NULL,
                                     ipc_fit_type = NULL, ipc_eif_preds = NULL, ...) {
   if (ipc_fit_type != "external") {
     if (length(unique(obs_grad)) == 1) {
-      noisy_obs_grad <- rnorm(length(obs_grad), mean = obs_grad, sd = 1e-5)
+      noisy_obs_grad <- stats::rnorm(length(obs_grad), mean = obs_grad, sd = 1e-5)
       obs_grad <- noisy_obs_grad
     }
     ipc_eif_mod <- SuperLearner::SuperLearner(

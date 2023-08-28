@@ -3,6 +3,7 @@
 \docType{package}
 \name{vimp}
 \alias{vimp}
+\alias{vimp-package}
 \title{vimp: Perform Inference on Algorithm-Agnostic Intrinsic Variable Importance}
 \description{
 A unified framework for valid statistical inference on algorithm-agnostic
@@ -14,7 +15,7 @@ choose a variable importance measure, and specify variable(s) of interest;
 \section{Author(s)}{
 
 \bold{Maintainer}: Brian Williamson \url{https://bdwilliamson.github.io/}
-\bold{Contributor}: Jean Feng \url{https://www.jeanfeng.com}
+\bold{Contributors}: Jean Feng \url{https://www.jeanfeng.com}, Charlie Wolock \url{https://cwolock.github.io/}
 
 Methodology authors:
 \itemize{
@@ -58,3 +59,26 @@ importance estimates; testthat, WeightedROC, cvAUC, and covr help with unit test
 knitr, rmarkdown, and tidyselect help with the vignettes and examples.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://bdwilliamson.github.io/vimp/}
+  \item \url{https://github.com/bdwilliamson/vimp}
+  \item \url{http://bdwilliamson.github.io/vimp/}
+  \item Report bugs at \url{https://github.com/bdwilliamson/vimp/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Brian D. Williamson \email{brian.d.williamson@kp.org} (\href{https://orcid.org/0000-0002-7024-548X}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Jean Feng [contributor]
+  \item Charlie Wolock [contributor]
+  \item Noah Simon (\href{https://orcid.org/0000-0002-8985-2474}{ORCID}) [thesis advisor]
+  \item Marco Carone (\href{https://orcid.org/0000-0003-2106-0953}{ORCID}) [thesis advisor]
+}
+
+}
+\keyword{internal}

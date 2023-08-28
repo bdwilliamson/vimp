@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -66,6 +66,18 @@
       <small>Source: <a href="https://github.com/bdwilliamson/vimp/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.3.3" id="vimp-233">vimp 2.3.3<a class="anchor" aria-label="anchor" href="#vimp-233"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-2-3-3">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-3"></a></h3>
+<ul><li>Add clustered bootstrap and associated unit tests</li>
+</ul></div>
+<div class="section level3">
+<h3 id="minor-changes-2-3-3">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-3-3"></a></h3>
+<ul><li>Update software author list</li>
+<li>Fix roxygen2 CRAN bug for package documentation</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.2" id="vimp-232">vimp 2.3.2<a class="anchor" aria-label="anchor" href="#vimp-232"></a></h2>
 <div class="section level3">
@@ -242,7 +254,7 @@
 <li>Added bootstrap-based standard error estimates as an option to both <code>vim</code> and <code>cv_vim</code>; currently, this option is only available for non-sampled-split calls (i.e., with <code>sample_splitting = FALSE</code>)</li>
 <li>Updated sample-splitting behavior to match more closely with theoretical results (and improve power!): namely, that since estimation of the nuisance regression functions (i.e., the regression of outcome on all covariates and outcome on the reduced set of covariates) can be treated as fixed in making inference, sample-splitting is only necessary for evaluating predictiveness. Thus, the final regression functions from a call to <code>vim</code> are based on the entire dataset, while the full and reduced predictiveness (<code>predictiveness_full</code> and <code>predictiveness_reduced</code>, along with the corresponding confidence intervals) is evaluated using separate portions of the data for the full and reduced regressions.</li>
 <li>Added argument <code>sample_splitting</code> to <code>vim</code>, <code>cv_vim</code> and <code>sp_vim</code>; if <code>FALSE</code>, sample-splitting is not used to estimate predictiveness. Note that we recommend using the default, <code>TRUE</code>, in all cases, since inference using <code>sample_splitting = FALSE</code> will be invalid for variables with truly null variable importance.</li>
-<li>Updated cross-fitting (also referred to as cross-validation) behavior within <code>sample_splitting = TRUE</code> to match more closely with theoretical results (and improve power!). In this case, we first split the data into <span class="math inline">2<em>K</em></span> cross-fitting folds, and split these folds equally into two sample-splitting folds. For the nuisance regression using all covariates, for each <span class="math inline"><em>k</em> ∈ {1, …, <em>K</em>}</span> we set aside the data in sample-splitting fold 1 and cross-fitting fold <span class="math inline"><em>k</em></span> [this comprises <span class="math inline">1/(2<em>K</em>)</span> of the data]. We train using the remaining observations [comprising <span class="math inline">(2<em>K</em> − 1)/(2<em>K</em>)</span> of the data] not in this testing fold, and we test on the originally withheld data. We repeat for the nuisance regression using the reduced set of covariates, but withhold data in sample-splitting fold 2. This update affects both <code>cv_vim</code> and <code>sp_vim</code>. If <code>sample_splitting = FALSE</code>, then we use standard cross-fitting.</li>
+<li>Updated cross-fitting (also referred to as cross-validation) behavior within <code>sample_splitting = TRUE</code> to match more closely with theoretical results (and improve power!). In this case, we first split the data into <span class="math inline">2<em>K</em></span> cross-fitting folds, and split these folds equally into two sample-splitting folds. For the nuisance regression using all covariates, for each <span class="math inline"><em>k</em> ∈ {1, …, <em>K</em>}</span> we set aside the data in sample-splitting fold 1 and cross-fitting fold <span class="math inline"><em>k</em></span> [this comprises <span class="math inline">1/(2<em>K</em>)</span> of the data]. We train using the remaining observations [comprising <span class="math inline">(2<em>K</em>−1)/(2<em>K</em>)</span> of the data] not in this testing fold, and we test on the originally withheld data. We repeat for the nuisance regression using the reduced set of covariates, but withhold data in sample-splitting fold 2. This update affects both <code>cv_vim</code> and <code>sp_vim</code>. If <code>sample_splitting = FALSE</code>, then we use standard cross-fitting.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-0"></a></h3>
@@ -556,7 +568,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
