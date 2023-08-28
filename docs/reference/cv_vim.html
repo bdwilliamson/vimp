@@ -112,6 +112,8 @@ feature(s) of interest versus not.</p>
 <span>  bootstrap <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  b <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  boot_interval_type <span class="op">=</span> <span class="st">"perc"</span>,</span>
+<span>  clustered <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cluster_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">Y</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -337,6 +339,16 @@ and <code>sample_splitting = FALSE</code>); defaults to 1000.</p></dd>
 <code>boot{boot.ci}</code>) if requested. Defaults to <code>"perc"</code>.</p></dd>
 
 
+<dt>clustered</dt>
+<dd><p>should the bootstrap resamples be performed on clusters
+rather than individual observations? Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt>cluster_id</dt>
+<dd><p>vector of the same length as <code>Y</code> giving the cluster IDs
+used for the clustered bootstrap, if <code>clustered</code> is <code>TRUE</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>other arguments to the estimation tool, see "See also".</p></dd>
 
@@ -451,6 +463,9 @@ within the <code>vim</code> object. This results in a list including:</p><dl><dt
 
  <dt>ipc_weights</dt>
 <dd><p>the weights</p></dd>
+
+ <dt>cluster_id</dt>
+<dd><p>the cluster IDs</p></dd>
 
  <dt>mat</dt>
 <dd><p>a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value</p></dd>
