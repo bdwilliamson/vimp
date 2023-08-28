@@ -227,6 +227,7 @@ within the \code{vim} object. This results in a list including:
  \item{cross_fitting_folds}{the folds used for cross-fitting}
  \item{y}{the outcome}
  \item{ipc_weights}{the weights}
+ \item{cluster_id}{the cluster IDs}
  \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }

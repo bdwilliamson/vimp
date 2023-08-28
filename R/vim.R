@@ -96,6 +96,10 @@
 #' @param boot_interval_type the type of bootstrap interval (one of \code{"norm"},
 #'   \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
 #'   \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.
+#' @param clustered should the bootstrap resamples be performed on clusters
+#'   rather than individual observations? Defaults to \code{FALSE}.
+#' @param cluster_id vector of the same length as \code{Y} giving the cluster IDs
+#'   used for the clustered bootstrap, if \code{clustered} is \code{TRUE}.
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and the type of risk-based measure.
@@ -136,6 +140,7 @@
 #'  \item{sample_splitting_folds}{the folds used for sample-splitting (used for hypothesis testing)}
 #'  \item{y}{the outcome}
 #'  \item{ipc_weights}{the weights}
+#'  \item{cluster_id}{the cluster IDs}
 #'  \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 #' }
 #'
@@ -197,10 +202,16 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 ipc_weights = rep(1, length(Y)),
                 ipc_est_type = "aipw", scale_est = TRUE, nuisance_estimators_full = NULL,
                 nuisance_estimators_reduced = NULL, exposure_name = NULL,
-                bootstrap = FALSE, b = 1000, boot_interval_type = "perc", ...) {
+                bootstrap = FALSE, b = 1000, boot_interval_type = "perc",
+                clustered = FALSE, cluster_id = rep(NA, length(Y)), ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
+
+    if (bootstrap & clustered & sum(is.na(cluster_id)) > 0){
+      stop(paste0("If using clustered bootstrap, cluster IDs must be provided",
+                  " for all observations."))
+    }
 
     # check to see if Y is a matrix or data.frame; if not, make it one
     # (just for ease of reading)
@@ -345,7 +356,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
                                          type = full_type, b = b,
                                          boot_interval_type = boot_interval_type,
-                                         alpha = alpha)
+                                         alpha = alpha, clustered = clustered,
+                                         cluster_id = cluster_id)
             se <- boot_results$se
         } else {
             se <- sqrt(mean(eif ^ 2) / length(eif))
@@ -398,7 +410,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
                                          type = full_type, b = b,
                                          boot_interval_type = boot_interval_type,
-                                         alpha = alpha)
+                                         alpha = alpha, clustered = clustered,
+                                         cluster_id = cluster_id)
             se <- boot_results$se
             se_full <- boot_results$se_full
             se_redu <- boot_results$se_reduced
@@ -555,6 +568,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                  ipc_weights = ipc_weights,
                  ipc_scale = ipc_scale,
                  scale = scale,
+                 cluster_id = cluster_id,
                  mat = mat)
 
     # make it also a vim and vim_type object
