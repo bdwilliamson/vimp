@@ -55,7 +55,8 @@ Suggests:
     cvAUC,
     tidyselect,
     WeightedROC,
-    purrr
+    purrr,
+    boot
 License: MIT + file LICENSE
 URL: https://bdwilliamson.github.io/vimp/,
     https://github.com/bdwilliamson/vimp,
