@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
       </span>
     </div>
 
@@ -98,7 +98,7 @@
                         <h4 data-toc-skip class="author">Brian D.
 Williamson</h4>
             
-            <h4 data-toc-skip class="date">2022-12-08</h4>
+            <h4 data-toc-skip class="date">2023-08-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/HEAD/vignettes/types-of-vims.Rmd" class="external-link"><code>vignettes/types-of-vims.Rmd</code></a></small>
       <div class="hidden name"><code>types-of-vims.Rmd</code></div>
@@ -109,19 +109,15 @@ Williamson</h4>
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/" class="external-link">"vimp"</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; vimp version 2.3.1: Perform Inference on Algorithm-Agnostic Variable Importance</span></span>
+<span><span class="co">#&gt; vimp version 2.3.3: Perform Inference on Algorithm-Agnostic Variable Importance</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: package 'SuperLearner' was built under R version 4.0.5</span></span>
 <span><span class="co">#&gt; Loading required package: nnls</span></span>
-<span><span class="co">#&gt; Warning: package 'nnls' was built under R version 4.0.3</span></span>
 <span><span class="co">#&gt; Loading required package: gam</span></span>
-<span><span class="co">#&gt; Warning: package 'gam' was built under R version 4.0.5</span></span>
 <span><span class="co">#&gt; Loading required package: splines</span></span>
 <span><span class="co">#&gt; Loading required package: foreach</span></span>
-<span><span class="co">#&gt; Warning: package 'foreach' was built under R version 4.0.5</span></span>
-<span><span class="co">#&gt; Loaded gam 1.20.1</span></span>
+<span><span class="co">#&gt; Loaded gam 1.22-2</span></span>
 <span><span class="co">#&gt; Super Learner</span></span>
-<span><span class="co">#&gt; Version: 2.0-28</span></span>
+<span><span class="co">#&gt; Version: 2.0-28.1</span></span>
 <span><span class="co">#&gt; Package created on 2021-05-04</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
@@ -176,7 +172,7 @@ measure importance.</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyselect.r-lib.org" class="external-link">"tidyselect"</a></span><span class="op">)</span></span>
 <span><span class="co"># retain only the columns of interest for this analysis</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">vrc01</span><span class="op">$</span><span class="va">ic50.censored</span></span>
-<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">learners</span> <span class="op">&lt;-</span> <span class="st">"SL.glm"</span></span></code></pre></div>
 </div>
@@ -300,7 +296,7 @@ than one) that best addresses your scientific question.</p>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-magaret2019" class="csl-entry">
 Magaret, CA, DC Benkeser, BD Williamson, et al. 2019. <span>“Prediction
-of <span>Vrc01</span> Neutralization Sensitivity by <span>HIV</span>-1
+of <span>VRC01</span> Neutralization Sensitivity by <span>HIV</span>-1
 Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">https://doi.org/10.1371/journal.pcbi.1006952</a>.
 </div>
 </div>
@@ -324,7 +320,7 @@ Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href=
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

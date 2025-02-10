@@ -1,3 +1,14 @@
+# vimp 2.3.3
+
+## Major changes
+
+* Add clustered bootstrap and associated unit tests
+
+## Minor changes
+
+* Update software author list
+* Fix roxygen2 CRAN bug for package documentation
+
 # vimp 2.3.2
 
 ## Major changes

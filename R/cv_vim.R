@@ -116,6 +116,7 @@
 #'  \item{cross_fitting_folds}{the folds used for cross-fitting}
 #'  \item{y}{the outcome}
 #'  \item{ipc_weights}{the weights}
+#'  \item{cluster_id}{the cluster IDs}
 #'  \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 #' }
 #'
@@ -197,10 +198,16 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    nuisance_estimators_full = NULL,
                    nuisance_estimators_reduced = NULL, exposure_name = NULL,
                    cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000,
-                   boot_interval_type = "perc", ...) {
+                   boot_interval_type = "perc", clustered = FALSE,
+                   cluster_id = rep(NA, length(Y)), ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, cross_fitted_f1, cross_fitted_f2, indx)
+
+    if (bootstrap & clustered & sum(is.na(cluster_id)) > 0){
+      stop(paste0("If using clustered bootstrap, cluster IDs must be provided",
+                  " for all observations."))
+    }
 
     if (sample_splitting) {
         ss_V <- V * 2
@@ -399,7 +406,9 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
         se_redu <- NA
         if (bootstrap) {
             boot_results <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds,
-                                         f2 = non_cf_redu_preds, type = full_type, b = b)
+                                         f2 = non_cf_redu_preds, type = full_type,
+                                         b = b, clustered = clustered,
+                                         cluster_id = cluster_id)
             se <- boot_results$se
         }
     } else {
@@ -500,7 +509,8 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             boot_results <- bootstrap_se(Y = Y_cc, f1 = non_cf_full_preds,
                                          f2 = non_cf_redu_preds, type = full_type,
                                          b = b, boot_interval_type = boot_interval_type,
-                                         alpha = alpha)
+                                         alpha = alpha, clustered = clustered,
+                                         cluster_id = cluster_id)
             se <- boot_results$se
             se_full <- boot_results$se_full
             se_redu <- boot_results$se_reduced
@@ -682,6 +692,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    ipc_weights = ipc_weights,
                    ipc_scale = ipc_scale,
                    scale = scale,
+                   cluster_id = cluster_id,
                    mat = mat)
 
     # make it also a vim and vim_type object

@@ -33,6 +33,8 @@ vim(
   bootstrap = FALSE,
   b = 1000,
   boot_interval_type = "perc",
+  clustered = FALSE,
+  cluster_id = rep(NA, length(Y)),
   ...
 )
 }
@@ -157,6 +159,12 @@ and \code{sample_splitting = FALSE}); defaults to 1000.}
 \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
 \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
 
+\item{clustered}{should the bootstrap resamples be performed on clusters
+rather than individual observations? Defaults to \code{FALSE}.}
+
+\item{cluster_id}{vector of the same length as \code{Y} giving the cluster IDs
+used for the clustered bootstrap, if \code{clustered} is \code{TRUE}.}
+
 \item{...}{other arguments to the estimation tool, see "See also".}
 }
 \value{
@@ -204,6 +212,7 @@ within the \code{vim} object. This results in a list including:
  \item{sample_splitting_folds}{the folds used for sample-splitting (used for hypothesis testing)}
  \item{y}{the outcome}
  \item{ipc_weights}{the weights}
+ \item{cluster_id}{the cluster IDs}
  \item{mat}{a tibble with the estimate, SE, CI, hypothesis testing decision, and p-value}
 }
 }

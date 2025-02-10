@@ -8,7 +8,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Software authors:** [Brian Williamson](https://bdwilliamson.github.io/) and [Jean Feng](https://jeanfeng.com/)
+**Software authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Jean Feng](https://jeanfeng.com/), and [Charlie Wolock](https://cwolock.github.io/)
 
 **Methodology authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Peter Gilbert](https://www.fredhutch.org/en/faculty-lab-directory/gilbert-peter.html), [Noah Simon](http://faculty.washington.edu/nrsimon/), [Marco Carone](http://faculty.washington.edu/mcarone/about.html), [Jean Feng](http://www.jeanfeng.com/)
 
@@ -46,45 +46,35 @@ devtools::install_github(repo = "bdwilliamson/vimp")
 
 ## Example
 
-This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the [vignette](https://bdwilliamson.github.io/vimp/introduction_to_vimp.html).
+This example shows how to use `vimp` in a simple setting with simulated data, using `SuperLearner` to estimate the conditional mean functions and specifying the importance measure of interest as the R-squared-based measure. For more examples and detailed explanation, please see the [vignette](https://bdwilliamson.github.io/vimp/introduction-to-vimp.html).
 
 ```r
-## load required functions and libraries
+# load required functions and libraries
 library("SuperLearner")
 library("vimp")
 library("xgboost")
 library("glmnet")
 
-## -------------------------------------------------------------
-## problem setup
-## -------------------------------------------------------------
-## set up the data
+# -------------------------------------------------------------
+# problem setup
+# -------------------------------------------------------------
+# set up the data
 n <- 100
 p <- 2
 s <- 1 # desire importance for X_1
 x <- as.data.frame(replicate(p, runif(n, -1, 1)))
 y <- (x[,1])^2*(x[,1]+7/5) + (25/9)*(x[,2])^2 + rnorm(n, 0, 1)
 
-## -------------------------------------------------------------
-## preliminary step: estimate the conditional means
-## -------------------------------------------------------------
-## set up the learner library, consisting of the mean, boosted trees,
-## elastic net, and random forest
+# -------------------------------------------------------------
+# get variable importance!
+# -------------------------------------------------------------
+# set up the learner library, consisting of the mean, boosted trees,
+# elastic net, and random forest
 learner.lib <- c("SL.mean", "SL.xgboost", "SL.glmnet", "SL.randomForest")
-
-## the full conditional mean
-full_regression <- SuperLearner::SuperLearner(Y = y, X = x, family = gaussian(), SL.library = learner.lib)
-full_fit <- full_regression$SL.predict
-
-## the reduced conditional mean
-reduced_regression <- SuperLearner::SuperLearner(Y = full_fit, X = x[, -s, drop = FALSE], family = gaussian(), SL.library = learner.lib)
-reduced_fit <- reduced_regression$SL.predict
-
-## -------------------------------------------------------------
-## get variable importance!
-## -------------------------------------------------------------
-## get the variable importance estimate, SE, and CI
-vimp <- vimp_rsquared(Y = y, f1 = full_fit, f2 = reduced_fit, indx = 1, run_regression = FALSE)
+# get the variable importance estimate, SE, and CI
+# I'm using only 2 cross-validation folds to make things run quickly; in practice, you should use more
+set.seed(20231213)
+vimp <- vimp_rsquared(Y = y, X = x, indx = 1, V = 2)
 ```
 
 ## Citation
