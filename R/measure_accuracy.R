@@ -60,7 +60,7 @@ measure_accuracy <- function(fitted_values, y, full_y = NULL,
     weighted_obs_grad[C == 1] <- obs_grad * ipc_weights[C == 1]
     grad <- weighted_obs_grad - (C * ipc_weights - 1) * ipc_eif_preds
     if (ipc_est_type == "ipw") {
-      est <- scale_est(obs_est, rep(1, length(grad)), scale = scale)
+      est <- scale_est(obs_est, rep(0, length(grad)), scale = scale)
     } else {
       est <- scale_est(obs_est, grad, scale = scale)
     }
