@@ -83,6 +83,42 @@ test_that("IPW AUC estimation with a better learner works", {
   expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
 })
 
+set.seed(9876)
+
+# test that sensitivity with a better learner works
+test_that("IPW sensitivity estimation with a better learner works", {
+  expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
+                         SL.library = "SL.glm", obsWeights = weights_cc))
+  est_sens_wauc <- WeightedROC::WeightedROC(
+    guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
+  )
+  cutoff_index <- which.min(abs(est_sens_wauc$threshold - 0.5))
+  cutoff <- est_sens_wauc$threshold[cutoff_index]
+  est_sens <- measure_sensitivity(fitted_values = sl_fit$SL.predict, y = y_cc,
+                                  full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
+                                  ipc_est_type = "ipw", cutoff = cutoff,
+                                  ipc_weights = ipc_weights, ipc_fit_type = "SL",
+                                  SL.library = "SL.glm", method = "method.CC_LS")
+  expect_equal(est_sens$point_est, est_sens_wauc$TPR[cutoff_index], tolerance = 0.001, scale = 1)
+})
+
+test_that("IPW specificity estimation with a better learner works", {
+  expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
+                                        SL.library = "SL.glm", obsWeights = weights_cc))
+  est_sens_wauc <- WeightedROC::WeightedROC(
+    guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
+  )
+  cutoff_index <- which.min(abs(est_sens_wauc$threshold - 0.5))
+  cutoff <- est_sens_wauc$threshold[cutoff_index]
+  est_spec <- measure_specificity(fitted_values = sl_fit$SL.predict, y = y_cc,
+                                  full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
+                                  ipc_est_type = "ipw", cutoff = cutoff,
+                                  ipc_weights = ipc_weights, ipc_fit_type = "SL",
+                                  SL.library = "SL.glm", method = "method.CC_LS")
+  expect_equal(est_spec$point_est, 1-est_sens_wauc$FPR[cutoff_index], tolerance = 0.001, scale = 1)
+})
+
+
 # test IPW CV-VIM --------------------------------------------------------------
 # test that VIM with inverse probability of coarsening weights and cross-fitting works
 set.seed(5678)
@@ -131,4 +167,5 @@ test_that("SPVIM with IPW and binary outcome works", {
                                Z = c("Y","X1","X2")))
   expect_equal(est$est[2], 0.1, tolerance = 0.05, scale = 1)
 })
+
 
