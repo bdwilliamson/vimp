@@ -805,7 +805,8 @@ process_arg_lst <- function(arg_lst) {
 #' @return the full string indicating the type of VIM
 #' @export
 get_full_type <- function(type) {
-  types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "average_value")
+  types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "average_value",
+             "sensitivity", "specificity", "ppv", "npv")
   full_type <- types[pmatch(type, types)]
   if (is.na(full_type)) {
     stop("We currently do not support the entered variable importance parameter.")
