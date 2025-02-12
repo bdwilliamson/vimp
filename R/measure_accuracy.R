@@ -31,6 +31,7 @@
 #'   (defaults to \code{FALSE})
 #' @param nuisance_estimators not used; for compatibility with \code{measure_average_value}.
 #' @param a not used; for compatibility with \code{measure_average_value}.
+#' @param cutoff The risk score cutoff at which the accuracy is evaluated, defaults to 0.5 (for the accuracy of the Bayes classifier).
 #' @param ... other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.
 #'
 #' @return A named list of: (1) the estimated classification accuracy of the
@@ -45,12 +46,12 @@ measure_accuracy <- function(fitted_values, y, full_y = NULL,
                              ipc_eif_preds = rep(1, length(y)),
                              ipc_est_type = "aipw", scale = "logit",
                              na.rm = FALSE, nuisance_estimators = NULL,
-                             a = NULL, ...) {
+                             a = NULL, cutoff = 0.5, ...) {
   # compute the EIF: if there is coarsening, do a correction
   if (!all(ipc_weights == 1)) {
-    obs_grad <- ((fitted_values > 1/2) == y) -
-      mean((fitted_values > 1/2) == y, na.rm = na.rm)
-    obs_est <- mean((1 * ipc_weights[C == 1]) * ((fitted_values > 1/2) == y),
+    obs_grad <- ((fitted_values > cutoff) == y) -
+      mean((fitted_values > cutoff) == y, na.rm = na.rm)
+    obs_est <- mean((1 * ipc_weights[C == 1]) * ((fitted_values > cutoff) == y),
                     na.rm = na.rm)
     # if IPC EIF preds aren't entered, estimate the regression
     ipc_eif_preds <- estimate_eif_projection(obs_grad = obs_grad, C = C,
@@ -65,8 +66,8 @@ measure_accuracy <- function(fitted_values, y, full_y = NULL,
       est <- scale_est(obs_est, grad, scale = scale)
     }
   } else {
-    est <- mean(((fitted_values > 1/2) == y), na.rm = na.rm)
-    grad <- ((fitted_values > 1/2) == y) - mean((fitted_values > 1/2) == y,
+    est <- mean(((fitted_values > cutoff) == y), na.rm = na.rm)
+    grad <- ((fitted_values > cutoff) == y) - mean((fitted_values > cutoff) == y,
                                                 na.rm = na.rm)
   }
   return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))
