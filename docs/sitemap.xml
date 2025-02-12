@@ -142,7 +142,19 @@
     <loc>http://bdwilliamson.github.io/vimp/reference/measure_mse.html</loc>
   </url>
   <url>
+    <loc>http://bdwilliamson.github.io/vimp/reference/measure_npv.html</loc>
+  </url>
+  <url>
+    <loc>http://bdwilliamson.github.io/vimp/reference/measure_ppv.html</loc>
+  </url>
+  <url>
     <loc>http://bdwilliamson.github.io/vimp/reference/measure_r_squared.html</loc>
+  </url>
+  <url>
+    <loc>http://bdwilliamson.github.io/vimp/reference/measure_sensitivity.html</loc>
+  </url>
+  <url>
+    <loc>http://bdwilliamson.github.io/vimp/reference/measure_specificity.html</loc>
   </url>
   <url>
     <loc>http://bdwilliamson.github.io/vimp/reference/merge_vim.html</loc>

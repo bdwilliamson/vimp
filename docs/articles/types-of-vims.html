@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.4</span>
       </span>
     </div>
 
@@ -98,7 +98,7 @@
                         <h4 data-toc-skip class="author">Brian D.
 Williamson</h4>
             
-            <h4 data-toc-skip class="date">2023-08-28</h4>
+            <h4 data-toc-skip class="date">2025-02-11</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/HEAD/vignettes/types-of-vims.Rmd" class="external-link"><code>vignettes/types-of-vims.Rmd</code></a></small>
       <div class="hidden name"><code>types-of-vims.Rmd</code></div>
@@ -109,16 +109,17 @@ Williamson</h4>
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/" class="external-link">"vimp"</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; vimp version 2.3.3: Perform Inference on Algorithm-Agnostic Variable Importance</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; vimp version 2.3.4: Perform Inference on Algorithm-Agnostic Variable Importance</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: nnls</span></span>
 <span><span class="co">#&gt; Loading required package: gam</span></span>
 <span><span class="co">#&gt; Loading required package: splines</span></span>
 <span><span class="co">#&gt; Loading required package: foreach</span></span>
-<span><span class="co">#&gt; Loaded gam 1.22-2</span></span>
+<span><span class="co">#&gt; Loaded gam 1.22-3</span></span>
 <span><span class="co">#&gt; Super Learner</span></span>
-<span><span class="co">#&gt; Version: 2.0-28.1</span></span>
-<span><span class="co">#&gt; Package created on 2021-05-04</span></span></code></pre></div>
+<span><span class="co">#&gt; Version: 2.0-29</span></span>
+<span><span class="co">#&gt; Package created on 2024-02-06</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -156,7 +157,7 @@ Learner (this is for illustration only; in practice, I suggest using a
 large library of learners, as outlined in the <a href="introduction-to-vimp.html">main vignette</a>). Finally, I will use
 the area under the receiver operating characteristic curve (AUC) to
 measure importance.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># read in the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"vrc01"</span><span class="op">)</span></span>
 <span><span class="co"># subset to the columns of interest for this analysis</span></span>
@@ -168,11 +169,12 @@ measure importance.</p>
 <span><span class="co">#&gt;     filter, lag</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyselect.r-lib.org" class="external-link">"tidyselect"</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyselect.r-lib.org" class="external-link">"tidyselect"</a></span><span class="op">)</span></span>
 <span><span class="co"># retain only the columns of interest for this analysis</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="va">vrc01</span><span class="op">$</span><span class="va">ic50.censored</span></span>
-<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://rdrr.io/pkg/magrittr/man/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">vrc01</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"geog"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"subtype"</span><span class="op">)</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"length"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">learners</span> <span class="op">&lt;-</span> <span class="st">"SL.glm"</span></span></code></pre></div>
 </div>
@@ -186,7 +188,7 @@ P_0).\]</span> This is the measure of importance that I estimated in the
 <a href="introduction-to-vimp.html">main vignette</a>. To estimate the
 conditional VIM for family history of heart disease, I can use the
 following code:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># note the use of a small V and a small number of SL folds, for illustration only</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
 <span><span class="va">V</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
@@ -204,7 +206,7 @@ prediction function that <em>uses no covariates</em> (i.e., is fitting
 the mean). Then the marginal VIM is defined as <span class="math display">\[V(f_{0,s}, P_0) - V(f_{0,\emptyset},
 P_0).\]</span> To estimate the marginal VIM for family history of heart
 disease, I can use the following code:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># note the use of a small V and a small number of SL folds, for illustration only</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">5678</span><span class="op">)</span></span>
 <span><span class="va">subtype_01_AE_marg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_auc.html">vimp_auc</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span><span class="op">[</span>, <span class="fl">5</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, indx <span class="op">=</span> <span class="fl">1</span>, SL.library <span class="op">=</span> <span class="va">learners</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span><span class="op">)</span></span></code></pre></div>
@@ -221,7 +223,7 @@ from adding feature <span class="math inline">\(j\)</span> to each
 possible grouping of the other features. To estimate the SPVIM for
 family history of heart disease, I can use the following code (note that
 <code>sp_vim</code> returns VIM estimates for all features):</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">91011</span><span class="op">)</span></span>
 <span><span class="va">all_vim_spvim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sp_vim.html">sp_vim</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, type <span class="op">=</span> <span class="st">"auc"</span>, SL.library <span class="op">=</span> <span class="va">learners</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -242,16 +244,18 @@ confounders.</p>
 <p>The three VIMs defined here may be different for a given feature of
 interest. Indeed, we can see this for whether or not subtype is 01_AE in
 the VRC01 data:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subtype_01_AE_cond</span></span>
 <span><span class="co">#&gt; Variable importance estimates:</span></span>
 <span><span class="co">#&gt;       Estimate    SE         95% CI           VIMP &gt; 0 p-value  </span></span>
-<span><span class="co">#&gt; s = 5 0.001778934 0.05614002 [2.19097e-30, 1] FALSE    0.4873607</span></span>
-<span><span class="va">subtype_01_AE_marg</span></span>
+<span><span class="co">#&gt; s = 5 0.001778934 0.05614002 [2.19097e-30, 1] FALSE    0.4873607</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">subtype_01_AE_marg</span></span>
 <span><span class="co">#&gt; Variable importance estimates:</span></span>
 <span><span class="co">#&gt;       Estimate   SE        95% CI                    VIMP &gt; 0 p-value  </span></span>
-<span><span class="co">#&gt; s = 1 0.01302083 0.1073992 [1.015723e-09, 0.9999942] FALSE    0.4517514</span></span>
-<span><span class="co"># note: need to look at row for s = 5</span></span>
+<span><span class="co">#&gt; s = 1 0.01302083 0.1073992 [1.015723e-09, 0.9999942] FALSE    0.4517514</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># note: need to look at row for s = 5</span></span>
 <span><span class="va">all_vim_spvim</span></span>
 <span><span class="co">#&gt; Variable importance estimates:</span></span>
 <span><span class="co">#&gt;        Estimate    SE          95% CI           VIMP &gt; 0 p-value  </span></span>
@@ -293,7 +297,7 @@ than one) that best addresses your scientific question.</p>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-magaret2019" class="csl-entry">
 Magaret, CA, DC Benkeser, BD Williamson, et al. 2019. <span>“Prediction
 of <span>VRC01</span> Neutralization Sensitivity by <span>HIV</span>-1
@@ -320,7 +324,7 @@ Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href=
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>

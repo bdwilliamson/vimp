@@ -40,6 +40,10 @@ reference:
   - measure_deviance
   - measure_mse
   - measure_r_squared
+  - measure_npv
+  - measure_ppv
+  - measure_sensitivity
+  - measure_specificity
   - est_predictiveness_cv
   - est_predictiveness
 - title: Aggregate variable importance estimates
