@@ -18,6 +18,7 @@ measure_accuracy(
   na.rm = FALSE,
   nuisance_estimators = NULL,
   a = NULL,
+  cutoff = 0.5,
   ...
 )
 }
@@ -63,6 +64,8 @@ apply the correction, and back-transform).}
 \item{nuisance_estimators}{not used; for compatibility with \code{measure_average_value}.}
 
 \item{a}{not used; for compatibility with \code{measure_average_value}.}
+
+\item{cutoff}{The risk score cutoff at which the accuracy is evaluated, defaults to 0.5 (for the accuracy of the Bayes classifier).}
 
 \item{...}{other arguments to SuperLearner, if \code{ipc_fit_type = "SL"}.}
 }

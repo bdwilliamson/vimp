@@ -18,6 +18,21 @@ estimate_nuisances(
   split = 1,
   ...
 )
+
+estimate_nuisances(
+  fit,
+  X,
+  exposure_name,
+  V = 1,
+  SL.library,
+  sample_splitting,
+  sample_splitting_folds,
+  verbose,
+  weights,
+  cross_fitted_se,
+  split = 1,
+  ...
+)
 }
 \arguments{
 \item{fit}{the fitted nuisance function estimator}
@@ -64,7 +79,14 @@ nuisance function estimators for use in the average value VIM:
  the treatment assignment based on the estimated optimal rule
  (based on the estimated outcome regression); the expected outcome under the
  estimated optimal rule; and the estimated propensity score.
+
+nuisance function estimators for use in the average value VIM:
+ the treatment assignment based on the estimated optimal rule
+ (based on the estimated outcome regression); the expected outcome under the
+ estimated optimal rule; and the estimated propensity score.
 }
 \description{
+Estimate nuisance functions for average value-based VIMs
+
 Estimate nuisance functions for average value-based VIMs
 }

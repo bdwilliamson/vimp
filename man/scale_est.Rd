@@ -5,6 +5,8 @@
 \title{Return an estimator on a different scale}
 \usage{
 scale_est(obs_est = NULL, grad = NULL, scale = "identity")
+
+scale_est(obs_est = NULL, grad = NULL, scale = "identity")
 }
 \arguments{
 \item{obs_est}{the observed VIM estimate}
@@ -15,11 +17,20 @@ scale_est(obs_est = NULL, grad = NULL, scale = "identity")
 }
 \value{
 the scaled estimate
+
+the scaled estimate
 }
 \description{
 Return an estimator on a different scale
+
+Return an estimator on a different scale
 }
 \details{
+It may be of interest to return an estimate (or confidence interval)
+  on a different scale than originally measured. For example, computing a
+  confidence interval (CI) for a VIM value that lies in (0,1) on the logit scale
+  ensures that the CI also lies in (0, 1).
+
 It may be of interest to return an estimate (or confidence interval)
   on a different scale than originally measured. For example, computing a
   confidence interval (CI) for a VIM value that lies in (0,1) on the logit scale

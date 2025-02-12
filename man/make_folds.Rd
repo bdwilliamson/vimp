@@ -5,6 +5,8 @@
 \title{Create Folds for Cross-Fitting}
 \usage{
 make_folds(y, V = 2, stratified = FALSE, C = NULL, probs = rep(1/V, V))
+
+make_folds(y, V = 2, stratified = FALSE, C = NULL, probs = rep(1/V, V))
 }
 \arguments{
 \item{y}{the outcome}
@@ -20,7 +22,11 @@ make_folds(y, V = 2, stratified = FALSE, C = NULL, probs = rep(1/V, V))
 }
 \value{
 a vector of folds
+
+a vector of folds
 }
 \description{
+Create Folds for Cross-Fitting
+
 Create Folds for Cross-Fitting
 }

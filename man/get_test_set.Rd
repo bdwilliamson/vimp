@@ -5,6 +5,8 @@
 \title{Return test-set only data}
 \usage{
 get_test_set(arg_lst, k)
+
+get_test_set(arg_lst, k)
 }
 \arguments{
 \item{arg_lst}{a list of estimates, data, etc.}
@@ -13,7 +15,11 @@ get_test_set(arg_lst, k)
 }
 \value{
 the test-set only data
+
+the test-set only data
 }
 \description{
+Return test-set only data
+
 Return test-set only data
 }

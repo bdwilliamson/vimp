@@ -17,6 +17,20 @@ check_fitted_values(
   ss_V = NULL,
   cv = FALSE
 )
+
+check_fitted_values(
+  Y = NULL,
+  f1 = NULL,
+  f2 = NULL,
+  cross_fitted_f1 = NULL,
+  cross_fitted_f2 = NULL,
+  sample_splitting_folds = NULL,
+  cross_fitting_folds = NULL,
+  cross_fitted_se = TRUE,
+  V = NULL,
+  ss_V = NULL,
+  cv = FALSE
+)
 }
 \arguments{
 \item{Y}{the outcome}
@@ -51,11 +65,19 @@ standard errors?}
 \value{
 None. Called for the side effect of stopping the algorithm if
   any inputs are in an unexpected format.
+
+None. Called for the side effect of stopping the algorithm if
+  any inputs are in an unexpected format.
 }
 \description{
 Check pre-computed fitted values for call to vim, cv_vim, or sp_vim
+
+Check pre-computed fitted values for call to vim, cv_vim, or sp_vim
 }
 \details{
+Ensure that inputs to \code{vim}, \code{cv_vim}, and \code{sp_vim}
+  follow the correct formats.
+
 Ensure that inputs to \code{vim}, \code{cv_vim}, and \code{sp_vim}
   follow the correct formats.
 }

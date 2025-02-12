@@ -2,8 +2,8 @@
 % Please edit documentation in R/vimp-package.R
 \docType{package}
 \name{vimp}
-\alias{vimp}
 \alias{vimp-package}
+\alias{vimp}
 \title{vimp: Perform Inference on Algorithm-Agnostic Intrinsic Variable Importance}
 \description{
 A unified framework for valid statistical inference on algorithm-agnostic

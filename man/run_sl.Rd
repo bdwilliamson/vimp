@@ -24,6 +24,27 @@ run_sl(
   vector = TRUE,
   ...
 )
+
+run_sl(
+  Y = NULL,
+  X = NULL,
+  V = 5,
+  SL.library = "SL.glm",
+  univariate_SL.library = NULL,
+  s = 1,
+  cv_folds = NULL,
+  sample_splitting = TRUE,
+  ss_folds = NULL,
+  split = 1,
+  verbose = FALSE,
+  progress_bar = NULL,
+  indx = 1,
+  weights = rep(1, nrow(X)),
+  cross_fitted_se = TRUE,
+  full = NULL,
+  vector = TRUE,
+  ...
+)
 }
 \arguments{
 \item{Y}{the outcome}
@@ -72,7 +93,11 @@ For SPVIMs, can be entered manually.}
 }
 \value{
 a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
+
+a list of length V, with the results of predicting on the hold-out data for each v in 1 through V
 }
 \description{
+Run a Super Learner for the provided subset of features
+
 Run a Super Learner for the provided subset of features
 }

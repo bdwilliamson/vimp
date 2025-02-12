@@ -51,7 +51,7 @@ unobserved).}
 \item{Z}{either \code{NULL} (if no coarsening) or a matrix-like object
 containing the fully observed data.}
 
-\item{folds_Z}{either the cross-validation folds for the observed data 
+\item{folds_Z}{either the cross-validation folds for the observed data
 (no coarsening) or a vector of folds for the fully observed data Z.}
 
 \item{ipc_weights}{weights for inverse probability of coarsening (IPC)

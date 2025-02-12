@@ -5,13 +5,19 @@
 \title{Process argument list for Super Learner estimation of the EIF}
 \usage{
 process_arg_lst(arg_lst)
+
+process_arg_lst(arg_lst)
 }
 \arguments{
 \item{arg_lst}{the list of arguments for Super Learner}
 }
 \value{
 a list of modified arguments for EIF estimation
+
+a list of modified arguments for EIF estimation
 }
 \description{
+Process argument list for Super Learner estimation of the EIF
+
 Process argument list for Super Learner estimation of the EIF
 }

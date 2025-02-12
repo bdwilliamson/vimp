@@ -5,6 +5,8 @@
 \title{Create complete-case outcome, weights, and Z}
 \usage{
 create_z(Y, C, Z, X, ipc_weights)
+
+create_z(Y, C, Z, X, ipc_weights)
 }
 \arguments{
 \item{Y}{the outcome}
@@ -19,7 +21,11 @@ create_z(Y, C, Z, X, ipc_weights)
 }
 \value{
 a list, with the complete-case outcome, weights, and Z matrix
+
+a list, with the complete-case outcome, weights, and Z matrix
 }
 \description{
+Create complete-case outcome, weights, and Z
+
 Create complete-case outcome, weights, and Z
 }

@@ -12,6 +12,15 @@ estimate_eif_projection(
   ipc_eif_preds = NULL,
   ...
 )
+
+estimate_eif_projection(
+  obs_grad = NULL,
+  C = NULL,
+  Z = NULL,
+  ipc_fit_type = NULL,
+  ipc_eif_preds = NULL,
+  ...
+)
 }
 \arguments{
 \item{obs_grad}{the estimated (observed) EIF}
@@ -34,7 +43,11 @@ covariates/outcome; otherwise, not used.}
 }
 \value{
 the projection of the EIF onto the fully-observed variables
+
+the projection of the EIF onto the fully-observed variables
 }
 \description{
+Estimate projection of EIF on fully-observed variables
+
 Estimate projection of EIF on fully-observed variables
 }

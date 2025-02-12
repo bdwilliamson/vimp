@@ -5,6 +5,8 @@
 \title{Check inputs to a call to vim, cv_vim, or sp_vim}
 \usage{
 check_inputs(Y, X, f1, f2, indx)
+
+check_inputs(Y, X, f1, f2, indx)
 }
 \arguments{
 \item{Y}{the outcome}
@@ -22,11 +24,19 @@ using the reduced set of covariates}
 \value{
 None. Called for the side effect of stopping the algorithm if
   any inputs are in an unexpected format.
+
+None. Called for the side effect of stopping the algorithm if
+  any inputs are in an unexpected format.
 }
 \description{
 Check inputs to a call to vim, cv_vim, or sp_vim
+
+Check inputs to a call to vim, cv_vim, or sp_vim
 }
 \details{
+Ensure that inputs to \code{vim}, \code{cv_vim}, and \code{sp_vim}
+  follow the correct formats.
+
 Ensure that inputs to \code{vim}, \code{cv_vim}, and \code{sp_vim}
   follow the correct formats.
 }

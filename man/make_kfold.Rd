@@ -9,6 +9,12 @@ make_kfold(
   sample_splitting_folds = rep(1, length(unique(cross_fitting_folds))),
   C = rep(1, length(cross_fitting_folds))
 )
+
+make_kfold(
+  cross_fitting_folds,
+  sample_splitting_folds = rep(1, length(unique(cross_fitting_folds))),
+  C = rep(1, length(cross_fitting_folds))
+)
 }
 \arguments{
 \item{cross_fitting_folds}{the vector of cross-fitting folds}
@@ -19,7 +25,11 @@ make_kfold(
 }
 \value{
 the two sets of testing folds for K-fold cross-fitting
+
+the two sets of testing folds for K-fold cross-fitting
 }
 \description{
+Turn folds from 2K-fold cross-fitting into individual K-fold folds
+
 Turn folds from 2K-fold cross-fitting into individual K-fold folds
 }

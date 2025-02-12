@@ -5,13 +5,19 @@
 \title{Obtain the type of VIM to estimate using partial matching}
 \usage{
 get_full_type(type)
+
+get_full_type(type)
 }
 \arguments{
 \item{type}{the partial string indicating the type of VIM}
 }
 \value{
 the full string indicating the type of VIM
+
+the full string indicating the type of VIM
 }
 \description{
+Obtain the type of VIM to estimate using partial matching
+
 Obtain the type of VIM to estimate using partial matching
 }
