@@ -1,195 +1,71 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/404.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/articles/introduction-to-vimp.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/articles/ipcw-vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/articles/precomputed-regressions.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/articles/types-of-vims.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/authors.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/index.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/news/index.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/average_vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/bootstrap_se.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/check_fitted_values.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/check_inputs.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/create_z.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/cv_vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/est_predictiveness.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/est_predictiveness_cv.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/estimate.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/estimate.predictiveness_measure.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/estimate_eif_projection.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/estimate_nuisances.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/estimate_type_predictiveness.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/extract_sampled_split_predictions.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/format.predictiveness_measure.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/format.vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/get_cv_sl_folds.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/get_full_type.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/get_test_set.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/make_folds.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/make_kfold.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_accuracy.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_anova.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_auc.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_average_value.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_cross_entropy.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_deviance.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_mse.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/measure_r_squared.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/merge_vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/predictiveness_measure.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/print.predictiveness_measure.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/print.vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/process_arg_lst.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/run_sl.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/sample_subsets.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/scale_est.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/sp_vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/spvim_ics.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/spvim_se.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vim.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_accuracy.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_anova.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_auc.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_ci.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_deviance.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_hypothesis_test.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_regression.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_rsquared.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vimp_se.html</loc>
-  </url>
-  <url>
-    <loc>http://bdwilliamson.github.io/vimp/reference/vrc01.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>http://bdwilliamson.github.io/vimp/404.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/LICENSE-text.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/LICENSE.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/articles/index.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/articles/introduction-to-vimp.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/articles/ipcw-vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/articles/precomputed-regressions.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/articles/types-of-vims.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/authors.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/index.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/news/index.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/average_vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/bootstrap_se.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/check_fitted_values.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/check_inputs.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/create_z.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/cv_vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/est_predictiveness.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/est_predictiveness_cv.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/estimate.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/estimate.predictiveness_measure.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/estimate_eif_projection.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/estimate_nuisances.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/estimate_type_predictiveness.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/extract_sampled_split_predictions.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/format.predictiveness_measure.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/format.vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/get_cv_sl_folds.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/get_full_type.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/get_test_set.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/index.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/make_folds.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/make_kfold.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_accuracy.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_anova.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_auc.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_average_value.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_cross_entropy.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_deviance.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_mse.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_npv.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_ppv.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_r_squared.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_sensitivity.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/measure_specificity.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/merge_vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/predictiveness_measure.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/print.predictiveness_measure.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/print.vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/process_arg_lst.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/run_sl.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/sample_subsets.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/scale_est.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/sp_vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/spvim_ics.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/spvim_se.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vim.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_accuracy.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_anova.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_auc.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_ci.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_deviance.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_hypothesis_test.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_regression.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_rsquared.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vimp_se.html</loc></url>
+<url><loc>http://bdwilliamson.github.io/vimp/reference/vrc01.html</loc></url>
 </urlset>
+
