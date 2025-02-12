@@ -374,6 +374,7 @@ get_test_set <- function(arg_lst, k) {
     l[folds == k]
   })
   test_lst$a <- arg_lst$a[folds == k]
+  test_lst$cutoff <- arg_lst$cutoff
   return(test_lst)
 }
 
