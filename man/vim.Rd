@@ -157,7 +157,7 @@ and \code{sample_splitting = FALSE}); defaults to 1000.}
 
 \item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"},
 \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
-\code{boot::boot.ci}) if requested. Defaults to \code{"perc"}.}
+\code{boot.ci}) if requested. Defaults to \code{"perc"}.}
 
 \item{clustered}{should the bootstrap resamples be performed on clusters
 rather than individual observations? Defaults to \code{FALSE}.}
@@ -264,6 +264,6 @@ est_2 <- vim(Y = y, f1 = full_fitted, f2 = reduced_fitted,
 }
 \seealso{
 \code{\link[SuperLearner]{SuperLearner}} for specific usage of the
-  \code{SuperLearner} function and package and \code{\link{boot}{boot.ci}}
+  \code{SuperLearner} function and package and \code{\link[boot]{boot.ci}}
   for specific usage of the \code{boot.ci} function and package.
 }
