@@ -1,3 +1,19 @@
+# vimp 2.3.5
+
+## Major changes
+None
+
+## Minor changes
+* Update reference pages to pass new CRAN checks for links and items
+
+# vimp 2.3.4
+
+## Major changes
+None
+
+## Minor changes
+* Update reference pages
+
 # vimp 2.3.3
 
 ## Major changes

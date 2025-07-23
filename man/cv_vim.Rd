@@ -195,7 +195,7 @@ and \code{sample_splitting = FALSE}); defaults to 1000.}
 
 \item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"},
 \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
-\code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
+\code{boot::boot.ci}) if requested. Defaults to \code{"perc"}.}
 
 \item{clustered}{should the bootstrap resamples be performed on clusters
 rather than individual observations? Defaults to \code{FALSE}.}

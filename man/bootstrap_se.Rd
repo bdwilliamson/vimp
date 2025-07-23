@@ -45,7 +45,7 @@ and \code{sample_splitting = FALSE}); defaults to 1000.}
 
 \item{boot_interval_type}{the type of bootstrap interval (one of \code{"norm"},
 \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
-\code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.}
+\code{boot::boot.ci}) if requested. Defaults to \code{"perc"}.}
 
 \item{alpha}{the level to compute the confidence interval at.
 Defaults to 0.05, corresponding to a 95\% confidence interval.}

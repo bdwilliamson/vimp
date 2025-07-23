@@ -95,7 +95,7 @@
 #'   and \code{sample_splitting = FALSE}); defaults to 1000.
 #' @param boot_interval_type the type of bootstrap interval (one of \code{"norm"},
 #'   \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
-#'   \code{\link{boot}{boot.ci}}) if requested. Defaults to \code{"perc"}.
+#'   \code{boot::boot.ci}) if requested. Defaults to \code{"perc"}.
 #' @param clustered should the bootstrap resamples be performed on clusters
 #'   rather than individual observations? Defaults to \code{FALSE}.
 #' @param cluster_id vector of the same length as \code{Y} giving the cluster IDs
@@ -190,7 +190,8 @@
 #'             sample_splitting_folds = get_cv_sl_folds(full_fit$folds))
 #'
 #' @seealso \code{\link[SuperLearner]{SuperLearner}} for specific usage of the
-#'   \code{SuperLearner} function and package.
+#'   \code{SuperLearner} function and package and \code{\link{boot}{boot.ci}}
+#'   for specific usage of the \code{boot.ci} function and package.
 #' @export
 vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 type = "r_squared", run_regression = TRUE,

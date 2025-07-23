@@ -7,7 +7,7 @@
 #'
 #' @return an object of class \code{vim} containing all of the output
 #' from the individual \code{vim} objects. This results in a list containing:
-#' \itemize{
+#' \describe{
 #'  \item{s}{ - a list of the column(s) to calculate variable importance for}
 #'  \item{SL.library}{ - a list of the libraries of learners passed to \code{SuperLearner}}
 #'  \item{full_fit}{ - a list of the fitted values of the chosen method fit to the full data}
