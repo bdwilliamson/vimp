@@ -1,12 +1,13 @@
 # R/`vimp`: inference on algorithm-agnostic variable importance <img src="man/figures/logo.png" align="right" width="120px"/>
 
+ <!-- badges: start -->
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/vimp)](https://cran.r-project.org/package=vimp)
-[![Travis-CI Build Status](https://travis-ci.com/bdwilliamson/vimp.svg?branch=master)](https://travis-ci.com/bdwilliamson/vimp)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bdwilliamson/vimp?branch=master&svg=true)](https://ci.appveyor.com/project/bdwilliamson/vimp)
+[![R-CMD-check](https://github.com/bdwilliamson/vimp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bdwilliamson/vimp/actions/workflows/R-CMD-check.yaml)
 [![Coverage status](https://codecov.io/gh/bdwilliamson/vimp/branch/master/graph/badge.svg)](https://codecov.io/github/bdwilliamson/vimp?branch=master)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/vimp)](https://CRAN.R-project.org/package=vimp)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<!-- badges: end -->
 
 **Software authors:** [Brian Williamson](https://bdwilliamson.github.io/), [Jean Feng](https://jeanfeng.com/), and [Charlie Wolock](https://cwolock.github.io/)
 
