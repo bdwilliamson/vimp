@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.5</span>
       </span>
     </div>
 
@@ -90,19 +90,44 @@
     
 
 <p>an object of class <code>vim</code> containing the (weighted) average of the individual importance estimates, as well as the appropriate standard error and confidence interval.
-This results in a list containing:</p><ul><li><p>s - a list of the column(s) to calculate variable importance for</p></li>
-<li><p>SL.library - a list of the libraries of learners passed to <code>SuperLearner</code></p></li>
-<li><p>full_fit - a list of the fitted values of the chosen method fit to the full data</p></li>
-<li><p>red_fit - a list of the fitted values of the chosen method fit to the reduced data</p></li>
-<li><p>est- a vector with the corrected estimates</p></li>
-<li><p>naive- a vector with the naive estimates</p></li>
-<li><p>update- a list with the influence curve-based updates</p></li>
-<li><p>mat - a matrix with the estimated variable importance, the standard error, and the \((1-\alpha) \times 100\)% confidence interval</p></li>
-<li><p>full_mod - a list of the objects returned by the estimation procedure for the full data regression (if applicable)</p></li>
-<li><p>red_mod - a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)</p></li>
-<li><p>alpha - the level, for confidence interval calculation</p></li>
-<li><p>y - a list of the outcomes</p></li>
-</ul></div>
+This results in a list containing:</p><dl><dt>s</dt>
+<dd><p>- a list of the column(s) to calculate variable importance for</p></dd>
+
+ <dt>SL.library</dt>
+<dd><p>- a list of the libraries of learners passed to <code>SuperLearner</code></p></dd>
+
+ <dt>full_fit</dt>
+<dd><p>- a list of the fitted values of the chosen method fit to the full data</p></dd>
+
+ <dt>red_fit</dt>
+<dd><p>- a list of the fitted values of the chosen method fit to the reduced data</p></dd>
+
+ <dt>est</dt>
+<dd><p>- a vector with the corrected estimates</p></dd>
+
+ <dt>naive</dt>
+<dd><p>- a vector with the naive estimates</p></dd>
+
+ <dt>update</dt>
+<dd><p>- a list with the influence curve-based updates</p></dd>
+
+ <dt>mat</dt>
+<dd><p>- a matrix with the estimated variable importance, the standard error, and the \((1-\alpha) \times 100\)% confidence interval</p></dd>
+
+ <dt>full_mod</dt>
+<dd><p>- a list of the objects returned by the estimation procedure for the full data regression (if applicable)</p></dd>
+
+ <dt>red_mod</dt>
+<dd><p>- a list of the objects returned by the estimation procedure for the reduced data regression (if applicable)</p></dd>
+
+ <dt>alpha</dt>
+<dd><p>- the level, for confidence interval calculation</p></dd>
+
+ <dt>y</dt>
+<dd><p>- a list of the outcomes</p></dd>
+
+
+</dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>

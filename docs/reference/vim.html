@@ -19,7 +19,7 @@ predictiveness using the feature(s) of interest versus not."><meta property="og:
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.5</span>
       </span>
     </div>
 
@@ -286,7 +286,7 @@ and <code>sample_splitting = FALSE</code>); defaults to 1000.</p></dd>
 <dt>boot_interval_type</dt>
 <dd><p>the type of bootstrap interval (one of <code>"norm"</code>,
 <code>"basic"</code>, <code>"stud"</code>, <code>"perc"</code>, or <code>"bca"</code>, as in
-<code>boot{boot.ci}</code>) if requested. Defaults to <code>"perc"</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/boot/man/boot.ci.html" class="external-link">boot::boot.ci</a></code>) if requested. Defaults to <code>"perc"</code>.</p></dd>
 
 
 <dt>clustered</dt>
@@ -395,7 +395,8 @@ within the <code>vim</code> object. This results in a list including:</p><dl><dt
     <div id="see-also">
     <h2>See also</h2>
     <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/SuperLearner/man/SuperLearner.html" class="external-link">SuperLearner</a></code> for specific usage of the
-  <code>SuperLearner</code> function and package.</p></div>
+  <code>SuperLearner</code> function and package and <code>boot{boot.ci}</code>
+  for specific usage of the <code>boot.ci</code> function and package.</p></div>
     </div>
 
     <div id="ref-examples">

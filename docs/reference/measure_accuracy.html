@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.5</span>
       </span>
     </div>
 
@@ -86,6 +86,7 @@
 <span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  nuisance_estimators <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  a <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cutoff <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -158,6 +159,10 @@ apply the correction, and back-transform).</p></dd>
 
 <dt>a</dt>
 <dd><p>not used; for compatibility with <code>measure_average_value</code>.</p></dd>
+
+
+<dt>cutoff</dt>
+<dd><p>The risk score cutoff at which the accuracy is evaluated, defaults to 0.5 (for the accuracy of the Bayes classifier).</p></dd>
 
 
 <dt>...</dt>
