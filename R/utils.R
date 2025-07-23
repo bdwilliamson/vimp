@@ -618,7 +618,7 @@ estimate_nuisances <- function(fit, X, exposure_name, V = 1, SL.library, sample_
 # @keywords internal
 release_questions <- function() {
   c(
-    "Have you run rhub::rhub_check() with 1,4,5?"
+    "Have you run rhub::rhub_check() with 1,4,5?",
     "Have you run devtools::check_win_devel() and devtools::check_win_release()?"
   )
 }
