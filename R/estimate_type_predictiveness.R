@@ -22,13 +22,13 @@ estimate_type_predictiveness <- function(arg_lst, type) {
   } else if (grepl("r_squared", type)) {
     est_lst <- do.call(measure_r_squared, arg_lst)
   } else if (grepl("sensitivity", type)) {
-    est_lst <- do.call(measure_sensitivity(, arg_lst))
+    est_lst <- do.call(measure_sensitivity, arg_lst)
   } else if (grepl("specificity", type)) {
-    est_lst <- do.call(measure_specificity(, arg_lst))
+    est_lst <- do.call(measure_specificity, arg_lst)
   } else if (grepl("ppv", type)) {
-    est_lst <- do.call(measure_ppv(, arg_lst))
+    est_lst <- do.call(measure_ppv, arg_lst)
   } else if (grepl("npv", type)) {
-    est_lst <- do.call(measure_npv(, arg_lst))
+    est_lst <- do.call(measure_npv, arg_lst)
   } else {
     stop("The requested predictiveness measure is not available in vimp.")
   }
