@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version, I have:
 
-* Updated man pages to handle NOTEs in current CRAN checks
+* Updated package internals
 
 ## Test environments
 * local windows-x86_64, R 4.4.0

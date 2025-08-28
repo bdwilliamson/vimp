@@ -1,3 +1,13 @@
+# vimp 2.3.6
+
+## Major changes
+
+* Update the way that PPV, NPV, sensitivity, and specificity are calculated so that they return meaningful answers if all predictions are the same (for example, if using the mean outcome value to predict)
+
+## Minor changes
+
+* Add tests for PPV, NPV, sensitivity, specificity
+
 # vimp 2.3.5
 
 ## Major changes
