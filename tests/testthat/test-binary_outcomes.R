@@ -114,6 +114,7 @@ test_that("Deviance-based variable importance works", {
 })
 
 # test measures of predictiveness ----------------------------------------------
+set.seed(20250828)
 test_that("Measures of predictiveness work", {
  auc_lst <- est_predictiveness(full_fitted, y,
                                 type = "auc")
@@ -128,6 +129,22 @@ test_that("Measures of predictiveness work", {
  full_ce <- est_predictiveness(full_fitted, y,
                                type = "cross_entropy")$point_est
  expect_equal(full_ce, -0.24, tolerance = 0.1, scale = 1)
+ full_sens <- est_predictiveness(full_fitted, y,
+                                 type = "sens", cutoff = 0.5)$point_est
+ expect_equal(full_sens, 0.92, tolerance = 0.1, scale = 1)
+ full_spec <- est_predictiveness(full_fitted, y,
+                                 type = "spec", cutoff = 0.5)$point_est
+ expect_equal(full_spec, 0.86, tolerance = 0.1, scale = 1)
+ full_ppv <- est_predictiveness(full_fitted, y,
+                                type = "ppv", cutoff = 0.5)$point_est
+ expect_equal(full_ppv, 0.91, tolerance = 0.1, scale = 1)
+ full_npv <- est_predictiveness(full_fitted, y,
+                                type = "npv", cutoff = 0.5)$point_est
+ expect_equal(full_sens, 0.88, tolerance = 0.1, scale = 1)
+ fitted_mean <- rep(mean(y), length(y))
+ mean_ppv <- est_predictiveness(fitted_mean, y,
+                                type = "ppv", cutoff = quantile(fitted_mean, 0.95))$point_est
+ expect_equal(mean_ppv, 0.60, tolerance = 0.1, scale = 1)
 })
 
 # check against cvAUC ----------------------------------------------------------

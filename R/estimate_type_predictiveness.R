@@ -21,9 +21,9 @@ estimate_type_predictiveness <- function(arg_lst, type) {
     est_lst <- do.call(measure_mse, arg_lst)
   } else if (grepl("r_squared", type)) {
     est_lst <- do.call(measure_r_squared, arg_lst)
-  } else if (grepl("sensitivity", type)) {
+  } else if (grepl("sens", type)) {
     est_lst <- do.call(measure_sensitivity, arg_lst)
-  } else if (grepl("specificity", type)) {
+  } else if (grepl("spec", type)) {
     est_lst <- do.call(measure_specificity, arg_lst)
   } else if (grepl("ppv", type)) {
     est_lst <- do.call(measure_ppv, arg_lst)

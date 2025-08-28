@@ -21,11 +21,11 @@ measure_ppv <- function(fitted_values, y, full_y = NULL,
                         a = NULL, cutoff = 0.5, ...) {
 
   if (!all(ipc_weights == 1)) {
-    theta_1 <- mean(fitted_values > cutoff, na.rm = na.rm)
-    temp_est <- sum(y == 1 & fitted_values > cutoff, na.rm = na.rm) / sum(fitted_values > cutoff, na.rm = na.rm)
-    obs_grad <- (y == 1 & fitted_values > cutoff)/theta_1 - (fitted_values > cutoff)*temp_est/(theta_1)
-    obs_est <-  sum((1 * ipc_weights[C == 1]) * (y == 1 & fitted_values > cutoff), na.rm = na.rm) /
-      sum((1 * ipc_weights[C == 1]) * (fitted_values > cutoff), na.rm = na.rm)
+    theta_1 <- mean(fitted_values >= cutoff, na.rm = na.rm)
+    temp_est <- sum(y == 1 & fitted_values >= cutoff, na.rm = na.rm) / sum(fitted_values >= cutoff, na.rm = na.rm)
+    obs_grad <- (y == 1 & fitted_values >= cutoff)/theta_1 - (fitted_values >= cutoff)*temp_est/(theta_1)
+    obs_est <-  sum((1 * ipc_weights[C == 1]) * (y == 1 & fitted_values >= cutoff), na.rm = na.rm) /
+      sum((1 * ipc_weights[C == 1]) * (fitted_values >= cutoff), na.rm = na.rm)
 
     # if IPC EIF preds aren't entered, estimate the regression
     ipc_eif_preds <- estimate_eif_projection(obs_grad = obs_grad, C = C,
@@ -41,9 +41,9 @@ measure_ppv <- function(fitted_values, y, full_y = NULL,
       est <- scale_est(obs_est, grad, scale = scale)
     }
   } else{
-    theta_1 <- mean(fitted_values > cutoff, na.rm = na.rm)
-    est <- sum(y == 1 & fitted_values > cutoff, na.rm = na.rm) / sum(fitted_values > cutoff, na.rm = na.rm)
-    grad <- (y == 1 & fitted_values > cutoff)/theta_1 - (fitted_values > cutoff)*est/(theta_1)
+    theta_1 <- mean(fitted_values >= cutoff, na.rm = na.rm)
+    est <- sum(y == 1 & fitted_values >= cutoff, na.rm = na.rm) / sum(fitted_values >= cutoff, na.rm = na.rm)
+    grad <- (y == 1 & fitted_values >= cutoff)/theta_1 - (fitted_values >= cutoff)*est/(theta_1)
   }
 
   return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))

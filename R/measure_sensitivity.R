@@ -22,8 +22,8 @@ measure_sensitivity <- function(fitted_values, y, full_y = NULL,
 
   if (!all(ipc_weights == 1)) {
     p_1 <- mean(y == 1, na.rm = na.rm)
-    temp_est <- sum(y == 1 & fitted_values > cutoff, na.rm = na.rm) / sum(y == 1, na.rm = na.rm)
-    obs_grad <- (y == 1 & fitted_values > cutoff)/p_1 - (y == 1)*temp_est/(p_1)
+    temp_est <- sum(y == 1 & fitted_values >= cutoff, na.rm = na.rm) / sum(y == 1, na.rm = na.rm)
+    obs_grad <- (y == 1 & fitted_values >= cutoff)/p_1 - (y == 1)*temp_est/(p_1)
     obs_est <-  sum((1 * ipc_weights[C == 1]) * (y == 1 & fitted_values > cutoff), na.rm = na.rm) /
       sum((1 * ipc_weights[C == 1]) * (y == 1), na.rm = na.rm)
 
@@ -42,8 +42,8 @@ measure_sensitivity <- function(fitted_values, y, full_y = NULL,
     }
   } else{
     p_1 <- mean(y == 1, na.rm = na.rm)
-    est <- sum(y == 1 & fitted_values > cutoff, na.rm = na.rm) / sum(y == 1, na.rm = na.rm)
-    grad <- (y == 1 & fitted_values > cutoff)/p_1 - (y == 1)*est/(p_1)
+    est <- sum(y == 1 & fitted_values >= cutoff, na.rm = na.rm) / sum(y == 1, na.rm = na.rm)
+    grad <- (y == 1 & fitted_values >= cutoff)/p_1 - (y == 1)*est/(p_1)
   }
 
   return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))

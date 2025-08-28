@@ -59,7 +59,8 @@ est_predictiveness <- function(fitted_values, y, a = NULL, full_y = NULL,
 
     # get the correct measure function; if not one of the supported ones, say so
     types <- c("accuracy", "auc", "deviance", "r_squared", "anova", "mse",
-               "cross_entropy", "average_value")
+               "cross_entropy", "average_value", "sensitivity", "specificity",
+               "ppv", "npv")
     full_type <- types[pmatch(type, types)]
     if (is.na(full_type)) stop(
         paste0("We currently do not support the entered variable importance ",
@@ -67,7 +68,9 @@ est_predictiveness <- function(fitted_values, y, a = NULL, full_y = NULL,
     )
     measure_funcs <- c(measure_accuracy, measure_auc, measure_deviance,
                        measure_r_squared, NA, measure_mse,
-                       measure_cross_entropy, measure_average_value)
+                       measure_cross_entropy, measure_average_value,
+                       measure_sensitivity, measure_specificity,
+                       measure_ppv, measure_npv)
     measure_func <- measure_funcs[pmatch(type, types)]
 
     # compute plug-in point estimate, EIF, inverse-weighted EIF predictions
