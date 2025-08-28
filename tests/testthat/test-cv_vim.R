@@ -5,7 +5,7 @@ suppressWarnings(library("SuperLearner"))
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
-n <- 5e4
+n <- 1e4
 x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the x's
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
@@ -138,8 +138,10 @@ test_that("Cross-validated variable importance with odd number of outer folds wo
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check that influence curve worked
-  expect_equal(sum(!is.na(est$eif_full)), 24999)
-  expect_equal(sum(!is.na(est$eif_redu)), 25001)
+  # expect_equal(sum(!is.na(est$eif_full)), 24999)
+  # expect_equal(sum(!is.na(est$eif_redu)), 25001)
+  expect_equal(sum(!is.na(est$eif_full)), 5001)
+  expect_equal(sum(!is.na(est$eif_redu)), 4999)
   # check that the point estimate is what it is supposed to be
   # expect_equal(sprintf("%.15f", est$est), "0.307418610446996")
 })

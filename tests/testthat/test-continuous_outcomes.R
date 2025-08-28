@@ -5,7 +5,7 @@ suppressWarnings(library("SuperLearner"))
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
-n <- 5e4
+n <- 1e4
 x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the covariates
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)

@@ -6,7 +6,7 @@ suppressWarnings(library("SuperLearner"))
 # make continuous data
 set.seed(4747)
 p <- 2
-n <- 5e4
+n <- 1e4
 x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the covariates
 y_continuous <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
@@ -50,7 +50,7 @@ accuracy_full <- 0.927
 auc_full <- 0.984
 cross_entropy_full <- -0.163
 deviance_full <- 0.764
-n <- 5e4
+n <- 1e4
 set.seed(4747)
 dat <- gen_data(n, mu_0, mu_1, Sigma, p = 0.6, j = 1)
 y_binary <- dat$y

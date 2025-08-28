@@ -5,7 +5,7 @@ library("SuperLearner")
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
-n <- 5e4
+n <- 1e4
 x <- as.data.frame(replicate(p, stats::rnorm(n, 0, 1)))
 # apply the function to the x's
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
@@ -44,7 +44,7 @@ test_that("Estimating SPVIMs works", {
   expect_silent(format(est)[1])
   expect_output(print(est), "Estimate", fixed = TRUE)
   # check the actual point estimates
-  # expect_equal(sprintf("%.15f", as.numeric(est$est[2])), 
+  # expect_equal(sprintf("%.15f", as.numeric(est$est[2])),
   #              "0.135665058694294")
 })
 set.seed(1234)
@@ -68,7 +68,7 @@ test_that("Estimating SPVIMs without cross-fitted SEs works", {
 set.seed(5678)
 test_that("Estimating SPVIMs with special univariate library works", {
   est_uni <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
-                    SL.library = learners, 
+                    SL.library = learners,
                     univariate_SL.library = univariate_learners,
                     gamma = .1, alpha = 0.05, delta = 0,
                     cvControl = list(V = V), env = environment())
@@ -78,7 +78,7 @@ test_that("Estimating SPVIMs with special univariate library works", {
 set.seed(91011)
 test_that("Estimating SPVIMs with a single library function works", {
   est_single <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
-                       SL.library = "SL.glm", 
+                       SL.library = "SL.glm",
                        univariate_SL.library = univariate_learners,
                        gamma = .1, alpha = 0.05, delta = 0,
                        cvControl = list(V = V), env = environment())
@@ -88,10 +88,10 @@ test_that("Estimating SPVIMs with a single library function works", {
 set.seed(121314)
 test_that("Estimating SPVIMs with verbose = TRUE works", {
   expect_message(est_verbose <- sp_vim(Y = y, X = x, V = V, type = "r_squared",
-                                       SL.library = "SL.glm", 
+                                       SL.library = "SL.glm",
                                        univariate_SL.library = "SL.glm",
                                        gamma = .1, alpha = 0.05, delta = 0,
-                                       cvControl = list(V = V), env = environment(), 
+                                       cvControl = list(V = V), env = environment(),
                                        verbose = TRUE),
                  "Fitting learners",
                  all = FALSE)

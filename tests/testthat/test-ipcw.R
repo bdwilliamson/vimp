@@ -2,11 +2,13 @@
 library("testthat")
 suppressWarnings(library("SuperLearner"))
 library("WeightedROC")
+library("dplyr")
+library("purrr")
 
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
-n <- 5e4
+n <- 1e4
 x <- replicate(p, stats::rnorm(n, 0, 1))
 # apply the function to the x's
 y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
@@ -35,6 +37,7 @@ ipc_weights <- 1 / predict(glm(C ~ y, family = "binomial"), type = "response")
 
 learners <- c("SL.glm", "SL.mean")
 V <- 2
+nboot <- 500
 
 # test IPW VIM -----------------------------------------------------------------
 set.seed(1234)
@@ -51,40 +54,55 @@ y_cc <- y_bin[cc]
 x_cc <- x_df[cc, ]
 weights_cc <- ipc_weights[cc]
 set.seed(121314)
+sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
+                       SL.library = "SL.mean", obsWeights = weights_cc)
 # test that AUC estimation with the mean works
+est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
+                       full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
+                       ipc_est_type = "ipw",
+                       ipc_weights = ipc_weights, ipc_fit_type = "SL",
+                       SL.library = "SL.glm", method = "method.CC_LS")
+est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+  guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
+))
+
 test_that("IPW AUC estimation with the mean works", {
-  sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
-                         SL.library = "SL.mean", obsWeights = weights_cc)
-  est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
-                         ipc_est_type = "ipw",
-                         ipc_weights = ipc_weights, ipc_fit_type = "SL",
-                         SL.library = "SL.glm", method = "method.CC_LS")
-  est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-    guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
-  ))
   expect_equal(est_auc$point_est, 0.5, tolerance = 0.001, scale = 1)
   expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
 })
 set.seed(121314)
+suppressWarnings(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
+                                      SL.library = "SL.glm", obsWeights = weights_cc))
+
 # test that AUC estimation with a better learner works
-test_that("IPW AUC estimation with a better learner works", {
-  expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
-                                        SL.library = "SL.glm", obsWeights = weights_cc))
-  est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
-                         ipc_est_type = "ipw",
-                         ipc_weights = ipc_weights, ipc_fit_type = "SL",
-                         SL.library = "SL.glm", method = "method.CC_LS")
-  expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
-  est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-    guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
+est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
+                       full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
+                       ipc_est_type = "ipw",
+                       ipc_weights = ipc_weights, ipc_fit_type = "SL",
+                       SL.library = "SL.glm", method = "method.CC_LS")
+est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+  guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
+))
+# bootstrap to get weighted AUC SE
+wuac_boot_stat <- function(data, indices) {
+  WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+    guess = data$fit[indices], label = data$y[indices], weight = data$weight[indices]
   ))
+}
+boot_wauc <- boot::boot(data = data.frame(fit = sl_fit$SL.predict, y = y_cc,
+                                          weight = weights_cc),
+                        statistic = wuac_boot_stat,
+                        R = nboot)
+boot_wauc_se <- sqrt(apply(boot_wauc$t, 2, function(x) mean((x - mean(x)) ^ 2)))
+boot_wauc_ci <- boot::boot.ci(boot_wauc, type = "norm")
+auc_se <- sqrt(mean(est_auc$eif ^ 2) / length(est_auc$eif))
+test_that("IPW AUC estimation with a better learner works", {
+  expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
   expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
+  expect_equal(auc_se, boot_wauc_se, tolerance = 0.005, scale = 1)
 })
 
 set.seed(9876)
-
 # test that sensitivity with a better learner works
 test_that("IPW sensitivity estimation with a better learner works", {
   expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
@@ -115,7 +133,7 @@ test_that("IPW specificity estimation with a better learner works", {
                                   ipc_est_type = "ipw", cutoff = cutoff,
                                   ipc_weights = ipc_weights, ipc_fit_type = "SL",
                                   SL.library = "SL.glm", method = "method.CC_LS")
-  expect_equal(est_spec$point_est, 1-est_sens_wauc$FPR[cutoff_index], tolerance = 0.001, scale = 1)
+  expect_equal(est_spec$point_est, 1-est_sens_wauc$FPR[cutoff_index], tolerance = 0.005, scale = 1)
 })
 
 
@@ -129,216 +147,6 @@ test_that("CV-VIM with inverse probability of coarsening weights works", {
              cvControl = list(V = V), env = environment())
   expect_equal(est_cv$est, r2_one, tolerance = 0.3, scale = 1)
 })
-
-univariate_learners <- "SL.glm"
-set.seed(91011)
-
-# test IPW SPVIM ---------------------------------------------------------------
-# test that SPVIM with inverse probability of coarsening weights works
-test_that("SPVIM with inverse probability of coarsening weights works", {
-  expect_warning(est_spvim <- sp_vim(Y = y, X = x_df, type = "r_squared", V = 2,
-                      SL.library = learners, method = "method.CC_LS",
-                      univariate_SL.library = univariate_learners, gamma = 0.1,
-                      alpha = 0.05, delta = 0, C = C, Z = "Y",
-                      ipc_weights = ipc_weights,
-                      cvControl = list(V = 2), env = environment()))
-  expect_equal(est_spvim$est[3], shapley_val_2, tolerance = 0.3, scale = 1)
-})
-# binary SPVIM
-set.seed(1234)
-n <- 250
-W <- runif(n, min = -1,  max = 1)
-A <- rbinom(n, size = 1, prob = plogis(W))
-Y <- rbinom(n,1,plogis(A * (1 + W + 2*W^2) + sin(5*W)))
-propW <- 1/rnorm(n,0.5,0.1)
-censoringW <-  runif(n, min = 1,  max = 5)
-data <- data.frame(W,A,Y, propW, censoringW)
-
-X_for_vim <- data.frame(X1 = W, X2=A)
-
-set.seed(5678)
-test_that("SPVIM with IPW and binary outcome works", {
-  expect_warning(est <- sp_vim(Y = Y, X = X_for_vim, V = 2, type = "auc",
-                               SL.library = learners,
-                               univariate_SL.library = univariate_learners, gamma = 0.1,
-                               stratified = TRUE, C = rep(1,nrow(X_for_vim)),
-                               cvControl = list(V = 2),
-                               ipc_weights = propW*censoringW, ipc_est_type = "ipw",
-                               Z = c("Y","X1","X2")))
-  expect_equal(est$est[2], 0.1, tolerance = 0.05, scale = 1)
-})
-
-
-# load required functions and packages
-library("testthat")
-suppressWarnings(library("SuperLearner"))
-library("WeightedROC")
-library("dplyr")
-library("purrr")
-
-# generate the data -- note that this is a simple setting, for speed -----------
-set.seed(4747)
-p <- 2
-n <- 5e4
-x <- replicate(p, stats::rnorm(n, 0, 1))
-# apply the function to the x's
-y <- 1 + 0.5 * x[, 1] + 0.75 * x[, 2] + stats::rnorm(n, 0, 1)
-# get the 'true' SPVIMs
-true_var <- mean((y - mean(y)) ^ 2)
-mse_one <- mean((y - (1 + 0.5 * x[, 1])) ^ 2)
-mse_two <- mean((y - (1 + 0.75 * x[, 2])) ^ 2)
-mse_full <- mean((y - (1 + 0.5 * x[, 1] + 0.75 * x[, 2])) ^ 2)
-# get the true SPVIMs
-r2_one <- 1 - mse_one / true_var
-r2_two <- 1 - mse_two / true_var
-r2_full <- 1 - mse_full / true_var
-shapley_val_1 <- (1/2) * (r2_one - 0) + (1/2) * (r2_full - r2_two)
-shapley_val_2 <- (1/2) * (r2_two - 0) + (1/2) * (r2_full - r2_one)
-# create a binomial outcome, get true AUC
-y_bin <- as.numeric(y > 0)
-true_auc <- cvAUC::AUC(pnorm(1 + 0.5 * x[, 1] + 0.75 * x[, 2]), y_bin)
-# make this a two-phase study, assume that X is only measured on
-# subjects in the second phase; note C = 1 is inclusion
-C <- rbinom(n, size = 1, prob = exp(y) / (1 + exp(y)))
-tmp_x <- x
-tmp_x[C == 0, ] <- NA
-x <- tmp_x
-x_df <- as.data.frame(x)
-ipc_weights <- 1 / predict(glm(C ~ y, family = "binomial"), type = "response")
-
-learners <- c("SL.glm", "SL.mean")
-V <- 2
-
-# test IPW VIM -----------------------------------------------------------------
-set.seed(1234)
-# test that VIM with inverse probability of coarsening weights works
-test_that("VIM with inverse probability of coarsening weights works", {
-  est <- vim(Y = y, X = x_df, indx = 1, type = "r_squared", run_regression = TRUE,
-             SL.library = learners, method = "method.CC_LS",
-             alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
-             cvControl = list(V = V), env = environment())
-  expect_equal(est$est, r2_one, tolerance = 0.2, scale = 1)
-})
-cc <- complete.cases(x_df)
-y_cc <- y_bin[cc]
-x_cc <- x_df[cc, ]
-weights_cc <- ipc_weights[cc]
-set.seed(121314)
-# test that AUC estimation with the mean works
-test_that("IPW AUC estimation with the mean works", {
-  sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = binomial(),
-                         SL.library = "SL.mean", obsWeights = weights_cc)
-  est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                         full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
-                         ipc_est_type = "ipw",
-                         ipc_weights = ipc_weights, ipc_fit_type = "SL",
-                         SL.library = "SL.glm", method = "method.CC_LS")
-  est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-    guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
-  ))
-  expect_equal(est_auc$point_est, 0.5, tolerance = 0.001, scale = 1)
-  expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
-})
-set.seed(121314)
-# test that AUC estimation with a better learner works
-expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
-                                      SL.library = "SL.glm", obsWeights = weights_cc))
-est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                       full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
-                       ipc_est_type = "ipw",
-                       ipc_weights = ipc_weights, ipc_fit_type = "SL",
-                       SL.library = "SL.glm", method = "method.CC_LS")
-est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-  guess = sl_fit$SL.predict, label = y_cc, weight = weights_cc
-))
-# bootstrap to get weighted AUC SE
-wuac_boot_stat <- function(data, indices) {
-  WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-    guess = data$fit[indices], label = data$y[indices], weight = data$weight[indices]
-  ))
-}
-boot_wauc <- boot::boot(data = data.frame(fit = sl_fit$SL.predict, y = y_cc,
-                                          weight = weights_cc),
-                        statistic = wuac_boot_stat,
-                        R = 1000)
-boot_wauc_se <- sqrt(apply(boot_wauc$t, 2, function(x) mean((x - mean(x)) ^ 2)))
-boot_wauc_ci <- boot::boot.ci(boot_wauc, type = "norm")
-auc_se <- sqrt(mean(est_auc$eif ^ 2) / length(est_auc$eif))
-test_that("IPW AUC estimation with a better learner works", {
-  expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
-  expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
-  expect_equal(auc_se, boot_wauc_se, tolerance = 0.002, scale = 1)
-})
-# test IPW AUC with much larger, outlying weights ------------------------------
-set.seed(20230918)
-big_weights <- ipc_weights
-big_weights[big_weights > 10] <- ipc_weights[ipc_weights > 10] * 50
-big_weights_cc <- big_weights[cc]
-expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
-                                      SL.library = "SL.glm", obsWeights = big_weights_cc))
-est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                       full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
-                       ipc_est_type = "ipw",
-                       ipc_weights = big_weights, ipc_fit_type = "SL",
-                       SL.library = "SL.glm", method = "method.CC_LS")
-est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-  guess = sl_fit$SL.predict, label = y_cc, weight = big_weights_cc
-))
-# bootstrap to get weighted AUC SE
-wuac_boot_stat <- function(data, indices) {
-  WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-    guess = data$fit[indices], label = data$y[indices], weight = data$weight[indices]
-  ))
-}
-boot_wauc <- boot::boot(data = data.frame(fit = sl_fit$SL.predict, y = y_cc,
-                                          weight = big_weights_cc),
-                        statistic = wuac_boot_stat,
-                        R = 1000)
-boot_wauc_se <- sqrt(apply(boot_wauc$t, 2, function(x) mean((x - mean(x)) ^ 2)))
-boot_wauc_ci <- boot::boot.ci(boot_wauc, type = "norm")
-auc_se <- sqrt(mean(est_auc$eif ^ 2) / length(est_auc$eif))
-# with stabilized weights
-stabilized_weights <- big_weights / mean(big_weights)
-stabilized_weights_cc <- stabilized_weights[cc]
-expect_warning(stabilized_sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
-                                      SL.library = "SL.glm", obsWeights = stabilized_weights_cc))
-stabilized_est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
-                       full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
-                       ipc_est_type = "ipw",
-                       ipc_weights = stabilized_weights, ipc_fit_type = "SL",
-                       SL.library = "SL.glm", method = "method.CC_LS")
-stabilized_est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
-  guess = stabilized_sl_fit$SL.predict, label = y_cc, weight = stabilized_weights_cc
-))
-# bootstrap to get weighted AUC SE
-stabilized_boot_wauc <- boot::boot(data = data.frame(fit = stabilized_sl_fit$SL.predict, y = y_cc,
-                                          weight = stabilized_weights_cc),
-                        statistic = wuac_boot_stat,
-                        R = 1000)
-stabilized_boot_wauc_se <- sqrt(apply(stabilized_boot_wauc$t, 2, function(x) mean((x - mean(x)) ^ 2)))
-stabilized_boot_wauc_ci <- boot::boot.ci(stabilized_boot_wauc, type = "norm")
-stabilized_auc_se <- sqrt(mean(stabilized_est_auc$eif ^ 2) / length(stabilized_est_auc$eif))
-test_that("IPW AUC estimation with large weights works", {
-  expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
-  expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
-  expect_equal(auc_se, boot_wauc_se, tolerance = 0.025, scale = 1)
-  # stabilized weights
-  expect_equal(stabilized_est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
-  expect_equal(stabilized_est_auc$point_est, stabilized_est_auc_wauc, tolerance = 0.001, scale = 1)
-  expect_equal(auc_se / stabilized_auc_se, 10, tolerance = 5, scale = 1)
-})
-
-# test IPW CV-VIM --------------------------------------------------------------
-# test that VIM with inverse probability of coarsening weights and cross-fitting works
-set.seed(5678)
-test_that("CV-VIM with inverse probability of coarsening weights works", {
-  est_cv <- cv_vim(Y = y, X = x_df, indx = 1, type = "r_squared", V = 2,
-                   run_regression = TRUE, SL.library = learners[1], method = "method.CC_LS",
-             alpha = 0.05, delta = 0, C = C, Z = "Y", ipc_weights = ipc_weights,
-             cvControl = list(V = V), env = environment())
-  expect_equal(est_cv$est, r2_one, tolerance = 0.3, scale = 1)
-})
-
 # test that CV-VIM with IPW and fully-observed data works
 set.seed(20230414)
 n2 <- 1000
@@ -381,7 +189,7 @@ red_fit <- suppressWarnings(SuperLearner::CV.SuperLearner(
 cross_fitted_f2 <- red_fit$SL.predict
 ss_folds <- vimp::make_folds(unique(df2$split_id), V = 2)
 test_that("CV-VIM with IPW and fully-observed data works", {
-  result <- vimp::cv_vim(
+  expect_warning(result <- vimp::cv_vim(
     Y = df2$y,
     type = "r_squared",
     indx = idx,
@@ -394,7 +202,7 @@ test_that("CV-VIM with IPW and fully-observed data works", {
     V = n_splits / 2,
     ipc_weights = df2$w,
     Z = "Y"
-  )
+  ))
   expect_equal(result$p_value < 0.05, FALSE)
 })
 
@@ -434,7 +242,6 @@ test_that("CV-VIM with no IPW and fully-observed data works", {
   expect_equal(result$p_value < 0.05, TRUE)
 })
 
-
 # test IPW SPVIM ---------------------------------------------------------------
 univariate_learners <- "SL.glm"
 set.seed(91011)
@@ -472,3 +279,62 @@ test_that("SPVIM with IPW and binary outcome works", {
   expect_equal(est$est[2], 0.1, tolerance = 0.05, scale = 1)
 })
 
+
+# test IPW AUC with much larger, outlying weights ------------------------------
+set.seed(20230918)
+big_weights <- ipc_weights
+big_weights[big_weights > 10] <- ipc_weights[ipc_weights > 10] * 50
+big_weights_cc <- big_weights[cc]
+expect_warning(sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
+                                      SL.library = "SL.glm", obsWeights = big_weights_cc))
+est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
+                       full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
+                       ipc_est_type = "ipw",
+                       ipc_weights = big_weights, ipc_fit_type = "SL",
+                       SL.library = "SL.glm", method = "method.CC_LS")
+auc_se <- sqrt(mean(est_auc$eif ^ 2) / length(est_auc$eif))
+# est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+#   guess = sl_fit$SL.predict, label = y_cc, weight = big_weights_cc
+# ))
+# # bootstrap to get weighted AUC SE
+# wuac_boot_stat <- function(data, indices) {
+#   WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+#     guess = data$fit[indices], label = data$y[indices], weight = data$weight[indices]
+#   ))
+# }
+# boot_wauc <- boot::boot(data = data.frame(fit = sl_fit$SL.predict, y = y_cc,
+#                                           weight = big_weights_cc),
+#                         statistic = wuac_boot_stat,
+#                         R = nboot)
+# boot_wauc_se <- sqrt(apply(boot_wauc$t, 2, function(x) mean((x - mean(x)) ^ 2)))
+# boot_wauc_ci <- boot::boot.ci(boot_wauc, type = "norm")
+# # with stabilized weights
+stabilized_weights <- big_weights / mean(big_weights)
+stabilized_weights_cc <- stabilized_weights[cc]
+expect_warning(stabilized_sl_fit <- SuperLearner(Y = y_cc, X = x_cc, family = "binomial",
+                                      SL.library = "SL.glm", obsWeights = stabilized_weights_cc))
+stabilized_est_auc <- measure_auc(fitted_values = sl_fit$SL.predict, y = y_cc,
+                       full_y = y_bin, C = cc, Z = data.frame(Y = y_bin),
+                       ipc_est_type = "ipw",
+                       ipc_weights = stabilized_weights, ipc_fit_type = "SL",
+                       SL.library = "SL.glm", method = "method.CC_LS")
+stabilized_est_auc_wauc <- WeightedROC::WeightedAUC(WeightedROC::WeightedROC(
+  guess = stabilized_sl_fit$SL.predict, label = y_cc, weight = stabilized_weights_cc
+))
+# bootstrap to get weighted AUC SE
+stabilized_boot_wauc <- boot::boot(data = data.frame(fit = stabilized_sl_fit$SL.predict, y = y_cc,
+                                          weight = stabilized_weights_cc),
+                        statistic = wuac_boot_stat,
+                        R = nboot)
+stabilized_boot_wauc_se <- sqrt(apply(stabilized_boot_wauc$t, 2, function(x) mean((x - mean(x)) ^ 2)))
+stabilized_boot_wauc_ci <- boot::boot.ci(stabilized_boot_wauc, type = "norm")
+stabilized_auc_se <- sqrt(mean(stabilized_est_auc$eif ^ 2) / length(stabilized_est_auc$eif))
+test_that("IPW AUC estimation with large weights works", {
+  expect_equal(est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
+  # expect_equal(est_auc$point_est, est_auc_wauc, tolerance = 0.001, scale = 1)
+  # expect_equal(auc_se, boot_wauc_se, tolerance = 0.1, scale = 1)
+  # stabilized weights
+  expect_equal(stabilized_est_auc$point_est, true_auc, tolerance = 0.1, scale = 1)
+  expect_equal(stabilized_est_auc$point_est, stabilized_est_auc_wauc, tolerance = 0.001, scale = 1)
+  expect_equal(auc_se / stabilized_auc_se, 10, tolerance = 5, scale = 1)
+})

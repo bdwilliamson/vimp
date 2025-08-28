@@ -5,7 +5,7 @@ suppressWarnings(library("SuperLearner"))
 # generate the data -- note that this is a simple setting, for speed -----------
 set.seed(4747)
 p <- 2
-n <- 5e4
+n <- 1e4
 x <- replicate(p, stats::rnorm(n, 0, 1))
 x_df <- as.data.frame(x)
 # apply the function to the x's

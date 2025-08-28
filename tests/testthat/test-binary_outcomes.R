@@ -30,7 +30,7 @@ Sigma <- diag(1, nrow = 2)
 t_acc <- c(0.05110135, 0.1158337)
 t_dev <- c(0.14293485, 0.3001422)
 t_auc <- c(0.04011305, 0.1058621)
-n <- 10000
+n <- 1e4
 set.seed(4747)
 dat <- gen_data(n, mu_0, mu_1, Sigma, p = 0.6, j = 1)
 y <- dat$y
