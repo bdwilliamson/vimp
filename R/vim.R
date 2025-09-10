@@ -334,6 +334,14 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
     arg_lst <- list(...)
     # set method and family to compatible with continuous values, for EIF estimation
     arg_lst <- process_arg_lst(arg_lst)
+    arg_lst_full <- arg_lst_redu <- arg_lst
+    # allow separate cutoffs for full and reduced predictiveness, if entered
+    if (!is.null(arg_lst$cutoff)) {
+      if (length(arg_lst$cutoff) > 1) {
+        arg_lst_full$cutoff <- arg_lst$cutoff[1]
+        arg_lst_redu$cutoff <- arg_lst$cutoff[2]
+      }
+    }
     if (full_type == "anova") {
         # no sample-splitting, since no hypothesis testing
         est_lst <- measure_anova(
@@ -381,7 +389,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                ipc_weights = ipc_weights[sample_splitting_folds == 1],
                ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
-               SL.library = SL.library), arg_lst
+               SL.library = SL.library), arg_lst_full
         ))
         predictiveness_reduced_object <- do.call(predictiveness_measure, c(
          list(type = full_type, y = Y_cc[ss_folds_redu == 2, , drop = FALSE],
@@ -393,7 +401,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
               ipc_weights = ipc_weights[sample_splitting_folds == 2],
               ipc_fit_type = "SL", scale = ipc_scale,
               ipc_est_type = ipc_est_type, na.rm = na.rm,
-              SL.library = SL.library), arg_lst
+              SL.library = SL.library), arg_lst_redu
         ))
         predictiveness_full_lst <- estimate(predictiveness_full_object)
         predictiveness_redu_lst <- estimate(predictiveness_reduced_object)
@@ -443,7 +451,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                ipc_weights = ipc_weights,
                ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
-               SL.library = SL.library), arg_lst
+               SL.library = SL.library), arg_lst_full
         ))
         est_pred_reduced <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc,
@@ -453,7 +461,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                ipc_weights = ipc_weights,
                ipc_fit_type = "SL", scale = scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
-               SL.library = SL.library), arg_lst
+               SL.library = SL.library), arg_lst_redu
         ))
         est_pred_full_lst <- estimate(est_pred_full)
         est_pred_reduced_lst <- estimate(est_pred_reduced)
@@ -472,7 +480,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                ipc_weights = ipc_weights[sample_splitting_folds == 2],
                ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
-               SL.library = SL.library), arg_lst
+               SL.library = SL.library), arg_lst_full
         ))
         est_pred_reduced <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[ss_folds_redu == 1, , drop = FALSE],
@@ -484,7 +492,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                ipc_weights = ipc_weights[sample_splitting_folds == 1],
                ipc_fit_type = "SL", scale = ipc_scale,
                ipc_est_type = ipc_est_type, na.rm = na.rm,
-               SL.library = SL.library), arg_lst
+               SL.library = SL.library), arg_lst_redu
         ))
         est_pred_full_lst <- estimate(est_pred_full)
         est_pred_reduced_lst <- estimate(est_pred_reduced)

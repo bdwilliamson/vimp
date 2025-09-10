@@ -353,6 +353,14 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     arg_lst <- list(...)
     # set method and family to compatible with continuous values, for EIF estimation
     arg_lst <- process_arg_lst(arg_lst)
+    arg_lst_full <- arg_lst_redu <- arg_lst
+    # allow separate cutoffs for full and reduced predictiveness, if entered
+    if (!is.null(arg_lst$cutoff)) {
+      if (length(arg_lst$cutoff) > 1) {
+        arg_lst_full$cutoff <- arg_lst$cutoff[1]
+        arg_lst_redu$cutoff <- arg_lst$cutoff[2]
+      }
+    }
     eifs_lst <- NA
     # calculate the estimators, EIFs
     if (full_type == "anova") {
@@ -442,7 +450,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                  nuisance_estimators_full, function(l) {
                    l[full_test_cc]
                  }
-               )), arg_lst
+               )), arg_lst_full
         ))
         predictiveness_reduced_object <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[redu_test_cc], full_y = Y_cc,
@@ -455,7 +463,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                  nuisance_estimators_reduced, function(l) {
                    l[redu_test_cc]
                  }
-               )), arg_lst
+               )), arg_lst_redu
         ))
         predictiveness_full_lst <- estimate(predictiveness_full_object)
         predictiveness_redu_lst <- estimate(predictiveness_reduced_object)
@@ -472,7 +480,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               ipc_fit_type = "SL", scale = ipc_scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
                               SL.library = SL.library),
-                         arg_lst), quote = TRUE
+                         arg_lst_full), quote = TRUE
             )
             eif_full <- eif_full_lst$eif
             eif_redu_lst <- do.call(
@@ -484,7 +492,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                               ipc_fit_type = "SL", scale = ipc_scale,
                               ipc_est_type = ipc_est_type, na.rm = na.rm,
                               SL.library = SL.library),
-                         arg_lst), quote = TRUE
+                         arg_lst_redu), quote = TRUE
             )
             eif_redu <- eif_redu_lst$eif
             var_full <- mean(eif_full ^ 2)
@@ -551,7 +559,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                Z = Z_in, folds_Z = cf_folds_for_est, ipc_weights = ipc_weights,
                ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library,
-               nuisance_estimators = nuisance_estimators_full), arg_lst
+               nuisance_estimators = nuisance_estimators_full), arg_lst_full
         ))
         est_pred_reduced <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc, full_y = Y_cc,
@@ -560,7 +568,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                Z = Z_in, folds_Z = cf_folds_for_est, ipc_weights = ipc_weights,
                ipc_fit_type = "SL", scale = ipc_scale, ipc_est_type = ipc_est_type,
                na.rm = na.rm, SL.library = SL.library,
-               nuisance_estimators = nuisance_estimators_reduced), arg_lst
+               nuisance_estimators = nuisance_estimators_reduced), arg_lst_redu
         ))
         est_pred_full_lst <- estimate(est_pred_full)
         est_pred_reduced_lst <- estimate(est_pred_reduced)
@@ -588,7 +596,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                  nuisance_estimators_full, function(l) {
                    l[full_test_cc_for_est]
                  }
-               )), arg_lst
+               )), arg_lst_full
         ))
         est_pred_reduced <- do.call(predictiveness_measure, c(
           list(type = full_type, y = Y_cc[redu_test_cc_for_est], full_y = Y_cc,
@@ -601,7 +609,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                  nuisance_estimators_reduced, function(l) {
                    l[redu_test_cc_for_est]
                  }
-               )), arg_lst
+               )), arg_lst_redu
         ))
         est_pred_full_lst <- estimate(est_pred_full)
         est_pred_reduced_lst <- estimate(est_pred_reduced)
