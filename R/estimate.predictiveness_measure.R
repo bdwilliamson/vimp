@@ -54,7 +54,7 @@ estimate.predictiveness_measure <- function(x, ...) {
       ipc_eif_preds[arg_lst$folds_Z == k] <- this_est_lst$ipc_eif_preds
     }
     point_ests <- sapply(1:arg_lst$K, function(k) predictiveness_measures[[k]]$point_est)
-    point_est <- mean(point_ests)
+    point_est <- mean(point_ests, na.rm = TRUE)
     ipc_eif_preds <- ipc_eif_preds
     # estimate the denominator, if necessary
     if (estimate_denominator) {
@@ -89,7 +89,7 @@ estimate.predictiveness_measure <- function(x, ...) {
       point_ests <- 1 - point_ests / denominator$point_est
       eifs <- all_eifs
     }
-    x$point_est <- mean(point_ests)
+    x$point_est <- mean(point_ests, na.rm = TRUE)
     x$eif <- eif
     x$ipc_eif_preds <- ipc_eif_preds
     x$all_point_ests <- point_ests
