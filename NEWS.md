@@ -1,3 +1,12 @@
+# vimp 2.3.7
+
+## Major changes
+
+* Allow different cutoffs to be used for PPV, NPV, sensitivity, and specificity of the full and reduced models
+
+## Minor Changes
+None
+
 # vimp 2.3.6
 
 ## Major changes
