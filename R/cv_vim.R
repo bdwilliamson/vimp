@@ -495,16 +495,16 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                          arg_lst_redu), quote = TRUE
             )
             eif_redu <- eif_redu_lst$eif
-            var_full <- mean(eif_full ^ 2)
-            var_redu <- mean(eif_redu ^ 2)
+            var_full <- mean(eif_full ^ 2, na.rm = na.rm)
+            var_redu <- mean(eif_redu ^ 2, na.rm = na.rm)
         } else {
             eif_full <- predictiveness_full_lst$eif
             eif_redu <- predictiveness_redu_lst$eif
             var_full <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
-                mean(eifs_full[[k]] ^ 2)
+                mean(eifs_full[[k]] ^ 2, na.rm = na.rm)
             })))
             var_redu <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
-                mean(eifs_redu[[k]] ^ 2)
+                mean(eifs_redu[[k]] ^ 2, na.rm = na.rm)
             })))
         }
         predictiveness_full <- predictiveness_full_lst$point_est

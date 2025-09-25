@@ -22,9 +22,9 @@ measure_specificity <- function(fitted_values, y, full_y = NULL,
 
   if (!all(ipc_weights == 1)) {
     p_0 <- mean(y == 0, na.rm = na.rm)
-    temp_est <- sum(y == 0 & fitted_values <= cutoff, na.rm = na.rm) / sum(y == 0, na.rm = na.rm)
-    obs_grad <- (y == 0 & fitted_values <= cutoff)/p_0 - (y == 0)*temp_est/(p_0)
-    obs_est <-  sum((1 * ipc_weights[C == 1]) * (y == 0 & fitted_values <= cutoff), na.rm = na.rm) /
+    temp_est <- sum(y == 0 & fitted_values < cutoff, na.rm = na.rm) / sum(y == 0, na.rm = na.rm)
+    obs_grad <- (y == 0 & fitted_values < cutoff)/p_0 - (y == 0)*temp_est/(p_0)
+    obs_est <-  sum((1 * ipc_weights[C == 1]) * (y == 0 & fitted_values < cutoff), na.rm = na.rm) /
       sum((1 * ipc_weights[C == 1]) * (y == 0), na.rm = na.rm)
 
     # if IPC EIF preds aren't entered, estimate the regression
@@ -42,8 +42,8 @@ measure_specificity <- function(fitted_values, y, full_y = NULL,
     }
   } else{
     p_0 <- mean(y == 0, na.rm = na.rm)
-    est <- sum(y == 0 & fitted_values <= cutoff, na.rm = na.rm) / sum(y == 0, na.rm = na.rm)
-    grad <- (y == 0 & fitted_values <= cutoff)/p_0 - (y == 0)*est/(p_0)
+    est <- sum(y == 0 & fitted_values < cutoff, na.rm = na.rm) / sum(y == 0, na.rm = na.rm)
+    grad <- (y == 0 & fitted_values < cutoff)/p_0 - (y == 0)*est/(p_0)
   }
 
     return(list(point_est = est, eif = grad, ipc_eif_preds = ipc_eif_preds))

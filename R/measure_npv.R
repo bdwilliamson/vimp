@@ -23,10 +23,10 @@ measure_npv <- function(fitted_values, y, full_y = NULL,
 
   if (!all(ipc_weights == 1)) {
     theta_0 <- mean(fitted_values <= cutoff, na.rm = na.rm)
-    temp_est <- sum(y == 0 & fitted_values <= cutoff, na.rm = na.rm) / sum(fitted_values <= cutoff, na.rm = na.rm)
-    obs_grad <- (y == 0 & fitted_values <= cutoff)/theta_0 - (fitted_values <= cutoff)*temp_est/(theta_0)
-    obs_est <-  sum((1 * ipc_weights[C == 1]) * (y == 0 & fitted_values <= cutoff), na.rm = na.rm) /
-      sum((1 * ipc_weights[C == 1]) * (fitted_values <= cutoff), na.rm = na.rm)
+    temp_est <- sum(y == 0 & fitted_values < cutoff, na.rm = na.rm) / sum(fitted_values <= cutoff, na.rm = na.rm)
+    obs_grad <- (y == 0 & fitted_values < cutoff)/theta_0 - (fitted_values < cutoff)*temp_est/(theta_0)
+    obs_est <-  sum((1 * ipc_weights[C == 1]) * (y == 0 & fitted_values < cutoff), na.rm = na.rm) /
+      sum((1 * ipc_weights[C == 1]) * (fitted_values < cutoff), na.rm = na.rm)
 
     # if IPC EIF preds aren't entered, estimate the regression
     ipc_eif_preds <- estimate_eif_projection(obs_grad = obs_grad, C = C,
@@ -43,8 +43,8 @@ measure_npv <- function(fitted_values, y, full_y = NULL,
     }
   } else{
     theta_0 <- mean(fitted_values <= cutoff, na.rm = na.rm)
-    est <- sum(y == 0 & fitted_values <= cutoff, na.rm = na.rm) / sum(fitted_values <= cutoff, na.rm = na.rm)
-    grad <- (y == 0 & fitted_values <= cutoff)/theta_0 - (fitted_values <= cutoff)*est/(theta_0)
+    est <- sum(y == 0 & fitted_values < cutoff, na.rm = na.rm) / sum(fitted_values <= cutoff, na.rm = na.rm)
+    grad <- (y == 0 & fitted_values < cutoff)/theta_0 - (fitted_values < cutoff)*est/(theta_0)
   }
 
 

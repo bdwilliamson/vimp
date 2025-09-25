@@ -413,8 +413,8 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         # compute estimates of standard error
         eif_full <- predictiveness_full_lst$eif
         eif_redu <- predictiveness_redu_lst$eif
-        se_full <- sqrt(mean(eif_full ^ 2) / length(eif_full))
-        se_redu <- sqrt(mean(eif_redu ^ 2) / length(eif_redu))
+        se_full <- sqrt(mean(eif_full ^ 2, na.rm = na.rm) / length(eif_full))
+        se_redu <- sqrt(mean(eif_redu ^ 2, na.rm = na.rm) / length(eif_redu))
         if (bootstrap & !sample_splitting) {
             boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
                                          type = full_type, b = b,
