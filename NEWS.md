@@ -1,10 +1,18 @@
+# vimp 2.3.8
+
+## Major changes
+Compute standard errors using the cross-product of the EIFs by default, which handles correlated data. The previous behavior (using the square of the EIFs, which is valid for independent data) can be obtained using the argument `use_square = TRUE`.
+
+## Minor changes
+None
+
 # vimp 2.3.7
 
 ## Major changes
 
 * Allow different cutoffs to be used for PPV, NPV, sensitivity, and specificity of the full and reduced models
 
-## Minor Changes
+## Minor changes
 None
 
 # vimp 2.3.6

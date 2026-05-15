@@ -100,6 +100,7 @@
 #'   rather than individual observations? Defaults to \code{FALSE}.
 #' @param cluster_id vector of the same length as \code{Y} giving the cluster IDs
 #'   used for the clustered bootstrap, if \code{clustered} is \code{TRUE}.
+#' @param use_square logical; should we estimate the variance using the square of the EIF (\code{TRUE}) or using the cross product (\code{FALSE}, the default)
 #' @param ... other arguments to the estimation tool, see "See also".
 #'
 #' @return An object of classes \code{vim} and the type of risk-based measure.
@@ -204,7 +205,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                 ipc_est_type = "aipw", scale_est = TRUE, nuisance_estimators_full = NULL,
                 nuisance_estimators_reduced = NULL, exposure_name = NULL,
                 bootstrap = FALSE, b = 1000, boot_interval_type = "perc",
-                clustered = FALSE, cluster_id = rep(NA, length(Y)), ...) {
+                clustered = FALSE, cluster_id = rep(NA, length(Y)), use_square = FALSE, ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, f1, f2, indx)
@@ -369,7 +370,11 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
                                          cluster_id = cluster_id)
             se <- boot_results$se
         } else {
+          if (isTRUE(use_square)) {
             se <- sqrt(mean(eif ^ 2) / length(eif))
+          } else {
+            se <- as.numeric(sqrt(crossprod(matrix(eif))) / length(eif))
+          }
         }
     } else {
         # if no sample splitting, estimate on the whole data
@@ -413,8 +418,13 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
         # compute estimates of standard error
         eif_full <- predictiveness_full_lst$eif
         eif_redu <- predictiveness_redu_lst$eif
-        se_full <- sqrt(mean(eif_full ^ 2, na.rm = na.rm) / length(eif_full))
-        se_redu <- sqrt(mean(eif_redu ^ 2, na.rm = na.rm) / length(eif_redu))
+        if (isTRUE(use_square)) {
+          se_full <- sqrt(mean(eif_full ^ 2, na.rm = na.rm) / length(eif_full))
+          se_redu <- sqrt(mean(eif_redu ^ 2, na.rm = na.rm) / length(eif_redu))
+        } else {
+          se_full <- as.numeric(sqrt(crossprod(matrix(eif_full))) / length(eif_full))
+          se_redu <- as.numeric(sqrt(crossprod(matrix(eif_redu))) / length(eif_redu))
+        }
         if (bootstrap & !sample_splitting) {
             boot_results <- bootstrap_se(Y = Y_cc, f1 = full_preds, f2 = redu_preds,
                                          type = full_type, b = b,
@@ -433,7 +443,7 @@ vim <- function(Y = NULL, X = NULL, f1 = NULL, f2 = NULL, indx = 1,
             }
             se <- vimp_se(eif_full = eif_full, eif_reduced = eif_redu,
                           cross_fit = FALSE, sample_split = sample_splitting,
-                          na.rm = na.rm)
+                          na.rm = na.rm, use_square = use_square)
         }
     }
     est_for_inference <- est

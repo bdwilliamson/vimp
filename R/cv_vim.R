@@ -199,7 +199,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                    nuisance_estimators_reduced = NULL, exposure_name = NULL,
                    cross_fitted_se = TRUE, bootstrap = FALSE, b = 1000,
                    boot_interval_type = "perc", clustered = FALSE,
-                   cluster_id = rep(NA, length(Y)), ...) {
+                   cluster_id = rep(NA, length(Y)), use_square = FALSE, ...) {
     # check to see if f1 and f2 are missing
     # if the data is missing, stop and throw an error
     check_inputs(Y, X, cross_fitted_f1, cross_fitted_f2, indx)
@@ -404,7 +404,12 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                 ipc_fit_type = "SL", na.rm = na.rm,
                 SL.library = SL.library, arg_lst
             )$eif
-            se <- sqrt(mean(eif^2) / nrow(Y_cc))
+            if (isTRUE(use_square)) {
+              var <- mean(eif ^ 2)
+            } else {
+              var <- as.numeric(crossprod(matrix(eif))) / nrow(Y_cc)
+            }
+            se <- sqrt(var / nrow(Y_cc))
         }
         predictiveness_full <- NA
         predictiveness_redu <- NA
@@ -495,17 +500,46 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
                          arg_lst_redu), quote = TRUE
             )
             eif_redu <- eif_redu_lst$eif
-            var_full <- mean(eif_full ^ 2, na.rm = na.rm)
-            var_redu <- mean(eif_redu ^ 2, na.rm = na.rm)
+            if (isTRUE(use_square)) {
+              var_full <- mean(eif_full ^ 2, na.rm = na.rm)
+              var_redu <- mean(eif_redu ^ 2, na.rm = na.rm)
+            } else {
+              if (isTRUE(na.rm)) {
+                var_full <- as.numeric(crossprod(na.omit(matrix(eif_full)))) / length(eif_full)
+                var_redu <- as.numeric(crossprod(na.omit(matrix(eif_redu)))) / length(eif_redu)
+              } else {
+                var_full <- as.numeric(crossprod(matrix(eif_full))) / length(eif_full)
+                var_redu <- as.numeric(crossprod(matrix(eif_redu))) / length(eif_redu)
+              }
+            }
+
         } else {
             eif_full <- predictiveness_full_lst$eif
             eif_redu <- predictiveness_redu_lst$eif
-            var_full <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
+            if (isTRUE(use_square)) {
+              var_full <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
                 mean(eifs_full[[k]] ^ 2, na.rm = na.rm)
-            })))
-            var_redu <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
+              })))
+              var_redu <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
                 mean(eifs_redu[[k]] ^ 2, na.rm = na.rm)
-            })))
+              })))
+            } else {
+              var_full <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
+                if (isTRUE(na.rm)) {
+                  as.numeric(crossprod(na.omit(matrix(eifs_full[[k]])))) / length(eifs_full[[k]])
+                } else {
+                  as.numeric(crossprod(matrix(eifs_full[[k]]))) / length(eifs_full[[k]])
+                }
+              })))
+              var_redu <- mean(unlist(lapply(as.list(seq_len(V)), function(k) {
+                if (isTRUE(na.rm)) {
+                  as.numeric(crossprod(na.omit(matrix(eifs_redu[[k]])))) / length(eifs_redu[[k]])
+                } else {
+                  as.numeric(crossprod(matrix(eifs_redu[[k]]))) / length(eifs_redu[[k]])
+                }
+              })))
+            }
+
         }
         predictiveness_full <- predictiveness_full_lst$point_est
         predictiveness_redu <- predictiveness_redu_lst$point_est
@@ -532,11 +566,11 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
             if (!cross_fitted_se) {
                 se <- vimp_se(eif_full = eif_full, eif_reduced = eif_redu,
                               cross_fit = FALSE, sample_split = sample_splitting,
-                              na.rm = na.rm)
+                              na.rm = na.rm, use_square = use_square)
             } else {
                 se <- vimp_se(eif_full = eifs_full, eif_reduced = eifs_redu,
                               cross_fit = TRUE, sample_split = sample_splitting,
-                              na.rm = na.rm)
+                              na.rm = na.rm, use_square = use_square)
             }
         }
     }
