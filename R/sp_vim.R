@@ -95,7 +95,7 @@ sp_vim <- function(Y = NULL, X = NULL, V = 5, type = "r_squared",
                    C = rep(1, length(Y)), Z = NULL, ipc_scale = "identity",
                    ipc_weights = rep(1, length(Y)),
                    ipc_est_type = "aipw", scale = "identity", scale_est = TRUE,
-                   cross_fitted_se = TRUE, ...) {
+                   cross_fitted_se = TRUE, use_square = FALSE, ...) {
     # if the data is missing, stop and throw an error
     if (is.null(Y)) stop("You must enter an outcome, Y.")
     if (is.null(X)) stop("You must enter a matrix of predictors, X.")

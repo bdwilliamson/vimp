@@ -3,6 +3,8 @@
 ## Major changes
 Compute standard errors using the cross-product of the EIFs by default, which handles correlated data. The previous behavior (using the square of the EIFs, which is valid for independent data) can be obtained using the argument `use_square = TRUE`.
 
+Also handle clustered data in sample splitting and cross fitting, by ensuring that all observations for a given cluster are in the same fold.
+
 ## Minor changes
 None
 

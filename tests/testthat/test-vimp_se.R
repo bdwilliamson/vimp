@@ -21,27 +21,9 @@ folds_lst <- lapply(as.list(seq_len(2)), function(i) which(folds == i))
 learners <- c("SL.glm", "SL.mean")
 V <- 2
 
-# fit nuisance regressions -----------------------------------------------------
-# fit the data with all covariates and sample-splitting (note V = 2 in CV.SL)
-set.seed(4747)
-full_fit <- suppressWarnings(
-  SuperLearner::CV.SuperLearner(Y = y, X = x, SL.library = learners,
-                                cvControl = list(V = 2, validRows = folds_lst),
-                                innerCvControl = list(list(V = V)))
-)
-full_fitted <- SuperLearner::predict.SuperLearner(full_fit, onlySL = TRUE)$pred
-# fit the data with only X1
-reduced_fit <- suppressWarnings(
-  SuperLearner::CV.SuperLearner(Y = full_fitted,
-                                X = x[, -2, drop = FALSE],
-                                SL.library = learners,
-                                cvControl = list(V = 2, validRows = full_fit$folds),
-                                innerCvControl = list(list(V = V)))
-)
-reduced_fitted <- SuperLearner::predict.SuperLearner(reduced_fit, onlySL = TRUE)$pred
-
-# in this case, using the EIF squared or using crossprod should give exactly the same answer,
+# in all cases, using the EIF squared or using crossprod should give exactly the same answer,
 # because the data are independent
+
 test_that("Variable importance SEs without cross-fitting or sample-splitting works", {
   set.seed(20260515)
   est_eif_square <- vim(Y = y, X = x, indx = 2, type = "r_squared", run_regression = TRUE,

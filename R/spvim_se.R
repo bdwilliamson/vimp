@@ -1,31 +1,42 @@
 #' Standard error estimate for SPVIM values
 #'
-#' Compute standard error estimates based on the estimated influence function 
+#' Compute standard error estimates based on the estimated influence function
 #'   for a SPVIM value of interest.
 #'
-#' @param ics the influence function estimates based on the contributions 
-#'   from sampling observations and sampling subsets: a list of length two 
+#' @param ics the influence function estimates based on the contributions
+#'   from sampling observations and sampling subsets: a list of length two
 #'   resulting from a call to \code{spvim_ics}.
 #' @param idx the index of interest
 #' @param gamma the proportion of the sample size used when sampling subsets
 #' @param na_rm remove \code{NA}s?
+#' @param use_square logical; should we estimate the variance using the square of the EIF (\code{TRUE}) or using the cross product (\code{FALSE}, the default)
 #'
 #' @return The standard error estimate for the desired SPVIM value
 #'
-#' @details Since the processes for sampling observations and subsets are 
+#' @details Since the processes for sampling observations and subsets are
 #'   independent, the variance for a given SPVIM estimator is simply the sum of
 #'  the variances based on sampling observations and on sampling subsets.
 #'
 #' @seealso \code{\link[vimp]{spvim_ics}} for how the influence functions are estimated.
 #' @importFrom stats var
 #' @export
-spvim_se <- function(ics, idx = 1, gamma = 1, na_rm = FALSE) {
-  var_v <- mean(ics$contrib_v[idx, ] ^ 2, na.rm = na_rm)
-  var_s <- mean(ics$contrib_s[idx, ] ^ 2, na.rm = na_rm)
-  
+spvim_se <- function(ics, idx = 1, gamma = 1, na_rm = FALSE, use_square = FALSE) {
+  if (isTRUE(use_square)) {
+    var_v <- mean(ics$contrib_v[idx, ] ^ 2, na.rm = na_rm)
+    var_s <- mean(ics$contrib_s[idx, ] ^ 2, na.rm = na_rm)
+  } else {
+    if (isTRUE(na.rm)) {
+      var_v <- as.numeric(crossprod(na.omit(matrix(ics$contrib_v[idx, ])))) / length(ics$contrib_v[idx, ])
+      var_s <- as.numeric(crossprod(na.omit(matrix(ics$contrib_s[idx, ])))) / length(ics$contrib_s[idx, ])
+    } else {
+      var_v <- as.numeric(crossprod(matrix(ics$contrib_v[idx, ]))) / length(ics$contrib_v[idx, ])
+      var_s <- as.numeric(crossprod(matrix(ics$contrib_s[idx, ]))) / length(ics$contrib_s[idx, ])
+    }
+  }
+
   var_v_contrib <- var_v / ncol(ics$contrib_v)
   var_s_contrib <- var_s / ncol(ics$contrib_s) * (1 / gamma)
   se <- sqrt(var_v_contrib + var_s_contrib)
-  return(list(se=se, var_v_contrib = var_v_contrib, 
+  return(list(se=se, var_v_contrib = var_v_contrib,
               var_s_contrib = var_s_contrib))
 }
