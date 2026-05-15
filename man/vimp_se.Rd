@@ -9,7 +9,8 @@ vimp_se(
   eif_reduced,
   cross_fit = TRUE,
   sample_split = TRUE,
-  na.rm = FALSE
+  na.rm = FALSE,
+  use_square = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ the full set of covariates.}
 
 \item{na.rm}{logical; should NA's be removed in computation?
 (defaults to \code{FALSE}).}
+
+\item{use_square}{logical; should we estimate the variance using the square of the EIF (\code{TRUE}) or using the cross product (\code{FALSE}, the default)}
 }
 \value{
 The standard error for the estimated variable importance for the

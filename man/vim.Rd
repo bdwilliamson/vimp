@@ -35,6 +35,7 @@ vim(
   boot_interval_type = "perc",
   clustered = FALSE,
   cluster_id = rep(NA, length(Y)),
+  use_square = FALSE,
   ...
 )
 }
@@ -159,11 +160,13 @@ and \code{sample_splitting = FALSE}); defaults to 1000.}
 \code{"basic"}, \code{"stud"}, \code{"perc"}, or \code{"bca"}, as in
 \code{boot.ci}) if requested. Defaults to \code{"perc"}.}
 
-\item{clustered}{should the bootstrap resamples be performed on clusters
+\item{clustered}{should the sample-splitting or bootstrap resamples be performed on clusters
 rather than individual observations? Defaults to \code{FALSE}.}
 
 \item{cluster_id}{vector of the same length as \code{Y} giving the cluster IDs
-used for the clustered bootstrap, if \code{clustered} is \code{TRUE}.}
+used for sample-splitting or the clustered bootstrap, if \code{clustered} is \code{TRUE}.}
+
+\item{use_square}{logical; should we estimate the variance using the square of the EIF (\code{TRUE}) or using the cross product (\code{FALSE}, the default)}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

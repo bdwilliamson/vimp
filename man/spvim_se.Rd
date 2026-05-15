@@ -4,11 +4,11 @@
 \alias{spvim_se}
 \title{Standard error estimate for SPVIM values}
 \usage{
-spvim_se(ics, idx = 1, gamma = 1, na_rm = FALSE)
+spvim_se(ics, idx = 1, gamma = 1, na_rm = FALSE, use_square = FALSE)
 }
 \arguments{
-\item{ics}{the influence function estimates based on the contributions 
-from sampling observations and sampling subsets: a list of length two 
+\item{ics}{the influence function estimates based on the contributions
+from sampling observations and sampling subsets: a list of length two
 resulting from a call to \code{spvim_ics}.}
 
 \item{idx}{the index of interest}
@@ -16,16 +16,18 @@ resulting from a call to \code{spvim_ics}.}
 \item{gamma}{the proportion of the sample size used when sampling subsets}
 
 \item{na_rm}{remove \code{NA}s?}
+
+\item{use_square}{logical; should we estimate the variance using the square of the EIF (\code{TRUE}) or using the cross product (\code{FALSE}, the default)}
 }
 \value{
 The standard error estimate for the desired SPVIM value
 }
 \description{
-Compute standard error estimates based on the estimated influence function 
+Compute standard error estimates based on the estimated influence function
   for a SPVIM value of interest.
 }
 \details{
-Since the processes for sampling observations and subsets are 
+Since the processes for sampling observations and subsets are
   independent, the variance for a given SPVIM estimator is simply the sum of
  the variances based on sampling observations and on sampling subsets.
 }

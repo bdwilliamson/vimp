@@ -27,6 +27,7 @@ sp_vim(
   scale = "identity",
   scale_est = TRUE,
   cross_fitted_se = TRUE,
+  use_square = FALSE,
   ...
 )
 }
@@ -115,6 +116,8 @@ Defaults to \code{TRUE}.}
 
 \item{cross_fitted_se}{should we use cross-fitting to estimate the standard
 errors (\code{TRUE}, the default) or not (\code{FALSE})?}
+
+\item{use_square}{logical; should we estimate the variance using the square of the EIF (\code{TRUE}) or using the cross product (\code{FALSE}, the default)}
 
 \item{...}{other arguments to the estimation tool, see "See also".}
 }

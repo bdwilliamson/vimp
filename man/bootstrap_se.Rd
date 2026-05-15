@@ -31,9 +31,9 @@ is desired, then the value of \code{f2} at each position should be the result
 of predicting from a model trained without that observation.}
 
 \item{cluster_id}{vector of the same length as \code{Y} giving the cluster IDs
-used for the clustered bootstrap, if \code{clustered} is \code{TRUE}.}
+used for sample-splitting or the clustered bootstrap, if \code{clustered} is \code{TRUE}.}
 
-\item{clustered}{should the bootstrap resamples be performed on clusters
+\item{clustered}{should the sample-splitting or bootstrap resamples be performed on clusters
 rather than individual observations? Defaults to \code{FALSE}.}
 
 \item{type}{the type of importance to compute; defaults to
