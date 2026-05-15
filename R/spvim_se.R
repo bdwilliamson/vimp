@@ -25,7 +25,7 @@ spvim_se <- function(ics, idx = 1, gamma = 1, na_rm = FALSE, use_square = FALSE)
     var_v <- mean(ics$contrib_v[idx, ] ^ 2, na.rm = na_rm)
     var_s <- mean(ics$contrib_s[idx, ] ^ 2, na.rm = na_rm)
   } else {
-    if (isTRUE(na.rm)) {
+    if (isTRUE(na_rm)) {
       var_v <- as.numeric(crossprod(na.omit(matrix(ics$contrib_v[idx, ])))) / length(ics$contrib_v[idx, ])
       var_s <- as.numeric(crossprod(na.omit(matrix(ics$contrib_s[idx, ])))) / length(ics$contrib_s[idx, ])
     } else {

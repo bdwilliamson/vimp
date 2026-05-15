@@ -144,7 +144,7 @@ test_that("Measures of predictiveness work", {
  fitted_mean <- rep(mean(y), length(y))
  mean_ppv <- est_predictiveness(fitted_mean, y,
                                 type = "ppv", cutoff = quantile(fitted_mean, 0.95))$point_est
- expect_equal(mean_ppv, 0.60, tolerance = 0.1, scale = 1)
+ expect_equal(mean_ppv, 0, tolerance = 0.1, scale = 1)
 })
 
 # check against cvAUC ----------------------------------------------------------

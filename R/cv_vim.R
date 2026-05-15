@@ -247,7 +247,7 @@ cv_vim <- function(Y = NULL, X = NULL, cross_fitted_f1 = NULL,
     if (run_regression) {
       # set up the cross-fitting folds
       if (isTRUE(clustered)) {
-        df <- data.frame("Y" = y, "id" = cluster_id)
+        df <- data.frame("Y" = Y_cc, "id" = cluster_id)
         group_df <- df[!duplicated(df$id), c("id", "Y")]
         folds_init <- rsample::group_vfold_cv(data = group_df, v = ss_V, group = "id",
                                               strata = switch(as.numeric(stratified) + 1, NULL, "Y"),
