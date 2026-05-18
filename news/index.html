@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.8</span>
       </span>
     </div>
 
@@ -67,13 +67,25 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="2.3.8" id="vimp-238">vimp 2.3.8<a class="anchor" aria-label="anchor" href="#vimp-238"></a></h2>
+<div class="section level3">
+<h3 id="major-changes-2-3-8">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-8"></a></h3>
+<p>Compute standard errors using the cross-product of the EIFs by default, which handles correlated data. The previous behavior (using the square of the EIFs, which is valid for independent data) can be obtained using the argument <code>use_square = TRUE</code>.</p>
+<p>Also handle clustered data in sample splitting and cross fitting, by ensuring that all observations for a given cluster are in the same fold.</p>
+</div>
+<div class="section level3">
+<h3 id="minor-changes-2-3-8">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-3-8"></a></h3>
+<p>None</p>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="2.3.7" id="vimp-237">vimp 2.3.7<a class="anchor" aria-label="anchor" href="#vimp-237"></a></h2>
 <div class="section level3">
 <h3 id="major-changes-2-3-7">Major changes<a class="anchor" aria-label="anchor" href="#major-changes-2-3-7"></a></h3>
 <ul><li>Allow different cutoffs to be used for PPV, NPV, sensitivity, and specificity of the full and reduced models</li>
 </ul></div>
 <div class="section level3">
-<h3 id="minor-changes-2-3-7">Minor Changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-3-7"></a></h3>
+<h3 id="minor-changes-2-3-7">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-3-7"></a></h3>
 <p>None</p>
 </div>
 </div>
@@ -298,7 +310,7 @@
 <li>Added bootstrap-based standard error estimates as an option to both <code>vim</code> and <code>cv_vim</code>; currently, this option is only available for non-sampled-split calls (i.e., with <code>sample_splitting = FALSE</code>)</li>
 <li>Updated sample-splitting behavior to match more closely with theoretical results (and improve power!): namely, that since estimation of the nuisance regression functions (i.e., the regression of outcome on all covariates and outcome on the reduced set of covariates) can be treated as fixed in making inference, sample-splitting is only necessary for evaluating predictiveness. Thus, the final regression functions from a call to <code>vim</code> are based on the entire dataset, while the full and reduced predictiveness (<code>predictiveness_full</code> and <code>predictiveness_reduced</code>, along with the corresponding confidence intervals) is evaluated using separate portions of the data for the full and reduced regressions.</li>
 <li>Added argument <code>sample_splitting</code> to <code>vim</code>, <code>cv_vim</code> and <code>sp_vim</code>; if <code>FALSE</code>, sample-splitting is not used to estimate predictiveness. Note that we recommend using the default, <code>TRUE</code>, in all cases, since inference using <code>sample_splitting = FALSE</code> will be invalid for variables with truly null variable importance.</li>
-<li>Updated cross-fitting (also referred to as cross-validation) behavior within <code>sample_splitting = TRUE</code> to match more closely with theoretical results (and improve power!). In this case, we first split the data into <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>K</mi></mrow><annotation encoding="application/x-tex">2K</annotation></semantics></math> cross-fitting folds, and split these folds equally into two sample-splitting folds. For the nuisance regression using all covariates, for each <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">k \in \{1, \ldots, K\}</annotation></semantics></math> we set aside the data in sample-splitting fold 1 and cross-fitting fold <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> [this comprises <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>K</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1 / (2K)</annotation></semantics></math> of the data]. We train using the remaining observations [comprising <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>K</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">(2K-1)/(2K)</annotation></semantics></math> of the data] not in this testing fold, and we test on the originally withheld data. We repeat for the nuisance regression using the reduced set of covariates, but withhold data in sample-splitting fold 2. This update affects both <code>cv_vim</code> and <code>sp_vim</code>. If <code>sample_splitting = FALSE</code>, then we use standard cross-fitting.</li>
+<li>Updated cross-fitting (also referred to as cross-validation) behavior within <code>sample_splitting = TRUE</code> to match more closely with theoretical results (and improve power!). In this case, we first split the data into <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>K</mi></mrow><annotation encoding="application/x-tex">2K</annotation></semantics></math> cross-fitting folds, and split these folds equally into two sample-splitting folds. For the nuisance regression using all covariates, for each <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>K</mi><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">k \in \{1, \ldots, K\}</annotation></semantics></math> we set aside the data in sample-splitting fold 1 and cross-fitting fold <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> [this comprises <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>K</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">1 / (2K)</annotation></semantics></math> of the data]. We train using the remaining observations [comprising <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>K</mi><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mn>2</mn><mi>K</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(2K-1)/(2K)</annotation></semantics></math> of the data] not in this testing fold, and we test on the originally withheld data. We repeat for the nuisance regression using the reduced set of covariates, but withhold data in sample-splitting fold 2. This update affects both <code>cv_vim</code> and <code>sp_vim</code>. If <code>sample_splitting = FALSE</code>, then we use standard cross-fitting.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-2-2-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-2-2-0"></a></h3>
@@ -612,7 +624,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

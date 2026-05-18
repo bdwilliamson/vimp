@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.8</span>
       </span>
     </div>
 
@@ -77,7 +77,8 @@
 <span>  <span class="va">eif_reduced</span>,</span>
 <span>  cross_fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  sample_split <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  na.rm <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  use_square <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -107,6 +108,10 @@ the full set of covariates.</p></dd>
 <dd><p>logical; should NA's be removed in computation?
 (defaults to <code>FALSE</code>).</p></dd>
 
+
+<dt id="arg-use-square">use_square<a class="anchor" aria-label="anchor" href="#arg-use-square"></a></dt>
+<dd><p>logical; should we estimate the variance using the square of the EIF (<code>TRUE</code>) or using the cross product (<code>FALSE</code>, the default)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -132,7 +137,7 @@ the full set of covariates.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

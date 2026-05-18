@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.8</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
                         <h4 data-toc-skip class="author">Brian D.
 Williamson</h4>
             
-            <h4 data-toc-skip class="date">2025-09-25</h4>
+            <h4 data-toc-skip class="date">2026-05-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/types-of-vims.Rmd" class="external-link"><code>vignettes/types-of-vims.Rmd</code></a></small>
       <div class="hidden name"><code>types-of-vims.Rmd</code></div>
@@ -106,16 +106,16 @@ Williamson</h4>
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://bdwilliamson.github.io/vimp/" class="external-link">"vimp"</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; vimp version 2.3.7: Perform Inference on Algorithm-Agnostic Variable Importance</span></span>
+<span><span class="co">#&gt; vimp version 2.3.8: Perform Inference on Algorithm-Agnostic Variable Importance</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/ecpolley/SuperLearner" class="external-link">"SuperLearner"</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: nnls</span></span>
 <span><span class="co">#&gt; Loading required package: gam</span></span>
 <span><span class="co">#&gt; Loading required package: splines</span></span>
 <span><span class="co">#&gt; Loading required package: foreach</span></span>
-<span><span class="co">#&gt; Loaded gam 1.22-6</span></span>
+<span><span class="co">#&gt; Loaded gam 1.22-7</span></span>
 <span><span class="co">#&gt; Super Learner</span></span>
-<span><span class="co">#&gt; Version: 2.0-29</span></span>
-<span><span class="co">#&gt; Package created on 2024-02-06</span></span></code></pre></div>
+<span><span class="co">#&gt; Version: 2.0-40</span></span>
+<span><span class="co">#&gt; Package created on 2025-12-14</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
@@ -140,7 +140,7 @@ classification accuracy, area under the receiver operating
 characteristic curve (AUC), and deviance. For a fixed function
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>,
 the predictiveness is given by
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>P</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">V(f, P)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo>,</mo><mi>P</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">V(f, P)</annotation></semantics></math>,
 where large values imply that
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
 is a good predictor of the outcome. The best possible prediction
@@ -154,7 +154,7 @@ Often,
 is the true conditional mean (e.g., for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>).
 Then the <em>total oracle predictiveness</em> can be defined as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mn>0</mn></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">V(f_0, P_0)</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mn>0</mn></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">V(f_0, P_0)</annotation></semantics></math>.
 This is the best possible value of predictiveness.</p>
 <p>I define variable importance measures (VIMs) as contrasts in oracle
 predictivness. The oracle models that I plug in determine what type of
@@ -165,10 +165,10 @@ variables, and an index set
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>
 of interest (containing some subset of the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
-variables). Throughout this document, I will use the VRC01 data <span class="citation">(Magaret, Benkeser, Williamson, et al. 2019)</span>, a
-subset of the data freely available from the Los Alamos National
-Laboratory’s Compile, Neutralize, and Tally Neutralizing Antibody Panels
-database. Information about these data is available <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">here</a>.
+variables). Throughout this document, I will use the VRC01 data <span class="citation">(Magaret et al. 2019)</span>, a subset of the data
+freely available from the Los Alamos National Laboratory’s Compile,
+Neutralize, and Tally Neutralizing Antibody Panels database. Information
+about these data is available <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">here</a>.
 Throughout, I will also use a simple library of learners for the Super
 Learner (this is for illustration only; in practice, I suggest using a
 large library of learners, as outlined in the <a href="introduction-to-vimp.html">main vignette</a>). Finally, I will use
@@ -198,14 +198,14 @@ measure importance.</p>
 <h2 id="conditional-vims">Conditional VIMs<a class="anchor" aria-label="anchor" href="#conditional-vims"></a>
 </h2>
 <p>The <em>reduced oracle predictiveness</em> is defined as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mo>−</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">V(f_{0,-s}, P_0)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>−</mi><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">V(f_{0,-s}, P_0)</annotation></semantics></math>,
 where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mo>−</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">f_{0,-s}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>−</mi><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">f_{0,-s}</annotation></semantics></math>
 is the best possible prediction function that <em>does not use the
 covariates with index in
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math></em>.
 Then the conditional VIM is defined as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mn>0</mn></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mo>−</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">V(f_0, P_0) - V(f_{0,-s}, P_0).</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mn>0</mn></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>−</mi><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">V(f_0, P_0) - V(f_{0,-s}, P_0).</annotation></semantics></math>
 This is the measure of importance that I estimated in the <a href="introduction-to-vimp.html">main vignette</a>. To estimate the
 conditional VIM for family history of heart disease, I can use the
 following code:</p>
@@ -220,20 +220,20 @@ following code:</p>
 <h2 id="marginal-vims">Marginal VIMs<a class="anchor" aria-label="anchor" href="#marginal-vims"></a>
 </h2>
 <p>The <em>marginal oracle predictiveness</em> is defined as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">V(f_{0,s}, P_0)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">V(f_{0,s}, P_0)</annotation></semantics></math>,
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><annotation encoding="application/x-tex">f_{0,s}</annotation></semantics></math>
 is the best possible prediction function that <em>only uses the
 covariates with index in
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math></em>.
 The <em>null oracle predictiveness</em> is defined as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>∅</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">V(f_{0, \emptyset}, P_0)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>∅</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">V(f_{0, \emptyset}, P_0)</annotation></semantics></math>,
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>∅</mi></mrow></msub><annotation encoding="application/x-tex">f_{0,\emptyset}</annotation></semantics></math>
 is the best possible prediction function that <em>uses no
 covariates</em> (i.e., is fitting the mean). Then the marginal VIM is
 defined as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>∅</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">V(f_{0,s}, P_0) - V(f_{0,\emptyset}, P_0).</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>∅</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">V(f_{0,s}, P_0) - V(f_{0,\emptyset}, P_0).</annotation></semantics></math>
 To estimate the marginal VIM for family history of heart disease, I can
 use the following code:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -249,7 +249,7 @@ conditional VIMs by averaging over all possible subsets. More
 specifically, the SPVIM for feature
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
 is given by
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><mo>∑</mo><mrow><mi>s</mi><mo>⊆</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>p</mi><mo stretchy="false" form="postfix">}</mo><mo>\</mo><mo stretchy="false" form="prefix">{</mo><mi>j</mi><mo stretchy="false" form="postfix">}</mo></mrow></munder><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mrow><mi>p</mi><mo>−</mo><mn>1</mn></mrow><mrow><mo stretchy="false" form="prefix">|</mo><mi>s</mi><mo stretchy="false" form="postfix">|</mo></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">{</mo><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi><mo>∪</mo><mo stretchy="false" form="prefix">{</mo><mi>j</mi><mo stretchy="false" form="postfix">}</mo></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">}</mo><mo>;</mo></mrow><annotation encoding="application/x-tex">\sum_{s \subseteq \{1,\ldots,p\} \setminus \{j\}} \binom{p-1}{\lvert s \rvert}^{-1}\{V(f_{0, s \cup \{j\}}, P_0)) - V(f_{0,s}, P_0)\};</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><munder><mo>∑</mo><mrow><mi>s</mi><mo>⊆</mo><mo stretchy="false" form="prefix">{</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>p</mi><mo stretchy="false" form="postfix">}</mo><mo>\</mo><mo stretchy="false" form="prefix">{</mo><mi>j</mi><mo stretchy="false" form="postfix">}</mo></mrow></munder><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mrow><mi>p</mi><mo>−</mo><mn>1</mn></mrow><mrow><mo stretchy="false" form="prefix">|</mo><mi>s</mi><mo stretchy="false" form="postfix">|</mo></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mi>−</mi><mn>1</mn></mrow></msup><mo stretchy="false" form="prefix">{</mo><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi><mo>∪</mo><mo stretchy="false" form="prefix">{</mo><mi>j</mi><mo stretchy="false" form="postfix">}</mo></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">}</mo><mo>;</mo></mrow><annotation encoding="application/x-tex">\sum_{s \subseteq \{1,\ldots,p\} \setminus \{j\}} \binom{p-1}{\lvert s \rvert}^{-1}\{V(f_{0, s \cup \{j\}}, P_0)) - V(f_{0,s}, P_0)\};</annotation></semantics></math>
 this is the average gain in predictiveness from adding feature
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>
 to each possible grouping of the other features. To estimate the SPVIM
@@ -267,7 +267,7 @@ adjust for in all cases. For example, in HIV vaccine studies, we often
 adjust for baseline demographic variables, including age and behavioral
 factors. If this is the case, then the null predictiveness above can be
 modified to be
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>c</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">V(f_{0,c}, P_0)</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>f</mi><mrow><mn>0</mn><mo>,</mo><mi>c</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">V(f_{0,c}, P_0)</annotation></semantics></math>,
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math>
 is the index set of all confounders.</p>
@@ -331,8 +331,9 @@ than one) that best addresses your scientific question.</p>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-magaret2019" class="csl-entry">
-Magaret, CA, DC Benkeser, BD Williamson, et al. 2019. <span>“Prediction
-of <span>VRC01</span> Neutralization Sensitivity by <span>HIV</span>-1
+Magaret, CA, DC Benkeser, BD Williamson, BR Borate, LN Carpp, IS
+Georgiev, I Setliff, et al. 2019. <span>“Prediction of
+<span>VRC01</span> Neutralization Sensitivity by <span>HIV</span>-1
 Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">https://doi.org/10.1371/journal.pcbi.1006952</a>.
 </div>
 </div>
@@ -354,7 +355,7 @@ Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href=
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

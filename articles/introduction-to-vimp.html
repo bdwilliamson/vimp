@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vimp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.8</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Brian D.
 Williamson</h4>
             
-            <h4 data-toc-skip class="date">2025-09-25</h4>
+            <h4 data-toc-skip class="date">2026-05-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bdwilliamson/vimp/blob/master/vignettes/introduction-to-vimp.Rmd" class="external-link"><code>vignettes/introduction-to-vimp.Rmd</code></a></small>
       <div class="hidden name"><code>introduction-to-vimp.Rmd</code></div>
@@ -116,9 +116,7 @@ importance based on the difference in nonparametric
 classification accuracy, and area under the receiver operating
 characteristic curve (AUC). These quantities are all nonparametric
 generalizations of the usual measures in simple parametric models (e.g.,
-linear models). For more details, see the accompanying manuscripts <span class="citation">Williamson, Gilbert, Carone, et al. (2020)</span>,
-<span class="citation">Williamson, Gilbert, Simon, et al. (2021)</span>,
-and <span class="citation">Williamson and Feng (2020)</span>.</p>
+linear models). For more details, see the accompanying manuscripts <span class="citation">Williamson et al. (2020)</span>, <span class="citation">Williamson et al. (2021)</span>, and <span class="citation">Williamson and Feng (2020)</span>.</p>
 <p>Variable importance estimates may be computed quickly, depending on
 the techniques used to estimate the underlying conditional means — if
 these techniques are slow, then the variable importance procedure will
@@ -244,15 +242,15 @@ to be 0.061, with a 95% confidence interval of [0.013, 0.242].</p>
 variable importance in the context of assessing the importance of amino
 acid sequence features in predicting the neutralization sensitivity of
 the HIV virus to the broadly neutralizing antibody VRC01. For more
-information about this study, see <span class="citation">Magaret,
-Benkeser, Williamson, et al. (2019)</span>.</p>
+information about this study, see <span class="citation">Magaret et al.
+(2019)</span>.</p>
 <p>Often when working with data we attempt to estimate the conditional
 mean of the outcome
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>
 given features
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>,
 defined as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>P</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>E</mi><mi>P</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>Y</mi><mo>∣</mo><mi>X</mi><mo>=</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\mu_P(x) = E_P(Y \mid X = x)</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>P</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>E</mi><mi>P</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo>∣</mo><mi>X</mi><mo>=</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\mu_P(x) = E_P(Y \mid X = x)</annotation></semantics></math>.</p>
 <p>There are many tools for estimating this conditional mean. We might
 choose a classical parametric tool such as linear regression. We might
 also want to be model-agnostic and use a more nonparametric approach to
@@ -270,12 +268,12 @@ scientific interest to understand which features contribute the most to
 the variation in
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mi>P</mi></msub><annotation encoding="application/x-tex">\mu_P</annotation></semantics></math>.
 Specifically, we might consider
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mrow><mi>P</mi><mo>,</mo><mi>s</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>E</mi><mi>P</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>Y</mi><mo>∣</mo><msub><mi>X</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub><mo>=</mo><msub><mi>x</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\mu_{P, s}(x) = E_P(Y \mid X_{(-s)} = x_{(-s)}),</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mrow><mi>P</mi><mo>,</mo><mi>s</mi></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>E</mi><mi>P</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo>∣</mo><msub><mi>X</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>s</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo>=</mo><msub><mi>x</mi><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi>s</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\mu_{P, s}(x) = E_P(Y \mid X_{(-s)} = x_{(-s)}),</annotation></semantics></math>
 where for a vector
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>v</mi><annotation encoding="application/x-tex">v</annotation></semantics></math>
 and a set of indices
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>s</mi><annotation encoding="application/x-tex">s</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>v</mi><mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msub><annotation encoding="application/x-tex">v_{-(s)}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>v</mi><mrow><mi>−</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mo stretchy="false" form="postfix">)</mo></mrow></msub><annotation encoding="application/x-tex">v_{-(s)}</annotation></semantics></math>
 denotes the elements of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>v</mi><annotation encoding="application/x-tex">v</annotation></semantics></math>
 with index not in
@@ -294,11 +292,11 @@ We define the population
 value of a given regression function
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>
 as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>μ</mi><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mo>−</mo><mfrac><mrow><msub><mi>E</mi><msub><mi>P</mi><mn>0</mn></msub></msub><mo stretchy="false" form="prefix">{</mo><mi>Y</mi><mo>−</mo><mi>μ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>X</mi><mo stretchy="true" form="postfix">)</mo></mrow><msup><mo stretchy="false" form="postfix">}</mo><mn>2</mn></msup></mrow><mrow><mi>v</mi><mi>a</mi><msub><mi>r</mi><msub><mi>P</mi><mn>0</mn></msub></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>Y</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">R^2(\mu, P_0) = 1 - \frac{E_{P_0}\{Y - \mu(X)\}^2}{var_{P_0}(Y)}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>R</mi><mn>2</mn></msup><mo stretchy="false" form="prefix">(</mo><mi>μ</mi><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mn>1</mn><mo>−</mo><mfrac><mrow><msub><mi>E</mi><msub><mi>P</mi><mn>0</mn></msub></msub><mo stretchy="false" form="prefix">{</mo><mi>Y</mi><mo>−</mo><mi>μ</mi><mo stretchy="false" form="prefix">(</mo><mi>X</mi><mo stretchy="false" form="postfix">)</mo><msup><mo stretchy="false" form="postfix">}</mo><mn>2</mn></msup></mrow><mrow><mi>v</mi><mi>a</mi><msub><mi>r</mi><msub><mi>P</mi><mn>0</mn></msub></msub><mo stretchy="false" form="prefix">(</mo><mi>Y</mi><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></mrow><annotation encoding="application/x-tex">R^2(\mu, P_0) = 1 - \frac{E_{P_0}\{Y - \mu(X)\}^2}{var_{P_0}(Y)}</annotation></semantics></math>,
 where the numerator of this expression is the population mean squared
 error and the denominator is the population variance. We can then define
 a nonparametric measure of variable importance,
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msup><mi>R</mi><mn>2</mn></msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><msub><mi>P</mi><mn>0</mn></msub></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msup><mi>R</mi><mn>2</mn></msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mrow><msub><mi>P</mi><mn>0</mn></msub><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\psi_{0, s} = R^2(\mu_{P_0}, P_0) - R^2(\mu_{P_0,s}, P_0),</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><mn>0</mn><mo>,</mo><mi>s</mi></mrow></msub><mo>=</mo><msup><mi>R</mi><mn>2</mn></msup><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><msub><mi>P</mi><mn>0</mn></msub></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><msup><mi>R</mi><mn>2</mn></msup><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mrow><msub><mi>P</mi><mn>0</mn></msub><mo>,</mo><mi>s</mi></mrow></msub><mo>,</mo><msub><mi>P</mi><mn>0</mn></msub><mo stretchy="false" form="postfix">)</mo><mo>,</mo></mrow><annotation encoding="application/x-tex">\psi_{0, s} = R^2(\mu_{P_0}, P_0) - R^2(\mu_{P_0,s}, P_0),</annotation></semantics></math>
 which is the proportion of the variability in the outcome explained by
 including
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>j</mi></msub><annotation encoding="application/x-tex">X_j</annotation></semantics></math>
@@ -319,10 +317,10 @@ regression function estimates in <code>vimp</code>”</a>.</p>
 <div class="section level3">
 <h3 id="a-look-at-the-vrc01-data">A look at the VRC01 data<a class="anchor" aria-label="anchor" href="#a-look-at-the-vrc01-data"></a>
 </h3>
-<p>Throughout this document I will use the VRC01 data <span class="citation">(Magaret, Benkeser, Williamson, et al. 2019)</span>, a
-subset of the data freely available from the Los Alamos National
-Laboratory’s Compile, Neutralize, and Tally Neutralizing Antibody Panels
-database. Information about these data is available <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">here</a>.</p>
+<p>Throughout this document I will use the VRC01 data <span class="citation">(Magaret et al. 2019)</span>, a subset of the data
+freely available from the Los Alamos National Laboratory’s Compile,
+Neutralize, and Tally Neutralizing Antibody Panels database. Information
+about these data is available <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">here</a>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># read in the data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"vrc01"</span><span class="op">)</span></span></code></pre></div>
@@ -557,7 +555,7 @@ larger number of folds and a larger library in practice):</p>
 <span><span class="va">start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">subtype_01_AE_vim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vimp_rsquared.html">vimp_rsquared</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">y</span>, X <span class="op">=</span> <span class="va">X</span>, indx <span class="op">=</span> <span class="fl">5</span>, SL.library <span class="op">=</span> <span class="va">learners.2</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span>, env <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html" class="external-link">environment</a></span><span class="op">(</span><span class="op">)</span>, V <span class="op">=</span> <span class="va">V</span>, cvControl <span class="op">=</span> <span class="va">sl_cvcontrol</span>, family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html" class="external-link">binomial</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>This code takes approximately 0.986 seconds to run on a (not very
+<p>This code takes approximately 0.996 seconds to run on a (not very
 fast) PC. I can display these estimates:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">subtype_01_AE_vim</span></span></code></pre></div>
@@ -611,12 +609,12 @@ importance, I can view them all simultaneously by plotting:</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated individual feature importance"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning: `geom_errobarh()` was deprecated in ggplot2 4.0.0.</span></span>
+<pre><code><span><span class="co">## Warning: `geom_errorbarh()` was deprecated in ggplot2 4.0.0.</span></span>
 <span><span class="co">## <span style="color: #00BBBB;">ℹ</span> Please use the `orientation` argument of `geom_errorbar()` instead.</span></span>
-<span><span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
+<span><span class="co">## <span style="color: #555555;">This warning is displayed once per session.</span></span></span>
 <span><span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
 <span><span class="co">## <span style="color: #555555;">generated.</span></span></span></code></pre>
-<p><img src="introduction-to-vimp_files/figure-html/vrc01-vim-1.png" width="816"></p>
+<p><img src="introduction-to-vimp_files/figure-html/vrc01-vim-1.png" class="r-plt" alt="" width="816"></p>
 </div>
 </div>
 <div class="section level2">
@@ -644,7 +642,7 @@ in the previous section to compute these estimates.</p>
 <span></span>
 <span><span class="va">grp_plot_tib</span> <span class="op">&lt;-</span> <span class="va">groups</span><span class="op">$</span><span class="va">mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>    grp_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>    grp_fct <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="va">s</span> <span class="op">==</span> <span class="st">"5,6,7,8,9,10,11,12,13,14,15"</span> <span class="op">~</span> <span class="st">"1"</span>,</span>
 <span>      <span class="va">s</span> <span class="op">==</span> <span class="st">"16,17,18,19,20,21"</span> <span class="op">~</span> <span class="st">"2"</span></span>
 <span>    <span class="op">)</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1"</span>, <span class="st">"2"</span><span class="op">)</span>,  labels <span class="op">=</span> <span class="va">all_grp_nms</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -657,7 +655,7 @@ in the previous section to compute these estimates.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">""</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Estimated feature group importance"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>subtitle <span class="op">=</span> <span class="st">"in the VRC01 data (considering only geographic confounders, subtype, and viral geometry)"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction-to-vimp_files/figure-html/vrc01-group-vim-1.png" width="816"></p>
+<p><img src="introduction-to-vimp_files/figure-html/vrc01-group-vim-1.png" class="r-plt" alt="" width="816"></p>
 </div>
 <div class="section level2">
 <h2 id="types-of-population-variable-importance">Types of population variable importance<a class="anchor" aria-label="anchor" href="#types-of-population-variable-importance"></a>
@@ -691,8 +689,9 @@ Learner.”</span> <em>Statistical Applications in Genetics and Molecular
 Biology</em> 6 (1): Online Article 25.
 </div>
 <div id="ref-magaret2019" class="csl-entry">
-Magaret, CA, DC Benkeser, BD Williamson, et al. 2019. <span>“Prediction
-of <span>VRC01</span> Neutralization Sensitivity by <span>HIV</span>-1
+Magaret, CA, DC Benkeser, BD Williamson, BR Borate, LN Carpp, IS
+Georgiev, I Setliff, et al. 2019. <span>“Prediction of
+<span>VRC01</span> Neutralization Sensitivity by <span>HIV</span>-1
 Gp160 Sequence Features.”</span> <em>PLOS Computational Biology</em>. <a href="https://doi.org/10.1371/journal.pcbi.1006952" class="external-link">https://doi.org/10.1371/journal.pcbi.1006952</a>.
 </div>
 <div id="ref-williamson2020c" class="csl-entry">
@@ -703,13 +702,13 @@ International Conference on Machine Learning</em>, 119:10282–91.
 Proceedings of Machine Learning Research. <a href="http://proceedings.mlr.press/v119/williamson20a.html" class="external-link">http://proceedings.mlr.press/v119/williamson20a.html</a>.
 </div>
 <div id="ref-williamson2020a" class="csl-entry">
-Williamson, BD, PB Gilbert, M Carone, et al. 2020. <span>“Nonparametric
-Variable Importance Assessment Using Machine Learning
-Techniques.”</span> <em>Biometrics</em>.
+Williamson, BD, PB Gilbert, M Carone, and N Simon. 2020.
+<span>“Nonparametric Variable Importance Assessment Using Machine
+Learning Techniques.”</span> <em>Biometrics</em>.
 </div>
 <div id="ref-williamson2021" class="csl-entry">
-Williamson, BD, PB Gilbert, NR Simon, et al. 2021. <span>“A General
-Framework for Inference on Algorithm-Agnostic Variable
+Williamson, BD, PB Gilbert, NR Simon, and M Carone. 2021. <span>“A
+General Framework for Inference on Algorithm-Agnostic Variable
 Importance.”</span> <em>Journal of the American Statistical
 Association</em>. <a href="https://doi.org/10.1080/01621459.2021.2003200" class="external-link">https://doi.org/10.1080/01621459.2021.2003200</a>.
 </div>
@@ -737,7 +736,7 @@ Society: Series B (Statistical Methodology)</em> 67 (2): 301–20.
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
