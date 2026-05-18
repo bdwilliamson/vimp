@@ -38,7 +38,8 @@ Imports:
     rlang,
     MASS,
     data.table,
-    boot
+    boot,
+    rsample
 Suggests:
     knitr,
     rmarkdown,
